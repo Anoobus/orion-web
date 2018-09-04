@@ -58,12 +58,7 @@ namespace orion.web.ApplicationStartup
             services.AddIdentity<IdentityUser, IdentityRole>()
             .AddDefaultUI()
             .AddDefaultTokenProviders()
-            .AddEntityFrameworkStores<ApplicationDbContext>();
-
-            //services.AddIdentity<IdentityUser, IdentityRole>()
-            //                .AddEntityFrameworkStores<ApplicationDbContext>()
-            //                .AddDefaultUI()
-            //                .AddDefaultTokenProviders();
+            .AddEntityFrameworkStores<ApplicationDbContext>();            
 
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);

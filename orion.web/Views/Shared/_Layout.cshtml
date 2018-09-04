@@ -34,26 +34,31 @@
                 </button>
                 <div class="navbar-brand">Orion Engineering</div>
             </div>
-            <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li><a asp-controller="Home" asp-action="Index">Home</a></li>
-                    @if(User.IsInRole(UserRoleName.Admin))
-                    {
-                        <li><a asp-controller="Jobs" asp-action="Index">Jobs</a></li>
-                    }
-                    else
-                    {
-                        <li><a asp-controller="Jobs" asp-action="Index">My Jobs</a></li>
-                    }
-                    <li><a asp-controller="Time" asp-action="Index">Time Entry</a></li>
-                    @if(User.IsInRole(UserRoleName.Admin))
-                    {
-                        <li><a asp-controller="Employee" asp-action="List">Employees</a></li>
-                    }
 
-                </ul>
+            <div class="navbar-collapse collapse">
+                @if(User.Identity.IsAuthenticated)
+                {
+                    <ul class="nav navbar-nav">
+                        <li><a asp-controller="Home" asp-action="Index">Home</a></li>
+                        @if(User.IsInRole(UserRoleName.Admin))
+                        {
+                            <li><a asp-controller="Jobs" asp-action="Index">Jobs</a></li>
+                        }
+                        else
+                        {
+                            <li><a asp-controller="Jobs" asp-action="Index">My Jobs</a></li>
+                        }
+                        <li><a asp-controller="Time" asp-action="Index">Time Entry</a></li>
+                        @if(User.IsInRole(UserRoleName.Admin))
+                        {
+                            <li><a asp-controller="Employee" asp-action="List">Employees</a></li>
+                        }
+
+                    </ul>
+                }
                 @await Html.PartialAsync("_LoginPartial")
             </div>
+
         </div>
     </div>
     <partial name="_CookieConsentPartial" />
@@ -119,16 +124,20 @@
                     }
                 })
                 .fail(function (e) {
-                    $.notify({
-                        // options
-                        message: "couldn't get notifications: " + e.status
-                    }, {
-                            // settings
-                            type: 'danger'
-                        });
+                    @if(User.Identity.IsAuthenticated)
+                    {
+                    <Text>
+                            $.notify({
+                                    // options
+                                    message: "couldn't get notifications: " + e.status
+                            }, {
+                                    // settings
+                                    type: if;
 
-                    console.log(e);
-                });
+                                    console.log(e);
+                                });
+                    </Text>
+                    }
         });
     </script>
     @RenderSection("Scripts", required: false)

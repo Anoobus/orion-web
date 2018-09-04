@@ -148,8 +148,7 @@ namespace orion.web.TimeEntries
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Save(int year, int id, FullTimeEntryViewModel vm)
         {
-            await SaveTimeEntriesAsync(year, id, vm);
-            NotificationsController.AddNotification(this.User.SafeUserName(), "Timesheet has been submitted for approval");
+            await SaveTimeEntriesAsync(year, id, vm);            
             return RedirectToAction(nameof(Edit));
         }
 
