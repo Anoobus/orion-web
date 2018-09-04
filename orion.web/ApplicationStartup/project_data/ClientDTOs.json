@@ -1,0 +1,32 @@
+[
+  {
+    "ClientName": "Barton Malow Company",
+    "FullName": "0221-Barton Malow Company",
+    "ClientId": 1,
+    "ClientCode": "0221"
+  },
+  {
+    "ClientName": "Commercial Contractingg Corporation",
+    "FullName": "0333-Commercial Contractingg Corporation",
+    "ClientId": 2,
+    "ClientCode": "0333"
+  },
+  {
+    "ClientName": "Conti Electric",
+    "FullName": "0336-Conti Electric",
+    "ClientId": 3,
+    "ClientCode": "0336"
+  },
+  {
+    "ClientName": "Motor City Electric Company",
+    "FullName": "0336-Motor City Electric Company",
+    "ClientId": 4,
+    "ClientCode": "0336"
+  },
+  {
+    "ClientName": "Orion Engineering HQ",
+    "FullName": "0000-Orion Engineering HQ",
+    "ClientId": 5,
+    "ClientCode": "0000"
+  }
+]

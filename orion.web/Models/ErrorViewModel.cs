@@ -1,6 +1,5 @@
-using System;
 
-namespace orion.web.Models
+namespace orion.web
 {
     public class ErrorViewModel
     {

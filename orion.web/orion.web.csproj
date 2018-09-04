@@ -4,12 +4,81 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <UserSecretsId>aspnet-orion.web-FEEF65A2-EA60-42A9-8F69-6C8534D9A130</UserSecretsId>
     <DockerTargetOS>Linux</DockerTargetOS>
+    <StartupObject></StartupObject>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Account\**" />
+    <Compile Remove="Authorization\**" />
+    <Content Remove="Account\**" />
+    <Content Remove="Authorization\**" />
+    <EmbeddedResource Remove="Account\**" />
+    <EmbeddedResource Remove="Authorization\**" />
+    <None Remove="Account\**" />
+    <None Remove="Authorization\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="ApplicationStartup\project_data\ClientDTOs.json" />
+    <Content Remove="ApplicationStartup\project_data\JobDTOs.json" />
+    <Content Remove="ApplicationStartup\project_data\SiteDTOs.json" />
+    <Content Remove="ApplicationStartup\project_data\TaskCategorys.json" />
+    <Content Remove="ApplicationStartup\project_data\TaskDTOs.json" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.0.1916590" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.1" PrivateAssets="All" />
+    <PackageReference Include="NPOI" Version="2.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Views\Employee\List.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Shared\Error.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Shared\_CookieConsentPartial.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Shared\_Layout.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Shared\_LoginPartial.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Shared\_ValidationScriptsPartial.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Views\Shared\_CookieConsentPartial.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Views\Shared\_CookieConsentPartial.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="ApplicationStartup\project_data\ClientDTOs.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="ApplicationStartup\project_data\JobDTOs.json" />
+    <EmbeddedResource Include="ApplicationStartup\project_data\SiteDTOs.json" />
+    <EmbeddedResource Include="ApplicationStartup\project_data\TaskCategorys.json" />
+    <EmbeddedResource Include="ApplicationStartup\project_data\TaskDTOs.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Areas\Identity\Services\" />
   </ItemGroup>
 
 </Project>

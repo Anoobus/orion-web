@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using orion.web.Models;
+using orion.web.Employees;
 
 namespace orion.web.Controllers
 {
@@ -15,6 +16,7 @@ namespace orion.web.Controllers
             return View();
         }
 
+        [Authorize(Roles =UserRoleName.Admin)]
         public IActionResult About()
         {
             ViewData["Message"] = "Your application description page.";

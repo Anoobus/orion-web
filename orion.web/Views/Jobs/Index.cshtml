@@ -1,0 +1,13 @@
+﻿@model string
+
+
+
+<h1>Job Management</h1>
+<p>
+    <a class="btn btn-success" asp-action="List">View All Jobs</a>
+    <a class="btn btn-success" asp-action="Create">Add New Job</a>
+    <a class="btn btn-success" asp-action="Create" asp-controller="Task">Add New Task</a>
+    <a class="btn btn-success" href="@Url.Action("Index","Reports")">View Job Reports</a>
+</p>
+
+

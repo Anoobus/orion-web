@@ -1,8 +1,7 @@
-﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification\ 
-for details on configuring this project to bundle and minify static web assets. */
-body {
+﻿body {
     padding-top: 50px;
     padding-bottom: 20px;
+    font-size: 12px;
 }
 
 /* Wrapping element */
@@ -12,26 +11,59 @@ body {
     padding-right: 15px;
 }
 
+.breadcrumb {
+    margin-top: 5px;
+}
+.body-content div {
+    padding-top: 5px;
+}
+/* Set widths on the form inputs since otherwise they're 100% wide */
+input {
+    max-width: 280px;
+}
+
+.vertical-bottom {
+    vertical-align: bottom;
+}
+.orion-form select,
+textarea {
+    max-width: 310px;
+    padding: 3px 6px 3px 6px;
+    font-size:12px;
+}
+
+select
+
+ul {
+    list-style-type: none;
+}
+
 /* Carousel */
-.carousel-caption p {
-    font-size: 20px;
-    line-height: 1.4;
+.carousel-caption {
+    z-index: 10 !important;
 }
 
-/* Make .svg files in the carousel display properly in older browsers */
-.carousel-inner .item img[src$=".svg"] {
-    width: 100%;
-}
-
-/* QR code generator */
-#qrCode {
-    margin: 15px;
-}
-
-/* Hide/rearrange for smaller screens */
-@media screen and (max-width: 767px) {
-    /* Hide captions */
-    .carousel-caption {
-        display: none;
+    .carousel-caption p {
+        font-size: 20px;
+        line-height: 1.4;
     }
+
+@media (min-width: 768px) {
+    .carousel-caption {
+        z-index: 10 !important;
+    }
+}
+.form-group.skinny select {
+    font-size: 10px;
+    max-width: 95px;
+    padding: 1px;
+    line-height: 11px;
+    height: 20px;
+}
+.form-group.skinny input {
+    max-width: 55px;
+    font-size: 10px;
+    padding: 1px;
+    line-height: 11px;
+    height: 20px;
 }

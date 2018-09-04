@@ -1,0 +1,62 @@
+﻿@model orion.web.Jobs.JobListViewModel
+<ol class="breadcrumb">
+    <li class="breadcrumb-item active">List</li>
+</ol>
+<div class="row">
+    <p>
+        <a class="btn btn-success" asp-action="Create">Create New</a>
+    </p>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.HeaderHelp.FullJobCode)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.HeaderHelp.JobName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.HeaderHelp.Client.ClientName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.HeaderHelp.Site.SiteName)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var item in Model.AllJobsWithAssociationStatus)
+            {
+                <tr>
+                    <td>
+                     @Html.ActionLink( item.Key.FullJobCode, "Edit", new { id = item.Key.JobId })  
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Key.JobName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Key.Client.ClientName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Key.Site.SiteName)
+                    </td>
+                    <td>
+                        
+                        Delete |
+                        @if(item.Value)
+                        {
+                            @Html.ActionLink("Remove From My Jobs", "RemoveJobForCurrentUser", new { id = item.Key.JobId })
+
+                        }
+                        else
+                        {
+                            @Html.ActionLink("Add To My Jobs", "AddJobForCurrentUser", new { id = item.Key.JobId })
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+</div>

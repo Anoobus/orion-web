@@ -1,0 +1,10 @@
+[
+  {
+    "TaskCategoryId": 1,
+    "Name": "normal"
+  },
+  {
+    "TaskCategoryId": 2,
+    "Name": "internalOnly"
+  }
+]

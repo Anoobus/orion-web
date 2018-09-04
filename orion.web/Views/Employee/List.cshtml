@@ -1,0 +1,38 @@
+﻿@model orion.web.Employees.EmployeeListViewModel
+<ol class="breadcrumb">
+    <li class="breadcrumb-item active">Employee List</li>
+</ol>
+<div class="row">
+    <p>
+        <a class="btn btn-success" asp-action="NewEmployee">Add New Employee</a>
+    </p>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.HeaderHelp.Name)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.HeaderHelp.AssignJobs)
+                </th>               
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var item in Model.Employees)
+            {
+                <tr>
+                    <td>
+                     @Html.ActionLink( item.Name, "Edit", new { employee = item.Name })  
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.AssignJobs.Count)
+                    </td>                                                                   
+                  
+                </tr>
+            }
+        </tbody>
+    </table>
+
+</div>
