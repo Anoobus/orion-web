@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using orion.web.Employees;
@@ -18,15 +19,12 @@ namespace orion.web.JobsTasks
         }
 
         // GET: Client/Create
-        public ActionResult Create()
+        public async Task<ActionResult> Create()
         {
+            var cats = await taskService.GetTaskCategoriesAsync();
             var vm = new TaskViewModel()
             {
-                AllTaskCategories = Enum.GetValues(typeof(TaskCategoryId)).OfType<TaskCategoryId>().Select(x => new CategroyDTO()
-                {
-                    Id = (int)x,
-                    Name = x.ToString()
-                }),
+                AllTaskCategories =cats,
                 Task = new TaskDTO()
             };
             return View("Create", vm);
@@ -35,16 +33,17 @@ namespace orion.web.JobsTasks
         // POST: Client/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(TaskViewModel client)
+        public async Task<ActionResult> Create(TaskViewModel submittedTask)
         {
-
+            var cats = await taskService.GetTaskCategoriesAsync();
+            var catName = cats.FirstOrDefault(x => x.Id == submittedTask.SelectedCategory).Name;
             taskService.Post(new TaskDTO()
             {
-                Description = client.Task.Description,
-                Name = client.Task.Name,
-                TaskCategory = (TaskCategoryId)client.SelectedCategory,
+                Description = submittedTask.Task.Description,
+                Name = submittedTask.Task.Name,
+                TaskCategoryName = catName,
             });
-            NotificationsController.AddNotification(this.User.SafeUserName(), $"{client.Task.Name} has been created");
+            NotificationsController.AddNotification(this.User.SafeUserName(), $"{submittedTask.Task.Name} has been created");
             return RedirectToAction("Index", "Jobs");
 
         }

@@ -79,7 +79,7 @@ namespace orion.web.TimeEntries
             var employeeName = this.User.Identity.Name;
             var timeEntries = timeService.Get(year,id, employeeName);
             var jobList = jobService.Get(employeeName).ToList();
-            var taskList = taskService.Get().ToList();
+            var taskList = taskService.GetTasks().ToList();
             var entries = new List<TimeEntryViewModel>();
             var status = await timeApprovalService.Get(year, id, User.Identity.Name);
             Enum.TryParse<TimeApprovalStatus>(status.TimeApprovalStatus, out var mappedStatus);
@@ -90,7 +90,7 @@ namespace orion.web.TimeEntries
                     SelectedJobId = entry.Key.JobId,
                     SelectedTaskId = entry.Key.JobTaskId,
                     AvailableJobs = jobList.Where(x => x.JobId == entry.Key.JobId),
-                    AvailableTasks = taskList.Where(x => x.TaskId == entry.Key.JobTaskId),
+                    AvailableTasks = taskList.GroupBy(x => x.TaskCategoryName).ToDictionary(x => x.Key, x => x.AsEnumerable()),
                     Monday = viewModelRepo.MapToViewModel(id, year, DayOfWeek.Monday, entry),
                     Tuesday = viewModelRepo.MapToViewModel(id, year, DayOfWeek.Tuesday, entry),
                     Wednesday = viewModelRepo.MapToViewModel(id, year, DayOfWeek.Wednesday, entry),
@@ -124,15 +124,13 @@ namespace orion.web.TimeEntries
         private TimeEntryViewModel GenerateEmptyJobTask(int year, int id)
         {
             var jobList = jobService.Get(this.User.Identity.Name).ToList();
-            var taskList = taskService.Get().ToList();
+            var taskList = taskService.GetTasks().ToList();
             return new TimeEntryViewModel()
             {
                 SelectedJobId = null,
                 SelectedTaskId = null,
-                AvailableJobs = jobList.Where(x => x.AllowedCategory == TaskCategoryId.normal),
-                AvailableTasks = taskList.Where(x => x.TaskCategory == TaskCategoryId.normal),
-                InternalJobs = jobList.Where(x => x.AllowedCategory == TaskCategoryId.internalOnly),
-                InternalTasks = taskList.Where(x => x.TaskCategory == TaskCategoryId.internalOnly),
+                AvailableJobs = jobList,
+                AvailableTasks = taskList.GroupBy(x => x.TaskCategoryName).ToDictionary(x => x.Key, x => x.AsEnumerable()),
                 Monday = viewModelRepo.EmptyViewModel(DayOfWeek.Monday, id, year),
                 Tuesday = viewModelRepo.EmptyViewModel(DayOfWeek.Tuesday, id, year),
                 Wednesday = viewModelRepo.EmptyViewModel(DayOfWeek.Wednesday, id, year),
@@ -234,8 +232,8 @@ namespace orion.web.TimeEntries
 
         private static TimeEntryDTO CreateDTO(int id, FullTimeEntryViewModel vm, ITimeService thing, int employeeId, TimeEntryViewModel thingsToAdd, TimeSpentViewModel marker)
         {
-            thingsToAdd.SelectedTaskId = vm.NewEntry.SelectedTaskId ?? vm.NewEntry.SelectedInternalTaskId;
-            thingsToAdd.SelectedJobId = vm.NewEntry.SelectedJobId ?? vm.NewEntry.SelectedInternalJobId;
+            thingsToAdd.SelectedTaskId = vm.NewEntry.SelectedTaskId;
+            thingsToAdd.SelectedJobId = vm.NewEntry.SelectedJobId;
             var dto = new TimeEntryDTO()
             {
                 Date = marker.Date,

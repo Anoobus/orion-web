@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using orion.web.Clients;
 using orion.web.DataAccess.EF;
-using orion.web.JobsTasks;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace orion.web.Jobs
 {
@@ -30,7 +29,6 @@ namespace orion.web.Jobs
             return db.Jobs.Where(x => thisEmpJobs.Contains(x.JobId))
                      .Include(x => x.Client)
                      .Include(x => x.Site)
-                     .Include(x => x.TaskCategory)
                      ?.Select(job => MapToDTO(job))
                      ?.ToList() ?? new List<JobDTO>();
 
@@ -41,7 +39,6 @@ namespace orion.web.Jobs
             return db.Jobs
                          .Include(x => x.Client)
                          .Include(x => x.Site)
-                         .Include(x => x.TaskCategory)
                          .Select(Job => MapToDTO(Job)).ToList();
         }
 
@@ -63,25 +60,19 @@ namespace orion.web.Jobs
                     SiteID = Job.Site.SiteID,
                     SiteName = Job.Site.SiteName
                 },
-                AllowedCategory = Enum.Parse<TaskCategoryId>(Job.TaskCategory.Name,true),
-                 TargetHours = Job.TargetHours  
+                TargetHours = Job.TargetHours
             };
         }
 
         public JobDTO Post(JobDTO job)
         {
-            if (job.AllowedCategory == TaskCategoryId.unknown)
-            {
-                job.AllowedCategory = TaskCategoryId.normal;
-            }
             var efJob = new Job()
             {
                 ClientId = job.Client.ClientId,
                 JobCode = job.JobCode,
                 JobName = job.JobName,
                 SiteId = job.Site.SiteID,
-                TaskCategoryId = db.TaskCategories.Single(x => x.Name ==  job.AllowedCategory.ToString()).TaskCategoryId,
-                 TargetHours = job.TargetHours
+                TargetHours = job.TargetHours
             };
             db.Jobs.Add(efJob);
             db.SaveChanges();
@@ -96,7 +87,6 @@ namespace orion.web.Jobs
             efJob.JobCode = job.JobCode;
             efJob.JobName = job.JobName;
             efJob.SiteId = job.Site.SiteID;
-            efJob.TaskCategoryId = (int)job.AllowedCategory;
             efJob.TargetHours = job.TargetHours;
             db.SaveChanges();
         }

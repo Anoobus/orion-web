@@ -1,12 +1,19 @@
 ﻿@model orion.web.Jobs.JobListViewModel
+@using orion.web.Employees
 <ol class="breadcrumb">
-    <li class="breadcrumb-item active">List</li>
+    <li class="breadcrumb-item active"> Job List</li>
 </ol>
 <div class="row">
-    <p>
-        <a class="btn btn-success" asp-action="Create">Create New</a>
-    </p>
+    @if(User.IsInRole(UserRoleName.Admin))
+    {
+        <p>
+            <a class="btn btn-success" asp-action="Create">Create New</a>
+        </p>
+    }
 
+
+
+    <input id="quick-filter" type="text" placeholder="quick filter rows" />
     <table class="table">
         <thead>
             <tr>
@@ -24,13 +31,14 @@
                 </th>
                 <th></th>
             </tr>
+
         </thead>
-        <tbody>
+        <tbody id="table-data">
             @foreach(var item in Model.AllJobsWithAssociationStatus)
             {
                 <tr>
                     <td>
-                     @Html.ActionLink( item.Key.FullJobCode, "Edit", new { id = item.Key.JobId })  
+                        @Html.ActionLink(item.Key.FullJobCode, "Edit", new { id = item.Key.JobId })
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.Key.JobName)
@@ -42,7 +50,7 @@
                         @Html.DisplayFor(modelItem => item.Key.Site.SiteName)
                     </td>
                     <td>
-                        
+
                         Delete |
                         @if(item.Value)
                         {
@@ -60,3 +68,17 @@
     </table>
 
 </div>
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#quick-filter").on("keyup", function () {
+                var value = $(this).val().toLowerCase();
+                $("#table-data tr").filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+        });
+
+    </script>
+}

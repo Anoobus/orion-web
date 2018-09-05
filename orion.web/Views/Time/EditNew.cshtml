@@ -102,32 +102,23 @@
                 <div class="modal-body">
                     @if(Model.NewEntry.AvailableJobs.Any())
                     {
-                        <div class="form-group">
-                            <h4>Regular Jobs</h4>
-                            <select asp-for="NewEntry.SelectedJobId" class="form-control"
-                                    asp-items="@(new SelectList(Model.NewEntry.AvailableJobs, "JobId", "FullJobCodeWithName"))">
-                                <option>Select Job</option>
-                            </select>
-                            <select asp-for="NewEntry.SelectedTaskId" class="form-control"
-                                    asp-items="@(new SelectList(Model.NewEntry.AvailableTasks, "TaskId", "Name"))">
-                                <option>Select Task</option>
-                            </select>
-                        </div>
+                    <div class="form-group">
+                        <h4>Regular Jobs</h4>
+                        <select asp-for="NewEntry.SelectedJobId" class="form-control"
+                                asp-items="@(new SelectList(Model.NewEntry.AvailableJobs, "JobId", "FullJobCodeWithName"))">
+                            <option>Select Job</option>
+                        </select>
+                        <select asp-for="NewEntry.SelectedTaskCategory" class="form-control"
+                                asp-items="@(new SelectList(Model.NewEntry.AvailableCategories, "Key", "Value"))">
+                            <option>Select Task</option>
+                        </select>
+                        <select asp-for="NewEntry.SelectedTaskId" class="form-control" 
+                                asp-items="@(new SelectList(Model.NewEntry.TasksInCategory, "TaskId", "Name" ))">
+                            <option>Select Task</option>
+                        </select>
+                    </div>
                     }
-                    @if(Model.NewEntry.InternalJobs.Any())
-                    {
-                        <div class="form-group">
-                            <h4>Internal Jobs</h4>
-                            <select asp-for="NewEntry.SelectedInternalJobId" class="form-control"
-                                    asp-items="@(new SelectList(Model.NewEntry.InternalJobs,"JobId","FullJobCodeWithName"))">
-                                <option>Select Other Jobs</option>
-                            </select>
-                            <select asp-for="NewEntry.SelectedInternalTaskId" class="form-control"
-                                    asp-items="@(new SelectList(Model.NewEntry.InternalTasks,"TaskId","Name"))">
-                                <option>Make a selection</option>
-                            </select>
-                        </div>
-                    }
+
                     <blockquote>
                         <h4>Don't see your job? <a asp-controller="Jobs" asp-action="List"> <span class="glyphicon glyphicon-plus"></span> Add a Job</a> to your list.</h4>
                     </blockquote>

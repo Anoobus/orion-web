@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using orion.web.DataAccess.EF;
 
 namespace orion.web.DataAccess.EF.Migrations
 {
     [DbContext(typeof(OrionDbContext))]
-    partial class OrionDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180905013407_DroppedCategoryFromJob")]
+    partial class DroppedCategoryFromJob
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

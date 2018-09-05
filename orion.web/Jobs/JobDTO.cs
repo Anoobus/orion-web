@@ -18,7 +18,6 @@ namespace orion.web.Jobs
         public string FullJobCode => $"{Client?.ClientCode} {JobCode}";
         [DisplayName("Job")]
         public string FullJobCodeWithName => $"{Client?.ClientCode}{JobCode}-{JobName}";
-        public TaskCategoryId AllowedCategory { get; set; }
 
         public decimal TargetHours { get; set; }
 

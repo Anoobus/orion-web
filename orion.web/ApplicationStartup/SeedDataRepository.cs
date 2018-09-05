@@ -52,7 +52,7 @@ namespace orion.web.ApplicationStartup
                         {
                             Description = task.Description,
                             ShortName = task.Name,
-                            TaskCategoryId = db.TaskCategories.Single(x => x.Name == task.TaskCategory.ToString()).TaskCategoryId,
+                            TaskCategoryId = db.TaskCategories.Single(x => x.Name == task.TaskCategoryName).TaskCategoryId,
                         });
                     }
                 }

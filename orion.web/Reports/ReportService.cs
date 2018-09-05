@@ -79,7 +79,7 @@ namespace orion.web.Reports
 
     private static ReportDTO GenerateDetailedJobreport(DateTime start, DateTime end, int? jobId)
     {
-        using(var conn = new SqlConnection("Server=localhost,1401;Database=orion-data;User Id=orion.web;Password=Orion123!;MultipleActiveResultSets=true"))
+        using(var conn = new SqlConnection("Server=localhost,1433;Database=orion.web;User Id=sa;Password=g!Yl69a4l5muZ3fJ;MultipleActiveResultSets=true"))
         using(var cmd = conn.CreateCommand())
         {
             conn.Open();
@@ -127,7 +127,7 @@ namespace orion.web.Reports
 
     private static ReportDTO GenerateTimePeriodreport(DateTime start, DateTime end, int? jobId)
     {
-        using(var conn = new SqlConnection("Server=localhost,1401;Database=orion-data;User Id=orion.web;Password=Orion123!;MultipleActiveResultSets=true"))
+        using(var conn = new SqlConnection("Server=localhost,1433;Database=orion.web;User Id=sa;Password=g!Yl69a4l5muZ3fJ;MultipleActiveResultSets=true"))
         using(var cmd = conn.CreateCommand())
         {
             conn.Open();

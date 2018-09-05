@@ -10,13 +10,33 @@ namespace orion.web.TimeEntries
         public TimeApprovalStatus ApprovalStatus { get; set; }
         public int? SelectedJobId { get; set; }
         public int? SelectedTaskId { get; set; }
+        public string SelectedTaskCategory { get; set; }
         public int RowId { get; set; }
         public IEnumerable<JobDTO> AvailableJobs { get; set; }
-        public IEnumerable<TaskDTO> AvailableTasks { get; set; }
-        public int? SelectedInternalJobId { get; set; }
-        public int? SelectedInternalTaskId { get; set; }
-        public IEnumerable<JobDTO> InternalJobs { get; set; }
-        public IEnumerable<TaskDTO> InternalTasks { get; set; }
+        public Dictionary<string,string> AvailableCategories { get
+            {
+                return AvailableTasks.ToDictionary(x => x.Key, x => string.Join(",",x.Value.Select(z => z.TaskId)));
+            }
+        }
+        public Dictionary<string, IEnumerable<TaskDTO>> AvailableTasks { get; set; }
+        public IEnumerable<TaskDTO> TasksInCategory
+        {
+            get
+            {
+                if(AvailableTasks.ContainsKey(SelectedTaskCategory))
+                {
+                    return AvailableTasks[SelectedTaskCategory];
+                }
+                return Enumerable.Empty<TaskDTO>();
+            }
+            set
+            {
+                if(AvailableTasks.ContainsKey(SelectedTaskCategory))
+                {
+                    AvailableTasks[SelectedTaskCategory] = value;
+                }
+            }
+        }
         public TimeSpentViewModel Monday { get; set; }
         public TimeSpentViewModel Tuesday { get; set; }
         public TimeSpentViewModel Wednesday { get; set; }
@@ -45,8 +65,8 @@ namespace orion.web.TimeEntries
         }
 
         public string SelectedEntryTaskName()
-        {
-            return AvailableTasks.FirstOrDefault(x => x.TaskId == SelectedTaskId)?.Name;
+        {           
+            return AvailableTasks.SelectMany(x => x.Value).FirstOrDefault(z => z.TaskId == SelectedTaskId) ?.Name;
         }
 
 

@@ -7,10 +7,6 @@
         public string JobCode { get; set; }
         public string JobName { get; set; }
 
-        public int TaskCategoryId { get; set; }
-        public TaskCategory TaskCategory { get; set; }
-
-
         public int ClientId { get; set; }
         public Client Client { get; set; }
 
