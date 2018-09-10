@@ -13,30 +13,17 @@ namespace orion.web.TimeEntries
         public string SelectedTaskCategory { get; set; }
         public int RowId { get; set; }
         public IEnumerable<JobDTO> AvailableJobs { get; set; }
-        public Dictionary<string,string> AvailableCategories { get
+        public IEnumerable<string> AvailableCategories { get
             {
-                return AvailableTasks.ToDictionary(x => x.Key, x => string.Join(",",x.Value.Select(z => z.TaskId)));
+                if(AvailableTasks != null)
+                {
+                    return AvailableTasks.Select(x => x.TaskCategoryName).Distinct();
+                }
+                return Enumerable.Empty<string>();
             }
         }
-        public Dictionary<string, IEnumerable<TaskDTO>> AvailableTasks { get; set; }
-        public IEnumerable<TaskDTO> TasksInCategory
-        {
-            get
-            {
-                if(AvailableTasks.ContainsKey(SelectedTaskCategory))
-                {
-                    return AvailableTasks[SelectedTaskCategory];
-                }
-                return Enumerable.Empty<TaskDTO>();
-            }
-            set
-            {
-                if(AvailableTasks.ContainsKey(SelectedTaskCategory))
-                {
-                    AvailableTasks[SelectedTaskCategory] = value;
-                }
-            }
-        }
+        public IEnumerable<TaskDTO> AvailableTasks { get; set; }
+    
         public TimeSpentViewModel Monday { get; set; }
         public TimeSpentViewModel Tuesday { get; set; }
         public TimeSpentViewModel Wednesday { get; set; }
@@ -59,14 +46,15 @@ namespace orion.web.TimeEntries
         public string SelectedEntryJobName()
         {
             var job = AvailableJobs.FirstOrDefault(x => x.JobId == SelectedJobId)?.FullJobCodeWithName;
-            var other = AvailableJobs.FirstOrDefault(x => x.JobId == SelectedJobId)?.Site?.SiteName;
-            return $"{job}({other})";
+            return job;
+            //var other = AvailableJobs.FirstOrDefault(x => x.JobId == SelectedJobId)?.Site?.SiteName;
+            //return $"{job}({other})";
 
         }
 
         public string SelectedEntryTaskName()
-        {           
-            return AvailableTasks.SelectMany(x => x.Value).FirstOrDefault(z => z.TaskId == SelectedTaskId) ?.Name;
+        {
+            return AvailableTasks.FirstOrDefault(x => x.TaskId == SelectedTaskId)?.Name;
         }
 
 

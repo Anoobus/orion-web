@@ -4,61 +4,61 @@
     <li class="breadcrumb-item"><a asp-action="List">Job List</a></li>
     <li class="breadcrumb-item active"> Create New Job</li>
 </ol>
-<form asp-action="Create" method="post" class="orion-form">
+<div class="row">
+    <div class="col-md-3">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <a class="btn btn-default" asp-action="Create" asp-controller="Site">Create Site</a>
+                </div>
+                <div class="form-group">
+                    <a class="btn btn-default" asp-action="Create" asp-controller="Client">Create Client</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-9">
+
+        <form asp-action="Create" method="post" class="orion-form">
 
 
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-    <input type="hidden" asp-for="Job.JobId" class="form-control" />
-    <div class="row">
-        <div class="col-md-2 form-inline">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Job.JobId" class="form-control" />
             <div class="form-group">
                 <label asp-for="Job.JobCode" class="control-label"></label>
                 <input asp-for="Job.JobCode" class="form-control" placeholder="XXXX" />
                 <span asp-validation-for="Job.JobCode" class="text-danger"></span>
             </div>
-        </div>
-        <div class="col-md-5 form-inline">
             <div class="form-group">
                 <label asp-for="Job.Client.ClientName" class="control-label"></label>
 
                 <select asp-for="SelectedClientId" class="form-control"
                         asp-items="@(new SelectList(Model.AvailableClients,"ClientId","FullName"))"></select>
             </div>
-            <a class="btn btn-default vertical-bottom" asp-controller="Client" asp-action="Create">Add Client</a>
-        </div>
-        <div class="col-md-5 form-inline">
+
             <div class="form-group">
                 <label asp-for="Job.Site" class="control-label"></label>
                 <select asp-for="SelectedSiteId" class="form-control"
                         asp-items="@(new SelectList(Model.AvailableSites,"SiteID","SiteName"))"></select>
             </div>
-            <a class="btn btn-default vertical-bottom" asp-controller="Site" asp-action="Create">Add Site</a>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-6">
+
             <div class="form-group">
                 <label class="control-label">Description</label>
                 <textarea asp-for="Job.JobName" class="form-control" placeholder="Brief Description"></textarea>
                 <span asp-validation-for="Job.JobName" class="text-danger"></span>
             </div>
-    
-        </div>
-        <div class="col-md-6">
+
             <div class="form-group">
                 <label class="control-label">Target Hours</label>
                 <input asp-for="Job.TargetHours" class="form-control" placeholder="XXX.X" />
                 <span asp-validation-for="Job.TargetHours" class="text-danger"></span>
             </div>
-            
-        </div>
+
+            <div class="form-group">
+                <a class="btn btn-default" asp-action="List">Back to List</a> <input type="submit" value="Save" class="btn btn-default" />
+            </div>
+        </form>
+
+
     </div>
-    <div class="row">
-        <div class="form-group">
-            <a class="btn btn-default" asp-action="List">Back to List</a> <input type="submit" value="Save" class="btn btn-default" />
-        </div>
-    </div>
-</form>
-
-
-
+</div>

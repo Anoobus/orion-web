@@ -5,61 +5,67 @@
     <li class="breadcrumb-item active"> Edit @Model.FullJobCode</li>
 </ol>
 <div class="row">
-    <div class="row">
-        <div class="col-md-2 form-inline">
+    <div class="col-md-3">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <a class="btn btn-default" asp-action="Create" asp-controller="Site">Create Site</a>
+                </div>
+                <div class="form-group">
+                    <a class="btn btn-default" asp-action="Create" asp-controller="Client">Create Client</a>
+                </div>
+            </div>
+            </div>
+    </div>
+    <div class="col-md-9">
+
+
+        <form asp-action="Edit">
             <div class="form-group">
-                <label asp-for="JobCode" class="control-label"></label>
+                <label asp-for="JobCode"></label>
                 <input asp-for="JobCode" class="form-control" readonly="readonly" />
             </div>
-        </div>
-        <div class="col-md-5 form-inline">
             <div class="form-group">
-                <label asp-for="Client.ClientName" class="control-label"></label>
+                <label asp-for="Client.ClientName"></label>
                 <select disabled class="form-control">
                     <option>@Model.Client.ClientName</option>
                 </select>
             </div>
-        </div>
-        <div class="col-md-5 form-inline">
             <div class="form-group">
-                <label asp-for="Site.SiteName" class="control-label"></label>
+                <label asp-for="Site.SiteName" =""></label>
                 <select disabled class="form-control">
                     <option>@Model.Site.SiteName</option>
                 </select>
             </div>
-        </div>
+
+
+                    <div class="form-group">
+                        <label class="control-label">Description</label>
+                        <textarea asp-for="JobName" class="form-control" placeholder="Brief Description"></textarea>
+                        <span asp-validation-for="JobName" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label">Target Hours</label>
+                        <input asp-for="TargetHours" class="form-control" placeholder="XXX.X" />
+                        <span asp-validation-for="TargetHours" class="text-danger"></span>
+                    </div>
+
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group">
+                    <a class="btn btn-default" asp-action="List">Back to List</a> <input type="submit" value="Save" class="btn btn-default" />
+                </div>
+
+
+            <input type="hidden" asp-for="JobId" class="form-control" />
+
+        </form>
+
+
+
+
+
     </div>
-
-    <form asp-action="Edit">
-        <div class="row">
-            <div class="col-md-6">
-                <div class="form-group">
-                    <label class="control-label">Description</label>
-                    <textarea asp-for="JobName" class="form-control" placeholder="Brief Description"></textarea>
-                    <span asp-validation-for="JobName" class="text-danger"></span>
-                </div>
-
-            </div>
-            <div class="col-md-6">
-                <div class="form-group">
-                    <label class="control-label">Target Hours</label>
-                    <input asp-for="TargetHours" class="form-control" placeholder="XXX.X" />
-                    <span asp-validation-for="TargetHours" class="text-danger"></span>
-                </div>
-
-            </div>
-        </div>
-        <div class="row">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <a class="btn btn-default" asp-action="List">Back to List</a> <input type="submit" value="Save" class="btn btn-default" />
-            </div>
-        </div>
-
-      
-        <input type="hidden" asp-for="JobId" class="form-control" />
-
-    </form>
 </div>
 
 

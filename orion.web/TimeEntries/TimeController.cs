@@ -49,7 +49,7 @@ namespace orion.web.TimeEntries
             var thisWeek = weekService.Get(dt).WeekId;
 
             var temp = new List<WeekTimeEntry>();
-            for(int i = thisWeek; i > (thisWeek - 3); i--)
+            for(int i = thisWeek; i > (thisWeek - 5); i--)
             {
                 var vm = viewModelRepo.GetWeekOfTimeViewModel(dt.Year, i);
                 temp.Add(new WeekTimeEntry()
@@ -73,7 +73,7 @@ namespace orion.web.TimeEntries
         
         [HttpGet]
         [Route("Edit/year/{year:int=1}/week/{id:int=1}", Name = EDIT_ROUTE)]
-        public async System.Threading.Tasks.Task<ActionResult> Edit(int year, int id)
+        public async Task<ActionResult> Edit(int year, int id)
         {
             Calendar cal = DateTimeFormatInfo.CurrentInfo.Calendar;
             var employeeName = this.User.Identity.Name;
@@ -90,7 +90,7 @@ namespace orion.web.TimeEntries
                     SelectedJobId = entry.Key.JobId,
                     SelectedTaskId = entry.Key.JobTaskId,
                     AvailableJobs = jobList.Where(x => x.JobId == entry.Key.JobId),
-                    AvailableTasks = taskList.GroupBy(x => x.TaskCategoryName).ToDictionary(x => x.Key, x => x.AsEnumerable()),
+                    AvailableTasks = taskList,
                     Monday = viewModelRepo.MapToViewModel(id, year, DayOfWeek.Monday, entry),
                     Tuesday = viewModelRepo.MapToViewModel(id, year, DayOfWeek.Tuesday, entry),
                     Wednesday = viewModelRepo.MapToViewModel(id, year, DayOfWeek.Wednesday, entry),
@@ -130,7 +130,7 @@ namespace orion.web.TimeEntries
                 SelectedJobId = null,
                 SelectedTaskId = null,
                 AvailableJobs = jobList,
-                AvailableTasks = taskList.GroupBy(x => x.TaskCategoryName).ToDictionary(x => x.Key, x => x.AsEnumerable()),
+                AvailableTasks = taskList,
                 Monday = viewModelRepo.EmptyViewModel(DayOfWeek.Monday, id, year),
                 Tuesday = viewModelRepo.EmptyViewModel(DayOfWeek.Tuesday, id, year),
                 Wednesday = viewModelRepo.EmptyViewModel(DayOfWeek.Wednesday, id, year),

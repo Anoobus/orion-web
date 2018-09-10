@@ -1,0 +1,43 @@
+﻿@using orion.web.Reports
+@using System.Data
+@model orion.web.Reports.ReportDTO
+
+<h4>@Model.ReportName</h4>
+<div class="Row">
+    <div class="col-12">
+        <blockquote class="blockquote">
+            <ul>
+                @foreach(var item in Model.RunSettings)
+                {
+                    <li>@item.Key: @item.Value</li>
+                }
+            </ul>
+        </blockquote>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    @foreach(var item in Model.Data.Columns.OfType<DataColumn>())
+                    {
+                        <th>@item.ColumnName</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach(var row in Model.Data.Rows.OfType<DataRow>())
+                {
+                    <tr>
+                        @foreach(var col in Model.Data.Columns.OfType<DataColumn>())
+                        {
+                            <td>@row[col.ColumnName]</td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+

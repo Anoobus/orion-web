@@ -1,0 +1,9 @@
+﻿@model orion.web.Reports.ReportSelectionViewModel
+
+
+@foreach(var rpt in Model.AvailableReports)
+{
+    <a class="btn btn-success" asp-action="GetReportSetup" asp-all-route-data="Model.GetRouteForReport(rpt)">Generate @Html.DisplayFor(x => rpt.ReportDisplayName) </a>
+}
+
+

@@ -1,0 +1,15 @@
+﻿@using orion.web.Reports
+@model orion.web.Reports.PeriodBasedReportSettings
+
+<div class="form-group">
+    <label asp-for="Start" class="control-label"></label>
+    <input asp-for="Start" type="date" class="form-control" />
+    <span asp-validation-for="Start" class="text-danger"></span>
+</div>
+
+<div class="form-group">
+    <label asp-for="End" class="control-label"></label>
+    <input asp-for="End" type="date" class="form-control" />
+    <span asp-validation-for="End" class="text-danger"></span>
+</div>
+

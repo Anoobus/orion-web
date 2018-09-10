@@ -85,8 +85,8 @@
         <div class="form-group">
             <a asp-action="Index" class="btn btn-default">Back to List</a>
             <input type="submit" value="Save" class="btn btn-default" />
-           <a asp-action="SubmitForApproval"  class="btn btn-success" >Submit</a>
-            <a class="btn btn-success" id="do-approval" href="#" data-toggle="modal" data-target="#submittedModel">Submit For Approval</a>
+           @*<a asp-action="SubmitForApproval"  class="btn btn-success" >Submit</a>
+            <a class="btn btn-success" id="do-approval" href="#" data-toggle="modal" data-target="#submittedModel">Submit For Approval</a>*@
         </div>
 
     </div>
@@ -97,23 +97,23 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Your Jobs</h5>
+                    <h4 class="modal-title" id="exampleModalLabel">Add Job To Time Sheet</h4>
                 </div>
                 <div class="modal-body">
                     @if(Model.NewEntry.AvailableJobs.Any())
                     {
                     <div class="form-group">
-                        <h4>Regular Jobs</h4>
+                        
                         <select asp-for="NewEntry.SelectedJobId" class="form-control"
                                 asp-items="@(new SelectList(Model.NewEntry.AvailableJobs, "JobId", "FullJobCodeWithName"))">
                             <option>Select Job</option>
                         </select>
                         <select asp-for="NewEntry.SelectedTaskCategory" class="form-control"
-                                asp-items="@(new SelectList(Model.NewEntry.AvailableCategories, "Key", "Value"))">
+                                asp-items="@(new SelectList(Model.NewEntry.AvailableCategories) {  })" >
                             <option>Select Task</option>
                         </select>
                         <select asp-for="NewEntry.SelectedTaskId" class="form-control" 
-                                asp-items="@(new SelectList(Model.NewEntry.TasksInCategory, "TaskId", "Name" ))">
+                                asp-items="@(new SelectList(Model.NewEntry.AvailableTasks, "TaskId", "Name" ))">
                             <option>Select Task</option>
                         </select>
                     </div>
@@ -132,7 +132,7 @@
         </div>
     </div>
     <!-- Modal -->
-    <div class="modal fade" id="submittedModel" tabindex="-1" role="dialog" aria-labelledby="submittedModelLabel" aria-hidden="true">
+    @*<div class="modal fade" id="submittedModel" tabindex="-1" role="dialog" aria-labelledby="submittedModelLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -146,7 +146,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div>*@
 </form>
 
 @section scripts {

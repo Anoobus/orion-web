@@ -1,9 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Linq;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using orion.web.Common;
 using orion.web.Jobs;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace orion.web.Reports
 {
@@ -24,70 +25,105 @@ namespace orion.web.Reports
 
         public ActionResult Index()
         {
-            return View("Index");
+            var allReports = new List<ReportNameViewModel>();
+            allReports.Add(new ReportNameViewModel()
+            {
+                ReportDisplayName = "All Jobs For Period Report",
+                ReportSystemName = ReportNames.JOBS_SUMMARY_REPORT
+            });
+
+            allReports.Add(new ReportNameViewModel()
+            {
+                ReportDisplayName = "Job Details Period Report",
+                ReportSystemName = ReportNames.JOB_DETAIL_REPORT
+            });
+            var vm = new ReportSelectionViewModel()
+            {
+                AvailableReports = allReports,
+            };
+            return View("ReportsIndex", vm);
         }
 
         [HttpGet]
-        [Route("RunReport/{reportName}")]
-        public ActionResult RunReport(string reportName)
+        [Route("GetReportSetup/{reportName}")]
+        public ActionResult GetReportSetup(string reportName)
         {
-            var vm = new ReportViewModel();
             var wk = weekService.Get(DateTime.Now);
-            vm.Start = weekService.GetWeekDate(wk.Year, wk.WeekId, DayOfWeek.Monday);
-            vm.End = weekService.GetWeekDate(wk.Year, wk.WeekId, DayOfWeek.Sunday);
-            vm.AvailableJobs = jobService.Get().Select(x => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem() { Text = x.FullJobCodeWithName, Value = x.JobId.ToString() }).ToArray();
-            vm.ReportName = reportName;
-            return View("ReportDetails", vm);
-        }
-
-        [HttpPost]
-        [Route("RunReport/{reportName}/xlsx")]
-        public ActionResult RunReportXlsx(string reportName, ReportViewModel model)
-        {
-            var vm = new ReportViewModel();
-            var wk = weekService.Get(DateTime.Now);
-            vm.Start = weekService.GetWeekDate(wk.Year, wk.WeekId, DayOfWeek.Monday);
-            vm.End = weekService.GetWeekDate(wk.Year, wk.WeekId, DayOfWeek.Sunday);
-            vm.AvailableJobs = jobService.Get().Select(x => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem() { Text = x.FullJobCodeWithName, Value = x.JobId.ToString() }).ToArray();
-            vm.ReportName = model.ReportName;
-            int? joby = null;
-            if(int.TryParse(model.AvailableJobs.FirstOrDefault(x => x.Selected)?.Value, out var jobId))
+            var ps = new PeriodBasedReportSettings()
             {
-                joby = jobId;
-            }
-            var rpt = reportservice.AsXls(reportName, model.Start, model.End, joby);
-            return File(rpt, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"{reportName}.xlsx");
-        }
-        [HttpPost]
-        [Route("RunReport/{reportName}")]
-        public ActionResult RunReport(string reportName, ReportViewModel model)
-        {
-            var vm = new ReportViewModel();
-            var wk = weekService.Get(DateTime.Now);
-            vm.Start = weekService.GetWeekDate(wk.Year, wk.WeekId, DayOfWeek.Monday);
-            vm.End = weekService.GetWeekDate(wk.Year, wk.WeekId, DayOfWeek.Sunday);
-            vm.AvailableJobs = jobService.Get().Select(x => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem() { Text = x.FullJobCodeWithName, Value = x.JobId.ToString() }).ToArray();
-            vm.ReportName = model.ReportName;
-            int? joby = null;
-            if(model.SelectedJobId != "all")
+                Start = weekService.GetWeekDate(wk.Year, wk.WeekId, DayOfWeek.Monday),
+                End = weekService.GetWeekDate(wk.Year, wk.WeekId, DayOfWeek.Sunday)
+            };
+            if(reportName == ReportNames.JOBS_SUMMARY_REPORT)
             {
-                if(int.TryParse(model.SelectedJobId, out var jobId))
+                var vm = new ReportViewModel<JobSummaryReportSettings>();
+                vm.Report.PeriodSettings = ps;
+                vm.SelectedReport = new ReportNameViewModel()
                 {
-                    joby = jobId;
-                }
+                    ReportDisplayName = "All Jobs For Period Report",
+                    ReportSystemName = ReportNames.JOBS_SUMMARY_REPORT
+                };
+                return View("JobSummaryReport", vm);
+            }
+            else if(reportName == ReportNames.JOB_DETAIL_REPORT)
+            {
+                var vm = new ReportViewModel<JobDetailReport>();
+                vm.Report.PeriodSettings = ps;
+                vm.Report.JobBasedReportSettings = new JobBasedReportSettings()
+                {
+                    AvailableJobs = jobService.Get().ToList()
+                };
+                vm.SelectedReport = new ReportNameViewModel()
+                {
+                    ReportDisplayName = "Job Details Period Report",
+                    ReportSystemName = ReportNames.JOB_DETAIL_REPORT
+                };
+                return View("JobDetailReport", vm);
             }
 
-            if(model.ForDownload)
+            throw new NotImplementedException();
+        }       
+
+        [HttpPost]
+        [Route("RunReport/" + ReportNames.JOBS_SUMMARY_REPORT)]
+        public ActionResult JobSummaryReport(ReportViewModel<JobSummaryReportSettings> reportSettings)
+        {           
+            var rpt = reportservice.GetJobsSummaryReport(reportSettings.Report.PeriodSettings.Start, 
+                reportSettings.Report.PeriodSettings.End, 
+                reportSettings.Report.ShowAllJobsRegardlessOfHoursBooked,
+                reportSettings.SelectedReport.ReportDisplayName);
+
+
+            if(reportSettings.ForDownload)
             {
-                var rpt = reportservice.AsXls(reportName, model.Start, model.End, joby);
-                return File(rpt, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"{reportName}.xlsx");
+                var export = new ExcelExport();
+                var memoryStream = export.AsXls(rpt);
+                return File(memoryStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"{reportSettings.SelectedReport.ReportDisplayName}.xlsx");
             }
             else
             {
-                var rpt = reportservice.Get(reportName, model.Start, model.End, joby);
-                vm.ReportData = rpt.ReportData;
-                vm.Columns = rpt.Columns;
-                return View("ReportDetails", vm);
+                return View("ViewCompletedReport", rpt);
+            }
+        }
+
+        [HttpPost]
+        [Route("RunReport/" + ReportNames.JOB_DETAIL_REPORT)]
+        public ActionResult JobDetailReport(ReportViewModel<JobDetailReport> reportSettings)
+        {
+            var rpt = reportservice.GetJobDetailReport(reportSettings.Report.PeriodSettings.Start,
+                reportSettings.Report.PeriodSettings.End,
+                int.Parse(reportSettings.Report.JobBasedReportSettings.SelectedJobId),
+                reportSettings.SelectedReport.ReportDisplayName);
+
+            if(reportSettings.ForDownload)
+            {
+                var export = new ExcelExport();
+                var memoryStream = export.AsXls(rpt);
+                return File(memoryStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"{reportSettings.SelectedReport.ReportDisplayName}.xlsx");
+            }
+            else
+            {
+                return View("ViewCompletedReport", rpt);
             }
         }
 

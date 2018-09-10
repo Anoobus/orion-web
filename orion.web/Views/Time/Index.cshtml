@@ -1,39 +1,55 @@
 ﻿@model IEnumerable<orion.web.TimeEntries.WeekTimeEntry>
+@using orion.web.Employees
 
-<h1>Time Management</h1>
-<p>
-    <a class="btn btn-success" asp-action="Current">Edit This Weeks Time</a>
-    <a class="btn btn-success" href="@Url.Action("Index","Reports")">View Reports</a>
-</p>
+<ol class="breadcrumb">
+    <li class="breadcrumb-item active"> Weekly Listing</li>
+</ol>
+<div class="row">
+    <div class="col-md-3">
+        <div class="form-group">
+            <a class="btn btn-success" asp-action="Current" >Edit This Weeks Time</a>
+        </div>
+            @if(User.IsInRole(UserRoleName.Admin))
+            {
+        <div class="form-group">
+                <a class="btn btn-success" href="@Url.Action("Index", "Reports")">View Reports</a>
+            </div>
+            }
+        </div>
+        <div class="col-md-9">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.WeekStart)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.WeekEnd)
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach(var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @item.WeekStart.ToShortDateString()
+                            </td>
+                            <td>
+                                @item.WeekEnd.ToShortDateString()
+                            </td>
+                            <td>
+                                @Html.ActionLink("Details", "Edit", new { id = item.WeekId, year = item.WeekStart.Year })
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-<hr/>
-<h3>Saved Entries</h3>
-<table class="table">
-    <thead>
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.WeekStart)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.WeekEnd)
-        </th>
-        <th></th>
-    </tr>
-    </thead>
-    <tbody>
-    @foreach (var item in Model) {
-        <tr>                                    
-            <td>
-                @item.WeekStart.ToShortDateString()
-            </td>
-            <td>
-                @item.WeekEnd.ToShortDateString()
-            </td>
-            <td>                
-                @Html.ActionLink("Details", "Edit", new { id = item.WeekId, year = item.WeekStart.Year  }) 
-            </td>
-        </tr>
-    }
-    </tbody>
-</table>
+
+
+
 

@@ -32,7 +32,10 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <div class="navbar-brand">Orion Engineering</div>
+                <div class="navbar-brand ">
+                        <img src="~/images/orion_logo_brand.png" style="margin:0px;padding:0px;height:1.5em"/>
+                    
+                </div>
             </div>
 
             <div class="navbar-collapse collapse">
@@ -95,49 +98,64 @@
     </environment>
 
     <script type="text/javascript">
+        function toastSuccess(data) {
+            $.notify({
+                // options
+                icon: 'glyphicon glyphicon-info-sign',
+                message: data
+            }, {
+                    // settings
+                    type: 'info',
+                    placement: {
+                        from: "bottom",
+                        align: "center"
+                    },
+                    offset: 20,
+                    spacing: 10,
+                    delay: 2000,
+                    timer: 700,
+                    animate: {
+                        enter: 'animated fadeInUp',
+                        exit: 'animated fadeOutDown'
+                    },
+                });
+        }
+        function toastError(e) {
+            $.notify({
+                // options
+                message: "couldn't get notifications: " + e.status
+            }, {
+                    // settings
+                    type: 'error',
+                    placement: {
+                        from: "bottom",
+                        align: "center"
+                    },
+                    offset: 20,
+                    spacing: 10,
+                    delay: 2000,
+                    timer: 700,
+                    animate: {
+                        enter: 'animated fadeInUp',
+                        exit: 'animated fadeOutDown'
+                    },
+                });
+        }
         $(document).ready(function () {
             $.get("/api/Notifications")
                 .done(function (data) {
-
                     if (Object.keys(data).length !== 0) {
-                        console.log('creating notification')
-                        $.notify({
-                            // options
-                            icon: 'glyphicon glyphicon-info-sign',
-                            message: data
-                        }, {
-                                // settings
-                                type: 'info',
-                                placement: {
-                                    from: "bottom",
-                                    align: "center"
-                                },
-                                offset: 20,
-                                spacing: 10,
-                                delay: 2000,
-                                timer: 700,
-                                animate: {
-                                    enter: 'animated fadeInUp',
-                                    exit: 'animated fadeOutDown'
-                                },
-                            });
+                        toastSuccess(data);
                     }
                 })
                 .fail(function (e) {
                     @if(User.Identity.IsAuthenticated)
                     {
                     <Text>
-                            $.notify({
-                                    // options
-                                    message: "couldn't get notifications: " + e.status
-                            }, {
-                                    // settings
-                                    type: if;
-
-                                    console.log(e);
-                                });
+                    toastError(e);
                     </Text>
                     }
+                });
         });
     </script>
     @RenderSection("Scripts", required: false)

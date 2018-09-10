@@ -14,7 +14,7 @@
 .breadcrumb {
     margin-top: 5px;
 }
-.body-content div {
+div.body-content.container  {
     padding-top: 5px;
 }
 /* Set widths on the form inputs since otherwise they're 100% wide */
@@ -66,4 +66,20 @@ ul {
     padding: 1px;
     line-height: 11px;
     height: 20px;
+}
+
+
+.job-code-link-cell
+{
+    min-width: 80px
+}
+
+.action-links-cell
+{
+    min-width: 160px
+}
+
+.btn-margin-right
+{
+    margin-right:5px;
 }

@@ -4,68 +4,87 @@
     <li class="breadcrumb-item active"> Job List</li>
 </ol>
 <div class="row">
-    @if(User.IsInRole(UserRoleName.Admin))
-    {
-        <p>
-            <a class="btn btn-success" asp-action="Create">Create New</a>
-        </p>
-    }
 
 
 
-    <input id="quick-filter" type="text" placeholder="quick filter rows" />
-    <table class="table">
-        <thead>
-            <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.HeaderHelp.FullJobCode)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.HeaderHelp.JobName)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.HeaderHelp.Client.ClientName)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.HeaderHelp.Site.SiteName)
-                </th>
-                <th></th>
-            </tr>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <div class="form-group ">
+                @if(User.IsInRole(UserRoleName.Admin))
+                {
+                    <a class="btn  btn-default  btn-margin-right pull-right " asp-action="Create">Create New</a>
+                }
+                <a class="btn btn-default btn-margin-right pull-right " asp-action="Current" asp-controller="Time">Edit This Weeks Time</a>
+                <input id="quick-filter" type="text" placeholder="quick filter rows" class="input form-control" />
+            </div>
+        </div>
 
-        </thead>
-        <tbody id="table-data">
-            @foreach(var item in Model.AllJobsWithAssociationStatus)
-            {
-                <tr>
-                    <td>
-                        @Html.ActionLink(item.Key.FullJobCode, "Edit", new { id = item.Key.JobId })
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Key.JobName)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Key.Client.ClientName)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Key.Site.SiteName)
-                    </td>
-                    <td>
 
-                        Delete |
-                        @if(item.Value)
-                        {
-                            @Html.ActionLink("Remove From My Jobs", "RemoveJobForCurrentUser", new { id = item.Key.JobId })
+        <div class="panel-body">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th class="job-code-link-cell">
+                            @Html.DisplayNameFor(model => model.HeaderHelp.FullJobCode)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.HeaderHelp.JobName)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.HeaderHelp.Client.ClientName)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.HeaderHelp.Site.SiteName)
+                        </th>
+                        <th class="action-links-cell"></th>
+                    </tr>
 
-                        }
-                        else
-                        {
-                            @Html.ActionLink("Add To My Jobs", "AddJobForCurrentUser", new { id = item.Key.JobId })
-                        }
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+                </thead>
+                <tbody id="table-data">
+                    @foreach(var item in Model.AllJobsWithAssociationStatus)
+                    {
+                        <tr>
+                            <td>
+                                @if(User.IsInRole(UserRoleName.Admin))
+                                {
+                                    @Html.ActionLink(item.Key.FullJobCode, "Edit", new { id = item.Key.JobId })
+                                }
+                                else
+                                {
+                                    @Html.DisplayFor(modelItem => item.Key.FullJobCode)
+                                }
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Key.JobName)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Key.Client.ClientName)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Key.Site.SiteName)
+                            </td>
+                            <td>
+
+                                Delete |
+                                @if(item.Value)
+                                {
+                                    @Html.ActionLink("Remove From My Jobs", "RemoveJobForCurrentUser", new { id = item.Key.JobId })
+
+                                }
+                                else
+                                {
+                                    @Html.ActionLink("Add To My Jobs", "AddJobForCurrentUser", new { id = item.Key.JobId })
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+
 
 </div>
 

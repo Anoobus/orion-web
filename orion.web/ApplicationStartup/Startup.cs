@@ -47,14 +47,6 @@ namespace orion.web.ApplicationStartup
                 options.UseSqlServer(
                     Configuration.GetConnectionString("SiteConnection")));
 
-
-
-            //note default identity uses a razor class libary to generate the views too!
-            // https://docs.microsoft.com/en-us/aspnet/core/security/authentication/scaffold-identity?view=aspnetcore-2.1&tabs=visual-studio
-            //services.AddDefaultIdentity<IdentityUser>()
-            //    .AddRoles<IdentityRole>()
-            //    .AddEntityFrameworkStores<ApplicationDbContext>();
-
             services.AddIdentity<IdentityUser, IdentityRole>()
             .AddDefaultUI()
             .AddDefaultTokenProviders()
@@ -63,8 +55,11 @@ namespace orion.web.ApplicationStartup
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
-
-
+            
+                services.AddTransient<IJobSummaryQuery, JobSummaryQuery>();
+            services.AddTransient<ISingleJobDetailQuery, SingleJobDetailQuery>();
+            services.AddTransient<IUpdateEmployeeCommand, UpdateEmployeeCommand>();
+            services.AddTransient<ICreateEmployeeCommand, CreateEmployeeCommand>();
             services.AddTransient<IClientService, ClientService>();
             services.AddTransient<IJobService, JobService>();
             services.AddTransient<ISiteService, SiteService>();

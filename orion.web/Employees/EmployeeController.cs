@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using orion.web.Jobs;
 using orion.web.Notifications;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -14,12 +15,20 @@ namespace orion.web.Employees
         private readonly IEmployeeService employeeService;
         private readonly UserManager<IdentityUser> userManager;
         private readonly IJobService jobService;
+        private readonly ICreateEmployeeCommand createEmployeeCommand;
+        private readonly IUpdateEmployeeCommand updateEmployeeCommand;
 
-        public EmployeeController(IEmployeeService employeeService, UserManager<IdentityUser> userManager, IJobService jobService)
+        public EmployeeController(IEmployeeService employeeService,
+            UserManager<IdentityUser> userManager,
+            IJobService jobService,
+            ICreateEmployeeCommand createEmployeeCommand,
+            IUpdateEmployeeCommand updateEmployeeCommand)
         {
             this.employeeService = employeeService;
             this.userManager = userManager;
             this.jobService = jobService;
+            this.createEmployeeCommand = createEmployeeCommand;
+            this.updateEmployeeCommand = updateEmployeeCommand;
         }
 
         public ActionResult Index()
@@ -45,8 +54,6 @@ namespace orion.web.Employees
             var vm = new EditEmployeeViewModel()
             {
                 SelectedRole = emp.Role,
-                SelectedJobs = allJobs.Where(x => emp.AssignJobs.Any(z => z == x.JobId)).Select(x => x.JobId.ToString()).ToList(),
-                AvailableJobs = allJobs,
                 AvailableRoles = roles,
                 Email = emp.Name
             };
@@ -65,8 +72,6 @@ namespace orion.web.Employees
                 AvailableJobs = allJobs,
                 AvailableRoles = roles
             };
-
-
             return View("NewEmployee", vm);
         }
 
@@ -74,27 +79,55 @@ namespace orion.web.Employees
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> NewEmployee(CreateEmployeeViewModel employee)
         {
-
-            var userRole = employee.SelectedRole;
-            var user = new IdentityUser { UserName = employee.Email, Email = employee.Email };
-            var result = await userManager.CreateAsync(user, employee.Password);
-            if(result.Succeeded)
+            if(ModelState.IsValid)
             {
-                await userManager.AddToRoleAsync(user, userRole);
-                employeeService.Save(new EmployeeDTO()
+                var res = await createEmployeeCommand.Create(employee);
+                if(res.Successful)
                 {
-                    Name = employee.Email,
-                    AssignJobs = employee.SelectedJobs.Select(x => int.Parse(x)).ToList(),
-                    Role = userRole
-                });
-                NotificationsController.AddNotification(this.User.SafeUserName(), $"{employee.Email} has been created.");
-                return RedirectToAction(nameof(NewEmployee));
+                    NotificationsController.AddNotification(this.User.SafeUserName(), $"{employee.Email} has been created.");
+                    return RedirectToAction(nameof(NewEmployee));
+                }
+                else
+                {
+                    foreach(var err in res.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, err);
+                    }
+                }
             }
 
-            return View();
+            employee.AvailableJobs = jobService.Get();
+            employee.AvailableRoles = await employeeService.GetAllRoles();
+            return View("NewEmployee", employee);
+
 
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> EditEmployee(EditEmployeeViewModel employee)
+        {
+            if(ModelState.IsValid)
+            {
+                var res = await updateEmployeeCommand.UpdateAsync(employee);
 
+                if(res.Successful)
+                {
+                    NotificationsController.AddNotification(this.User.SafeUserName(), $"{employee.Email} has been updated.");
+                    return RedirectToAction(nameof(Edit), new { employee = employee.Email });
+                }
+                else
+                {
+                    foreach(var err in res.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, err);
+                    }
+                }
+            }
+
+            employee.AvailableRoles = await employeeService.GetAllRoles();
+            return View("Edit", employee);
+
+        }
     }
 }

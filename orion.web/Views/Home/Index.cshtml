@@ -1,4 +1,6 @@
-﻿@model string
+﻿@using orion.web.Employees
+
+@model string
 
 <div class="jumbotron">
     @if(User?.Identity?.IsAuthenticated ?? false)
@@ -6,9 +8,11 @@
         <h1>Welcome, @User.Identity.Name</h1>
 
         <a class="btn btn-lg btn-success" href="@Url.Action("Index","Time")">Enter Time</a>
-        <a class="btn btn-lg btn-success" href="@Url.Action("Index","Jobs")">View Jobs</a>
-        <a class="btn btn-lg btn-success" href="@Url.Action("Index","Reports")">View Reports</a>
-
+        <a class="btn btn-lg btn-success" href="@Url.Action("Index","Jobs")">My Jobs</a>
+        @if(User.IsInRole(UserRoleName.Admin))
+        {
+            <a class="btn btn-lg btn-success" href="@Url.Action("Index","Reports")">View Reports</a>
+        }
 
     }
 
