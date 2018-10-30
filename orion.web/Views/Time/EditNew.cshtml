@@ -24,12 +24,26 @@
 
     <div class="row">
         <div class="col-md-12">
-            <input type="hidden" asp-for="PageActionType" class="form-control" />
             <div asp-validation-summary="All" class="text-danger"></div>
+            @if(Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Approved
+                    || Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Submitted)
+            {
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="alert alert-dismissible alert-success">
+                            <strong>Please Note:</strong> No more changes are allowed for timesheet becuase it is already @Model.ApprovalStatus.
+                        </div>
+                    </div>
+                </div>
+            }
 
             <table class="table table-condensed table-hover" id="time-entry">
                 <tr>
                     <th>Effort</th>
+                    <th>Saturday</th>
+                    <th style="display:none" day="ot-col-saturday">OT-Saturday</th>
+                    <th>Sunday</th>
+                    <th style="display:none" day="ot-col-sunday">OT-Sunday</th>
                     <th>Monday</th>
                     <th style="display:none" day="ot-col-monday">OT-Monday</th>
                     <th>Tuesday</th>
@@ -40,10 +54,6 @@
                     <th style="display:none" day="ot-col-thursday">OT-Thursday</th>
                     <th>Friday</th>
                     <th style="display:none" day="ot-col-friday">OT-Friday</th>
-                    <th>Saturday</th>
-                    <th style="display:none" day="ot-col-saturday">OT-Saturday</th>
-                    <th>Sunday</th>
-                    <th style="display:none" day="ot-col-sunday">OT-Sunday</th>
                     <th style="display:none" day="ot-col-total">OT-Total</th>
                     <th>All Total</th>
                 </tr>
@@ -80,15 +90,20 @@
             </table>
         </div>
     </div>
+
     <div>
-      
         <div class="form-group">
             <a asp-action="Index" class="btn btn-default">Back to List</a>
-            <input type="submit" value="Save" class="btn btn-default" />
-           @*<a asp-action="SubmitForApproval"  class="btn btn-success" >Submit</a>
-            <a class="btn btn-success" id="do-approval" href="#" data-toggle="modal" data-target="#submittedModel">Submit For Approval</a>*@
-        </div>
+            @if(Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Unkown
+        || Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Rejected)
+            {
+                <input type="submit" name="postType" value="Copy Job/Tasks From Previous Week" class="btn btn-default" />
+                <input type="submit" name="postType" value="Save" class="btn btn-default" />
+                <input type="submit" name="postType" value="Submit" class="btn btn-success" />
+            }
 
+
+        </div>
     </div>
 
 
@@ -102,21 +117,26 @@
                 <div class="modal-body">
                     @if(Model.NewEntry.AvailableJobs.Any())
                     {
-                    <div class="form-group">
-                        
-                        <select asp-for="NewEntry.SelectedJobId" class="form-control"
-                                asp-items="@(new SelectList(Model.NewEntry.AvailableJobs, "JobId", "FullJobCodeWithName"))">
-                            <option>Select Job</option>
-                        </select>
-                        <select asp-for="NewEntry.SelectedTaskCategory" class="form-control"
-                                asp-items="@(new SelectList(Model.NewEntry.AvailableCategories) {  })" >
-                            <option>Select Task</option>
-                        </select>
-                        <select asp-for="NewEntry.SelectedTaskId" class="form-control" 
-                                asp-items="@(new SelectList(Model.NewEntry.AvailableTasks, "TaskId", "Name" ))">
-                            <option>Select Task</option>
-                        </select>
-                    </div>
+                        <div class="form-group">
+
+                            <select asp-for="NewEntry.SelectedJobId" class="form-control"
+                                    asp-items="@(new SelectList(Model.NewEntry.AvailableJobs, "JobId", "FullJobCodeWithName"))">
+                                <option>Select Job</option>
+                            </select>
+                            <select asp-for="NewEntry.SelectedTaskCategory" class="form-control"
+                                    asp-items="@(new SelectList(Model.NewEntry.AvailableCategories) {  })">
+                                <option>Select Category</option>
+                            </select>
+                            <select asp-for="NewEntry.SelectedTaskId" class="form-control" style="display:none">
+                                <option>Select Task</option>
+                                @foreach(var task in Model.NewEntry.AvailableTasks)
+                                {
+                                    <option value="@task.TaskId" class="@task.TaskCategoryName">
+                                        @task.Name
+                                    </option>
+                                }
+                            </select>
+                        </div>
                     }
 
                     <blockquote>
@@ -125,28 +145,30 @@
 
                 </div>
                 <div class="modal-footer">
-                    <button id="add-task-ok" type="button" class="btn btn-default">Add</button>
+                    <input type="submit" name="postType" value="Add Task" class="btn btn-success" />
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                 </div>
             </div>
         </div>
     </div>
+
     <!-- Modal -->
     @*<div class="modal fade" id="submittedModel" tabindex="-1" role="dialog" aria-labelledby="submittedModelLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="submittedModelLabel">Submission Complete</h5>
-                </div>
-                <div class="modal-body">
-                    <h4>You time for this week has been submitted for approval.</h4>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" id="submit-confirmed" class="btn btn-secondary" data-dismiss="modal">Ok</button>
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="submittedModelLabel">Submission Complete</h5>
+                    </div>
+                    <div class="modal-body">
+                        <h4>You time for this week has been submitted for approval.</h4>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" id="submit-confirmed" class="btn btn-secondary" data-dismiss="modal">Ok</button>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>*@
+        </div>*@
+    <input asp-for="ApprovalStatus" type="hidden" />
 </form>
 
 @section scripts {
@@ -156,17 +178,21 @@
     <script type="text/javascript">
 
         $(document).ready(function () {
-            $('#do-approval').click(function () {
+            const approvalStatus = $('#ApprovalStatus').val();
+            if (approvalStatus == "Approved" || approvalStatus == "Submitted") {
                 $("form :input").prop("disabled", true);
-                $('#submit-confirmed').prop("disabled", false);
                 $('#AddJob').hide();
-                $('#do-approval').fadeOut();
-            });
+            };           
 
-            $('#add-task-ok').click(function () {
-                $('#PageActionType').val('Addtask');
-                $('form').submit();
-            });
+            $('#NewEntry_SelectedTaskCategory').change((event) => {
+                const target = event.target.value;
+                $('#NewEntry_SelectedTaskId').fadeIn();
+                $('#NewEntry_SelectedTaskId option').hide().removeAttr("selected");
+                $('#NewEntry_SelectedTaskId option').hide();
+                $('#NewEntry_SelectedTaskId option[value="default"]').show();
+                $('#NewEntry_SelectedTaskId option[class="' + target + '"]').show();
+                $('#NewEntry_SelectedTaskId').prop("selectedIndex", 0);
+            })
         });
 
 

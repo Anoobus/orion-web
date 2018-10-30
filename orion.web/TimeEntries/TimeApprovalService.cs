@@ -70,6 +70,7 @@ namespace orion.web.TimeEntries
             match.ApproverEmployeeId = approver;
             match.ResponseReason = match.ResponseReason ?? "" + timeApprovalDTO.ResponseReason;
             match.TimeApprovalStatus = timeApprovalDTO.TimeApprovalStatus;
+            await db.SaveChangesAsync();
         }
     }
 }

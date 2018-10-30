@@ -18,8 +18,8 @@ namespace orion.web.TimeEntries
         {
             return new WeekOfTimeViewModel()
             {
-                WeekEnd = weekService.GetWeekDate(year, id, DayOfWeek.Sunday),
-                WeekStart = weekService.GetWeekDate(year,id, DayOfWeek.Monday)
+                WeekEnd = weekService.GetWeekDate(year, id, DayOfWeek.Friday),
+                WeekStart = weekService.GetWeekDate(year,id, DayOfWeek.Saturday)
             };
         }
       

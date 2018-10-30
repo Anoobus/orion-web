@@ -1,14 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Globalization;
-using Microsoft.AspNetCore.Authorization;
-using orion.web.Employees;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using orion.web.Common;
+using orion.web.Employees;
 using orion.web.Jobs;
 using orion.web.JobsTasks;
 using orion.web.Notifications;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace orion.web.TimeEntries
@@ -17,7 +17,7 @@ namespace orion.web.TimeEntries
     [Authorize]
     public class TimeController : Controller
     {
-        private const string EDIT_ROUTE = nameof(TimeController) +  nameof(Edit);
+        private const string EDIT_ROUTE = nameof(TimeController) + nameof(Edit);
         private readonly IJobService jobService;
         private readonly ITaskService taskService;
         private readonly ITimeService timeService;
@@ -26,9 +26,9 @@ namespace orion.web.TimeEntries
         private readonly ViewModelRepo viewModelRepo;
         private readonly ITimeApprovalService timeApprovalService;
 
-        public TimeController(IJobService jobService, 
-            ITaskService taskService, 
-            ITimeService timeService, 
+        public TimeController(IJobService jobService,
+            ITaskService taskService,
+            ITimeService timeService,
             IEmployeeService employeeService,
             IWeekService weekService,
             ViewModelRepo viewModelRepo,
@@ -70,14 +70,14 @@ namespace orion.web.TimeEntries
             return RedirectToAction("Edit", new { year = current.Year, id = current.WeekId });
         }
 
-        
+
         [HttpGet]
         [Route("Edit/year/{year:int=1}/week/{id:int=1}", Name = EDIT_ROUTE)]
         public async Task<ActionResult> Edit(int year, int id)
         {
             Calendar cal = DateTimeFormatInfo.CurrentInfo.Calendar;
             var employeeName = this.User.Identity.Name;
-            var timeEntries = timeService.Get(year,id, employeeName);
+            var timeEntries = timeService.Get(year, id, employeeName);
             var jobList = jobService.Get(employeeName).ToList();
             var taskList = taskService.GetTasks().ToList();
             var entries = new List<TimeEntryViewModel>();
@@ -98,7 +98,7 @@ namespace orion.web.TimeEntries
                     Friday = viewModelRepo.MapToViewModel(id, year, DayOfWeek.Friday, entry),
                     Saturday = viewModelRepo.MapToViewModel(id, year, DayOfWeek.Saturday, entry),
                     Sunday = viewModelRepo.MapToViewModel(id, year, DayOfWeek.Sunday, entry),
-                    ApprovalStatus = mappedStatus
+
                 };
                 entries.Add(item);
             }
@@ -109,8 +109,8 @@ namespace orion.web.TimeEntries
                 NewEntry = GenerateEmptyJobTask(year, id),
                 Week = viewModelRepo.GetWeekOfTimeViewModel(year, id),
                 NextWeekUrl = GetUrl(weekService.Next(year, id)),
-                PreviousWeekUrl = GetUrl(weekService.Previous( year, id)),
-
+                PreviousWeekUrl = GetUrl(weekService.Previous(year, id)),
+                ApprovalStatus = mappedStatus
             };
 
             return View("EditNew", vm);
@@ -118,7 +118,7 @@ namespace orion.web.TimeEntries
 
         private string GetUrl(WeekDTO weekDTO)
         {
-            return this.Url.RouteUrl(EDIT_ROUTE, new { year = weekDTO.Year, id = weekDTO.WeekId});
+            return this.Url.RouteUrl(EDIT_ROUTE, new { year = weekDTO.Year, id = weekDTO.WeekId });
         }
 
         private TimeEntryViewModel GenerateEmptyJobTask(int year, int id)
@@ -144,49 +144,84 @@ namespace orion.web.TimeEntries
         [HttpPost]
         [Route("Edit/year/{year:int}/week/{id:int}")]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Save(int year, int id, FullTimeEntryViewModel vm)
+        public async Task<ActionResult> Save(int year, int id, FullTimeEntryViewModel vm, string postType)
         {
-            await SaveTimeEntriesAsync(year, id, vm);            
+            await SaveTimeEntriesAsync(year, id, vm, postType);
+            if(postType == "Copy Job/Tasks From Previous Week")
+            {
+                var employeeName = this.User.Identity.Name;
+                var prev = weekService.Previous(year, id);
+                var timeEntries = timeService.Get(prev.Year, prev.WeekId, employeeName);
+                var empoyId = employeeService.GetSingleEmployee(employeeName).EmployeeId;
+                foreach(var entry in timeEntries.GroupBy(x => new { x.JobId, x.JobTaskId }))
+                {
+                    var thingsToAdd = GenerateEmptyJobTask(year, id);
+                    timeService.Save(year, id, employeeName, CreateDTO(id, entry.Key.JobTaskId, entry.Key.JobId, timeService, empoyId, thingsToAdd, thingsToAdd.Monday));
+                    timeService.Save(year, id, employeeName, CreateDTO(id, entry.Key.JobTaskId, entry.Key.JobId, timeService, empoyId, thingsToAdd, thingsToAdd.Tuesday));
+                    timeService.Save(year, id, employeeName, CreateDTO(id, entry.Key.JobTaskId, entry.Key.JobId, timeService, empoyId, thingsToAdd, thingsToAdd.Wednesday));
+                    timeService.Save(year, id, employeeName, CreateDTO(id, entry.Key.JobTaskId, entry.Key.JobId, timeService, empoyId, thingsToAdd, thingsToAdd.Thursday));
+                    timeService.Save(year, id, employeeName, CreateDTO(id, entry.Key.JobTaskId, entry.Key.JobId, timeService, empoyId, thingsToAdd, thingsToAdd.Friday));
+                    timeService.Save(year, id, employeeName, CreateDTO(id, entry.Key.JobTaskId, entry.Key.JobId, timeService, empoyId, thingsToAdd, thingsToAdd.Saturday));
+                    timeService.Save(year, id, employeeName, CreateDTO(id, entry.Key.JobTaskId, entry.Key.JobId, timeService, empoyId, thingsToAdd, thingsToAdd.Sunday));
+                }
+            }
+            if(postType == "Submit")
+            {
+                var current = await timeApprovalService.Get(year, id, User.Identity.Name);
+                if(vm.AddedEntries.Any(x => x.AllDays().Any(z => z.OvertimeHours > 0)))
+                {
+                    current.TimeApprovalStatus = TimeApprovalStatus.Submitted.ToString();
+                }
+                else
+                {
+                    current.TimeApprovalStatus = TimeApprovalStatus.Approved.ToString();
+                }
+
+                await timeApprovalService.Save(current);
+            }
             return RedirectToAction(nameof(Edit));
         }
 
-        private async Task SaveTimeEntriesAsync(int year, int id, FullTimeEntryViewModel vm)
+        private async Task SaveTimeEntriesAsync(int year, int id, FullTimeEntryViewModel vm, string postType)
         {
             var status = await timeApprovalService.Get(year, id, User.Identity.Name);
             Enum.TryParse<TimeApprovalStatus>(status.TimeApprovalStatus, out var mappedStatus);
             if(mappedStatus != TimeApprovalStatus.Submitted && mappedStatus != TimeApprovalStatus.Approved)
             {
-
-
                 var employeeName = this.User.Identity.Name;
                 var timeEntries = timeService.Get(year, id, employeeName);
-                if(vm.AddedEntries != null)
+                if(postType == "Save")
                 {
-                    foreach(var item in vm.AddedEntries)
+                    if(vm.AddedEntries != null)
                     {
-                        foreach(var day in item.AllDays())
+                        foreach(var item in vm.AddedEntries)
                         {
-                            var match = timeEntries.FirstOrDefault(x => x.TimeEntryId == day.TimeEntryId);
-                            match.Hours = day.Hours;
-                            match.OvertimeHours = day.OvertimeHours;
-                            timeService.Save(year, id, employeeName, match);
+                            foreach(var day in item.AllDays())
+                            {
+                                var match = timeEntries.FirstOrDefault(x => x.TimeEntryId == day.TimeEntryId);
+                                match.Hours = day.Hours;
+                                match.OvertimeHours = day.OvertimeHours;
+                                timeService.Save(year, id, employeeName, match);
+                            }
                         }
                     }
+                    NotificationsController.AddNotification(this.User.SafeUserName(), "Timesheet has been saved");
                 }
-                if(vm.PageActionType == PageActionType.Addtask)
+           
+                if(postType == "Add Task")
                 {
                     var thingsToAdd = GenerateEmptyJobTask(year, id);
                     var empoyId = employeeService.GetSingleEmployee(employeeName).EmployeeId;
-                    timeService.Save(year, id, employeeName, CreateDTO(id, vm, timeService, empoyId, thingsToAdd, thingsToAdd.Monday));
-                    timeService.Save(year, id, employeeName, CreateDTO(id, vm, timeService, empoyId, thingsToAdd, thingsToAdd.Tuesday));
-                    timeService.Save(year, id, employeeName, CreateDTO(id, vm, timeService, empoyId, thingsToAdd, thingsToAdd.Wednesday));
-                    timeService.Save(year, id, employeeName, CreateDTO(id, vm, timeService, empoyId, thingsToAdd, thingsToAdd.Thursday));
-                    timeService.Save(year, id, employeeName, CreateDTO(id, vm, timeService, empoyId, thingsToAdd, thingsToAdd.Friday));
-                    timeService.Save(year, id, employeeName, CreateDTO(id, vm, timeService, empoyId, thingsToAdd, thingsToAdd.Saturday));
-                    timeService.Save(year, id, employeeName, CreateDTO(id, vm, timeService, empoyId, thingsToAdd, thingsToAdd.Sunday));
-                }
 
-                NotificationsController.AddNotification(this.User.SafeUserName(), "Timesheet has been saved");
+                    timeService.Save(year, id, employeeName, CreateDTO(id, vm.NewEntry.SelectedTaskId, vm.NewEntry.SelectedJobId, timeService, empoyId, thingsToAdd, thingsToAdd.Monday));
+                    timeService.Save(year, id, employeeName, CreateDTO(id, vm.NewEntry.SelectedTaskId, vm.NewEntry.SelectedJobId, timeService, empoyId, thingsToAdd, thingsToAdd.Tuesday));
+                    timeService.Save(year, id, employeeName, CreateDTO(id, vm.NewEntry.SelectedTaskId, vm.NewEntry.SelectedJobId, timeService, empoyId, thingsToAdd, thingsToAdd.Wednesday));
+                    timeService.Save(year, id, employeeName, CreateDTO(id, vm.NewEntry.SelectedTaskId, vm.NewEntry.SelectedJobId, timeService, empoyId, thingsToAdd, thingsToAdd.Thursday));
+                    timeService.Save(year, id, employeeName, CreateDTO(id, vm.NewEntry.SelectedTaskId, vm.NewEntry.SelectedJobId, timeService, empoyId, thingsToAdd, thingsToAdd.Friday));
+                    timeService.Save(year, id, employeeName, CreateDTO(id, vm.NewEntry.SelectedTaskId, vm.NewEntry.SelectedJobId, timeService, empoyId, thingsToAdd, thingsToAdd.Saturday));
+                    timeService.Save(year, id, employeeName, CreateDTO(id, vm.NewEntry.SelectedTaskId, vm.NewEntry.SelectedJobId, timeService, empoyId, thingsToAdd, thingsToAdd.Sunday));
+                    NotificationsController.AddNotification(this.User.SafeUserName(), "The selected task has been added.");
+                }
             }
             else
             {
@@ -230,10 +265,10 @@ namespace orion.web.TimeEntries
             return RedirectToAction("Index", "Employee");
         }
 
-        private static TimeEntryDTO CreateDTO(int id, FullTimeEntryViewModel vm, ITimeService thing, int employeeId, TimeEntryViewModel thingsToAdd, TimeSpentViewModel marker)
+        private static TimeEntryDTO CreateDTO(int id, int? SelectedTaskId, int? SelectedJobId, ITimeService thing, int employeeId, TimeEntryViewModel thingsToAdd, TimeSpentViewModel marker)
         {
-            thingsToAdd.SelectedTaskId = vm.NewEntry.SelectedTaskId;
-            thingsToAdd.SelectedJobId = vm.NewEntry.SelectedJobId;
+            thingsToAdd.SelectedTaskId = SelectedTaskId;
+            thingsToAdd.SelectedJobId = SelectedJobId;
             var dto = new TimeEntryDTO()
             {
                 Date = marker.Date,

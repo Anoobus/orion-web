@@ -33,8 +33,8 @@ namespace orion.web.Common
         }
 
         public WeekDTO Get(DateTime date)
-        {            
-            var weekId = cal.GetWeekOfYear(date, DateTimeFormatInfo.CurrentInfo.CalendarWeekRule, DayOfWeek.Monday);
+        {
+            var weekId = cal.GetWeekOfYear(date, DateTimeFormatInfo.CurrentInfo.CalendarWeekRule, DayOfWeek.Saturday);
             return new WeekDTO()
             {
                 WeekId = weekId,

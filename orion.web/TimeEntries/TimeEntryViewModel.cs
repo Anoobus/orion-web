@@ -7,7 +7,7 @@ namespace orion.web.TimeEntries
 {
     public class TimeEntryViewModel
     {
-        public TimeApprovalStatus ApprovalStatus { get; set; }
+        
         public int? SelectedJobId { get; set; }
         public int? SelectedTaskId { get; set; }
         public string SelectedTaskCategory { get; set; }

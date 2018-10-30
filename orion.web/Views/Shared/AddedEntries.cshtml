@@ -6,15 +6,17 @@
             Job: @Model.SelectedEntryJobName()
             <br />
             Task: @Model.SelectedEntryTaskName()
+            <br />
+
         </label>
     </td>
+    @Html.EditorFor(model => model.Saturday, "~/Views/Shared/TimeSpentViewModel.cshtml")
+    @Html.EditorFor(model => model.Sunday, "~/Views/Shared/TimeSpentViewModel.cshtml")
     @Html.EditorFor(model => model.Monday, "~/Views/Shared/TimeSpentViewModel.cshtml")
     @Html.EditorFor(model => model.Tuesday, "~/Views/Shared/TimeSpentViewModel.cshtml")
     @Html.EditorFor(model => model.Wednesday, "~/Views/Shared/TimeSpentViewModel.cshtml")
     @Html.EditorFor(model => model.Thursday, "~/Views/Shared/TimeSpentViewModel.cshtml")
     @Html.EditorFor(model => model.Friday, "~/Views/Shared/TimeSpentViewModel.cshtml")
-    @Html.EditorFor(model => model.Saturday, "~/Views/Shared/TimeSpentViewModel.cshtml")
-    @Html.EditorFor(model => model.Sunday, "~/Views/Shared/TimeSpentViewModel.cshtml")
     <td class="form-inline" style="display:none" day="ot-col-total"></td>
     <td class="form-inline" day="col-total"></td>
 </tr>
