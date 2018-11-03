@@ -1,0 +1,24 @@
+﻿@model orion.web.TimeEntries.TimeEntryViewModel
+
+<tr auto-sum-row @Html.Raw($"row-{Model.RowId}")>
+    <td>
+        <a class="row-action" href="#edit" row-id="@Model.RowId" data-toggle="modal"  data-target="#exampleModal"><span class="glyphicon glyphicon-edit"></span></a>
+        <a class="row-action" href="#remove"  row-id="@Model.RowId"><span class="glyphicon glyphicon-trash"></span></a>
+        <label for="row-@Model.RowId">
+            Job: @Model.SelectedEntryJobName()
+            <br />
+            Task: @Model.SelectedEntryTaskName()
+        </label>
+    </td>
+    @Html.EditorFor(model => model.Saturday, "~/Views/TimeEntry/TimeEntryCell.cshtml")
+    @Html.EditorFor(model => model.Sunday, "~/Views/TimeEntry/TimeEntryCell.cshtml")
+    @Html.EditorFor(model => model.Monday, "~/Views/TimeEntry/TimeEntryCell.cshtml")
+    @Html.EditorFor(model => model.Tuesday, "~/Views/TimeEntry/TimeEntryCell.cshtml")
+    @Html.EditorFor(model => model.Wednesday, "~/Views/TimeEntry/TimeEntryCell.cshtml")
+    @Html.EditorFor(model => model.Thursday, "~/Views/TimeEntry/TimeEntryCell.cshtml")
+    @Html.EditorFor(model => model.Friday, "~/Views/TimeEntry/TimeEntryCell.cshtml")
+    <td class="form-inline" style="display:none" day="ot-col-total"></td>
+    <td class="form-inline" day="col-total"></td>
+</tr>
+
+

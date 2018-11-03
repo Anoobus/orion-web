@@ -1,18 +1,19 @@
-﻿using orion.web.DataAccess.EF;
+﻿using Microsoft.EntityFrameworkCore;
+using orion.web.Common;
+using orion.web.DataAccess.EF;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace orion.web.TimeEntries
 {
-
-  
-
-    public interface ITimeService
+    public interface ITimeService : IRegisterByConvention
     {        
-        IEnumerable<TimeEntryDTO> Get(int yearId, int weekId, string employeeName);
-        void Save(int yearId, int weekId, string employeeName, TimeEntryDTO entry);
+        Task<IEnumerable<TimeEntryDTO>> GetAsync(int yearId, int weekId, string employeeName);
+        Task SaveAsync(int yearId, int weekId, string employeeName, TimeEntryDTO entry);
+        Task DeleteAllEntries(int year, int weekId, int taskId, int JobId, string employeeName);
     }
-    public class TimeService :  ITimeService
+    public class TimeService : ITimeService
     {
         private readonly OrionDbContext db;
 
@@ -21,10 +22,19 @@ namespace orion.web.TimeEntries
             this.db = db;
         }
 
-        public IEnumerable<TimeEntryDTO> Get(int year, int weekId, string employeeName)
+        public async Task DeleteAllEntries(int year, int weekId, int taskId, int JobId, string employeeName)
         {
-            var empId = db.Employees.FirstOrDefault(x => x.Name == employeeName)?.EmployeeId ?? -1;
-            return db.TimeEntries.Where(x => x.WeekId == weekId && x.Date.Year == year && x.EmployeeId == empId).
+            var empId = (await db.Employees.FirstOrDefaultAsync(x => x.Name == employeeName))?.EmployeeId ?? -1;
+            var matches = db.TimeEntries.Where(x => x.WeekId == weekId && x.Date.Year == year && x.EmployeeId == empId &&
+            x.JobId == JobId && x.TaskId == taskId);
+            db.TimeEntries.RemoveRange(matches);
+            await db.SaveChangesAsync();
+        }
+
+        public async System.Threading.Tasks.Task<IEnumerable<TimeEntryDTO>> GetAsync(int year, int weekId, string employeeName)
+        {
+            var empId = (await db.Employees.FirstOrDefaultAsync(x => x.Name == employeeName))?.EmployeeId ?? -1;
+            return await db.TimeEntries.Where(x => x.WeekId == weekId && x.Date.Year == year && x.EmployeeId == empId).
                 Select(x => new TimeEntryDTO()
                 {
                     Date = x.Date,
@@ -35,13 +45,13 @@ namespace orion.web.TimeEntries
                     JobTaskId = x.TaskId,
                     TimeEntryId = x.TimeEntryId,
                     WeekId = x.WeekId,
-                }).ToList();
+                }).ToListAsync();
         }
 
-        public void Save(int year, int weekId, string employeeName, TimeEntryDTO entry)
+        public async System.Threading.Tasks.Task SaveAsync(int year, int weekId, string employeeName, TimeEntryDTO entry)
         {
-            var empId = db.Employees.FirstOrDefault(x => x.Name == employeeName)?.EmployeeId ?? -1;
-            var forUpdate = db.TimeEntries.SingleOrDefault(x => x.Date == entry.Date && x.EmployeeId == empId && x.TaskId == entry.JobTaskId && x.JobId == entry.JobId);
+            var empId = (await db.Employees.FirstOrDefaultAsync(x => x.Name == employeeName))?.EmployeeId ?? -1;
+            var forUpdate = await db.TimeEntries.SingleOrDefaultAsync(x => x.Date == entry.Date && x.EmployeeId == empId && x.TaskId == entry.JobTaskId && x.JobId == entry.JobId);
             if (forUpdate == null)
             {
                 forUpdate = new TimeEntry()
@@ -58,7 +68,7 @@ namespace orion.web.TimeEntries
             }
             forUpdate.Hours = entry.Hours;
             forUpdate.OvertimeHours = entry.OvertimeHours;
-            db.SaveChanges();
+            await db.SaveChangesAsync();
         }
 
        

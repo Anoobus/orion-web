@@ -5,25 +5,8 @@ using System.Linq;
 
 namespace orion.web.TimeEntries
 {
-    public class TimeEntryViewModel
+    public class Week<TimeSpentViewModel>
     {
-        
-        public int? SelectedJobId { get; set; }
-        public int? SelectedTaskId { get; set; }
-        public string SelectedTaskCategory { get; set; }
-        public int RowId { get; set; }
-        public IEnumerable<JobDTO> AvailableJobs { get; set; }
-        public IEnumerable<string> AvailableCategories { get
-            {
-                if(AvailableTasks != null)
-                {
-                    return AvailableTasks.Select(x => x.TaskCategoryName).Distinct();
-                }
-                return Enumerable.Empty<string>();
-            }
-        }
-        public IEnumerable<TaskDTO> AvailableTasks { get; set; }
-    
         public TimeSpentViewModel Monday { get; set; }
         public TimeSpentViewModel Tuesday { get; set; }
         public TimeSpentViewModel Wednesday { get; set; }
@@ -42,6 +25,27 @@ namespace orion.web.TimeEntries
             yield return Saturday;
             yield return Sunday;
         }
+    }
+
+    public class TimeEntryViewModel : Week<TimeSpentViewModel>
+    {
+
+        public int? SelectedJobId { get; set; }
+        public int? SelectedTaskId { get; set; }
+        public string SelectedTaskCategory { get; set; }
+        public string RowId => $"{SelectedJobId}.{SelectedTaskId}";
+        public IEnumerable<JobDTO> AvailableJobs { get; set; }
+        public IEnumerable<string> AvailableCategories { get
+            {
+                if(AvailableTasks != null)
+                {
+                    return AvailableTasks.Select(x => x.TaskCategoryName).Distinct();
+                }
+                return Enumerable.Empty<string>();
+            }
+        }
+        public IEnumerable<TaskDTO> AvailableTasks { get; set; }
+         
 
         public string SelectedEntryJobName()
         {

@@ -2,12 +2,13 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using orion.web.Common;
 using orion.web.DataAccess.EF;
 
 namespace orion.web.Employees
 {
 
-    public interface IEmployeeService
+    public interface IEmployeeService : IRegisterByConvention
     {
         Task<IEnumerable<string>> GetAllRoles();
         EmployeeDTO GetSingleEmployee(string employeeName);

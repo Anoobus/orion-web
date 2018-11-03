@@ -3,7 +3,7 @@ using System.Globalization;
 
 namespace orion.web.Common
 {
-    public interface IWeekService
+    public interface IWeekService : IRegisterByConvention
     {
         WeekDTO Next(int year, int id);
         WeekDTO Get(DateTime date);

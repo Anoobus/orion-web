@@ -14,6 +14,9 @@ namespace orion.web.DataAccess.EF
         public int? ApproverEmployeeId { get; set; }
         public string TimeApprovalStatus { get; set; }
         public DateTime? ApprovalDate { get; set; }
+        public DateTime? SubmittedDate { get; set; }
+        public decimal TotalRegularHours { get; set; }
+        public decimal TotalOverTimeHours { get; set; }
         public string ResponseReason { get; set; }
         public int Year { get; set; }
         public int WeekId { get; set; }

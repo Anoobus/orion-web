@@ -1,13 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿//using System;
+//using System.Collections.Generic;
+//using System.Linq;
+//using System.Threading.Tasks;
 
-namespace orion.web.TimeEntries
-{
-    public class WeekOfTimeViewModel
-    {
-        public DateTime WeekEnd { get; set; }
-        public DateTime WeekStart { get; set; }
-    }
-}
+//namespace orion.web.TimeEntries
+//{
+//    public class WeekOfTimeViewModel
+//    {
+//        public DateTime WeekEnd { get; set; }
+//        public DateTime WeekStart { get; set; }
+//        public int Year { get; set; }
+//        public int WeekId { get; set; }
+//    }
+//}

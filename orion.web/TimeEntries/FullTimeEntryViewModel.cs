@@ -4,11 +4,12 @@ namespace orion.web.TimeEntries
 {
     public class FullTimeEntryViewModel
     {
-        public WeekOfTimeViewModel Week { get; set; }
-        public List<TimeEntryViewModel> AddedEntries { get; set; }
+        public WeekIdentifier Week { get; set; }
+        public List<TimeEntryViewModel> TimeEntryRow { get; set; }
         public TimeEntryViewModel NewEntry { get; set; }
         public string NextWeekUrl { get; set; }
         public string PreviousWeekUrl { get; set; }
         public TimeApprovalStatus ApprovalStatus { get; set; }
+        public string SelectedRowId { get; set; }
     }
 }

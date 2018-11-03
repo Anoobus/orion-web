@@ -1,4 +1,6 @@
-﻿@model orion.web.TimeEntries.FullTimeEntryViewModel
+﻿@using orion.web.Employees
+
+@model orion.web.TimeEntries.FullTimeEntryViewModel
 
 <div class="row">
     <div class="col-md-3">
@@ -26,7 +28,7 @@
         <div class="col-md-12">
             <div asp-validation-summary="All" class="text-danger"></div>
             @if(Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Approved
-                    || Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Submitted)
+                || Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Submitted)
             {
                 <div class="row">
                     <div class="col-md-12">
@@ -59,16 +61,20 @@
                 </tr>
                 @{
                     int i = 0;
-                    foreach(var thing in Model.AddedEntries)
+                    foreach(var thing in Model.TimeEntryRow)
                     {
-                        @Html.EditorFor(m => thing, "~/Views/Shared/AddedEntries.cshtml", "AddedEntries[" + i++ + "]")
+                        @Html.EditorFor(m => thing, "~/Views/TimeEntry/TimeEntryRow.cshtml", "TimeEntryRow[" + i++ + "]")
                     }
                 }
                 <tfoot>
                     <tr>
                         <th>
-                            <a href="#" data-toggle="modal" id="AddJob" data-target="#exampleModal"> <span class="glyphicon glyphicon-plus"></span> Add Job/Task</a>
+                            <a href="#AddTask" data-toggle="modal" id="AddJob" data-target="#exampleModal"> <span class="glyphicon glyphicon-plus"></span> Add Job/Task</a>
                         </th>
+                        <th day="col-saturday"></th>
+                        <th style="display:none" day="ot-col-saturday"></th>
+                        <th day="col-sunday"></th>
+                        <th style="display:none" day="ot-col-sunday"></th>
                         <th day="col-monday"></th>
                         <th style="display:none" day="ot-col-monday"></th>
                         <th day="col-tuesday"></th>
@@ -79,10 +85,6 @@
                         <th style="display:none" day="ot-col-thursday"></th>
                         <th day="col-friday"></th>
                         <th style="display:none" day="ot-col-friday"></th>
-                        <th day="col-saturday"></th>
-                        <th style="display:none" day="ot-col-saturday"></th>
-                        <th day="col-sunday"></th>
-                        <th style="display:none" day="ot-col-sunday"></th>
                         <th style="display:none" day="ot-col-total"></th>
                         <th day="col-total"></th>
                     </tr>
@@ -95,13 +97,27 @@
         <div class="form-group">
             <a asp-action="Index" class="btn btn-default">Back to List</a>
             @if(Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Unkown
-        || Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Rejected)
+       || Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Rejected)
             {
                 <input type="submit" name="postType" value="Copy Job/Tasks From Previous Week" class="btn btn-default" />
                 <input type="submit" name="postType" value="Save" class="btn btn-default" />
+                <input type="submit" name="postType" value="RemoveRow" class="btn btn-default" style="display:none" />
                 <input type="submit" name="postType" value="Submit" class="btn btn-success" />
             }
 
+            @if(User.IsInRole(UserRoleName.Admin))
+            {
+                @if(Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Submitted)
+                {
+                    <button type="button" class="btn btn-success" value="Approve" id="btnApprove">Approve</button>
+                }
+
+                @if(Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Submitted
+            || Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Approved)
+                {
+                    <button type="button" class="btn btn-warning" value="Reject" id="btnReject">Reject</button>
+                }
+            }
 
         </div>
     </div>
@@ -127,7 +143,7 @@
                                     asp-items="@(new SelectList(Model.NewEntry.AvailableCategories) {  })">
                                 <option>Select Category</option>
                             </select>
-                            <select asp-for="NewEntry.SelectedTaskId" class="form-control" style="display:none">
+                            <select asp-for="NewEntry.SelectedTaskId" class="form-control" >
                                 <option>Select Task</option>
                                 @foreach(var task in Model.NewEntry.AvailableTasks)
                                 {
@@ -145,30 +161,19 @@
 
                 </div>
                 <div class="modal-footer">
-                    <input type="submit" name="postType" value="Add Task" class="btn btn-success" />
+                    <input id="ModalSubmit" type="submit" name="postType" value="Add Task" class="btn btn-success" />
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Modal -->
-    @*<div class="modal fade" id="submittedModel" tabindex="-1" role="dialog" aria-labelledby="submittedModelLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="submittedModelLabel">Submission Complete</h5>
-                    </div>
-                    <div class="modal-body">
-                        <h4>You time for this week has been submitted for approval.</h4>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" id="submit-confirmed" class="btn btn-secondary" data-dismiss="modal">Ok</button>
-                    </div>
-                </div>
-            </div>
-        </div>*@
     <input asp-for="ApprovalStatus" type="hidden" />
+    @if(User.IsInRole(UserRoleName.Admin))
+    {
+        <input type="hidden" id="IsAdmin" value="true" />
+    }
+    <input asp-for="SelectedRowId" type="hidden" />
 </form>
 
 @section scripts {
@@ -179,14 +184,85 @@
 
         $(document).ready(function () {
             const approvalStatus = $('#ApprovalStatus').val();
-            if (approvalStatus == "Approved" || approvalStatus == "Submitted") {
+            const isAdmin = $('#IsAdmin').val() == "true";
+            if (!isAdmin && (approvalStatus == "Approved" || approvalStatus == "Submitted")) {
                 $("form :input").prop("disabled", true);
                 $('#AddJob').hide();
-            };           
+                $('a.row-action').hide();
+            };
 
+            //remove row
+            $('a.row-action[href="#remove"]').click((el) => {
+                const rowId = $(el.currentTarget).attr('row-id');
+                console.log(rowId);
+                $('#SelectedRowId').val(rowId);                
+                $('input[type="submit"][value="RemoveRow"]').trigger('click');
+            });
+
+            //edit row
+            $('a.row-action[href="#edit"]').click((el) => {
+                const rowId = $(el.currentTarget).attr('row-id');
+                $('#SelectedRowId').val(rowId);
+                //the boostrap modal and this JS fight; i'm taking the lazy approach and waiting to set the button
+                setTimeout(() => {
+                    $('#ModalSubmit').val("Save New Combination");
+                    $('.modal-body blockquote').hide();
+                    $('.modal-header h4').text('Modify Job/Task Combination');
+                }, 300)
+            });
+
+            //add task
+            $('#AddJob').click((el) => {
+                $('#SelectedRowId').val('');
+                //the boostrap modal and this JS fight; i'm taking the lazy approach and waiting to set the button
+                setTimeout(() => {
+                    $('.modal-body blockquote').show();
+                    $('.modal-header h4').text('Add Job To Time Sheet');
+                    $('#ModalSubmit').val("Add Task");
+                }, 300);
+            });
+
+            $('#btnApprove').click((event) => {
+                @{ 
+                    var urly = Url.RouteUrl("ApprovalRoute", new
+                    {
+                        userName = User.Identity.Name,
+                        year = Model.Week.Year,
+                        id = Model.Week.WeekId,
+                        newApprovalState = "Approve"
+                    });
+                }
+                var jqxhr = $.post("@urly")                                    
+                    .done((res) => {
+                        console.log("res", res);
+                        if (res.success == true) {
+                            location.reload(); 
+                        }
+                     })
+                console.log("xhr", jqxhr);
+            });
+
+               $('#btnReject').click((event) => {
+                @{ 
+                    var urly2 = Url.RouteUrl("ApprovalRoute", new
+                    {
+                        userName = User.Identity.Name,
+                        year = Model.Week.Year,
+                        id = Model.Week.WeekId,
+                        newApprovalState = "Reject"
+                    });
+                }
+                var jqxhr = $.post("@urly2")                                    
+                    .done((res) => {
+                        console.log("res", res);
+                        if (res.success == true) {
+                            location.reload(); 
+                        }
+                     })
+                console.log("xhr", jqxhr);
+                });
             $('#NewEntry_SelectedTaskCategory').change((event) => {
                 const target = event.target.value;
-                $('#NewEntry_SelectedTaskId').fadeIn();
                 $('#NewEntry_SelectedTaskId option').hide().removeAttr("selected");
                 $('#NewEntry_SelectedTaskId option').hide();
                 $('#NewEntry_SelectedTaskId option[value="default"]').show();

@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
+using orion.web.Common;
 using orion.web.DataAccess.EF;
 using System;
 using System.IO;
@@ -10,7 +11,7 @@ using System.Linq;
 namespace orion.web.Reports
 {
 
-    public interface IReportservice
+    public interface IReportservice : IRegisterByConvention
     {
         ReportDTO GetJobDetailReport(DateTime start, DateTime end, int jobId, string reportDisplayName);
         ReportDTO GetJobsSummaryReport(DateTime start, DateTime end, bool showEmptyJobs,string reportDisplayName);

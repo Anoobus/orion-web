@@ -1,0 +1,68 @@
+﻿@model IEnumerable<orion.web.TimeEntries.TimeApprovalDTO>
+@using orion.web.Employees
+
+<ol class="breadcrumb">
+    <li class="breadcrumb-item active"> Weekly Listing</li>
+</ol>
+<div class="row">
+    <div class="col-md-3">
+       
+            <div class="form-group">
+                <a class="btn btn-success" href="@Url.Action("Index", "Reports")">View Reports</a>
+            </div>
+        
+    </div>
+    <div class="col-md-9">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().SubmittedDate)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().EmployeeName)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().TimeApprovalStatus)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().TotalRegularHours)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.First().TotalOverTimeHours)
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach(var item in Model)
+                {
+                <tr>
+                    <td>
+                        @item.SubmittedDate)
+                    </td>
+                    <td>
+                        @item.EmployeeName)
+                    </td>
+                    <td>
+                        @item.TimeApprovalStatus)
+                    </td>
+                    <td>
+                        @item.TotalRegularHours)
+                    </td>
+                    <td>
+                        @item.TotalOverTimeHours)
+                    </td>
+                    <td>
+                        @Html.ActionLink("Details", "Edit", new { id = item.WeekId, year = item.Year })
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+
+
+

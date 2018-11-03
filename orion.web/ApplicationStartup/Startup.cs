@@ -56,7 +56,7 @@ namespace orion.web.ApplicationStartup
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             
-                services.AddTransient<IJobSummaryQuery, JobSummaryQuery>();
+            services.AddTransient<IJobSummaryQuery, JobSummaryQuery>();
             services.AddTransient<ISingleJobDetailQuery, SingleJobDetailQuery>();
             services.AddTransient<IUpdateEmployeeCommand, UpdateEmployeeCommand>();
             services.AddTransient<ICreateEmployeeCommand, CreateEmployeeCommand>();
@@ -64,12 +64,8 @@ namespace orion.web.ApplicationStartup
             services.AddTransient<IJobService, JobService>();
             services.AddTransient<ISiteService, SiteService>();
             services.AddTransient<ITaskService, TaskService>();
-            services.AddTransient<ITimeService, TimeService>();
-            services.AddTransient<IEmployeeService, EmployeeService>();
-            services.AddTransient<IWeekService, WeekService>();
-            services.AddTransient<IReportservice, ReportService>();
-            services.AddTransient<ITimeApprovalService, TimeApprovalService>();
-            services.AddTransient<ViewModelRepo>();
+            this.GetType().Assembly.RegisterTypesWithRegisterByConventionMarker(services);
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
