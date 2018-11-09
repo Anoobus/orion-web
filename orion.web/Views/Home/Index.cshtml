@@ -7,7 +7,7 @@
     {
         <h1>Welcome, @User.Identity.Name</h1>
 
-        <a class="btn btn-lg btn-success" href="@Url.Action("Index","Time")">Enter Time</a>
+        <a class="btn btn-lg btn-success" href="@Url.Action("Index","TimeEntry")">Enter Time</a>
         <a class="btn btn-lg btn-success" href="@Url.Action("Index","Jobs")">My Jobs</a>
         @if(User.IsInRole(UserRoleName.Admin))
         {

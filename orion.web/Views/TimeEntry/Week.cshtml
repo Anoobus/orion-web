@@ -109,13 +109,13 @@
             {
                 @if(Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Submitted)
                 {
-                    <button type="button" class="btn btn-success" value="Approve" id="btnApprove">Approve</button>
+                    <input type="submit" name="postType" class="btn btn-success" value="Approve" id="btnApprove"/>
                 }
 
                 @if(Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Submitted
             || Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Approved)
                 {
-                    <button type="button" class="btn btn-warning" value="Reject" id="btnReject">Reject</button>
+                    <input type="submit" name="postType" class="btn btn-warning" value="Reject" id="btnReject"/>
                 }
             }
 
@@ -162,6 +162,7 @@
                 </div>
                 <div class="modal-footer">
                     <input id="ModalSubmit" type="submit" name="postType" value="Add Task" class="btn btn-success" />
+                    <input id="ModalSubmit" type="submit" name="postType" value="RemoveRow" class="btn btn-success" style="display:none" />
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                 </div>
             </div>
@@ -194,7 +195,6 @@
             //remove row
             $('a.row-action[href="#remove"]').click((el) => {
                 const rowId = $(el.currentTarget).attr('row-id');
-                console.log(rowId);
                 $('#SelectedRowId').val(rowId);                
                 $('input[type="submit"][value="RemoveRow"]').trigger('click');
             });
@@ -203,6 +203,9 @@
             $('a.row-action[href="#edit"]').click((el) => {
                 const rowId = $(el.currentTarget).attr('row-id');
                 $('#SelectedRowId').val(rowId);
+                $('#ModalSubmit').val("Save New Combination");
+                $('.modal-body blockquote').hide();
+                $('.modal-header h4').text('Modify Job/Task Combination');
                 //the boostrap modal and this JS fight; i'm taking the lazy approach and waiting to set the button
                 setTimeout(() => {
                     $('#ModalSubmit').val("Save New Combination");
@@ -214,6 +217,9 @@
             //add task
             $('#AddJob').click((el) => {
                 $('#SelectedRowId').val('');
+                $('.modal-body blockquote').show();
+                $('.modal-header h4').text('Add Job To Time Sheet');
+                $('#ModalSubmit').val("Add Task");
                 //the boostrap modal and this JS fight; i'm taking the lazy approach and waiting to set the button
                 setTimeout(() => {
                     $('.modal-body blockquote').show();
@@ -222,45 +228,6 @@
                 }, 300);
             });
 
-            $('#btnApprove').click((event) => {
-                @{ 
-                    var urly = Url.RouteUrl("ApprovalRoute", new
-                    {
-                        userName = User.Identity.Name,
-                        year = Model.Week.Year,
-                        id = Model.Week.WeekId,
-                        newApprovalState = "Approve"
-                    });
-                }
-                var jqxhr = $.post("@urly")                                    
-                    .done((res) => {
-                        console.log("res", res);
-                        if (res.success == true) {
-                            location.reload(); 
-                        }
-                     })
-                console.log("xhr", jqxhr);
-            });
-
-               $('#btnReject').click((event) => {
-                @{ 
-                    var urly2 = Url.RouteUrl("ApprovalRoute", new
-                    {
-                        userName = User.Identity.Name,
-                        year = Model.Week.Year,
-                        id = Model.Week.WeekId,
-                        newApprovalState = "Reject"
-                    });
-                }
-                var jqxhr = $.post("@urly2")                                    
-                    .done((res) => {
-                        console.log("res", res);
-                        if (res.success == true) {
-                            location.reload(); 
-                        }
-                     })
-                console.log("xhr", jqxhr);
-                });
             $('#NewEntry_SelectedTaskCategory').change((event) => {
                 const target = event.target.value;
                 $('#NewEntry_SelectedTaskId option').hide().removeAttr("selected");

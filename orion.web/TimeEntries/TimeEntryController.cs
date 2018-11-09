@@ -22,6 +22,7 @@ namespace orion.web.TimeEntries
         private readonly IWeekIdentifierListQuery weekIdentifierListQuery;
         private readonly IApproveTimeCommand approveTimeCommand;
         private readonly IRemoveRowCommand removeRowCommand;
+        private readonly IModifyJobTaskComboCommand modifyJobTaskComboCommand;
 
         public TimeEntryController(IWeekService weekService,
             ICopyPreviousWeekTimeCommand copyPreviousWeekTimeCommand,
@@ -30,7 +31,8 @@ namespace orion.web.TimeEntries
             IWeekOfTimeEntriesQuery weekOfTimeEntriesQuery,
             IWeekIdentifierListQuery weekIdentifierListQuery,
             IApproveTimeCommand approveTimeCommand,
-            IRemoveRowCommand removeRowCommand)
+            IRemoveRowCommand removeRowCommand,
+            IModifyJobTaskComboCommand modifyJobTaskComboCommand)
         {
             this.weekService = weekService;
             this.copyPreviousWeekTimeCommand = copyPreviousWeekTimeCommand;
@@ -40,11 +42,12 @@ namespace orion.web.TimeEntries
             this.weekIdentifierListQuery = weekIdentifierListQuery;
             this.approveTimeCommand = approveTimeCommand;
             this.removeRowCommand = removeRowCommand;
+            this.modifyJobTaskComboCommand = modifyJobTaskComboCommand;
         }
 
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
-            return View("WeekList", weekIdentifierListQuery.GetWeeks(5));
+            return View("WeekList", await weekIdentifierListQuery.GetWeeksAsync(5, User.Identity.Name));
         }
 
 
@@ -110,6 +113,26 @@ namespace orion.web.TimeEntries
                 });
                 NotificationsController.AddNotification(this.User.SafeUserName(), $"Timesheet is {TimeApprovalStatus.Submitted}");
             }
+            if(postType == "Reject")
+            {
+                var res = await approveTimeCommand.ApplyApproval(User.IsInRole(UserRoleName.Admin), User.Identity.Name, new TimeApprovalController.TimeApprovalRequest()
+                {
+                    AccountName = User.Identity.Name,
+                    NewApprovalState = TimeApprovalStatus.Rejected,
+                    WeekId = id,
+                    Year = year,
+                });
+                NotificationsController.AddNotification(this.User.SafeUserName(), $"Timesheet is {TimeApprovalStatus.Rejected}");
+
+            }
+            if(postType == "Save New Combination")
+            {
+                var rowId = vm.SelectedRowId;
+                var oldJobId = int.Parse(rowId.Substring(0, rowId.IndexOf(".")));
+                var oldTaskId = int.Parse(rowId.Substring(rowId.IndexOf(".") + 1));
+                var res = await modifyJobTaskComboCommand.ModifyJobTaskCombo(this.User.Identity.Name, year, id, vm.NewEntry.SelectedTaskId ?? 0, vm.NewEntry.SelectedJobId ?? 0, oldTaskId, oldJobId);
+            }
+
             if(postType == "RemoveRow")
             {
                 var rowId = vm.SelectedRowId;

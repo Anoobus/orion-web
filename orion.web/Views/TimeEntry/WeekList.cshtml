@@ -1,4 +1,4 @@
-﻿@model IEnumerable<orion.web.TimeEntries.WeekIdentifier>
+﻿@model orion.web.TimeEntries.WeekListViewModel
 @using orion.web.Employees
 
 <ol class="breadcrumb">
@@ -21,28 +21,67 @@
                 <thead>
                     <tr>
                         <th>
-                            @Html.DisplayNameFor(model => model.WeekStart)
+                            Week Start
                         </th>
                         <th>
-                            @Html.DisplayNameFor(model => model.WeekEnd)
+                            Week End
+                        </th>
+                        <th>
+                            Reg
+                        </th>
+                        <th>
+                            OT
+                        </th>
+                        <th>
+                            Status
                         </th>
                         <th></th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach(var item in Model)
+                    @foreach(var item in Model.Weeks)
                     {
-                        <tr>
-                            <td>
-                                @item.WeekStart.ToShortDateString()
-                            </td>
-                            <td>
-                                @item.WeekEnd.ToShortDateString()
-                            </td>
-                            <td>
-                                @Html.ActionLink("Details", "Edit", new { id = item.WeekId, year = item.WeekStart.Year })
-                            </td>
-                        </tr>
+                    <tr>
+                        <td>
+                            @item.WeekStart.ToShortDateString()
+                        </td>
+                        <td>
+                            @item.WeekEnd.ToShortDateString()
+                        </td>
+                        <td>
+                            @item.TotalRegular.ToString("N")
+                        </td>
+                        <td>
+                            @item.TotalRegular.ToString("N")
+                        </td>
+                        <td>
+                            @if(item.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Unkown)
+                            {
+                                <span class="label label-info">Not submitted</span>
+                            }
+                            else if(item.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Approved)
+                            {
+                                <span class="label label-success">
+                                    @item.ApprovalStatus
+                                </span>
+                            }
+                            else if(item.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Rejected)
+                            {
+                                <span class="label label-danger">
+                                    @item.ApprovalStatus
+                                </span>
+                            }
+                            else if(item.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Submitted)
+                            {
+                                <span class="label label-primary">
+                                    @item.ApprovalStatus
+                                </span>
+                            }
+                        </td>
+                        <td>
+                            @Html.ActionLink("Details", "Edit", new { id = item.WeekId, year = item.WeekStart.Year })
+                        </td>
+                    </tr>
                     }
                 </tbody>
             </table>

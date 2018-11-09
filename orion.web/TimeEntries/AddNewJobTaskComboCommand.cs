@@ -31,7 +31,6 @@ namespace orion.web.TimeEntries
         public async Task<CommandResult> AddNewJobTaskCombo(string employeeName, int year, int weekId, int newTaskId, int newJobId)
         {
             
-            var prev = weekService.Previous(year, weekId);
             var employeeId = employeeService.GetSingleEmployee(employeeName).EmployeeId;
             var entryForEveryDayOfWeek = timeSpentRepository.CreateEmptyWeekForCombo(year, weekId, newTaskId, newJobId, employeeId).ToList();
                 foreach(var day in entryForEveryDayOfWeek)
