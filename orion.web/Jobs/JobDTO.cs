@@ -17,7 +17,7 @@ namespace orion.web.Jobs
         [DisplayName("Job Code")]
         public string FullJobCode => $"{Client?.ClientCode} {JobCode}";
         [DisplayName("Job")]
-        public string FullJobCodeWithName => $"{Client?.ClientCode}{JobCode}-{JobName}";
+        public string FullJobCodeWithName => $"{Client?.ClientCode}-{JobCode}-{JobName}";
 
         public decimal TargetHours { get; set; }
 

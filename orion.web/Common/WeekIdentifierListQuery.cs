@@ -26,7 +26,7 @@ namespace orion.web.Common
             var weeks = new List<DetailedWeekIdentifier>();
             while(entriesToShow-- > 0)
             {
-                var temp = weekService.Previous(thisWeek.Year, thisWeek.WeekId);
+                var temp = thisWeek;
                 var thisWeekTimeSummary = await timeSummaryService.GetAsync(temp.Year, temp.WeekId, employeeName);
                 weeks.Add(new DetailedWeekIdentifier()
                 {
@@ -38,7 +38,7 @@ namespace orion.web.Common
                     TotalOverTime = thisWeekTimeSummary.OvertimeHours,
                     TotalRegular = thisWeekTimeSummary.Hours
                 });
-                thisWeek = temp;
+                thisWeek = weekService.Previous(thisWeek.Year, thisWeek.WeekId); 
             }
             return new WeekListViewModel()
             {

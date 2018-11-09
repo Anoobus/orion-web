@@ -47,13 +47,20 @@ namespace orion.web.TimeEntries
         public IEnumerable<TaskDTO> AvailableTasks { get; set; }
          
 
+        public string SelectedJobCode()
+        {
+            var job = AvailableJobs.FirstOrDefault(x => x.JobId == SelectedJobId);
+            if(job != null)
+            {
+                return $"{job.Client.ClientCode}-{job.JobCode}";
+            }
+            return string.Empty;
+        }
+
         public string SelectedEntryJobName()
         {
-            var job = AvailableJobs.FirstOrDefault(x => x.JobId == SelectedJobId)?.FullJobCodeWithName;
+            var job = AvailableJobs.FirstOrDefault(x => x.JobId == SelectedJobId)?.JobName;
             return job;
-            //var other = AvailableJobs.FirstOrDefault(x => x.JobId == SelectedJobId)?.Site?.SiteName;
-            //return $"{job}({other})";
-
         }
 
         public string SelectedEntryTaskName()
