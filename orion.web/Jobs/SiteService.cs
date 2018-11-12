@@ -25,7 +25,7 @@ namespace orion.web.Jobs
             {
                 SiteID = x.SiteID,
                 SiteName = x.SiteName
-            });
+            }).OrderBy(x => x.SiteName).ToList();
         }
 
         public void Post(SiteDTO site)

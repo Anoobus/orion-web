@@ -61,11 +61,13 @@ ul {
     height: 20px;
 }
 .form-group.skinny input {
-    max-width: 55px;
-    font-size: 10px;
+    max-width: 31px;
+    width:31px;
+    font-size: 16px;
     padding: 1px;
-    line-height: 11px;
-    height: 20px;
+    padding-left: 3px;
+    line-height: 12px;
+    height: 22px;    
 }
 
 
@@ -82,4 +84,26 @@ ul {
 .btn-margin-right
 {
     margin-right:5px;
+}
+table.table-condensed.table-hover th
+{
+    padding: 2px;
+}
+
+td.form-inline.time-cell
+{
+    vertical-align: middle;
+    text-align:center;
+}
+th[day], td[day] {
+    text-align: center;
+    vertical-align: middle;
+}
+table label
+{
+    margin:0px;
+}
+.week-list-row td, .week-list-row th{
+    text-align: center;
+    vertical-align: middle;
 }

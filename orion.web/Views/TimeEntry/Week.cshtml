@@ -47,22 +47,56 @@
                 <table class="table table-condensed table-hover" id="time-entry">
                     <tr>
                         <th colspan="2">Effort</th>
-                        <th>Saturday</th>
-                        <th style="display:none" day="ot-col-saturday">OT-Saturday</th>
-                        <th>Sunday</th>
-                        <th style="display:none" day="ot-col-sunday">OT-Sunday</th>
-                        <th>Monday</th>
-                        <th style="display:none" day="ot-col-monday">OT-Monday</th>
-                        <th>Tuesday</th>
-                        <th style="display:none" day="ot-col-tuesday">OT-Tuesday</th>
-                        <th>Wednesday</th>
-                        <th style="display:none" day="ot-col-wednesday">OT-Wednesday</th>
-                        <th>Thursday</th>
-                        <th style="display:none" day="ot-col-thursday">OT-Thursday</th>
-                        <th>Friday</th>
-                        <th style="display:none" day="ot-col-friday">OT-Friday</th>
+                        <th day="col-saturday">
+                            Sat
+                            <a href="#" class="ot-button">
+                                <span class="glyphicon glyphicon-time"></span>
+                            </a>
+                        </th>
+                        <th style="display:none" day="ot-col-saturday">OT-Sat</th>
+                        <th day="col-sunday">
+                            Sun
+                            <a href="#" class="ot-button">
+                                <span class="glyphicon glyphicon-time"></span>
+                            </a>
+                        </th>
+                        <th style="display:none" day="ot-col-sunday">OT-Sun</th>
+                        <th day="col-monday">
+                            Mon
+                            <a href="#" class="ot-button">
+                                <span class="glyphicon glyphicon-time"></span>
+                            </a>
+                        </th>
+                        <th style="display:none" day="ot-col-monday">OT-Mon</th>
+                        <th day="col-tuesday">
+                            Tues
+                            <a href="#" class="ot-button">
+                                <span class="glyphicon glyphicon-time"></span>
+                            </a>
+                        </th>
+                        <th style="display:none" day="ot-col-tuesday">OT-Tue</th>
+                        <th day="col-wednesday">
+                            Wed
+                            <a href="#" class="ot-button">
+                                <span class="glyphicon glyphicon-time"></span>
+                            </a>
+                        </th>
+                        <th style="display:none" day="ot-col-wednesday">OT-Wed</th>
+                        <th day="col-thursday">
+                            Thur
+                            <a href="#" class="ot-button">
+                                <span class="glyphicon glyphicon-time"></span>
+                            </a>
+                        </th>
+                        <th style="display:none" day="ot-col-thursday">OT-Thur</th>
+                        <th day="col-friday">
+                            Fri
+                            <a href="#" class="ot-button">
+                                <span class="glyphicon glyphicon-time"></span>
+                            </a></th>
+                        <th style="display:none" day="ot-col-friday">OT-Fri</th>
                         <th style="display:none" day="ot-col-total">OT-Total</th>
-                        <th>All Total</th>
+                        <th day>All Total</th>
                     </tr>
                     @{
                         int i = 0;
@@ -73,7 +107,7 @@
                     }
                     <tfoot>
                         <tr>
-                            <th>
+                            <th colspan="2">
                                 <a href="#AddTask" data-toggle="modal" id="AddJob" data-target="#exampleModal"> <span class="glyphicon glyphicon-plus"></span> Add Job/Task</a>
                             </th>
                             <th day="col-saturday"></th>

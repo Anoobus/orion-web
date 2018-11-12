@@ -19,8 +19,8 @@
         row.find('td[autosum][day^="ot-"] input[type="text"]').each(function (index, inputVal) {
             otTotal = otTotal + Number($(inputVal).val());
         });
-        row.find('td[day=ot-' + weekTableSumDefinition.columnTotoalIdentifier + ']').html(otTotal.toFixed(2));
-        row.find('td[day=' + weekTableSumDefinition.columnTotoalIdentifier + ']').html(total.toFixed(2));
+        row.find('td[day=ot-' + weekTableSumDefinition.columnTotoalIdentifier + ']').html(otTotal.toFixed(1));
+        row.find('td[day=' + weekTableSumDefinition.columnTotoalIdentifier + ']').html(total.toFixed(1));
     }
 
     function totalColumn(dayIdentifier, colName) {
@@ -28,7 +28,7 @@
         $('td[' + dayIdentifier + '="' + colName + '"] input[type="text"]').each(function (index, inputVal) {
             total = total + Number($(inputVal).val());
         });
-        $('tr:last th[' + dayIdentifier + '="' + colName + '"]').html(total.toFixed(2));
+        $('tr:last th[' + dayIdentifier + '="' + colName + '"]').html(total.toFixed(1));
     }
 
     function applyGrandTotal() {
@@ -38,14 +38,14 @@
                 var innerText = $(totalCell).text();
                 total += Number(innerText);
             });
-            $('tr:last th[' + weekTableSumDefinition.dayIdentifier + '="' + weekTableSumDefinition.columnTotoalIdentifier + '"]').html(total.toFixed(2));
+            $('tr:last th[' + weekTableSumDefinition.dayIdentifier + '="' + weekTableSumDefinition.columnTotoalIdentifier + '"]').html(total.toFixed(1));
 
             var otTotal = 0;
             $('td[' + weekTableSumDefinition.dayIdentifier + '="ot-' + weekTableSumDefinition.columnTotoalIdentifier + '"]').each(function (index, totalCell) {
                 var innerText = $(totalCell).text();
                 otTotal += Number(innerText);
             });
-            $('tr:last th[' + weekTableSumDefinition.dayIdentifier + '="ot-' + weekTableSumDefinition.columnTotoalIdentifier + '"]').html(otTotal.toFixed(2));
+            $('tr:last th[' + weekTableSumDefinition.dayIdentifier + '="ot-' + weekTableSumDefinition.columnTotoalIdentifier + '"]').html(otTotal.toFixed(1));
         }
     }
 

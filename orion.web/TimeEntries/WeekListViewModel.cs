@@ -13,6 +13,7 @@ namespace orion.web.TimeEntries
     {
         public decimal TotalOverTime { get; set; }
         public decimal TotalRegular { get; set; }
+        public bool IsCurrentWeek { get; set; }
         public TimeApprovalStatus ApprovalStatus { get; set; }
     }
 }

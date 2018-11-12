@@ -43,7 +43,7 @@ namespace orion.web.TimeApproval
                 current.TotalOverTimeHours = totalOt;
                 current.TotalRegularHours = totalReg;
                 
-                if(totalOt > 0)
+                if(totalOt > 0 || totalReg > 40)
                 {
                     current.TimeApprovalStatus = TimeApprovalStatus.Submitted;
                     sendNotification = true;

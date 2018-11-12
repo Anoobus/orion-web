@@ -66,7 +66,7 @@ namespace orion.web.TimeEntries
                 entries.Add(item);
             }
 
-
+            entries = entries.OrderBy(x => x.SelectedJobCode()).ToList();
             var nextWeek =  weekService.Next(year, id);
             var prevWeek = weekService.Previous(year, id);
             return new FullTimeEntryViewModel()

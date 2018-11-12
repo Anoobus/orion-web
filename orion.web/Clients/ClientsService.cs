@@ -25,7 +25,7 @@ namespace orion.web.Clients
                 ClientCode = x.ClientCode,
                 ClientId = x.ClientId,
                 ClientName = x.ClientName
-            }).ToList();
+            }).OrderBy(x => x.ClientCode).ToList();
         }
 
         public ClientDTO Post(ClientDTO client)

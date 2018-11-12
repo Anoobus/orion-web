@@ -43,7 +43,7 @@ namespace orion.web.Jobs
             var myJobs = jobService.Get(this.User.Identity.Name);
             var vm = new JobListViewModel()
             {
-                AllJobsWithAssociationStatus = jobs.ToDictionary(x => x, x => myJobs.Any(z => z.JobId == x.JobId)),
+                AllJobsWithAssociationStatus = jobs.OrderBy(x => x.FullJobCode).ToDictionary(x => x, x => myJobs.Any(z => z.JobId == x.JobId)),
                 HeaderHelp = new JobDTO()
             };
             return View("List", vm);

@@ -1,17 +1,15 @@
 ﻿@model orion.web.TimeEntries.TimeSpentViewModel
-<td class="form-inline" day="col-@Model.DayOfWeek.ToString().ToLower()" autosum>
+<td class="form-inline time-cell" day="col-@Model.DayOfWeek.ToString().ToLower()" autosum>
     <div class="form-group skinny">
-        <input asp-for="Hours" class="form-control" placeholder="XX.XX" />
+        <input asp-for="Hours" class="form-control" value="@(Model.Hours == 0 ? "" : Model.Hours.ToString(".#"))"/>
         @Html.HiddenFor(x => x.TimeEntryId)
-        <a href="#" class="ot-button">
-            <span class="glyphicon glyphicon-time"></span>
-        </a>
+       
     </div>
 </td>
 
-<td class="form-inline" day="ot-col-@Model.DayOfWeek.ToString().ToLower()" autosum style="display:none">
-    <div class="form-group skinny">
-        <input asp-for="OvertimeHours" class="form-control" placeholder="XX.XX" />        
+<td class="form-inline warning time-cell" day="ot-col-@Model.DayOfWeek.ToString().ToLower()" autosum style="display:none">
+    <div class="form-group skinny ">
+        <input asp-for="OvertimeHours" class="form-control" value="@(Model.OvertimeHours == 0 ? "" : Model.OvertimeHours.ToString(".#"))" />        
     </div>
 </td>
 

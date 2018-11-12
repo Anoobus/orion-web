@@ -7,41 +7,41 @@
 <div class="row">
     <div class="col-md-3">
         <div class="form-group">
-            <a class="btn btn-success" asp-action="Current" >Edit This Weeks Time</a>
+            <a class="btn btn-success" asp-action="Current">Edit This Weeks Time</a>
         </div>
-            @if(User.IsInRole(UserRoleName.Admin))
-            {
-        <div class="form-group">
+        @if(User.IsInRole(UserRoleName.Admin))
+        {
+            <div class="form-group">
                 <a class="btn btn-success" href="@Url.Action("Index", "Reports")">View Reports</a>
             </div>
-            }
-        </div>
-        <div class="col-md-9">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>
-                            Week Start
-                        </th>
-                        <th>
-                            Week End
-                        </th>
-                        <th>
-                            Reg
-                        </th>
-                        <th>
-                            OT
-                        </th>
-                        <th>
-                            Status
-                        </th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach(var item in Model.Weeks)
-                    {
-                    <tr>
+        }
+    </div>
+    <div class="col-md-9">
+        <table class="table table-hover">
+            <thead>
+                <tr class="week-list-row">
+                    <th>
+                        Week Start
+                    </th>
+                    <th>
+                        Week End
+                    </th>
+                    <th>
+                        Reg
+                    </th>
+                    <th>
+                        OT
+                    </th>
+                    <th>
+                        Status
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach(var item in Model.Weeks)
+                {
+                    <tr class="week-list-row">
                         <td>
                             @item.WeekStart.ToShortDateString()
                         </td>
@@ -49,10 +49,10 @@
                             @item.WeekEnd.ToShortDateString()
                         </td>
                         <td>
-                            @item.TotalRegular.ToString("N")
+                            @item.TotalRegular.ToString("0.#")
                         </td>
                         <td>
-                            @item.TotalRegular.ToString("N")
+                            @item.TotalRegular.ToString("0.#")
                         </td>
                         <td>
                             @if(item.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Unkown)
@@ -79,14 +79,23 @@
                             }
                         </td>
                         <td>
-                            @Html.ActionLink("Details", "Edit", new { id = item.WeekId, year = item.WeekStart.Year })
+                            <div style="display:inline-block">
+                                @if(item.IsCurrentWeek)
+                                {                                
+                                    @Html.ActionLink("Details (Current Week)", "Edit", new { id = item.WeekId, year = item.WeekStart.Year })
+                                }
+                                else
+                                {
+                                    @Html.ActionLink("Details", "Edit", new { id = item.WeekId, year = item.WeekStart.Year })
+                                }
+                            </div>
                         </td>
                     </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
+                }
+            </tbody>
+        </table>
     </div>
+</div>
 
 
 

@@ -1,19 +1,19 @@
 ﻿@model orion.web.TimeEntries.TimeEntryViewModel
 
 <tr auto-sum-row @Html.Raw($"row-{Model.RowId}")>
-    <td>
-        <a class="row-action" href="#edit" row-id="@Model.RowId" data-toggle="modal" data-target="#exampleModal"><span class="glyphicon glyphicon-edit"></span></a>
-        <a class="row-action" href="#remove" row-id="@Model.RowId"><span class="glyphicon glyphicon-trash"></span></a>
-        <label for="row-@Model.RowId">
-            @Model.SelectedJobCode()
-            <br />
-            @Model.SelectedEntryJobName()
-        </label>
-    </td>
-    <td>
-        <label for="row-@Model.RowId">
-            @Model.SelectedEntryTaskName()
-        </label>
+    <td colspan="2">
+        <div style="vertical-align:middle; display:inline-block">
+            <a class="row-action" href="#edit" row-id="@Model.RowId" data-toggle="modal" data-target="#exampleModal"><span class="glyphicon glyphicon-edit"></span></a>
+            <a class="row-action" href="#remove" row-id="@Model.RowId"><span class="glyphicon glyphicon-trash"></span></a>
+        </div>
+        <div style="vertical-align:middle; display:inline-block; text-align:left">
+            <label for="row-@Model.RowId">
+                @Model.SelectedJobCode() / @Model.SelectedEntryTaskName()
+            </label>
+            <label for="row-@Model.RowId" class="text-muted">
+                @Model.SelectedEntryJobName()
+            </label>
+        </div>       
     </td>
     @Html.EditorFor(model => model.Saturday, "~/Views/TimeEntry/TimeEntryCell.cshtml")
     @Html.EditorFor(model => model.Sunday, "~/Views/TimeEntry/TimeEntryCell.cshtml")

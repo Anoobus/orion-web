@@ -23,6 +23,7 @@ namespace orion.web.Common
         {
             var dt = DateTime.Now;
             var thisWeek = weekService.Get(DateTime.Now);
+            var isCurrent = true;
             var weeks = new List<DetailedWeekIdentifier>();
             while(entriesToShow-- > 0)
             {
@@ -36,9 +37,11 @@ namespace orion.web.Common
                     Year = temp.Year,
                     ApprovalStatus = thisWeekTimeSummary.ApprovalStatus,
                     TotalOverTime = thisWeekTimeSummary.OvertimeHours,
-                    TotalRegular = thisWeekTimeSummary.Hours
+                    TotalRegular = thisWeekTimeSummary.Hours,
+                     IsCurrentWeek = isCurrent
                 });
                 thisWeek = weekService.Previous(thisWeek.Year, thisWeek.WeekId); 
+                isCurrent = false;
             }
             return new WeekListViewModel()
             {
