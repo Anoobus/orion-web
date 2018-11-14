@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using orion.web.Common;
 using orion.web.Employees;
 using orion.web.Notifications;
 using orion.web.TimeApproval;
@@ -13,11 +14,18 @@ namespace orion.web.TimeEntries
     {
         private readonly ITimeApprovalService timeApprovalService;
         private readonly IApproveTimeCommand approveTimeCommand;
+        private readonly IWeekOfTimeEntriesQuery weekOfTimeEntriesQuery;
+        private readonly ITimeApprovalListQuery timeApprovalListQuery;
 
-        public TimeApprovalController(ITimeApprovalService timeApprovalService, IApproveTimeCommand approveTimeCommand)
+        public TimeApprovalController(ITimeApprovalService timeApprovalService, 
+            IApproveTimeCommand approveTimeCommand,
+            IWeekOfTimeEntriesQuery weekOfTimeEntriesQuery,
+            ITimeApprovalListQuery timeApprovalListQuery)
         {
             this.timeApprovalService = timeApprovalService;
             this.approveTimeCommand = approveTimeCommand;
+            this.weekOfTimeEntriesQuery = weekOfTimeEntriesQuery;
+            this.timeApprovalListQuery = timeApprovalListQuery;
         }
 
         public const string APPROVAL_ROUTE = "APPROVAL_ROUTE";
@@ -30,10 +38,11 @@ namespace orion.web.TimeEntries
             public TimeApprovalStatus NewApprovalState { get; set; }
         }
 
-        //public ActionResult Index()
-        //{
-        //    //return View("WeekList", weekIdentifierListQuery.GetWeeks(5));
-        //}
+        public async Task<ActionResult> Index()
+        {
+            var vm = await timeApprovalListQuery.GetApprovalListAsync();
+            return View("List", vm);
+        }
 
         [HttpPost]
         [Route("TimeApproval/{newApprovalState}", Name = APPROVAL_ROUTE)]

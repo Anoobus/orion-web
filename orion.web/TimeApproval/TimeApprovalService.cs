@@ -12,15 +12,17 @@ namespace orion.web.TimeEntries
     {
         Task<TimeApprovalDTO> Get(int yearId, int weekId, string employeeName);
         Task Save(TimeApprovalDTO timeApprovalDTO);
-        Task<IEnumerable<TimeApprovalDTO>> GetByStatus(params TimeApprovalStatus[] withTimeApprovalStatus);
+        Task<IEnumerable<TimeApprovalDTO>> GetByStatus(DateTime? beginDateInclusive = null, DateTime? endDateInclusive = null, params TimeApprovalStatus[] withTimeApprovalStatus);
     }
     public class TimeApprovalService : ITimeApprovalService
     {
         private readonly OrionDbContext db;
+        private readonly IWeekService weekService;
 
-        public TimeApprovalService(OrionDbContext db)
+        public TimeApprovalService(OrionDbContext db, IWeekService weekService)
         {
             this.db = db;
+            this.weekService = weekService;
         }
         public async Task<TimeApprovalDTO> Get(int yearId, int weekId, string employeeName)
         {
@@ -54,12 +56,26 @@ namespace orion.web.TimeEntries
             }
         }
 
-        public async Task<IEnumerable<TimeApprovalDTO>> GetByStatus(params TimeApprovalStatus[] withTimeApprovalStatus)
+        public async Task<IEnumerable<TimeApprovalDTO>> GetByStatus(DateTime? beginDateInclusive = null, DateTime? endDateInclusive = null, params TimeApprovalStatus[] withTimeApprovalStatus)
         {
             var statusAsString = withTimeApprovalStatus.Select(z => z.ToString()).ToArray();
-            var match = await db.TimeSheetApprovals
+            var baseQuery = db.TimeSheetApprovals
                                     .Include(z => z.Employee)
-                                    .Where(x => statusAsString.Contains(x.TimeApprovalStatus)).ToListAsync();
+                                    .Where(x => statusAsString.Contains(x.TimeApprovalStatus));
+
+            if(beginDateInclusive.HasValue)
+            {
+                var week = weekService.Get(beginDateInclusive.Value);
+                baseQuery = baseQuery.Where(x => x.Year > week.Year || (x.Year == week.Year &&  x.WeekId >= week.WeekId ));
+            }
+
+            if(endDateInclusive.HasValue)
+            {
+                var week = weekService.Get(endDateInclusive.Value);
+                baseQuery = baseQuery.Where(x => x.Year < week.Year || (x.Year == week.Year && x.WeekId <= week.WeekId ));
+            }
+
+            var match = await baseQuery.ToListAsync();
 
             var approverIds = match.Select(x => x.ApproverEmployeeId).Where(x => x.HasValue).Distinct().ToArray();
             var approverNames = await db.Employees.Where(x => approverIds.Contains(x.EmployeeId)).ToListAsync();
@@ -72,6 +88,7 @@ namespace orion.web.TimeEntries
                 TimeApprovalStatus = string.IsNullOrWhiteSpace(x.TimeApprovalStatus) ? TimeApprovalStatus.Unkown : Enum.Parse<TimeApprovalStatus>(x.TimeApprovalStatus),
                 WeekId = x.WeekId,
                 Year = x.Year,
+                 WeekStartDate = weekService.GetWeekDate(x.Year,x.WeekId, WeekIdentifier.WEEK_START),
                 SubmittedDate = x.SubmittedDate,
                  TotalOverTimeHours = x.TotalOverTimeHours,
                   TotalRegularHours = x.TotalRegularHours

@@ -19,6 +19,7 @@ namespace orion.web.TimeEntries
         public DateTime? ApprovalDate { get; set; }
         public string ResponseReason { get; set; }
         public DateTime? SubmittedDate { get; set; }
+        public DateTime WeekStartDate { get; set; }
         public decimal TotalRegularHours { get; set; }
         public decimal TotalOverTimeHours { get; set; }
     }

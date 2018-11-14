@@ -1,68 +1,52 @@
-﻿@model IEnumerable<orion.web.TimeEntries.TimeApprovalDTO>
+﻿@model orion.web.TimeApproval.TimeApprovalList
 @using orion.web.Employees
 
 <ol class="breadcrumb">
-    <li class="breadcrumb-item active"> Weekly Listing</li>
+    <li class="breadcrumb-item active"> Approval Listing</li>
 </ol>
 <div class="row">
     <div class="col-md-3">
-       
-            <div class="form-group">
-                <a class="btn btn-success" href="@Url.Action("Index", "Reports")">View Reports</a>
+        <div class="form-group">
+            <a class="btn btn-success" href="@Url.Action("Index", "Reports")">View Reports</a>
+        </div>
+
+        <div class="form-group panel panel-default">
+            <div class="panel-body">
+                On or After:
+                <input asp-for="PeriodStartData" type="date" class="form-control" />
+                <span asp-validation-for="PeriodStartData" class="text-danger"></span>
+                <br />
+                On or Before:
+                <input asp-for="PeriodEndDate" type="date" class="form-control" />
+                <span asp-validation-for="PeriodEndDate" class="text-danger"></span>
+                <br />
+                <a href="#" class="btn btn-default">Apply</a>
             </div>
-        
+        </div>
     </div>
     <div class="col-md-9">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>
-                        @Html.DisplayNameFor(model => model.First().SubmittedDate)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.First().EmployeeName)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.First().TimeApprovalStatus)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.First().TotalRegularHours)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.First().TotalOverTimeHours)
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach(var item in Model)
-                {
-                <tr>
-                    <td>
-                        @item.SubmittedDate)
-                    </td>
-                    <td>
-                        @item.EmployeeName)
-                    </td>
-                    <td>
-                        @item.TimeApprovalStatus)
-                    </td>
-                    <td>
-                        @item.TotalRegularHours)
-                    </td>
-                    <td>
-                        @item.TotalOverTimeHours)
-                    </td>
-                    <td>
-                        @Html.ActionLink("Details", "Edit", new { id = item.WeekId, year = item.Year })
-                    </td>
-                </tr>
-                }
-            </tbody>
-        </table>
+        <div class="panel panel-default">
+            <div class="panel-heading" data-toggle="collapse" data-target="#submitted">Submitted <span class="glyphicon glyphicon-resize-vertical" style="float:right"></span></div>
+            <div class="panel-body collapse in" id="submitted" aria-expanded="true">
+                @Html.EditorFor(model => model.SubmittedEntries, "~/Views/TimeApproval/TimeApprovalSection.cshtml")
+            </div>
+        </div>
+
+
+        <div class="panel panel-danger">
+            <div class="panel-heading" data-toggle="collapse" data-target="#rejected">Rejected <span class="glyphicon glyphicon-resize-vertical" style="float:right"></span></div>
+            <div class="panel-body collapse in" id="rejected" aria-expanded="true">
+                @Html.EditorFor(model => model.RejectedEntries, "~/Views/TimeApproval/TimeApprovalSection.cshtml")
+            </div>
+        </div>
+
+        <div class="panel panel-success">
+            <div class="panel-heading" data-toggle="collapse" data-target="#approved">Approved <span class="glyphicon glyphicon-resize-vertical" style="float:right"></span></div>
+            <div class="panel-body collapse in" id="approved" aria-expanded="true">
+                @Html.EditorFor(model => model.ApprovedEntries, "~/Views/TimeApproval/TimeApprovalSection.cshtml")
+
+
+            </div>
+        </div>
+
     </div>
-</div>
-
-
-
-
-

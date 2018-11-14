@@ -51,11 +51,7 @@ namespace orion.web.Common
                 date = date.AddDays(1);
                 canididate = Get(date);
             }
-            //if (date.DayOfWeek != dayOfWeek)
-            //{
-            //    if(date.DayOfWeek )
-            //    date = date.AddDays((int)dayOfWeek + (-1 * (int)date.DayOfWeek));
-            //}
+          
             return date;
         }    
 
