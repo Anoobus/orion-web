@@ -1,0 +1,16 @@
+version: '3'
+services:
+#  orion-web:
+#    build: .
+#    ports:
+#     - "80:8000"
+  sql:
+    image: "microsoft/mssql-server-linux:2017-CU12"
+    environment:
+     - ACCEPT_EULA=Y
+     - SA_PASSWORD=g!Yl69a4l5muZ3fJ
+     - MSSQL_PID=Express
+    volumes:     
+     - ./sql-mount:/var/opt/mssql
+    ports:
+     - "1433:1433"
