@@ -4,6 +4,7 @@ using orion.web.Common;
 using orion.web.Employees;
 using orion.web.Notifications;
 using orion.web.TimeApproval;
+using System;
 using System.Threading.Tasks;
 
 namespace orion.web.TimeEntries
@@ -16,25 +17,27 @@ namespace orion.web.TimeEntries
         private readonly IApproveTimeCommand approveTimeCommand;
         private readonly IWeekOfTimeEntriesQuery weekOfTimeEntriesQuery;
         private readonly ITimeApprovalListQuery timeApprovalListQuery;
+        private readonly ISessionAdapter sessionAdapter;
 
         public TimeApprovalController(ITimeApprovalService timeApprovalService, 
             IApproveTimeCommand approveTimeCommand,
             IWeekOfTimeEntriesQuery weekOfTimeEntriesQuery,
-            ITimeApprovalListQuery timeApprovalListQuery)
+            ITimeApprovalListQuery timeApprovalListQuery,
+            ISessionAdapter sessionAdapter)
         {
             this.timeApprovalService = timeApprovalService;
             this.approveTimeCommand = approveTimeCommand;
             this.weekOfTimeEntriesQuery = weekOfTimeEntriesQuery;
             this.timeApprovalListQuery = timeApprovalListQuery;
+            this.sessionAdapter = sessionAdapter;
         }
 
         public const string APPROVAL_ROUTE = "APPROVAL_ROUTE";
 
-        public class TimeApprovalRequest
+        public class TimeApprovalModel
         {
-            public int Year { get; set; }
             public int WeekId { get; set; }
-            public string AccountName { get; set; }
+            public int EmployeeId { get; set; }
             public TimeApprovalStatus NewApprovalState { get; set; }
         }
 
@@ -45,10 +48,26 @@ namespace orion.web.TimeEntries
         }
 
         [HttpPost]
-        [Route("TimeApproval/{newApprovalState}", Name = APPROVAL_ROUTE)]
-        public async Task<ActionResult> ApplyApproval(TimeApprovalRequest request)
+        public async Task<ActionResult> Index(DateTime PeriodStartData, DateTime PeriodEndDate)
         {
-            var res = await approveTimeCommand.ApplyApproval(User.IsInRole(UserRoleName.Admin), User.Identity.Name, request);
+            var vm = await timeApprovalListQuery.GetApprovalListAsync(beginDate: PeriodStartData, endDate: PeriodEndDate);
+            return View("List", vm);
+        }
+
+        
+    [HttpPost]
+        [Route("TimeApproval/{newApprovalState}", Name = APPROVAL_ROUTE)]
+        public async Task<ActionResult> ApplyApproval(TimeApprovalModel request)
+        {
+            var req = new TimeApprovalRequest()
+            {
+                ApprovingUserId = await sessionAdapter.EmployeeIdAsync(),
+                ApprovingUserIsAdmin = User.IsInRole(UserRoleName.Admin),
+                EmployeeId = request.EmployeeId,
+                NewApprovalState = request.NewApprovalState,
+                WeekId = request.WeekId
+            };
+            var res = await approveTimeCommand.ApplyApproval(req);
             if(res.Successful)
             {
                 NotificationsController.AddNotification(this.User.SafeUserName(), $"Timesheet is {request.NewApprovalState}");

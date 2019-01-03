@@ -45,23 +45,24 @@
             <div class="navbar-collapse collapse">
                 @if(User.Identity.IsAuthenticated)
                 {
-                    <ul class="nav navbar-nav">
-                        <li><a asp-controller="Home" asp-action="Index">Home</a></li>
-                        @if(User.IsInRole(UserRoleName.Admin))
-                        {
-                            <li><a asp-controller="Jobs" asp-action="Index">Jobs</a></li>
-                        }
-                        else
-                        {
-                            <li><a asp-controller="Jobs" asp-action="Index">My Jobs</a></li>
-                        }
-                        <li><a asp-controller="TimeEntry" asp-action="Index">Time Entry</a></li>
-                        @if(User.IsInRole(UserRoleName.Admin))
-                        {
-                            <li><a asp-controller="Employee" asp-action="List">Employees</a></li>
-                        }
+                <ul class="nav navbar-nav">
+                    <li><a asp-controller="Home" asp-action="Index">Home</a></li>
+                    @if (User.IsInRole(UserRoleName.Admin))
+                    {
+                        <li><a asp-controller="Jobs" asp-action="Index">Jobs</a></li>
+                    }
+                    else
+                    {
+                        <li><a asp-controller="Jobs" asp-action="Index">My Jobs</a></li>
+                    }
+                    <li><a asp-controller="TimeEntry" asp-action="Index">Time Entry</a></li>
+                    @if (User.IsInRole(UserRoleName.Admin))
+                    {
+                        <li><a asp-controller="Employee" asp-action="List">Employees</a></li>
+                        <li><a asp-controller="TimeApproval" asp-action="Index">Time Approval</a></li>
+                    }
 
-                    </ul>
+                </ul>
                 }
                 @await Html.PartialAsync("_LoginPartial")
             </div>

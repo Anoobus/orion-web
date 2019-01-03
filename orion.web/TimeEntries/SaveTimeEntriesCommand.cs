@@ -6,7 +6,7 @@ namespace orion.web.TimeEntries
 {
     public interface ISaveTimeEntriesCommand : IRegisterByConvention
     {
-        Task<CommandResult> SaveTimeEntriesAsync(string employeeName, int year, int id, FullTimeEntryViewModel vm);
+        Task<CommandResult> SaveTimeEntriesAsync(int employeeId,int id, FullTimeEntryViewModel vm);
     }
     public class SaveTimeEntriesCommand : ISaveTimeEntriesCommand
     {
@@ -18,12 +18,12 @@ namespace orion.web.TimeEntries
             this.timeApprovalService = timeApprovalService;
             this.timeService = timeService;
         }
-        public async Task<CommandResult> SaveTimeEntriesAsync(string employeeName, int year, int id, FullTimeEntryViewModel vm)
+        public async Task<CommandResult> SaveTimeEntriesAsync(int employeeId,  int id, FullTimeEntryViewModel vm)
         {
-            var statusAllowsSave = await GetSaveStatus(employeeName, year, id);
+            var statusAllowsSave = await GetSaveStatus(employeeId,  id);
             if(statusAllowsSave)
             {
-                var timeEntries = await timeService.GetAsync(year, id, employeeName);
+                var timeEntries = await timeService.GetAsync( id, employeeId);
 
                 if(vm.TimeEntryRow != null)
                 {
@@ -34,10 +34,15 @@ namespace orion.web.TimeEntries
                             var match = timeEntries.FirstOrDefault(x => x.TimeEntryId == day.TimeEntryId);
                             match.Hours = day.Hours;
                             match.OvertimeHours = day.OvertimeHours;
-                            await timeService.SaveAsync(year, id, employeeName, match);
+                            await timeService.SaveAsync( id, employeeId, match);
                         }
                     }
+
                 }
+                var time = await timeService.GetAsync(id, employeeId);
+                var totalOt = time.Sum(x => x.OvertimeHours);
+                var totalReg = time.Sum(x => x.Hours);
+                await timeApprovalService.UpdateTimeTotals(id, employeeId, totalOt, totalReg);
                 return new CommandResult(true);
             }
             else
@@ -46,9 +51,9 @@ namespace orion.web.TimeEntries
             }
         }
 
-        private async Task<bool> GetSaveStatus(string employeeName, int year, int id)
+        private async Task<bool> GetSaveStatus(int employeeId,  int id)
         {
-            var status = await timeApprovalService.Get(year, id, employeeName);
+            var status = await timeApprovalService.GetAsync( id, employeeId);
             var statusAllowsSave = status.TimeApprovalStatus != TimeApprovalStatus.Submitted
                 && status.TimeApprovalStatus != TimeApprovalStatus.Approved;
             return statusAllowsSave;

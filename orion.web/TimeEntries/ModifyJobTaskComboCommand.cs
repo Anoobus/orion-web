@@ -7,29 +7,29 @@ namespace orion.web.TimeEntries
 {
     public interface IModifyJobTaskComboCommand : IRegisterByConvention
     {
-        Task<CommandResult> ModifyJobTaskCombo(string employeeName, int year, int weekId, int newTaskId, int newJobId, int oldTaskId, int oldJobId);
+        Task<CommandResult> ModifyJobTaskCombo(int employeeId,  int weekId, int newTaskId, int newJobId, int oldTaskId, int oldJobId);
     }
     public class ModifyJobTaskComboCommand : IModifyJobTaskComboCommand
     {
         private readonly IEmployeeService employeeService;
-        private readonly IWeekService weekService;
+        //private readonly IWeekService weekService;
         private readonly ITimeService timeService;
         private readonly ITimeSpentRepository timeSpentRepository;
 
         public ModifyJobTaskComboCommand(IEmployeeService employeeService,
-            IWeekService weekService,
+          //  IWeekService weekService,
             ITimeService timeService,
             ITimeSpentRepository timeSpentRepository)
         {
             this.employeeService = employeeService;
-            this.weekService = weekService;
+            //this.weekService = weekService;
             this.timeService = timeService;
             this.timeSpentRepository = timeSpentRepository;
         }
-        public async Task<CommandResult> ModifyJobTaskCombo(string employeeName, int year, int weekId, int newTaskId, int newJobId, int oldTaskId, int oldJobId)
+        public async Task<CommandResult> ModifyJobTaskCombo(int employeeId,  int weekId, int newTaskId, int newJobId, int oldTaskId, int oldJobId)
         {
 
-            var timeEntries = await timeService.GetAsync(year, weekId, employeeName);
+            var timeEntries = await timeService.GetAsync( weekId, employeeId);
 
             var oldEntries = timeEntries.Where(x => x.JobId == oldJobId && x.JobTaskId == oldTaskId).ToList();
             var existingEntries = timeEntries.Where(x => x.JobId == newJobId && x.JobTaskId == newTaskId).ToList();
@@ -41,11 +41,11 @@ namespace orion.web.TimeEntries
                 {
                     match.Hours += item.entry.Hours;
                     match.OvertimeHours += item.entry.OvertimeHours;
-                    await timeService.SaveAsync(year, weekId, employeeName, match);
+                    await timeService.SaveAsync( weekId, employeeId, match);
                 }
                 else
                 {
-                    await timeService.SaveAsync(year, weekId, employeeName, new TimeEntryDTO()
+                    await timeService.SaveAsync( weekId, employeeId, new TimeEntryDTO()
                     {
                         Date = item.entry.Date,
                         EmployeeId = item.entry.EmployeeId,
@@ -58,7 +58,7 @@ namespace orion.web.TimeEntries
                 }
 
             }
-            await timeService.DeleteAllEntries(year, weekId, oldTaskId, oldJobId, employeeName);
+            await timeService.DeleteAllEntries( weekId, oldTaskId, oldJobId, employeeId);
             return new CommandResult(true);
         }
     }

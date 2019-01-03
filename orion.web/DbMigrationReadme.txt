@@ -1,0 +1,1 @@
+﻿Add-Migration MigrationName -Context OrionDbContext -OutputDir DataAccess\EF\Migrations

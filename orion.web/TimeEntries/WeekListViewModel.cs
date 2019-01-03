@@ -8,6 +8,7 @@ namespace orion.web.TimeEntries
     public class WeekListViewModel
     {
         public IEnumerable<DetailedWeekIdentifier> Weeks { get; set; }
+        public int EmployeeId { get; set; }
     }
     public class DetailedWeekIdentifier : WeekIdentifier
     {

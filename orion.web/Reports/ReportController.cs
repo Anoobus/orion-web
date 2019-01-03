@@ -12,13 +12,14 @@ namespace orion.web.Reports
     [Route("[controller]")]
     public class ReportsController : Controller
     {
-        private readonly IWeekService weekService;
+        //private readonly IWeekService weekService;
         private readonly IJobService jobService;
         private readonly IReportservice reportservice;
 
-        public ReportsController(IWeekService weekService, IJobService jobService, IReportservice reportservice)
+        public ReportsController(//IWeekService weekService, 
+            IJobService jobService, IReportservice reportservice)
         {
-            this.weekService = weekService;
+            //this.weekService = weekService;
             this.jobService = jobService;
             this.reportservice = reportservice;
         }
@@ -46,13 +47,13 @@ namespace orion.web.Reports
 
         [HttpGet]
         [Route("GetReportSetup/{reportName}")]
-        public ActionResult GetReportSetup(string reportName)
+        public async System.Threading.Tasks.Task<ActionResult> GetReportSetupAsync(string reportName)
         {
-            var wk = weekService.Get(DateTime.Now);
+            var wk = WeekDTO.CreateWithWeekContaining(DateTime.Now);
             var ps = new PeriodBasedReportSettings()
             {
-                Start = weekService.GetWeekDate(wk.Year, wk.WeekId, DayOfWeek.Monday),
-                End = weekService.GetWeekDate(wk.Year, wk.WeekId, DayOfWeek.Sunday)
+                Start = wk.WeekStart,
+                End = wk.WeekEnd
             };
             if(reportName == ReportNames.JOBS_SUMMARY_REPORT)
             {
@@ -71,7 +72,7 @@ namespace orion.web.Reports
                 vm.Report.PeriodSettings = ps;
                 vm.Report.JobBasedReportSettings = new JobBasedReportSettings()
                 {
-                    AvailableJobs = jobService.Get().ToList()
+                    AvailableJobs = (await jobService.GetAsync()).ToList()
                 };
                 vm.SelectedReport = new ReportNameViewModel()
                 {

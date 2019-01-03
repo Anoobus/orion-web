@@ -1,286 +1,292 @@
 ﻿@using orion.web.Employees
+@using orion.web.TimeEntries
 
 @model orion.web.TimeEntries.FullTimeEntryViewModel
 <div class="row">
     <ol class="breadcrumb">
-        <li class="breadcrumb-item "> <a  href="@Url.Action("Index","TimeEntry")">Weekly Listing</a></li>
+        <li class="breadcrumb-item "> <a href="@Url.Action("Index","TimeEntry")">Weekly Listing</a></li>
         <li class="breadcrumb-item active">Time Entry For Week Starting: @Model.Week.WeekStart.ToShortDateString()</li>
     </ol>
+</div>
+<div class="row">
+    <div class="col-md-3">
+        <a href="@Url.Action(nameof(TimeEntryController.Edit),"TimeEntry",new { employeeId = Model.EmployeeId, weekId = Model.Week.WeekId - 1 })" class="btn btn-default"> <span class="glyphicon glyphicon-chevron-left"></span> Previous Week</a>
     </div>
+    <div class="col-md-2">
+        <span>
+            <label asp-for="Week.WeekStart" class="control-label"></label> @Model.Week.WeekStart.ToShortDateString()
+        </span>
+    </div>
+    <div class="col-md-2">
+        <span>
+
+            <label asp-for="Week.WeekEnd" class="control-label"></label> @Model.Week.WeekEnd.ToShortDateString()
+        </span>
+
+    </div>
+    <div class="col-md-3">
+        <a href="@Url.Action(nameof(TimeEntryController.Edit),"TimeEntry",new { employeeId = Model.EmployeeId, weekId = Model.Week.WeekId + 1 })" class="btn btn-default"> Next Week <span class="glyphicon glyphicon-chevron-right"></span></a>
+    </div>
+</div>
+<form asp-action="Save" method="post"  >
+
     <div class="row">
-        <div class="col-md-3">
-            <a href="@Model.PreviousWeekUrl" class="btn btn-default"> <span class="glyphicon glyphicon-chevron-left"></span> Previous Week</a>
-        </div>
-        <div class="col-md-2">
-            <span>
-                <label asp-for="Week.WeekStart" class="control-label"></label> @Model.Week.WeekStart.ToShortDateString()
-            </span>
-        </div>
-        <div class="col-md-2">
-            <span>
-
-                <label asp-for="Week.WeekEnd" class="control-label"></label> @Model.Week.WeekEnd.ToShortDateString()
-            </span>
-
-        </div>
-        <div class="col-md-3">
-            <a href="@Model.NextWeekUrl" class="btn btn-default"> Next Week <span class="glyphicon glyphicon-chevron-right"></span></a>
-        </div>
-    </div>
-    <form asp-action="Save" method="post">
-
-        <div class="row">
-            <div class="col-md-12">
-                <div asp-validation-summary="All" class="text-danger"></div>
-                @if(Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Approved
-                   || Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Submitted)
-                {
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="alert alert-dismissible alert-success">
-                                <strong>Please Note:</strong> No more changes are allowed for timesheet becuase it is already @Model.ApprovalStatus.
-                            </div>
+        <div class="col-md-12">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            @if (Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Approved
+             || Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Submitted)
+            {
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="alert alert-dismissible alert-success">
+                            <strong>Please Note:</strong> No more changes are allowed for timesheet becuase it is already @Model.ApprovalStatus.
                         </div>
                     </div>
-                }
+                </div>
+            }
 
-                <table class="table table-condensed table-hover" id="time-entry">
+            <table class="table table-condensed table-hover" id="time-entry">
+                <tr>
+                    <th colspan="2">Effort</th>
+                    <th day="col-saturday">
+                        Sat
+                        <a href="#" class="ot-button">
+                            <span class="glyphicon glyphicon-time"></span>
+                        </a>
+                    </th>
+                    <th style="display:none" day="ot-col-saturday">OT-Sat</th>
+                    <th day="col-sunday">
+                        Sun
+                        <a href="#" class="ot-button">
+                            <span class="glyphicon glyphicon-time"></span>
+                        </a>
+                    </th>
+                    <th style="display:none" day="ot-col-sunday">OT-Sun</th>
+                    <th day="col-monday">
+                        Mon
+                        <a href="#" class="ot-button">
+                            <span class="glyphicon glyphicon-time"></span>
+                        </a>
+                    </th>
+                    <th style="display:none" day="ot-col-monday">OT-Mon</th>
+                    <th day="col-tuesday">
+                        Tues
+                        <a href="#" class="ot-button">
+                            <span class="glyphicon glyphicon-time"></span>
+                        </a>
+                    </th>
+                    <th style="display:none" day="ot-col-tuesday">OT-Tue</th>
+                    <th day="col-wednesday">
+                        Wed
+                        <a href="#" class="ot-button">
+                            <span class="glyphicon glyphicon-time"></span>
+                        </a>
+                    </th>
+                    <th style="display:none" day="ot-col-wednesday">OT-Wed</th>
+                    <th day="col-thursday">
+                        Thur
+                        <a href="#" class="ot-button">
+                            <span class="glyphicon glyphicon-time"></span>
+                        </a>
+                    </th>
+                    <th style="display:none" day="ot-col-thursday">OT-Thur</th>
+                    <th day="col-friday">
+                        Fri
+                        <a href="#" class="ot-button">
+                            <span class="glyphicon glyphicon-time"></span>
+                        </a>
+                    </th>
+                    <th style="display:none" day="ot-col-friday">OT-Fri</th>
+                    <th style="display:none" day="ot-col-total">OT-Total</th>
+                    <th day>All Total</th>
+                </tr>
+                @{
+                    int i = 0;
+                    foreach (var thing in Model.TimeEntryRow)
+                    {
+                        @Html.EditorFor(m => thing, "~/Views/TimeEntry/TimeEntryRow.cshtml", "TimeEntryRow[" + i++ + "]")
+                    }
+                }
+                <tfoot>
                     <tr>
-                        <th colspan="2">Effort</th>
-                        <th day="col-saturday">
-                            Sat
-                            <a href="#" class="ot-button">
-                                <span class="glyphicon glyphicon-time"></span>
-                            </a>
+                        <th colspan="2">
+                            <a href="#AddTask" data-toggle="modal" id="AddJob" data-target="#exampleModal"> <span class="glyphicon glyphicon-plus"></span> Add Job/Task</a>
                         </th>
-                        <th style="display:none" day="ot-col-saturday">OT-Sat</th>
-                        <th day="col-sunday">
-                            Sun
-                            <a href="#" class="ot-button">
-                                <span class="glyphicon glyphicon-time"></span>
-                            </a>
-                        </th>
-                        <th style="display:none" day="ot-col-sunday">OT-Sun</th>
-                        <th day="col-monday">
-                            Mon
-                            <a href="#" class="ot-button">
-                                <span class="glyphicon glyphicon-time"></span>
-                            </a>
-                        </th>
-                        <th style="display:none" day="ot-col-monday">OT-Mon</th>
-                        <th day="col-tuesday">
-                            Tues
-                            <a href="#" class="ot-button">
-                                <span class="glyphicon glyphicon-time"></span>
-                            </a>
-                        </th>
-                        <th style="display:none" day="ot-col-tuesday">OT-Tue</th>
-                        <th day="col-wednesday">
-                            Wed
-                            <a href="#" class="ot-button">
-                                <span class="glyphicon glyphicon-time"></span>
-                            </a>
-                        </th>
-                        <th style="display:none" day="ot-col-wednesday">OT-Wed</th>
-                        <th day="col-thursday">
-                            Thur
-                            <a href="#" class="ot-button">
-                                <span class="glyphicon glyphicon-time"></span>
-                            </a>
-                        </th>
-                        <th style="display:none" day="ot-col-thursday">OT-Thur</th>
-                        <th day="col-friday">
-                            Fri
-                            <a href="#" class="ot-button">
-                                <span class="glyphicon glyphicon-time"></span>
-                            </a></th>
-                        <th style="display:none" day="ot-col-friday">OT-Fri</th>
-                        <th style="display:none" day="ot-col-total">OT-Total</th>
-                        <th day>All Total</th>
+                        <th day="col-saturday"></th>
+                        <th style="display:none" day="ot-col-saturday"></th>
+                        <th day="col-sunday"></th>
+                        <th style="display:none" day="ot-col-sunday"></th>
+                        <th day="col-monday"></th>
+                        <th style="display:none" day="ot-col-monday"></th>
+                        <th day="col-tuesday"></th>
+                        <th style="display:none" day="ot-col-tuesday"></th>
+                        <th day="col-wednesday"></th>
+                        <th style="display:none" day="ot-col-wednesday"></th>
+                        <th day="col-thursday"></th>
+                        <th style="display:none" day="ot-col-thursday"></th>
+                        <th day="col-friday"></th>
+                        <th style="display:none" day="ot-col-friday"></th>
+                        <th style="display:none" day="ot-col-total"></th>
+                        <th day="col-total"></th>
                     </tr>
-                    @{
-                        int i = 0;
-                        foreach(var thing in Model.TimeEntryRow)
-                        {
-                            @Html.EditorFor(m => thing, "~/Views/TimeEntry/TimeEntryRow.cshtml", "TimeEntryRow[" + i++ + "]")
-                        }
-                    }
-                    <tfoot>
-                        <tr>
-                            <th colspan="2">
-                                <a href="#AddTask" data-toggle="modal" id="AddJob" data-target="#exampleModal"> <span class="glyphicon glyphicon-plus"></span> Add Job/Task</a>
-                            </th>
-                            <th day="col-saturday"></th>
-                            <th style="display:none" day="ot-col-saturday"></th>
-                            <th day="col-sunday"></th>
-                            <th style="display:none" day="ot-col-sunday"></th>
-                            <th day="col-monday"></th>
-                            <th style="display:none" day="ot-col-monday"></th>
-                            <th day="col-tuesday"></th>
-                            <th style="display:none" day="ot-col-tuesday"></th>
-                            <th day="col-wednesday"></th>
-                            <th style="display:none" day="ot-col-wednesday"></th>
-                            <th day="col-thursday"></th>
-                            <th style="display:none" day="ot-col-thursday"></th>
-                            <th day="col-friday"></th>
-                            <th style="display:none" day="ot-col-friday"></th>
-                            <th style="display:none" day="ot-col-total"></th>
-                            <th day="col-total"></th>
-                        </tr>
-                    </tfoot>
-                </table>
-            </div>
+                </tfoot>
+            </table>
         </div>
+    </div>
 
-        <div>
-            <div class="form-group">
-                <a asp-action="Index" class="btn btn-default">Back to List</a>
-                @if(Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Unkown
-          || Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Rejected)
+    <div>
+        <div class="form-group">
+            <a asp-action="Index" class="btn btn-default">Back to List</a>
+            @if (Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Unkown
+    || Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Rejected)
+            {
+                <input type="submit" name="postType" value="Copy Job/Tasks From Previous Week" class="btn btn-default" />
+                <input type="submit" name="postType" value="Save" class="btn btn-default" />
+                <input type="submit" name="postType" value="RemoveRow" class="btn btn-default" style="display:none" />
+                <input type="submit" name="postType" value="Submit" class="btn btn-success" />
+            }
+
+            @if (User.IsInRole(UserRoleName.Admin))
+            {
+                @if (Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Submitted)
                 {
-                    <input type="submit" name="postType" value="Copy Job/Tasks From Previous Week" class="btn btn-default" />
-                    <input type="submit" name="postType" value="Save" class="btn btn-default" />
-                    <input type="submit" name="postType" value="RemoveRow" class="btn btn-default" style="display:none" />
-                    <input type="submit" name="postType" value="Submit" class="btn btn-success" />
+                    <input type="submit" name="postType" class="btn btn-success" value="Approve" id="btnApprove" />
                 }
 
-                @if(User.IsInRole(UserRoleName.Admin))
+                @if (Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Submitted
+         || Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Approved)
                 {
-                    @if(Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Submitted)
-                    {
-                        <input type="submit" name="postType" class="btn btn-success" value="Approve" id="btnApprove" />
-                    }
-
-                    @if(Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Submitted
-               || Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Approved)
-                    {
-                        <input type="submit" name="postType" class="btn btn-warning" value="Reject" id="btnReject" />
-                    }
+                    <input type="submit" name="postType" class="btn btn-warning" value="Reject" id="btnReject" />
                 }
+            }
 
-            </div>
         </div>
+    </div>
 
 
-        <!-- Modal -->
-        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h4 class="modal-title" id="exampleModalLabel">Add Job To Time Sheet</h4>
-                    </div>
-                    <div class="modal-body">
-                        @if(Model.NewEntry.AvailableJobs.Any())
-                        {
-                            <div class="form-group">
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="exampleModalLabel">Add Job To Time Sheet</h4>
+                </div>
+                <div class="modal-body">
+                    @if (Model.NewEntry.AvailableJobs.Any())
+                    {
+                        <div class="form-group">
 
-                                <select asp-for="NewEntry.SelectedJobId" class="form-control"
-                                        asp-items="@(new SelectList(Model.NewEntry.AvailableJobs, "JobId", "FullJobCodeWithName"))">
-                                    <option>Select Job</option>
-                                </select>
-                                <select asp-for="NewEntry.SelectedTaskCategory" class="form-control"
-                                        asp-items="@(new SelectList(Model.NewEntry.AvailableCategories) {  })">
-                                    <option>Select Category</option>
-                                </select>
-                                <select asp-for="NewEntry.SelectedTaskId" class="form-control">
-                                    <option>Select Task</option>
-                                    @foreach(var task in Model.NewEntry.AvailableTasks)
-                                    {
-                                        <option value="@task.TaskId" class="@task.TaskCategoryName">
-                                            @task.Name
-                                        </option>
-                                    }
-                                </select>
-                            </div>
-                        }
+                            <select asp-for="NewEntry.SelectedJobId" class="form-control"
+                                    asp-items="@(new SelectList(Model.NewEntry.AvailableJobs, "JobId", "FullJobCodeWithName"))">
+                                <option>Select Job</option>
+                            </select>
+                            <select asp-for="NewEntry.SelectedTaskCategory" class="form-control"
+                                    asp-items="@(new SelectList(Model.NewEntry.AvailableCategories) {  })">
+                                <option>Select Category</option>
+                            </select>
+                            <select asp-for="NewEntry.SelectedTaskId" class="form-control">
+                                <option>Select Task</option>
+                                @foreach (var task in Model.NewEntry.AvailableTasks)
+                                {
+                                    <option value="@task.TaskId" class="@task.TaskCategoryName">
+                                        @task.Name
+                                    </option>
+                                }
+                            </select>
+                        </div>
+                    }
 
-                        <blockquote>
-                            <h4>Don't see your job? <a asp-controller="Jobs" asp-action="List"> <span class="glyphicon glyphicon-plus"></span> Add a Job</a> to your list.</h4>
-                        </blockquote>
+                    <blockquote>
+                        <h4>Don't see your job? <a asp-controller="Jobs" asp-action="List"> <span class="glyphicon glyphicon-plus"></span> Add a Job</a> to your list.</h4>
+                    </blockquote>
 
-                    </div>
-                    <div class="modal-footer">
-                        <input id="ModalSubmit" type="submit" name="postType" value="Add Task" class="btn btn-success" />
-                        <input id="ModalSubmit" type="submit" name="postType" value="RemoveRow" class="btn btn-success" style="display:none" />
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input id="ModalSubmit" type="submit" name="postType" value="Add Task" class="btn btn-success" />
+                    <input id="ModalSubmit" type="submit" name="postType" value="RemoveRow" class="btn btn-success" style="display:none" />
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                 </div>
             </div>
         </div>
+    </div>
 
-        <input asp-for="ApprovalStatus" type="hidden" />
-        @if(User.IsInRole(UserRoleName.Admin))
-        {
-            <input type="hidden" id="IsAdmin" value="true" />
-        }
-        <input asp-for="SelectedRowId" type="hidden" />
-    </form>
+    <input asp-for="ApprovalStatus" type="hidden" />
+    @if (User.IsInRole(UserRoleName.Admin))
+    {
+        <input type="hidden" id="IsAdmin" value="true" />
+    }
+    <input asp-for="SelectedRowId" type="hidden" />
+</form>
 
-    @section scripts {
-        <script type="text/javascript" src="~/js/TimeEntry/weekTableSumDefinition.js"></script>
-        <script type="text/javascript" src="~/js/TimeEntry/weekTimeEntryTableSummation.js"></script>
-        <script type="text/javascript" src="~/js/TimeEntry/weekTimeEntryOvertimeToggle.js"></script>
-        <script type="text/javascript">
+@section scripts {
+    <script type="text/javascript" src="~/js/TimeEntry/weekTableSumDefinition.js"></script>
+    <script type="text/javascript" src="~/js/TimeEntry/weekTimeEntryTableSummation.js"></script>
+    <script type="text/javascript" src="~/js/TimeEntry/weekTimeEntryOvertimeToggle.js"></script>
+    <script type="text/javascript">
 
-            $(document).ready(function () {
-                const approvalStatus = $('#ApprovalStatus').val();
-                const isAdmin = $('#IsAdmin').val() == "true";
-                if (!isAdmin && (approvalStatus == "Approved" || approvalStatus == "Submitted")) {
-                    $("form :input").prop("disabled", true);
-                    $('#AddJob').hide();
-                    $('a.row-action').hide();
-                };
+        $(document).ready(function () {
+            const approvalStatus = $('#ApprovalStatus').val();
+            const isAdmin = $('#IsAdmin').val() == "true";
+            if ((approvalStatus == "Approved" || approvalStatus == "Submitted")) {
+                $("form :input").prop("disabled", true);
+                $('#AddJob').hide();
+                $('a.row-action').hide();
+                if (isAdmin) {
+                    $("form :input[type='submit']").prop("disabled", false);
+                    $("form :input[name='__RequestVerificationToken']").prop("disabled", false);
+                }
+            };
 
-                //remove row
-                $('a.row-action[href="#remove"]').click((el) => {
-                    const rowId = $(el.currentTarget).attr('row-id');
-                    $('#SelectedRowId').val(rowId);
-                    $('input[type="submit"][value="RemoveRow"]').trigger('click');
-                });
+            //remove row
+            $('a.row-action[href="#remove"]').click((el) => {
+                const rowId = $(el.currentTarget).attr('row-id');
+                $('#SelectedRowId').val(rowId);
+                $('input[type="submit"][value="RemoveRow"]').trigger('click');
+            });
 
-                //edit row
-                $('a.row-action[href="#edit"]').click((el) => {
-                    const rowId = $(el.currentTarget).attr('row-id');
-                    $('#SelectedRowId').val(rowId);
+            //edit row
+            $('a.row-action[href="#edit"]').click((el) => {
+                const rowId = $(el.currentTarget).attr('row-id');
+                $('#SelectedRowId').val(rowId);
+                $('#ModalSubmit').val("Save New Combination");
+                $('.modal-body blockquote').hide();
+                $('.modal-header h4').text('Modify Job/Task Combination');
+                //the boostrap modal and this JS fight; i'm taking the lazy approach and waiting to set the button
+                setTimeout(() => {
                     $('#ModalSubmit').val("Save New Combination");
                     $('.modal-body blockquote').hide();
                     $('.modal-header h4').text('Modify Job/Task Combination');
-                    //the boostrap modal and this JS fight; i'm taking the lazy approach and waiting to set the button
-                    setTimeout(() => {
-                        $('#ModalSubmit').val("Save New Combination");
-                        $('.modal-body blockquote').hide();
-                        $('.modal-header h4').text('Modify Job/Task Combination');
-                    }, 300)
-                });
+                }, 300)
+            });
 
-                //add task
-                $('#AddJob').click((el) => {
-                    $('#SelectedRowId').val('');
+            //add task
+            $('#AddJob').click((el) => {
+                $('#SelectedRowId').val('');
+                $('.modal-body blockquote').show();
+                $('.modal-header h4').text('Add Job To Time Sheet');
+                $('#ModalSubmit').val("Add Task");
+                //the boostrap modal and this JS fight; i'm taking the lazy approach and waiting to set the button
+                setTimeout(() => {
                     $('.modal-body blockquote').show();
                     $('.modal-header h4').text('Add Job To Time Sheet');
                     $('#ModalSubmit').val("Add Task");
-                    //the boostrap modal and this JS fight; i'm taking the lazy approach and waiting to set the button
-                    setTimeout(() => {
-                        $('.modal-body blockquote').show();
-                        $('.modal-header h4').text('Add Job To Time Sheet');
-                        $('#ModalSubmit').val("Add Task");
-                    }, 300);
-                });
-
-                $('#NewEntry_SelectedTaskCategory').change((event) => {
-                    const target = event.target.value;
-                    $('#NewEntry_SelectedTaskId option').hide().removeAttr("selected");
-                    $('#NewEntry_SelectedTaskId option').hide();
-                    $('#NewEntry_SelectedTaskId option[value="default"]').show();
-                    $('#NewEntry_SelectedTaskId option[class="' + target + '"]').show();
-                    $('#NewEntry_SelectedTaskId').prop("selectedIndex", 0);
-                })
+                }, 300);
             });
 
+            $('#NewEntry_SelectedTaskCategory').change((event) => {
+                const target = event.target.value;
+                $('#NewEntry_SelectedTaskId option').hide().removeAttr("selected");
+                $('#NewEntry_SelectedTaskId option').hide();
+                $('#NewEntry_SelectedTaskId option[value="default"]').show();
+                $('#NewEntry_SelectedTaskId option[class="' + target + '"]').show();
+                $('#NewEntry_SelectedTaskId').prop("selectedIndex", 0);
+            })
+        });
 
 
-        </script>
-    }
+
+    </script>
+}
 
 
 

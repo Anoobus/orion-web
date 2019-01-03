@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using orion.web.Clients;
+using orion.web.Common;
 using orion.web.Employees;
 using orion.web.Notifications;
 using orion.web.TimeEntries;
@@ -17,14 +18,16 @@ namespace orion.web.Jobs
         private readonly IEmployeeService employeeService;
         private readonly ISiteService siteService;
         private readonly ITimeService timeService;
+        private readonly ISessionAdapter sessionAdapter;
 
-        public JobsController(IClientService clientService, IJobService jobService, IEmployeeService employeeService, ISiteService siteService, ITimeService timeService)
+        public JobsController(IClientService clientService, IJobService jobService, IEmployeeService employeeService, ISiteService siteService, ITimeService timeService, ISessionAdapter sessionAdapter)
         {
             this.clientService = clientService;
             this.jobService = jobService;
             this.employeeService = employeeService;
             this.siteService = siteService;
             this.timeService = timeService;
+            this.sessionAdapter = sessionAdapter;
         }
         public ActionResult Index()
         {
@@ -37,10 +40,10 @@ namespace orion.web.Jobs
                 return RedirectToAction(nameof(List));
             }
         }
-        public ActionResult List()
+        public async System.Threading.Tasks.Task<ActionResult> List()
         {
-            var jobs = jobService.Get();
-            var myJobs = jobService.Get(this.User.Identity.Name);
+            var jobs = await jobService.GetAsync();
+            var myJobs = await jobService.GetAsync(await sessionAdapter.EmployeeIdAsync());
             var vm = new JobListViewModel()
             {
                 AllJobsWithAssociationStatus = jobs.OrderBy(x => x.FullJobCode).ToDictionary(x => x, x => myJobs.Any(z => z.JobId == x.JobId)),
@@ -49,9 +52,9 @@ namespace orion.web.Jobs
             return View("List", vm);
         }
 
-        public ActionResult AddJobForCurrentUser(int id)
+        public async System.Threading.Tasks.Task<ActionResult> AddJobForCurrentUser(int id)
         {
-            var me = employeeService.GetSingleEmployee(this.User.Identity.Name);
+            var me = await employeeService.GetSingleEmployeeAsync(this.User.Identity.Name);
             me.AssignJobs.Add(id);
             employeeService.Save(me);
             var employeeName = this.User.Identity.Name;
@@ -59,10 +62,10 @@ namespace orion.web.Jobs
             return RedirectToAction(nameof(List));
         }
 
-        public ActionResult RemoveJobForCurrentUser(int id)
+        public async System.Threading.Tasks.Task<ActionResult> RemoveJobForCurrentUser(int id)
         {
 
-            var me = employeeService.GetSingleEmployee(this.User.Identity.Name);
+            var me = await employeeService.GetSingleEmployeeAsync(this.User.Identity.Name);
             if(me.AssignJobs.Contains(id))
             {
                 me.AssignJobs.Remove(id);
@@ -74,9 +77,9 @@ namespace orion.web.Jobs
         }
 
         // GET: Client/Details/5
-        public ActionResult Edit(int id)
+        public async System.Threading.Tasks.Task<ActionResult> EditAsync(int id)
         {
-            var job = jobService.Get().SingleOrDefault(x => x.JobId == id);
+            var job = (await jobService.GetAsync()).SingleOrDefault(x => x.JobId == id);
             return View("Details", job);
         }
 
@@ -112,9 +115,9 @@ namespace orion.web.Jobs
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = UserRoleName.Admin)]
-        public ActionResult Edit(JobDTO job)
+        public async System.Threading.Tasks.Task<ActionResult> Edit(JobDTO job)
         {
-            var jobSaved = jobService.Get().Single(x => x.JobId == job.JobId);
+            var jobSaved = (await jobService.GetAsync()).Single(x => x.JobId == job.JobId);
             jobSaved.JobName = job.JobName;
             jobSaved.TargetHours = job.TargetHours;
             jobService.Put((jobSaved));

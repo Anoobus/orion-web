@@ -43,7 +43,7 @@ namespace orion.web.JobsTasks
        
         public void Post(TaskDTO newTask)
         {
-            var cat = db.TaskCategories.Single(x => x.Name == newTask.Name);
+            var cat = db.TaskCategories.Single(x => x.Name == newTask.TaskCategoryName);
             var jt = new JobTask()
             {
                 Description = newTask.Description,

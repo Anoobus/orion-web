@@ -1,4 +1,5 @@
 ﻿using orion.web.Common;
+using orion.web.Employees;
 using orion.web.TimeEntries;
 using System;
 using System.Linq;
@@ -7,37 +8,49 @@ using static orion.web.TimeEntries.TimeApprovalController;
 
 namespace orion.web.TimeApproval
 {
+    public class TimeApprovalRequest
+    {
+        public int ApprovingUserId { get; set; }
+        public bool ApprovingUserIsAdmin { get; set; }
+
+        public int WeekId { get; set; }
+        public int EmployeeId { get; set; }
+        public TimeApprovalStatus NewApprovalState { get; set; }
+
+    }
     public interface IApproveTimeCommand : IRegisterByConvention
     {
-        Task<CommandResult> ApplyApproval(bool approverIsAdmin, string approvingEmployeeName, TimeApprovalRequest request);
+        Task<CommandResult> ApplyApproval(TimeApprovalRequest request);
     }
 
     public class ApproveTimeCommand : IApproveTimeCommand
     {
         private readonly ITimeApprovalService timeApprovalService;
         private readonly ITimeService timeService;
+        private readonly IEmployeeService employeeService;
 
-        public ApproveTimeCommand(ITimeApprovalService timeApprovalService, ITimeService timeService)
+        public ApproveTimeCommand(ITimeApprovalService timeApprovalService, ITimeService timeService, IEmployeeService employeeService)
         {
             this.timeApprovalService = timeApprovalService;
             this.timeService = timeService;
+            this.employeeService = employeeService;
         }
 
-        public async Task<CommandResult> ApplyApproval(bool approverIsAdmin, string approvingEmployeeName, TimeApprovalRequest request)
+        public async Task<CommandResult> ApplyApproval(TimeApprovalRequest request)
         {
-            var current = await timeApprovalService.Get(request.Year, request.WeekId, request.AccountName);
+            var current = await timeApprovalService.GetAsync( request.WeekId, request.EmployeeId);
             var isValidSubmit = request.NewApprovalState == TimeEntries.TimeApprovalStatus.Submitted &&
                 !(current.TimeApprovalStatus == TimeApprovalStatus.Submitted || current.TimeApprovalStatus == TimeApprovalStatus.Approved);
             var isValidReject = request.NewApprovalState == TimeEntries.TimeApprovalStatus.Rejected
                 && (current.TimeApprovalStatus == TimeApprovalStatus.Submitted || current.TimeApprovalStatus == TimeApprovalStatus.Approved)
-                && approverIsAdmin;
+                && request.ApprovingUserIsAdmin;
             var isValidApprove = request.NewApprovalState == TimeApprovalStatus.Approved
-                && approverIsAdmin;
+                && request.ApprovingUserIsAdmin;
 
             var sendNotification = false;
             if(isValidSubmit)
             {
-                var time = await timeService.GetAsync(request.Year, request.WeekId, request.AccountName);
+                var time = await timeService.GetAsync( request.WeekId, request.EmployeeId);
                 var totalOt = time.Sum(x => x.OvertimeHours);
                 var totalReg = time.Sum(x => x.Hours);
                 current.TotalOverTimeHours = totalOt;
@@ -59,7 +72,8 @@ namespace orion.web.TimeApproval
             }
             if(isValidApprove)
             {
-                current.ApproverName = approvingEmployeeName;
+                var approver = await employeeService.GetSingleEmployeeAsync(request.ApprovingUserId);
+                current.ApproverName = approver.Name;
                 current.ApprovalDate = DateTime.Now;
             }
             if(sendNotification)

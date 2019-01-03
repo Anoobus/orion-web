@@ -9,7 +9,7 @@ namespace orion.web.TimeEntries
 {
     public interface ITimeSummaryService : IRegisterByConvention
     {
-        Task<TimeSummaryDTO> GetAsync(int yearId, int weekId, string employeeName);
+        Task<TimeSummaryDTO> GetAsync(int yearId, int weekId, int employeeId);
     }
     public class TimeSummaryService : ITimeSummaryService
     {
@@ -20,11 +20,12 @@ namespace orion.web.TimeEntries
             this.db = db;
         }
 
-        public async Task<TimeSummaryDTO> GetAsync(int yearId, int weekId, string employeeName)
+        public async Task<TimeSummaryDTO> GetAsync(int yearId, int weekId, int employeeId)
         {
-            var empId = (await db.Employees.FirstOrDefaultAsync(x => x.Name == employeeName))?.EmployeeId ?? -1;
-            var listy = await db.TimeEntries.Where(x => x.WeekId == weekId && x.Date.Year == yearId && x.EmployeeId == empId).ToListAsync();
-            var approvalStatus = await db.TimeSheetApprovals.FirstOrDefaultAsync(x => x.EmployeeId == empId && x.Year == yearId && x.WeekId == weekId);
+            
+            var listy = await db.TimeEntries.Where(x => x.WeekId == weekId && x.Date.Year == yearId && x.EmployeeId == employeeId).ToListAsync();
+            var approvalStatus = await db.TimeSheetApprovals.FirstOrDefaultAsync(x => x.EmployeeId == employeeId
+            && x.WeekId == weekId);
             var mapped = string.IsNullOrWhiteSpace(approvalStatus?.TimeApprovalStatus) ? TimeApprovalStatus.Unkown : Enum.Parse<TimeApprovalStatus>(approvalStatus.TimeApprovalStatus);
             var existing = listy.GroupBy(x => x.EmployeeId).Select(x => new TimeSummaryDTO()
             {
@@ -40,7 +41,7 @@ namespace orion.web.TimeEntries
 
             return existing ?? new TimeSummaryDTO()
             {
-                EmployeeId = empId,
+                EmployeeId = employeeId,
                 Hours = 0,
                 OvertimeHours = 0,
                 WeekId = weekId,

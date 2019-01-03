@@ -4,13 +4,14 @@ using orion.web.DataAccess.EF;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace orion.web.Jobs
 {
     public interface IJobService
     {
-        IEnumerable<JobDTO> Get(string ForEmployeeName);
-        IEnumerable<JobDTO> Get();
+        Task<IEnumerable<JobDTO>> GetAsync(int employeeId);
+        Task<IEnumerable<JobDTO>> GetAsync();
         JobDTO Post(JobDTO job);
         void Put(JobDTO jobDto);
     }
@@ -23,23 +24,24 @@ namespace orion.web.Jobs
             this.db = orionDbContext;
         }
 
-        public IEnumerable<JobDTO> Get(string ForEmployeeName)
+        public async Task<IEnumerable<JobDTO>> GetAsync(int employeeId)
         {
-            var thisEmpJobs = db.Employees.Include(x => x.EmployeeJobs).SingleOrDefault(x => x.Name == ForEmployeeName)?.EmployeeJobs?.Select(z => z.JobId)?.ToArray();
-            return db.Jobs.Where(x => thisEmpJobs.Contains(x.JobId))
+            var thisEmpJobsGlob = await db.Employees.Include(x => x.EmployeeJobs).SingleOrDefaultAsync(x => x.EmployeeId == employeeId);
+            var thisEmpJobs = thisEmpJobsGlob?.EmployeeJobs?.Select(z => z.JobId)?.ToArray();
+            return await db.Jobs.Where(x => thisEmpJobs.Contains(x.JobId))
                      .Include(x => x.Client)
                      .Include(x => x.Site)
                      ?.Select(job => MapToDTO(job))
-                     ?.ToList() ?? new List<JobDTO>();
+                     ?.ToListAsync() ?? new List<JobDTO>();
 
         }
 
-        public IEnumerable<JobDTO> Get()
+        public async Task<IEnumerable<JobDTO>> GetAsync()
         {
-            return db.Jobs
+            return await db.Jobs
                          .Include(x => x.Client)
                          .Include(x => x.Site)
-                         .Select(Job => MapToDTO(Job)).ToList();
+                         .Select(Job => MapToDTO(Job)).ToListAsync();
         }
 
         private static JobDTO MapToDTO(Job Job)

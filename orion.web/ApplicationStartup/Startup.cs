@@ -50,11 +50,10 @@ namespace orion.web.ApplicationStartup
             services.AddIdentity<IdentityUser, IdentityRole>()
             .AddDefaultUI()
             .AddDefaultTokenProviders()
-            .AddEntityFrameworkStores<ApplicationDbContext>();            
+            .AddEntityFrameworkStores<ApplicationDbContext>();
 
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-
             
             services.AddTransient<IJobSummaryQuery, JobSummaryQuery>();
             services.AddTransient<ISingleJobDetailQuery, SingleJobDetailQuery>();
@@ -65,7 +64,7 @@ namespace orion.web.ApplicationStartup
             services.AddTransient<ISiteService, SiteService>();
             services.AddTransient<ITaskService, TaskService>();
             this.GetType().Assembly.RegisterTypesWithRegisterByConventionMarker(services);
-
+            services.AddHttpContextAccessor();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -87,7 +86,7 @@ namespace orion.web.ApplicationStartup
             app.UseCookiePolicy();
 
             app.UseAuthentication();
-
+     
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

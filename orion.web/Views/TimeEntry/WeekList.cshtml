@@ -82,11 +82,11 @@
                             <div style="display:inline-block">
                                 @if(item.IsCurrentWeek)
                                 {                                
-                                    @Html.ActionLink("Details (Current Week)", "Edit", new { id = item.WeekId, year = item.WeekStart.Year })
+                                    @Html.ActionLink("Details (Current Week)", "Edit", new { weekId = item.WeekId, employeeId= Model.EmployeeId })
                                 }
                                 else
                                 {
-                                    @Html.ActionLink("Details", "Edit", new { id = item.WeekId, year = item.WeekStart.Year })
+                                    @Html.ActionLink("Details", "Edit", new { weekId = item.WeekId, employeeId = Model.EmployeeId })
                                 }
                             </div>
                         </td>

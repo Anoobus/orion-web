@@ -55,7 +55,7 @@ namespace orion.web.Employees
                             allCommandErrors.AddRange(res2.Errors.Select(err => $"{err.Code}-{err.Description}"));
                             if(res2.Succeeded)
                             {
-                                var existingEmp = employeeService.GetSingleEmployee(employee.Email);
+                                var existingEmp = await employeeService.GetSingleEmployeeAsync(employee.Email);
                                 existingEmp.Role = employee.SelectedRole;
                                 employeeService.Save(existingEmp);
                             }
@@ -66,7 +66,7 @@ namespace orion.web.Employees
                             allCommandErrors.AddRange(res2.Errors.Select(err => $"{err.Code}-{err.Description}"));
                             if(res2.Succeeded)
                             {
-                                var existingEmp = employeeService.GetSingleEmployee(employee.Email);
+                                var existingEmp = await employeeService.GetSingleEmployeeAsync(employee.Email);
                                 existingEmp.Role = employee.SelectedRole;
                                 employeeService.Save(existingEmp);
                             }

@@ -12,6 +12,7 @@ namespace orion.web.TimeApproval
         public DateTime PeriodEndDate { get; set; }
         public IEnumerable<TimeApprovalDTO> ApprovedEntries { get; set; }
         public IEnumerable<TimeApprovalDTO> SubmittedEntries { get; set; }
+        public IEnumerable<TimeApprovalDTO> MissingEntries { get; set; }
         public IEnumerable<TimeApprovalDTO> RejectedEntries { get; set; }
         
     }

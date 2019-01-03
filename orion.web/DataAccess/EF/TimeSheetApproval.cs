@@ -18,7 +18,6 @@ namespace orion.web.DataAccess.EF
         public decimal TotalRegularHours { get; set; }
         public decimal TotalOverTimeHours { get; set; }
         public string ResponseReason { get; set; }
-        public int Year { get; set; }
         public int WeekId { get; set; }
     }
 }

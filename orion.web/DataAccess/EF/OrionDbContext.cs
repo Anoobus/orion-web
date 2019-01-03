@@ -10,11 +10,6 @@ namespace orion.web.DataAccess.EF
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            //Jobs has ClientId as foriegn key?
-            //builder.Entity<Client>()
-            //    .HasMany(x => x.Jobs)
-            //    .WithOne(x => x.Client)
-            //    .HasForeignKey(x => x.ClientId);
         }
 
         public DbSet<Client> Clients { get; set; }

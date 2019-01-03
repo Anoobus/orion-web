@@ -13,8 +13,8 @@ namespace orion.web.TimeEntries
     [Authorize]
     public class TimeEntryController : Controller
     {
-        private const string EDIT_ROUTE = nameof(TimeEntryController) + nameof(Edit);
-        private readonly IWeekService weekService;
+        public const string EDIT_ROUTE = nameof(TimeEntryController) + nameof(Edit);
+        //private readonly IWeekService weekService;
         private readonly ICopyPreviousWeekTimeCommand copyPreviousWeekTimeCommand;
         private readonly ISaveTimeEntriesCommand saveTimeEntriesCommand;
         private readonly IAddNewJobTaskComboCommand addNewJobTaskComboCommand;
@@ -23,8 +23,9 @@ namespace orion.web.TimeEntries
         private readonly IApproveTimeCommand approveTimeCommand;
         private readonly IRemoveRowCommand removeRowCommand;
         private readonly IModifyJobTaskComboCommand modifyJobTaskComboCommand;
+        private readonly ISessionAdapter sessionAdapter;
 
-        public TimeEntryController(IWeekService weekService,
+        public TimeEntryController(//IWeekService weekService,
             ICopyPreviousWeekTimeCommand copyPreviousWeekTimeCommand,
             ISaveTimeEntriesCommand saveTimeEntriesCommand,
             IAddNewJobTaskComboCommand addNewJobTaskComboCommand,
@@ -32,9 +33,10 @@ namespace orion.web.TimeEntries
             IWeekIdentifierListQuery weekIdentifierListQuery,
             IApproveTimeCommand approveTimeCommand,
             IRemoveRowCommand removeRowCommand,
-            IModifyJobTaskComboCommand modifyJobTaskComboCommand)
+            IModifyJobTaskComboCommand modifyJobTaskComboCommand,
+            ISessionAdapter sessionAdapter)
         {
-            this.weekService = weekService;
+            //this.weekService = weekService;
             this.copyPreviousWeekTimeCommand = copyPreviousWeekTimeCommand;
             this.saveTimeEntriesCommand = saveTimeEntriesCommand;
             this.addNewJobTaskComboCommand = addNewJobTaskComboCommand;
@@ -43,38 +45,48 @@ namespace orion.web.TimeEntries
             this.approveTimeCommand = approveTimeCommand;
             this.removeRowCommand = removeRowCommand;
             this.modifyJobTaskComboCommand = modifyJobTaskComboCommand;
+            this.sessionAdapter = sessionAdapter;
         }
 
         public async Task<ActionResult> Index()
         {
-            return View("WeekList", await weekIdentifierListQuery.GetWeeksAsync(5, User.Identity.Name));
+            return View("WeekList", await weekIdentifierListQuery.GetWeeksAsync(5, await sessionAdapter.EmployeeIdAsync()));
         }
 
 
-        public ActionResult Current()
+        public async Task<ActionResult> Current()
         {
-            var current = weekService.Get(DateTime.Now);
-            return RedirectToAction("Edit", new { year = current.Year, id = current.WeekId });
+            var current = WeekDTO.CreateWithWeekContaining(DateTime.Now);
+            return RedirectToAction("Edit", new { weekId = current.WeekId.Value, employeeId = await sessionAdapter.EmployeeIdAsync() });
         }
 
 
         [HttpGet]
-        [Route("Edit/year/{year:int=1}/week/{id:int=1}", Name = EDIT_ROUTE)]
-        public async Task<ActionResult> Edit(int year, int id)
+        [Route("Edit/Employee/{employeeId}/Week/{weekId:int=1}", Name = EDIT_ROUTE)]
+        public async Task<ActionResult> Edit(int weekId, int employeeId)
         {
-            var vm = await weekOfTimeEntriesQuery.GetFullTimeEntryViewModel(User.Identity.Name, year, id, EDIT_ROUTE, Url);
+            var req = new WeekOfTimeEntriesRequest()
+            {
+                EmployeeId = employeeId,
+                RequestingUserIsAdmin = User.IsInRole(UserRoleName.Admin),
+                RequestingUserName = User.Identity.Name,
+                WeekId = weekId
+            };
+            var vm = await weekOfTimeEntriesQuery.GetFullTimeEntryViewModelAsync(req);
             return View("Week", vm);
         }
 
+
+
         [HttpPost]
-        [Route("Edit/year/{year:int}/week/{id:int}")]
+        [Route("Edit/Employee/{employeeId}/Week/{weekId:int}")]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Save(int year, int id, FullTimeEntryViewModel vm, string postType)
+        public async Task<ActionResult> Save( int weekId, int employeeId, FullTimeEntryViewModel vm, string postType)
         {
-            if(postType == "Save" || postType == "Add Task" || postType == "Submit")
+            if (postType == "Save" || postType == "Add Task" || postType == "Submit")
             {
-                var res = await saveTimeEntriesCommand.SaveTimeEntriesAsync(User.Identity.Name, year, id, vm);
-                if(res.Successful)
+                var res = await saveTimeEntriesCommand.SaveTimeEntriesAsync(employeeId, weekId, vm);
+                if (res.Successful)
                 {
                     NotificationsController.AddNotification(this.User.SafeUserName(), "Timesheet has been saved");
                 }
@@ -84,10 +96,10 @@ namespace orion.web.TimeEntries
                 }
             }
 
-            if(postType == "Add Task")
+            if (postType == "Add Task")
             {
-                var res = await addNewJobTaskComboCommand.AddNewJobTaskCombo(this.User.Identity.Name, year, id, vm.NewEntry.SelectedTaskId ?? 0, vm.NewEntry.SelectedJobId ?? 0);
-                if(res.Successful)
+                var res = await addNewJobTaskComboCommand.AddNewJobTaskCombo(employeeId, weekId, vm.NewEntry.SelectedTaskId ?? 0, vm.NewEntry.SelectedJobId ?? 0);
+                if (res.Successful)
                 {
                     NotificationsController.AddNotification(this.User.SafeUserName(), "The selected task has been added.");
                 }
@@ -97,50 +109,69 @@ namespace orion.web.TimeEntries
                 }
             }
 
-            if(postType == "Copy Job/Tasks From Previous Week")
+            if (postType == "Copy Job/Tasks From Previous Week")
             {
-                await copyPreviousWeekTimeCommand.CopyPreviousWeekTime(User.Identity.Name, year, id);
+                await copyPreviousWeekTimeCommand.CopyPreviousWeekTime(employeeId, weekId);
             }
 
-            if(postType == "Submit")
+            if (postType == "Submit")
             {
-                var res = await approveTimeCommand.ApplyApproval(User.IsInRole(UserRoleName.Admin), User.Identity.Name, new TimeApprovalController.TimeApprovalRequest()
+                var req = new TimeApprovalRequest()
                 {
-                    AccountName = User.Identity.Name,
+                    ApprovingUserId = await sessionAdapter.EmployeeIdAsync(),
+                    ApprovingUserIsAdmin = User.IsInRole(UserRoleName.Admin),
+                    EmployeeId = employeeId,
                     NewApprovalState = TimeApprovalStatus.Submitted,
-                    WeekId = id,
-                    Year = year,
-                });
+                    WeekId = weekId
+                };
+                var res = await approveTimeCommand.ApplyApproval(req);
                 NotificationsController.AddNotification(this.User.SafeUserName(), $"Timesheet is {TimeApprovalStatus.Submitted}");
             }
-            if(postType == "Reject")
+
+            if (postType == "Approve")
             {
-                var res = await approveTimeCommand.ApplyApproval(User.IsInRole(UserRoleName.Admin), User.Identity.Name, new TimeApprovalController.TimeApprovalRequest()
+                var req = new TimeApprovalRequest()
                 {
-                    AccountName = User.Identity.Name,
+                    ApprovingUserId = await sessionAdapter.EmployeeIdAsync(),
+                    ApprovingUserIsAdmin = User.IsInRole(UserRoleName.Admin),
+                    EmployeeId = employeeId,
+                    NewApprovalState = TimeApprovalStatus.Approved,
+                    WeekId = weekId
+                };
+                var res = await approveTimeCommand.ApplyApproval(req);
+                NotificationsController.AddNotification(this.User.SafeUserName(), $"Timesheet is {TimeApprovalStatus.Submitted}");
+            }
+
+            if (postType == "Reject")
+            {
+                var req = new TimeApprovalRequest()
+                {
+                    ApprovingUserId = await sessionAdapter.EmployeeIdAsync(),
+                    ApprovingUserIsAdmin = User.IsInRole(UserRoleName.Admin),
+                    EmployeeId = employeeId,
                     NewApprovalState = TimeApprovalStatus.Rejected,
-                    WeekId = id,
-                    Year = year,
-                });
+                    WeekId = weekId
+                };
+                var res = await approveTimeCommand.ApplyApproval(req);
                 NotificationsController.AddNotification(this.User.SafeUserName(), $"Timesheet is {TimeApprovalStatus.Rejected}");
 
             }
-            if(postType == "Save New Combination")
+            if (postType == "Save New Combination")
             {
                 var rowId = vm.SelectedRowId;
                 var oldJobId = int.Parse(rowId.Substring(0, rowId.IndexOf(".")));
                 var oldTaskId = int.Parse(rowId.Substring(rowId.IndexOf(".") + 1));
-                var res = await modifyJobTaskComboCommand.ModifyJobTaskCombo(this.User.Identity.Name, year, id, vm.NewEntry.SelectedTaskId ?? 0, vm.NewEntry.SelectedJobId ?? 0, oldTaskId, oldJobId);
+                var res = await modifyJobTaskComboCommand.ModifyJobTaskCombo(employeeId, weekId, vm.NewEntry.SelectedTaskId ?? 0, vm.NewEntry.SelectedJobId ?? 0, oldTaskId, oldJobId);
             }
 
-            if(postType == "RemoveRow")
+            if (postType == "RemoveRow")
             {
                 var rowId = vm.SelectedRowId;
                 var jobId = rowId.Substring(0, rowId.IndexOf("."));
                 var taskId = rowId.Substring(rowId.IndexOf(".") + 1);
-                var res = await removeRowCommand.RemoveRow(User.Identity.Name, year, id, int.Parse(taskId), int.Parse(jobId));
+                var res = await removeRowCommand.RemoveRow(employeeId, weekId, int.Parse(taskId), int.Parse(jobId));
             }
-            return RedirectToAction(nameof(Edit));
+            return RedirectToAction(nameof(Edit), new { weekId = weekId, employeeId = employeeId});
         }
     }
 

@@ -11,7 +11,8 @@ namespace orion.web.Employees
     public interface IEmployeeService : IRegisterByConvention
     {
         Task<IEnumerable<string>> GetAllRoles();
-        EmployeeDTO GetSingleEmployee(string employeeName);
+        Task<EmployeeDTO> GetSingleEmployeeAsync(string employeeName);
+        Task<EmployeeDTO> GetSingleEmployeeAsync(int employeeId);
         Task<IEnumerable<EmployeeDTO>> GetAllEmployees();
         void Save(EmployeeDTO employee);
     }
@@ -42,10 +43,10 @@ namespace orion.web.Employees
             return await db.UserRoles.Select(x => x.Name).ToListAsync();
         }
 
-        public EmployeeDTO GetSingleEmployee(string employeeName)
+        public async Task<EmployeeDTO> GetSingleEmployeeAsync(string employeeName)
         {
 
-            return db.Employees
+            return await db.Employees
                           .Include(x => x.EmployeeJobs)
                           .Include(x => x.UserRole)
                           .Select(x => new EmployeeDTO()
@@ -55,10 +56,27 @@ namespace orion.web.Employees
                               Name = x.Name,
                                Role = x.UserRole.Name
                           })
-                          .FirstOrDefault(x => x.Name == employeeName);
+                          .FirstOrDefaultAsync(x => x.Name == employeeName);
 
 
         }
+
+        public async Task<EmployeeDTO> GetSingleEmployeeAsync(int employeeId)
+        {
+
+            return await db.Employees
+                          .Include(x => x.EmployeeJobs)
+                          .Include(x => x.UserRole)
+                          .Select(x => new EmployeeDTO()
+                          {
+                              EmployeeId = x.EmployeeId,
+                              AssignJobs = x.EmployeeJobs.Select(z => z.JobId).ToList(),
+                              Name = x.Name,
+                              Role = x.UserRole.Name
+                          })
+                          .FirstOrDefaultAsync(x => x.EmployeeId == employeeId);
+        }
+
 
         public void Save(EmployeeDTO employee)
         {

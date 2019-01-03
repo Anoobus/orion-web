@@ -48,9 +48,9 @@ namespace orion.web.Employees
         [HttpGet("[Controller]/Edit/{employee}")]
         public async Task<ActionResult> Edit(string employee)
         {
-            var allJobs = jobService.Get();
+            var allJobs = jobService.GetAsync();
             var roles = await employeeService.GetAllRoles();
-            var emp = employeeService.GetSingleEmployee(employee);
+            var emp = await employeeService.GetSingleEmployeeAsync(employee);
             var vm = new EditEmployeeViewModel()
             {
                 SelectedRole = emp.Role,
@@ -65,7 +65,7 @@ namespace orion.web.Employees
         [HttpGet]
         public async Task<ActionResult> NewEmployee()
         {
-            var allJobs = jobService.Get();
+            var allJobs = await jobService.GetAsync();
             var roles = await employeeService.GetAllRoles();
             var vm = new CreateEmployeeViewModel()
             {
@@ -96,7 +96,7 @@ namespace orion.web.Employees
                 }
             }
 
-            employee.AvailableJobs = jobService.Get();
+            employee.AvailableJobs = await jobService.GetAsync();
             employee.AvailableRoles = await employeeService.GetAllRoles();
             return View("NewEmployee", employee);
 

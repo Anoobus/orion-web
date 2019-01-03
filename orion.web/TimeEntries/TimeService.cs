@@ -9,9 +9,9 @@ namespace orion.web.TimeEntries
 {
     public interface ITimeService : IRegisterByConvention
     {        
-        Task<IEnumerable<TimeEntryDTO>> GetAsync(int yearId, int weekId, string employeeName);
-        Task SaveAsync(int yearId, int weekId, string employeeName, TimeEntryDTO entry);
-        Task DeleteAllEntries(int year, int weekId, int taskId, int JobId, string employeeName);
+        Task<IEnumerable<TimeEntryDTO>> GetAsync( int weekId, int employeeId);
+        Task SaveAsync( int weekId, int employeeId, TimeEntryDTO entry);
+        Task DeleteAllEntries( int weekId, int taskId, int JobId, int employeeId);
     }
     public class TimeService : ITimeService
     {
@@ -22,19 +22,17 @@ namespace orion.web.TimeEntries
             this.db = db;
         }
 
-        public async Task DeleteAllEntries(int year, int weekId, int taskId, int JobId, string employeeName)
+        public async Task DeleteAllEntries(int weekId, int taskId, int JobId, int employeeId)
         {
-            var empId = (await db.Employees.FirstOrDefaultAsync(x => x.Name == employeeName))?.EmployeeId ?? -1;
-            var matches = db.TimeEntries.Where(x => x.WeekId == weekId && x.Date.Year == year && x.EmployeeId == empId &&
+            var matches = db.TimeEntries.Where(x => x.WeekId == weekId && x.EmployeeId == employeeId &&
             x.JobId == JobId && x.TaskId == taskId);
             db.TimeEntries.RemoveRange(matches);
             await db.SaveChangesAsync();
         }
 
-        public async System.Threading.Tasks.Task<IEnumerable<TimeEntryDTO>> GetAsync(int year, int weekId, string employeeName)
+        public async Task<IEnumerable<TimeEntryDTO>> GetAsync( int weekId, int employeeId)
         {
-            var empId = (await db.Employees.FirstOrDefaultAsync(x => x.Name == employeeName))?.EmployeeId ?? -1;
-            return await db.TimeEntries.Where(x => x.WeekId == weekId && x.Date.Year == year && x.EmployeeId == empId).
+            return await db.TimeEntries.Where(x => x.WeekId == weekId  && x.EmployeeId == employeeId).
                 Select(x => new TimeEntryDTO()
                 {
                     Date = x.Date,
@@ -48,16 +46,15 @@ namespace orion.web.TimeEntries
                 }).ToListAsync();
         }
 
-        public async System.Threading.Tasks.Task SaveAsync(int year, int weekId, string employeeName, TimeEntryDTO entry)
+        public async Task SaveAsync( int weekId, int employeeId, TimeEntryDTO entry)
         {
-            var empId = (await db.Employees.FirstOrDefaultAsync(x => x.Name == employeeName))?.EmployeeId ?? -1;
-            var forUpdate = await db.TimeEntries.SingleOrDefaultAsync(x => x.Date == entry.Date && x.EmployeeId == empId && x.TaskId == entry.JobTaskId && x.JobId == entry.JobId);
+            var forUpdate = await db.TimeEntries.SingleOrDefaultAsync(x => x.Date == entry.Date && x.EmployeeId == employeeId && x.TaskId == entry.JobTaskId && x.JobId == entry.JobId);
             if (forUpdate == null)
             {
                 forUpdate = new TimeEntry()
                 {
                     Date = entry.Date,
-                    EmployeeId = empId,
+                    EmployeeId = employeeId,
                     Hours = entry.Hours,
                     JobId = entry.JobId,
                     OvertimeHours = entry.OvertimeHours,

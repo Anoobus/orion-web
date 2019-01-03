@@ -10,32 +10,35 @@ namespace orion.web.TimeEntries
 {
     public interface ITimeApprovalService : IRegisterByConvention
     {
-        Task<TimeApprovalDTO> Get(int yearId, int weekId, string employeeName);
+        Task<TimeApprovalDTO> GetAsync( int weekId, int employeeId);
         Task Save(TimeApprovalDTO timeApprovalDTO);
         Task<IEnumerable<TimeApprovalDTO>> GetByStatus(DateTime? beginDateInclusive = null, DateTime? endDateInclusive = null, params TimeApprovalStatus[] withTimeApprovalStatus);
+        Task UpdateTimeTotals(int weekId, int employeeId, decimal overtime, decimal regular);
     }
     public class TimeApprovalService : ITimeApprovalService
     {
         private readonly OrionDbContext db;
-        private readonly IWeekService weekService;
+        //private readonly IWeekService weekService;
 
-        public TimeApprovalService(OrionDbContext db, IWeekService weekService)
+        public TimeApprovalService(OrionDbContext db
+            //IWeekService weekService
+            )
         {
             this.db = db;
-            this.weekService = weekService;
+            //this.weekService = weekService;
         }
-        public async Task<TimeApprovalDTO> Get(int yearId, int weekId, string employeeName)
+        public async Task<TimeApprovalDTO> GetAsync( int weekId, int employeeId)
         {
-            var empId = db.Employees.FirstOrDefault(x => x.Name == employeeName)?.EmployeeId ?? -1;
+            var emp = await db.Employees.SingleAsync(x => x.EmployeeId == employeeId);
 
-            var match = await db.TimeSheetApprovals.SingleOrDefaultAsync(x => x.Year == yearId && x.WeekId == weekId && x.EmployeeId == empId);
-            if(match == null)
+            var match = await db.TimeSheetApprovals.SingleOrDefaultAsync(x =>  x.WeekId == weekId && x.EmployeeId == employeeId);
+            if (match == null)
             {
                 return new TimeApprovalDTO()
                 {
-                    EmployeeName = employeeName,
+                    EmployeeName = emp.Name,
+                    EmployeeId = emp.EmployeeId,
                     WeekId = weekId,
-                    Year = yearId,
                     TimeApprovalStatus = TimeApprovalStatus.Unkown
                 };
             }
@@ -47,11 +50,11 @@ namespace orion.web.TimeEntries
                 {
                     ApprovalDate = match.ApprovalDate,
                     ApproverName = approver,
-                    EmployeeName = employeeName,
+                    EmployeeName = emp.Name,
+                    EmployeeId = emp.EmployeeId,
                     ResponseReason = match.ResponseReason,
                     TimeApprovalStatus = mapped,
                     WeekId = match.WeekId,
-                    Year = match.Year
                 };
             }
         }
@@ -63,16 +66,16 @@ namespace orion.web.TimeEntries
                                     .Include(z => z.Employee)
                                     .Where(x => statusAsString.Contains(x.TimeApprovalStatus));
 
-            if(beginDateInclusive.HasValue)
+            if (beginDateInclusive.HasValue)
             {
-                var week = weekService.Get(beginDateInclusive.Value);
-                baseQuery = baseQuery.Where(x => x.Year > week.Year || (x.Year == week.Year &&  x.WeekId >= week.WeekId ));
+                var week = WeekDTO.CreateWithWeekContaining(beginDateInclusive.Value);
+                baseQuery = baseQuery.Where(x =>  x.WeekId >= week.WeekId.Value);
             }
 
-            if(endDateInclusive.HasValue)
+            if (endDateInclusive.HasValue)
             {
-                var week = weekService.Get(endDateInclusive.Value);
-                baseQuery = baseQuery.Where(x => x.Year < week.Year || (x.Year == week.Year && x.WeekId <= week.WeekId ));
+                var week = WeekDTO.CreateWithWeekContaining(endDateInclusive.Value);
+                baseQuery = baseQuery.Where(x =>  x.WeekId <= week.WeekId.Value);
             }
 
             var match = await baseQuery.ToListAsync();
@@ -84,38 +87,47 @@ namespace orion.web.TimeEntries
                 ApprovalDate = x.ApprovalDate,
                 ApproverName = approverNames.FirstOrDefault(z => z.EmployeeId == x.ApproverEmployeeId)?.Name,
                 EmployeeName = x.Employee.Name,
+                EmployeeId = x.EmployeeId,
                 ResponseReason = x.ResponseReason,
                 TimeApprovalStatus = string.IsNullOrWhiteSpace(x.TimeApprovalStatus) ? TimeApprovalStatus.Unkown : Enum.Parse<TimeApprovalStatus>(x.TimeApprovalStatus),
                 WeekId = x.WeekId,
-                Year = x.Year,
-                 WeekStartDate = weekService.GetWeekDate(x.Year,x.WeekId, WeekIdentifier.WEEK_START),
+                WeekStartDate = WeekDTO.CreateForWeekId(x.WeekId).WeekStart,
                 SubmittedDate = x.SubmittedDate,
-                 TotalOverTimeHours = x.TotalOverTimeHours,
-                  TotalRegularHours = x.TotalRegularHours
+                TotalOverTimeHours = x.TotalOverTimeHours,
+                TotalRegularHours = x.TotalRegularHours
             }).ToList();
+        }
+
+        public async Task UpdateTimeTotals(int weekId, int employeeId, decimal overtime, decimal regular)
+        {
+            var match = await db.TimeSheetApprovals.SingleOrDefaultAsync(x => x.WeekId == weekId && x.EmployeeId == employeeId);
+            if(match != null)
+            {
+                match.TotalOverTimeHours = overtime;
+                match.TotalRegularHours = regular;
+                await db.SaveChangesAsync();
+            };
         }
 
         public async Task Save(TimeApprovalDTO timeApprovalDTO)
         {
             var empId = db.Employees.FirstOrDefault(x => x.Name == timeApprovalDTO.EmployeeName)?.EmployeeId ?? -1;
 
-            var match = await db.TimeSheetApprovals.SingleOrDefaultAsync(x => x.Year == timeApprovalDTO.Year && x.WeekId == timeApprovalDTO.WeekId && x.EmployeeId == empId);
-            if(match == null)
+            var match = await db.TimeSheetApprovals.SingleOrDefaultAsync(x => x.WeekId == timeApprovalDTO.WeekId && x.EmployeeId == empId);
+            if (match == null)
             {
                 match = new TimeSheetApproval()
                 {
                     EmployeeId = empId,
                     WeekId = timeApprovalDTO.WeekId,
-                    Year = timeApprovalDTO.Year,
-                     
                 };
                 db.TimeSheetApprovals.Add(match);
             }
             var approver = db.Employees.FirstOrDefault(x => x.Name == timeApprovalDTO.ApproverName)?.EmployeeId ?? 0;
-            if(timeApprovalDTO.TimeApprovalStatus == TimeApprovalStatus.Approved)
+            if (timeApprovalDTO.TimeApprovalStatus == TimeApprovalStatus.Approved)
             {
                 match.ApprovalDate = DateTime.Now;
-                if(match.SubmittedDate == null)
+                if (match.SubmittedDate == null)
                 {
                     match.SubmittedDate = DateTime.Now;
                 }
@@ -124,7 +136,7 @@ namespace orion.web.TimeEntries
             {
                 match.ApprovalDate = null;
             }
-            if(timeApprovalDTO.TimeApprovalStatus == TimeApprovalStatus.Submitted)
+            if (timeApprovalDTO.TimeApprovalStatus == TimeApprovalStatus.Submitted)
             {
                 match.SubmittedDate = DateTime.Now;
             }

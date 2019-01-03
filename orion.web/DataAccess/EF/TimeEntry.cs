@@ -11,6 +11,6 @@ namespace orion.web.DataAccess.EF
         public decimal Hours { get; set; }
         public decimal OvertimeHours { get; set; }
         public DateTime Date { get; set; }
-        public int WeekId { get; set; }
+        public int WeekId { get; set; }        
     }
 }
