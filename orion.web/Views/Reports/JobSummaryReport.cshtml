@@ -1,25 +1,18 @@
 ﻿@using orion.web.Reports
-@model orion.web.Reports.ReportViewModel<JobSummaryReportSettings>
+@model orion.web.Reports.JobSummaryReportSettings
 
 
 <form asp-action="JobSummaryReport">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <div class="row">
         <div class="col-md-6">
-            @Html.HiddenFor(x => x.SelectedReport.ReportDisplayName)
-            @Html.HiddenFor(x => x.SelectedReport.ReportSystemName)
-            @Html.EditorFor(x => x.Report.PeriodSettings, "~/Views/Reports/PeriodBasedReportSettings.cshtml")
+            @Html.EditorFor(x => x.PeriodSettings, "~/Views/Reports/PeriodBasedReportSettings.cshtml")
             <div class="form-check">
-                <input asp-for="Report.ShowAllJobsRegardlessOfHoursBooked" type="checkbox" />
-                <label asp-for="Report.ShowAllJobsRegardlessOfHoursBooked" class="control-label"></label>
-                <span asp-validation-for="Report.ShowAllJobsRegardlessOfHoursBooked" class="text-danger"></span>
-            </div>
-            <div class="form-check">
-                <input asp-for="ForDownload" type="checkbox" />
-                <label asp-for="ForDownload" class="control-label"></label>
-                <span asp-validation-for="ForDownload" class="text-danger"></span>
+                <input asp-for="ShowAllJobsRegardlessOfHoursBooked" type="checkbox" />
+                <label asp-for="ShowAllJobsRegardlessOfHoursBooked" class="control-label"></label>
+                <span asp-validation-for="ShowAllJobsRegardlessOfHoursBooked" class="text-danger"></span>
             </div>
         </div>
     </div>
-    <input type="submit" value="Run" class="btn btn-default" />
+    <input type="submit" value="Download" class="btn btn-default" />
 </form>

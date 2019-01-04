@@ -1,5 +1,5 @@
 ﻿@using orion.web.Reports
-@model orion.web.Reports.ReportViewModel<JobDetailReport>
+@model orion.web.Reports.JobDetailReport
 
 
 
@@ -7,16 +7,13 @@
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <div class="row">
         <div class="col-md-6">
-            @Html.HiddenFor(x => x.SelectedReport.ReportDisplayName)
-            @Html.HiddenFor(x => x.SelectedReport.ReportSystemName)
-            @Html.EditorFor(x => x.Report.PeriodSettings, "~/Views/Reports/PeriodBasedReportSettings.cshtml")            
-            @Html.EditorFor(x => x.Report.JobBasedReportSettings, "~/Views/Reports/JobBasedReportSettings.cshtml")
+            @Html.EditorFor(x => x.PeriodSettings, "~/Views/Reports/PeriodBasedReportSettings.cshtml")            
             <div class="form-group">
-                <label asp-for="ForDownload" class="control-label"></label>
-                <input asp-for="ForDownload" type="checkbox" />
-                <span asp-validation-for="ForDownload" class="text-danger"></span>
+                <label asp-for="SelectedJobId"> For Job(s) </label>
+                <select asp-for="SelectedJobId" class="form-control"
+                        asp-items="@(new SelectList(Model.AvailableJobs, "JobId", "FullJobCodeWithName"))"></select>
             </div>
         </div>
     </div>
-    <input type="submit" value="Run" class="btn btn-default" />
+    <input type="submit" value="Download" class="btn btn-default" />
 </form>

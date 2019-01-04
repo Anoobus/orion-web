@@ -1,9 +1,45 @@
 ﻿@model orion.web.Reports.ReportSelectionViewModel
 
+<ol class="breadcrumb">
+    <li class="breadcrumb-item active"> Report Listing</li>
+</ol>
+<div class="row">
+    <div class="col-md-3">
+        <ul class="nav nav-stacked">
 
-@foreach(var rpt in Model.AvailableReports)
-{
-    <a class="btn btn-success" asp-action="GetReportSetup" asp-all-route-data="Model.GetRouteForReport(rpt)">Generate @Html.DisplayFor(x => rpt.ReportDisplayName) </a>
-}
+            @foreach (var rpt in Model.AvailableReports)
+            {
+                <li class="active">
+                    <a href="#">   @rpt </a>
+                </li>
+            }
+        </ul>
+
+    </div>
+    <div class="col-md-9">
+        <div class="panel panel-default report-panel" id="pay-period-report">
+            <div class="panel-heading">Pay Period report </div>
+            <div class="panel-body">
+                @Html.EditorFor(m => Model.PayPeriodReport, "~/Views/Reports/PayPeriodReport.cshtml")
+            </div>
+        </div>
+
+        <div class="panel panel-default report-panel" id="job-summary-report">
+            <div class="panel-heading">Job Summary Report </div>
+            <div class="panel-body">
+                @Html.EditorFor(m => Model.JobSummaryReport, "~/Views/Reports/JobSummaryReport.cshtml")
+            </div>
+        </div>
+
+        <div class="panel panel-default  report-panel" id="job-detail-report">
+            <div class="panel-heading">Job Detail Report </div>
+            <div class="panel-body">
+                @Html.EditorFor(m => Model.JobDetailReport, "~/Views/Reports/JobDetailReport.cshtml")
+            </div>
+        </div>
+    </div>
+</div>
+
+
 
 

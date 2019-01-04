@@ -40,7 +40,7 @@ namespace orion.web.Reports
 Select 
     min(Convert(varchar(10), te.Date, 101)) as PeriodStarting, 
     max(Convert(varchar(10), te.date, 101)) as PeriodEnding, 
-    e.[Name], 
+    e.First + ', ' + e.Last as EmployeeName, 
 	c.clientcode + '-' + j.JobCode  as JobCode,
 	j.JobName,
 	c.ClientName ,
@@ -64,7 +64,7 @@ where
 	(@JobId is null Or te.JobId = @JobId)
 	and te.Date >= @WeekStart
 	and te.Date <= @WeekEnd
-group by tc.Name, c.clientcode + '-' + j.JobCode, e.[name], c.clientcode + j.JobCode  , j.JobName, c.ClientName , jt.ShortName  ";
+group by tc.Name, c.clientcode + '-' + j.JobCode, e.First + ', ' + e.Last, c.clientcode + j.JobCode  , j.JobName, c.ClientName , jt.ShortName  ";
 
 
                 cmd.Parameters.Add(new SqlParameter("JobId", jobId));

@@ -36,9 +36,6 @@
     <Content Update="Views\Employee\List.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
-    <Content Update="Views\Reports\JobBasedReportSettings.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
     <Content Update="Views\Reports\PayPeriodReport.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>

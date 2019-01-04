@@ -1,19 +1,17 @@
 ﻿@using orion.web.Reports
-@model orion.web.Reports.ReportViewModel<PayPeriodReport>
+@model orion.web.Reports.PayPeriodReport
 
 <form asp-action="PayPeriodReport">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <div class="row">
         <div class="col-md-6">
-            @Html.HiddenFor(x => x.SelectedReport.ReportDisplayName)
-            @Html.HiddenFor(x => x.SelectedReport.ReportSystemName)
-            @Html.EditorFor(x => x.Report.PayPeriodEnd)                        
+
             <div class="form-group">
-                <label asp-for="ForDownload" class="control-label"></label>
-                <input asp-for="ForDownload" type="checkbox" />
-                <span asp-validation-for="ForDownload" class="text-danger"></span>
-            </div>
+                <label asp-for="PayPeriodEnd" class="control-label"></label>
+                <input asp-for="PayPeriodEnd" type="date" class="form-control" />
+                <span asp-validation-for="PayPeriodEnd" class="text-danger"></span>
+            </div>            
         </div>
     </div>
-    <input type="submit" value="Run" class="btn btn-default" />
+    <input type="submit" value="Download" class="btn btn-default" />
 </form>

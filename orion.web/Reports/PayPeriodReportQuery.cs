@@ -1,12 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using orion.web.Common;
 using orion.web.DataAccess.EF;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
@@ -16,7 +13,7 @@ namespace orion.web.Reports
 {
     public interface IPayPeriodReportQuery
     {
-        Task<ReportDTO<PayPeriodDataDTO>> RunAsync(DateTime payPeriodEnd, string reportDisplayName);
+        Task<ReportDTO<PayPeriodDataDTO>> RunAsync(DateTime payPeriodEnd);
     }
     public class PayPeriodReportQuery : IPayPeriodReportQuery
     {
@@ -28,12 +25,12 @@ namespace orion.web.Reports
             this.configuration = configuration;
             this.db = db;
         }
-        public async Task<ReportDTO<PayPeriodDataDTO>> RunAsync(DateTime payPeriodEnd, string reportDisplayName)
+        public async Task<ReportDTO<PayPeriodDataDTO>> RunAsync(DateTime payPeriodEnd)
         {
 
 
             using (var conn = new SqlConnection(configuration.GetConnectionString("SiteConnection")))
-            using(var cmd = conn.CreateCommand())
+            using (var cmd = conn.CreateCommand())
             {
                 await conn.OpenAsync();
 
@@ -66,7 +63,7 @@ Select "
 + $"	IsNull(sum(holiday.hours) + sum(holiday.overtimehours), 0) as {nameof(PayPeriodEmployees.Holiday)},"
 + $"	IsNull(sum(excusedNoPay.hours) + sum(excusedNoPay.overtimehours), 0) as {nameof(PayPeriodEmployees.ExcusedNoPay)},"
 + $"	e.{nameof(PayPeriodEmployees.IsExempt)},"
-+ $"	sum(te.hours) + sum(te.overtimehours) as {nameof(PayPeriodEmployees.Combined)} "
++ $"	IsNull(sum(te.hours) + sum(te.overtimehours),0) as {nameof(PayPeriodEmployees.Combined)} "
 +
 @"from 
 [dbo].Employees e
@@ -89,12 +86,10 @@ left outer join dbo.TimeEntries holiday
 	and holiday.TaskId = @holidayTime
 left outer join dbo.TimeEntries excusedNoPay
 	on te.TimeEntryId = excusedNoPay.TimeEntryId
-	and excusedNoPay.TaskId = @excusedWithoutPay
-	
-
+	and excusedNoPay.TaskId = @excusedWithoutPay	
 where 
-	 te.Date >= @payPeriodStart
-	and te.Date <= @payPeriodEnd
+    te.Date is null OR
+    (te.Date >= @payPeriodStart and te.Date <= @payPeriodEnd)
 group by e.EmployeeId, 
 	e.First + ', ' + e.Last,
 	e.IsExempt
@@ -114,20 +109,20 @@ group by e.EmployeeId,
                 var emps = new List<PayPeriodEmployees>();
                 var rdr = await cmd.ExecuteReaderAsync();
                 var map = GetColumnMap(rdr.GetColumnSchema());
-                while(await rdr.ReadAsync())
+                while (await rdr.ReadAsync())
                 {
                     emps.Add(new PayPeriodEmployees()
                     {
-                        Combined = rdr.GetDecimal(map[ nameof(PayPeriodEmployees.Combined)]),
-                         EmployeeName = rdr.GetSqlString(map[nameof(PayPeriodEmployees.EmployeeName)]).Value,
-                         ExcusedNoPay = rdr.GetDecimal(map[nameof(PayPeriodEmployees.ExcusedNoPay)]),
-                         Holiday = rdr.GetDecimal(map[nameof(PayPeriodEmployees.Holiday)]),
-                         IsExempt = rdr.GetBoolean(map[nameof(PayPeriodEmployees.IsExempt)]),
-                         Overtime = rdr.GetDecimal(map[nameof(PayPeriodEmployees.Overtime)]),
-                         Personal = rdr.GetDecimal(map[nameof(PayPeriodEmployees.Personal)]),
-                         Regular = rdr.GetDecimal(map[nameof(PayPeriodEmployees.Regular)]),
-                          Sick = rdr.GetDecimal(map[nameof(PayPeriodEmployees.Sick)]),
-                         Vacation = rdr.GetDecimal(map[nameof(PayPeriodEmployees.Vacation)]),
+                        Combined = rdr.GetDecimal(map[nameof(PayPeriodEmployees.Combined)]),
+                        EmployeeName = rdr.GetSqlString(map[nameof(PayPeriodEmployees.EmployeeName)]).Value,
+                        ExcusedNoPay = rdr.GetDecimal(map[nameof(PayPeriodEmployees.ExcusedNoPay)]),
+                        Holiday = rdr.GetDecimal(map[nameof(PayPeriodEmployees.Holiday)]),
+                        IsExempt = rdr.GetBoolean(map[nameof(PayPeriodEmployees.IsExempt)]),
+                        Overtime = rdr.GetDecimal(map[nameof(PayPeriodEmployees.Overtime)]),
+                        Personal = rdr.GetDecimal(map[nameof(PayPeriodEmployees.Personal)]),
+                        Regular = rdr.GetDecimal(map[nameof(PayPeriodEmployees.Regular)]),
+                        Sick = rdr.GetDecimal(map[nameof(PayPeriodEmployees.Sick)]),
+                        Vacation = rdr.GetDecimal(map[nameof(PayPeriodEmployees.Vacation)]),
                     });
                 }
                 data.Employees = emps;
@@ -139,18 +134,19 @@ group by e.EmployeeId,
                 new Dictionary<string, string>()
                 {
                     { "Pay Period", $"{pps.ToShortDateString()} thru {ppe.ToShortDateString()}" },
-                    { "Generated", DateTime.Now.ToShortDateString()},
+                    { "Generated", $"{DateTime.Now.ToShortDateString()} at {DateTime.Now.ToShortTimeString()}"},
+                    { "Company", $"Orion Engineering Co., Inc." },
                 }
                 };
             }
         }
         private static readonly Dictionary<string, int> ColumnMap = new Dictionary<string, int>();
         private static object reportColumnMapLock = new object();
-        private Dictionary<string, int>  GetColumnMap(ReadOnlyCollection<DbColumn> cols )
+        private Dictionary<string, int> GetColumnMap(ReadOnlyCollection<DbColumn> cols)
         {
             lock (reportColumnMapLock)
             {
-                if(!ColumnMap.Any())
+                if (!ColumnMap.Any())
                 {
                     var empPropNames = typeof(PayPeriodEmployees).GetProperties();
                     foreach (var prop in empPropNames)
@@ -158,12 +154,12 @@ group by e.EmployeeId,
                         ColumnMap.Add(prop.Name, cols.Single(x => x.ColumnName == prop.Name).ColumnOrdinal.Value);
                     }
                 }
-                   
+
             }
             return ColumnMap;
         }
-    
-        
+
+
 
     }
 }
