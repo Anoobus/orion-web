@@ -11,6 +11,7 @@ namespace orion.web.Reports
     public interface IReportWriter : IRegisterByConvention
     {
         (MemoryStream Steam, string MimeType, string Name) GetFinishedResult<T>(T reportSettings, string fileName, ReportDTO<PayPeriodDataDTO> rpt) where T : new();
+        (MemoryStream Steam, string MimeType, string Name) GetFinishedResult<T>(T reportSettings, string fileName, ReportDTO<JobSummaryReportDataDTO> rpt) where T : new();
         (MemoryStream Steam, string MimeType, string Name) GetFinishedResult<T>(T reportSettings, string fileName, ReportDTO<DataTable> rpt) where T : new();
     }
     public class ReportWriter : IReportWriter
@@ -29,5 +30,12 @@ namespace orion.web.Reports
             return (memoryStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"{fileName}.xlsx");
         }
 
+        public (MemoryStream Steam, string MimeType, string Name) GetFinishedResult<T>(T reportSettings, string fileName, ReportDTO<JobSummaryReportDataDTO> rpt) where T : new()
+        {
+            var export = new JobSummaryExcelExport();
+            var memoryStream = export.AsXls(rpt);
+            return (memoryStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"{fileName}.xlsx");
+
+        }
     }
 }

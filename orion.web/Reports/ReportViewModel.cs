@@ -11,6 +11,8 @@ namespace orion.web.Reports
         [Display(Name ="Show Jobs All Jobs (Even Those With 0 Time Spent)")]
         public bool ShowAllJobsRegardlessOfHoursBooked { get; set; }
         public PeriodBasedReportSettings PeriodSettings { get; set; }
+        public IEnumerable<JobDTO> AvailableJobs { get; set; }
+        public string SelectedJobId { get; set; }
     }
     public class JobDetailReport 
     {

@@ -11,7 +11,7 @@ namespace orion.web.Reports
     public interface IReportCreator : IRegisterByConvention
     {
         Task<ReportDTO<PayPeriodDataDTO>> CreatePayPeriodReportAsync(PayPeriodReport settings);
-        ReportDTO<DataTable> CreateJobSummaryReport(JobSummaryReportSettings settings);
+        Task<ReportDTO<JobSummaryReportDataDTO>> CreateJobSummaryReportAsync(JobSummaryReportSettings settings);
         ReportDTO<DataTable> CreateJobDetailReport(JobDetailReport settings);
     }
 
@@ -35,12 +35,13 @@ namespace orion.web.Reports
             return await payPeriodReportQuery.RunAsync(settings.PayPeriodEnd);
         }
 
-        public ReportDTO<DataTable> CreateJobSummaryReport(JobSummaryReportSettings settings)
+        public async Task<ReportDTO<JobSummaryReportDataDTO>> CreateJobSummaryReportAsync(JobSummaryReportSettings settings)
         {
-            return jobSummaryQuery.Run(settings.PeriodSettings.Start,
+            return await jobSummaryQuery.RunAsync(settings.PeriodSettings.Start,
                 settings.PeriodSettings.End,
                 settings.ShowAllJobsRegardlessOfHoursBooked,
-                "Job Summary Report");
+                "Job Summary Report",
+                int.Parse(settings.SelectedJobId));
         }
 
         public ReportDTO<DataTable> CreateJobDetailReport(JobDetailReport settings)

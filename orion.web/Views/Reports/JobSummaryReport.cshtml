@@ -7,11 +7,16 @@
     <div class="row">
         <div class="col-md-6">
             @Html.EditorFor(x => x.PeriodSettings, "~/Views/Reports/PeriodBasedReportSettings.cshtml")
-            <div class="form-check">
+            <div class="form-group">
+                <label asp-for="SelectedJobId"> For Job(s) </label>
+                <select asp-for="SelectedJobId" class="form-control"
+                        asp-items="@(new SelectList(Model.AvailableJobs, "JobId", "FullJobCodeWithName"))"></select>
+            </div>
+            @*<div class="form-check">
                 <input asp-for="ShowAllJobsRegardlessOfHoursBooked" type="checkbox" />
                 <label asp-for="ShowAllJobsRegardlessOfHoursBooked" class="control-label"></label>
                 <span asp-validation-for="ShowAllJobsRegardlessOfHoursBooked" class="text-danger"></span>
-            </div>
+            </div>*@
         </div>
     </div>
     <input type="submit" value="Download" class="btn btn-default" />

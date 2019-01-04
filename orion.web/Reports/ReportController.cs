@@ -39,9 +39,9 @@ namespace orion.web.Reports
 
         [HttpPost]
         [Route("RunReport/" + ReportNames.JOBS_SUMMARY_REPORT)]
-        public ActionResult JobSummaryReport(ReportSelectionViewModel request)
+        public async Task<ActionResult> JobSummaryReport(ReportSelectionViewModel request)
         {
-            var rpt = reportCreator.CreateJobSummaryReport(request.JobSummaryReport);
+            var rpt = await reportCreator.CreateJobSummaryReportAsync(request.JobSummaryReport);
             var (Steam, MimeType, Name) = reportWriter.GetFinishedResult(request.JobSummaryReport,"Job Summary Report", rpt);
             return File(Steam, MimeType, Name);
         }

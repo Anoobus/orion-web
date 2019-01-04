@@ -34,6 +34,7 @@ namespace orion.web.Reports
             {
                 await conn.OpenAsync();
 
+
                 cmd.CommandText = @"
 declare @vacationRowId as int
 select @vacationRowId = JobTaskId from dbo.JobTasks where ShortName = '87 - Vacation'

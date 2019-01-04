@@ -28,10 +28,11 @@ namespace orion.web.Reports
             return vm2;
         }
 
-        private JobSummaryReportSettings GetJobSummaryreport()
+        private async Task<JobSummaryReportSettings> GetJobSummaryreportAsync()
         {
             var vm = new JobSummaryReportSettings();
-            vm.PeriodSettings = GetDefaultPeriodSettings();           
+            vm.PeriodSettings = GetDefaultPeriodSettings();
+            vm.AvailableJobs = (await jobService.GetAsync()).ToList();
             return vm;
         }
 
@@ -56,7 +57,7 @@ namespace orion.web.Reports
                 AvailableReports = allReports,
                 PayPeriodReport = GetPayPeriodReportViewModel(),
                 JobDetailReport = await GetJobDetailreportAsync(),
-                JobSummaryReport = GetJobSummaryreport()
+                JobSummaryReport = await GetJobSummaryreportAsync()
             };
             return vm;
         }
