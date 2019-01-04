@@ -11,7 +11,7 @@
         <thead>
             <tr>
                 <th>
-                    @Html.DisplayNameFor(model => model.HeaderHelp.Name)
+                    @Html.DisplayNameFor(model => model.HeaderHelp.UserName)
                 </th>
                 <th>
                     @Html.DisplayNameFor(model => model.HeaderHelp.AssignJobs)
@@ -24,7 +24,7 @@
             {
                 <tr>
                     <td>
-                     @Html.ActionLink( item.Name, "Edit", new { employee = item.Name })  
+                     @Html.ActionLink( item.UserName, "Edit", new { employee = item.UserName })  
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.AssignJobs.Count)

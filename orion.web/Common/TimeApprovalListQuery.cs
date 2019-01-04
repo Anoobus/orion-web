@@ -64,7 +64,7 @@ namespace orion.web.Common
             var allMissing = missing.Select(x => new TimeApprovalDTO()
             {
                 EmployeeId = x.emp.EmployeeId,
-                EmployeeName = x.emp.Name,
+                EmployeeName = x.emp.UserName,
                 TimeApprovalStatus = TimeApprovalStatus.Unkown,
                 WeekId = x.week.WeekId.Value,
                 WeekStartDate = x.week.WeekStart,

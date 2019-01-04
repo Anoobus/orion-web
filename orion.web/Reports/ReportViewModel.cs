@@ -37,6 +37,12 @@ namespace orion.web.Reports
         public PeriodBasedReportSettings PeriodSettings { get; set; }
         public JobBasedReportSettings JobBasedReportSettings { get; set; }
     }
+
+    public class PayPeriodReport
+    {
+        public DateTime PayPeriodEnd { get; set; }
+    }
+
     public class JobBasedReportSettings
     {
         public IEnumerable<JobDTO> AvailableJobs { get; set; }

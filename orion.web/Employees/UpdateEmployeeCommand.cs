@@ -55,9 +55,7 @@ namespace orion.web.Employees
                             allCommandErrors.AddRange(res2.Errors.Select(err => $"{err.Code}-{err.Description}"));
                             if(res2.Succeeded)
                             {
-                                var existingEmp = await employeeService.GetSingleEmployeeAsync(employee.Email);
-                                existingEmp.Role = employee.SelectedRole;
-                                employeeService.Save(existingEmp);
+                                await SaveLocalEmployeeInfo(employee);
                             }
                         }
                         else
@@ -66,16 +64,28 @@ namespace orion.web.Employees
                             allCommandErrors.AddRange(res2.Errors.Select(err => $"{err.Code}-{err.Description}"));
                             if(res2.Succeeded)
                             {
-                                var existingEmp = await employeeService.GetSingleEmployeeAsync(employee.Email);
-                                existingEmp.Role = employee.SelectedRole;
-                                employeeService.Save(existingEmp);
+                                await SaveLocalEmployeeInfo(employee);                               
                             }
                         }
                     }
                 }
+                else
+                {
+                    await SaveLocalEmployeeInfo(employee);
+                }
             }
 
             return new CommandResult(allCommandErrors.Any(), allCommandErrors.ToArray());
+        }
+
+        private async Task SaveLocalEmployeeInfo(EditEmployeeViewModel employee)
+        {
+            var existingEmp = await employeeService.GetSingleEmployeeAsync(employee.Email);
+            existingEmp.Role = employee.SelectedRole;
+            existingEmp.First = employee.FirstName;
+            existingEmp.Last = employee.LastName;
+            existingEmp.IsExempt = employee.IsExempt;
+            employeeService.Save(existingEmp);
         }
     }
 }

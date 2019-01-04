@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using orion.web.Common;
 using orion.web.DataAccess.EF;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace orion.web.Employees
 {
@@ -29,13 +29,7 @@ namespace orion.web.Employees
             return await db.Employees
                      .Include(x => x.EmployeeJobs)
                      .Include(x => x.UserRole)
-                     .Select(x => new EmployeeDTO()
-                     {
-                         EmployeeId = x.EmployeeId,
-                         Name = x.Name,
-                         AssignJobs = x.EmployeeJobs.Select(z => z.JobId).ToList(),
-                          Role = x.UserRole.Name
-                     }).ToListAsync();
+                     .Select(x => MapToDTO(x)).ToListAsync();
         }
 
         public async Task<IEnumerable<string>> GetAllRoles()
@@ -45,55 +39,55 @@ namespace orion.web.Employees
 
         public async Task<EmployeeDTO> GetSingleEmployeeAsync(string employeeName)
         {
-
-            return await db.Employees
+            return MapToDTO(await db.Employees
                           .Include(x => x.EmployeeJobs)
                           .Include(x => x.UserRole)
-                          .Select(x => new EmployeeDTO()
-                          {
-                              EmployeeId = x.EmployeeId,
-                              AssignJobs = x.EmployeeJobs.Select(z => z.JobId).ToList(),
-                              Name = x.Name,
-                               Role = x.UserRole.Name
-                          })
-                          .FirstOrDefaultAsync(x => x.Name == employeeName);
-
-
+                          .FirstOrDefaultAsync(x => x.UserName == employeeName));
         }
 
         public async Task<EmployeeDTO> GetSingleEmployeeAsync(int employeeId)
         {
 
-            return await db.Employees
+            return MapToDTO(await db.Employees
                           .Include(x => x.EmployeeJobs)
                           .Include(x => x.UserRole)
-                          .Select(x => new EmployeeDTO()
-                          {
-                              EmployeeId = x.EmployeeId,
-                              AssignJobs = x.EmployeeJobs.Select(z => z.JobId).ToList(),
-                              Name = x.Name,
-                              Role = x.UserRole.Name
-                          })
-                          .FirstOrDefaultAsync(x => x.EmployeeId == employeeId);
+                          .FirstOrDefaultAsync(x => x.EmployeeId == employeeId));
         }
 
+        private static EmployeeDTO MapToDTO(Employee x)
+        {
+            if(x == null)
+            {
+                return null;
+            }
+            return new EmployeeDTO()
+            {
+                EmployeeId = x.EmployeeId,
+                AssignJobs = x.EmployeeJobs.Select(z => z.JobId).ToList(),
+                UserName = x.UserName,
+                First = x.First,
+                IsExempt = x.IsExempt,
+                Last = x.Last,
+                Role = x.UserRole.Name
+            };
+        }
 
         public void Save(EmployeeDTO employee)
         {
             var match = db.Employees
                           .Include(x => x.EmployeeJobs)
-                          .FirstOrDefault(x => x.Name == employee.Name);
+                          .FirstOrDefault(x => x.UserName == employee.UserName);
 
-            if(match == null)
+            if (match == null)
             {
                 match = new Employee()
                 {
-                    Name = employee.Name,
+                    UserName = employee.UserName,
                 };
                 db.Employees.Add(match);
             }
             match.EmployeeJobs.Clear();
-            foreach(var jobId in employee.AssignJobs)
+            foreach (var jobId in employee.AssignJobs)
             {
                 match.EmployeeJobs.Add(new EmployeeJob()
                 {
@@ -102,6 +96,10 @@ namespace orion.web.Employees
             }
 
             match.UserRoleId = db.UserRoles.Single(x => x.Name == employee.Role).UserRoleId;
+            match.First = employee.First;
+            match.Last = employee.Last;
+            match.IsExempt = employee.IsExempt;
+
             db.SaveChanges();
         }
 

@@ -4,6 +4,7 @@ using orion.web.Common;
 using orion.web.Jobs;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 
 namespace orion.web.Reports
@@ -12,16 +13,17 @@ namespace orion.web.Reports
     [Route("[controller]")]
     public class ReportsController : Controller
     {
-        //private readonly IWeekService weekService;
         private readonly IJobService jobService;
-        private readonly IReportservice reportservice;
+        private readonly IJobSummaryQuery jobSummaryQuery;
+        private readonly ISingleJobDetailQuery singleJobDetailQuery;
+        private readonly IPayPeriodReportQuery payPeriodReportQuery;
 
-        public ReportsController(//IWeekService weekService, 
-            IJobService jobService, IReportservice reportservice)
+        public ReportsController(IJobService jobService, IJobSummaryQuery jobSummaryQuery, ISingleJobDetailQuery singleJobDetailQuery, IPayPeriodReportQuery payPeriodReportQuery)
         {
-            //this.weekService = weekService;
             this.jobService = jobService;
-            this.reportservice = reportservice;
+            this.jobSummaryQuery = jobSummaryQuery;
+            this.singleJobDetailQuery = singleJobDetailQuery;
+            this.payPeriodReportQuery = payPeriodReportQuery;
         }
 
         public ActionResult Index()
@@ -38,6 +40,12 @@ namespace orion.web.Reports
                 ReportDisplayName = "Job Details Period Report",
                 ReportSystemName = ReportNames.JOB_DETAIL_REPORT
             });
+
+            allReports.Add(new ReportNameViewModel()
+            {
+                ReportDisplayName = "Pay Period Report",
+                ReportSystemName = ReportNames.PAY_PERIOD_REPORT
+            });
             var vm = new ReportSelectionViewModel()
             {
                 AvailableReports = allReports,
@@ -47,7 +55,7 @@ namespace orion.web.Reports
 
         [HttpGet]
         [Route("GetReportSetup/{reportName}")]
-        public async System.Threading.Tasks.Task<ActionResult> GetReportSetupAsync(string reportName)
+        public async System.Threading.Tasks.Task<ActionResult> GetReportSetup(string reportName)
         {
             var wk = WeekDTO.CreateWithWeekContaining(DateTime.Now);
             var ps = new PeriodBasedReportSettings()
@@ -81,23 +89,38 @@ namespace orion.web.Reports
                 };
                 return View("JobDetailReport", vm);
             }
+            else if (reportName == ReportNames.PAY_PERIOD_REPORT)
+            {
+                var vm = new ReportViewModel<PayPeriodReport>();
+                vm.Report.PayPeriodEnd = WeekDTO.CreateWithWeekContaining(DateTime.Now).WeekEnd;
+                vm.SelectedReport = new ReportNameViewModel()
+                {
+                    ReportDisplayName = "Pay Period Report",
+                    ReportSystemName = ReportNames.PAY_PERIOD_REPORT
+                };
+
+                return View("PayPeriodReport", vm);
+            }
 
             throw new NotImplementedException();
-        }       
+        }
+        
 
         [HttpPost]
-        [Route("RunReport/" + ReportNames.JOBS_SUMMARY_REPORT)]
-        public ActionResult JobSummaryReport(ReportViewModel<JobSummaryReportSettings> reportSettings)
-        {           
-            var rpt = reportservice.GetJobsSummaryReport(reportSettings.Report.PeriodSettings.Start, 
-                reportSettings.Report.PeriodSettings.End, 
-                reportSettings.Report.ShowAllJobsRegardlessOfHoursBooked,
-                reportSettings.SelectedReport.ReportDisplayName);
+        [Route("RunReport/" + ReportNames.PAY_PERIOD_REPORT)]
+        public async System.Threading.Tasks.Task<ActionResult> PayPeriodReport(ReportViewModel<PayPeriodReport> reportSettings)
+        {
+            
+            var rpt = await payPeriodReportQuery.RunAsync(reportSettings.Report.PayPeriodEnd,reportSettings.SelectedReport.ReportDisplayName);
 
+            return GetFinishedResult(reportSettings, rpt);
+        }
 
-            if(reportSettings.ForDownload)
+        private ActionResult GetFinishedResult<T>(ReportViewModel<T> reportSettings, ReportDTO<PayPeriodDataDTO> rpt) where T : new()
+        {
+            if (reportSettings.ForDownload)
             {
-                var export = new ExcelExport();
+                var export = new PayPeriodExcelExport();
                 var memoryStream = export.AsXls(rpt);
                 return File(memoryStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"{reportSettings.SelectedReport.ReportDisplayName}.xlsx");
             }
@@ -108,15 +131,32 @@ namespace orion.web.Reports
         }
 
         [HttpPost]
+        [Route("RunReport/" + ReportNames.JOBS_SUMMARY_REPORT)]
+        public ActionResult JobSummaryReport(ReportViewModel<JobSummaryReportSettings> reportSettings)
+        {           
+            var rpt = jobSummaryQuery.Run(reportSettings.Report.PeriodSettings.Start, 
+                reportSettings.Report.PeriodSettings.End, 
+                reportSettings.Report.ShowAllJobsRegardlessOfHoursBooked,
+                reportSettings.SelectedReport.ReportDisplayName);
+
+            return GetFinishedResultOther(reportSettings, rpt);
+        }
+
+        [HttpPost]
         [Route("RunReport/" + ReportNames.JOB_DETAIL_REPORT)]
         public ActionResult JobDetailReport(ReportViewModel<JobDetailReport> reportSettings)
         {
-            var rpt = reportservice.GetJobDetailReport(reportSettings.Report.PeriodSettings.Start,
+            var rpt = singleJobDetailQuery.Run(reportSettings.Report.PeriodSettings.Start,
                 reportSettings.Report.PeriodSettings.End,
                 int.Parse(reportSettings.Report.JobBasedReportSettings.SelectedJobId),
                 reportSettings.SelectedReport.ReportDisplayName);
 
-            if(reportSettings.ForDownload)
+            return GetFinishedResultOther(reportSettings, rpt);
+        }
+
+        private ActionResult GetFinishedResultOther<T>(ReportViewModel<T> reportSettings, ReportDTO<DataTable> rpt) where T : new()
+        {
+            if (reportSettings.ForDownload)
             {
                 var export = new ExcelExport();
                 var memoryStream = export.AsXls(rpt);

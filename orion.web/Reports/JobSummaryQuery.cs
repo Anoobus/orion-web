@@ -10,7 +10,7 @@ namespace orion.web.Reports
 {
     public interface IJobSummaryQuery
     {
-        ReportDTO Run(DateTime start, DateTime end, bool showEmptyJobs, string reportDisplayName);
+        ReportDTO<DataTable> Run(DateTime start, DateTime end, bool showEmptyJobs, string reportDisplayName);
     }
     public class JobSummaryQuery : IJobSummaryQuery
     {
@@ -20,7 +20,7 @@ namespace orion.web.Reports
         {
             this.configuration = configuration;
         }
-        public ReportDTO Run(DateTime start, DateTime end, bool showEmptyJobs, string reportDisplayName)
+        public ReportDTO<DataTable> Run(DateTime start, DateTime end, bool showEmptyJobs, string reportDisplayName)
         {
             using(var conn = new SqlConnection(configuration.GetConnectionString("SiteConnection")))
             using(var cmd = conn.CreateCommand())
@@ -74,9 +74,9 @@ where
                 });
             }
         }
-        private static ReportDTO MapToReport(SqlDataReader rdr, string reportName, Dictionary<string, string> runSettings)
+        private static ReportDTO<DataTable> MapToReport(SqlDataReader rdr, string reportName, Dictionary<string, string> runSettings)
         {
-            var rpt = new ReportDTO();
+            var rpt = new ReportDTO<DataTable>();
             var dt = new DataTable();
             dt.Load(rdr);
             rpt.Data = dt;

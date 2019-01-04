@@ -63,13 +63,13 @@ namespace orion.web.ApplicationStartup
                     await manager.AddToRoleAsync(act, UserRoleName.Admin);
                 }
 
-                var adminAccount = db.Employees.FirstOrDefault(x => x.Name == adminEmail);
+                var adminAccount = db.Employees.FirstOrDefault(x => x.UserName == adminEmail);
                 
                 if(adminAccount == null)
                 {
                     adminAccount = new Employee()
                     {
-                        Name = adminEmail
+                        UserName = adminEmail
                     };
                     
                     db.Employees.Add(adminAccount);

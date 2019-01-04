@@ -36,7 +36,7 @@ namespace orion.web.TimeEntries
             {
                 return new TimeApprovalDTO()
                 {
-                    EmployeeName = emp.Name,
+                    EmployeeName = emp.UserName,
                     EmployeeId = emp.EmployeeId,
                     WeekId = weekId,
                     TimeApprovalStatus = TimeApprovalStatus.Unkown
@@ -44,13 +44,13 @@ namespace orion.web.TimeEntries
             }
             else
             {
-                var approver = db.Employees.FirstOrDefault(x => x.EmployeeId == match.ApproverEmployeeId)?.Name ?? "";
+                var approver = db.Employees.FirstOrDefault(x => x.EmployeeId == match.ApproverEmployeeId)?.UserName ?? "";
                 Enum.TryParse<TimeApprovalStatus>(match.TimeApprovalStatus, out var mapped);
                 return new TimeApprovalDTO()
                 {
                     ApprovalDate = match.ApprovalDate,
                     ApproverName = approver,
-                    EmployeeName = emp.Name,
+                    EmployeeName = emp.UserName,
                     EmployeeId = emp.EmployeeId,
                     ResponseReason = match.ResponseReason,
                     TimeApprovalStatus = mapped,
@@ -85,8 +85,8 @@ namespace orion.web.TimeEntries
             return match.Select(x => new TimeApprovalDTO()
             {
                 ApprovalDate = x.ApprovalDate,
-                ApproverName = approverNames.FirstOrDefault(z => z.EmployeeId == x.ApproverEmployeeId)?.Name,
-                EmployeeName = x.Employee.Name,
+                ApproverName = approverNames.FirstOrDefault(z => z.EmployeeId == x.ApproverEmployeeId)?.UserName,
+                EmployeeName = x.Employee.UserName,
                 EmployeeId = x.EmployeeId,
                 ResponseReason = x.ResponseReason,
                 TimeApprovalStatus = string.IsNullOrWhiteSpace(x.TimeApprovalStatus) ? TimeApprovalStatus.Unkown : Enum.Parse<TimeApprovalStatus>(x.TimeApprovalStatus),
@@ -111,7 +111,7 @@ namespace orion.web.TimeEntries
 
         public async Task Save(TimeApprovalDTO timeApprovalDTO)
         {
-            var empId = db.Employees.FirstOrDefault(x => x.Name == timeApprovalDTO.EmployeeName)?.EmployeeId ?? -1;
+            var empId = db.Employees.FirstOrDefault(x => x.UserName == timeApprovalDTO.EmployeeName)?.EmployeeId ?? -1;
 
             var match = await db.TimeSheetApprovals.SingleOrDefaultAsync(x => x.WeekId == timeApprovalDTO.WeekId && x.EmployeeId == empId);
             if (match == null)
@@ -123,7 +123,7 @@ namespace orion.web.TimeEntries
                 };
                 db.TimeSheetApprovals.Add(match);
             }
-            var approver = db.Employees.FirstOrDefault(x => x.Name == timeApprovalDTO.ApproverName)?.EmployeeId ?? 0;
+            var approver = db.Employees.FirstOrDefault(x => x.UserName == timeApprovalDTO.ApproverName)?.EmployeeId ?? 0;
             if (timeApprovalDTO.TimeApprovalStatus == TimeApprovalStatus.Approved)
             {
                 match.ApprovalDate = DateTime.Now;

@@ -25,27 +25,29 @@ namespace orion.web.Employees
             var userRole = employee.SelectedRole;
             var user = new IdentityUser { UserName = employee.Email, Email = employee.Email };
             var passwordsMatch = employee.Password.Equals(employee.PasswordConfirm);
-            if(!passwordsMatch)
+            if (!passwordsMatch)
             {
                 return new CommandResult(false, "Passwords don't match");
             }
             var isNewEmployee = (await userManager.FindByNameAsync(employee.Email)) == null;
-            if(!passwordsMatch)
+            if (!passwordsMatch)
             {
                 return new CommandResult(false, $"{employee.Email} has already been created.");
             }
 
             var result = await userManager.CreateAsync(user, employee.Password);
 
-            if(result.Succeeded)
+            if (result.Succeeded)
             {
                 var employeesJobs = employee.SelectedJobs == null ? new List<int>() : employee.SelectedJobs.Select(x => int.Parse(x)).ToList();
                 await userManager.AddToRoleAsync(user, userRole);
                 employeeService.Save(new EmployeeDTO()
                 {
-                    Name = employee.Email,
+                    UserName = employee.Email,
                     AssignJobs = employeesJobs,
-                    Role = userRole
+                    Role = userRole,
+                    First = employee.FirstName,
+                    Last = employee.LastName
                 });
                 return new CommandResult(true);
             }

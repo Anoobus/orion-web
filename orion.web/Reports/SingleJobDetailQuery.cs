@@ -1,26 +1,37 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using orion.web.DataAccess.EF;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Linq;
 
 namespace orion.web.Reports
 {
     public interface ISingleJobDetailQuery
     {
-        ReportDTO Run(DateTime start, DateTime end, int jobId, string jobName, string reportDisplayName);
+        ReportDTO<DataTable> Run(DateTime start, DateTime end, int jobId,  string reportDisplayName);
     }
     public class SingleJobDetailQuery : ISingleJobDetailQuery
     {
         private readonly IConfiguration configuration;
+        private readonly OrionDbContext db;
 
-        public SingleJobDetailQuery(IConfiguration configuration)
+        public SingleJobDetailQuery(IConfiguration configuration, OrionDbContext db)
         {
             this.configuration = configuration;
+            this.db = db;
         }
-        public ReportDTO Run(DateTime start, DateTime end, int jobId, string jobName,string reportDisplayName)
+        public ReportDTO<DataTable> Run(DateTime start, DateTime end, int jobId, string reportDisplayName)
         {
-            using(var conn = new SqlConnection(configuration.GetConnectionString("SiteConnection")))
+
+            var jobMatch = db.Jobs
+               .Include(x => x.Client)
+               .First(x => x.JobId == jobId);
+            var jobName = $"{jobMatch.Client.ClientCode}-{jobMatch.JobCode} {jobMatch.JobName}";
+
+            using (var conn = new SqlConnection(configuration.GetConnectionString("SiteConnection")))
             using(var cmd = conn.CreateCommand())
             {
                 conn.Open();
@@ -70,9 +81,9 @@ group by tc.Name, c.clientcode + '-' + j.JobCode, e.[name], c.clientcode + j.Job
                 });
             }
         }
-        private static ReportDTO MapToReport(SqlDataReader rdr, string reportName, Dictionary<string, string> runSettings)
+        private static ReportDTO<DataTable> MapToReport(SqlDataReader rdr, string reportName, Dictionary<string, string> runSettings)
         {
-            var rpt = new ReportDTO();
+            var rpt = new ReportDTO<DataTable>();
             var dt = new DataTable();
             dt.Load(rdr);
             rpt.Data = dt;

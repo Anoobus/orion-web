@@ -49,7 +49,7 @@ namespace orion.web.TimeEntries
         {
             
             var employeeForWeek = await employeeService.GetSingleEmployeeAsync(request.EmployeeId);
-            if(!request.RequestingUserIsAdmin && employeeForWeek.Name != request.RequestingUserName)
+            if(!request.RequestingUserIsAdmin && employeeForWeek.UserName != request.RequestingUserName)
             {
                 throw new UnauthorizedAccessException($"You are not allowed to view others time sheets");
             }

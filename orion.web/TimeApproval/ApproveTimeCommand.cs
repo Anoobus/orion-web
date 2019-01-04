@@ -73,7 +73,7 @@ namespace orion.web.TimeApproval
             if(isValidApprove)
             {
                 var approver = await employeeService.GetSingleEmployeeAsync(request.ApprovingUserId);
-                current.ApproverName = approver.Name;
+                current.ApproverName = approver.UserName;
                 current.ApprovalDate = DateTime.Now;
             }
             if(sendNotification)

@@ -9,7 +9,7 @@ namespace orion.web.Reports
 {
     public class ExcelExport
     {
-        public MemoryStream AsXls(ReportDTO rpt)
+        public MemoryStream AsXls(ReportDTO<DataTable> rpt)
         {
             var ms2 = new MemoryStream();
             var copy = new MemoryStream();
