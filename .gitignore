@@ -260,3 +260,6 @@ paket-files/
 __pycache__/
 *.pyc
 /sql-mount
+/sql-mount-001
+/.env
+/orion.web/appsettings.Compose.json

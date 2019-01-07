@@ -88,6 +88,7 @@ where
                 var employeeRows = new List<JobEmployees>();
                 while (await rdr.ReadAsync())
                 {
+
                     if(!firstRowSettingsRetrieved)
                     {
                         rpt.JobCode = rdr.GetSqlString(map[nameof(JobSummaryReportDataDTO.JobCode)]).Value;

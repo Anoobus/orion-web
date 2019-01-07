@@ -115,7 +115,7 @@ group by e.EmployeeId,
                     emps.Add(new PayPeriodEmployees()
                     {
                         Combined = rdr.GetDecimal(map[nameof(PayPeriodEmployees.Combined)]),
-                        EmployeeName = rdr.GetSqlString(map[nameof(PayPeriodEmployees.EmployeeName)]).Value,
+                        EmployeeName = rdr.IsDBNull(map[nameof(PayPeriodEmployees.EmployeeName)]) ? "" : rdr.GetSqlString(map[nameof(PayPeriodEmployees.EmployeeName)]).Value,
                         ExcusedNoPay = rdr.GetDecimal(map[nameof(PayPeriodEmployees.ExcusedNoPay)]),
                         Holiday = rdr.GetDecimal(map[nameof(PayPeriodEmployees.Holiday)]),
                         IsExempt = rdr.GetBoolean(map[nameof(PayPeriodEmployees.IsExempt)]),

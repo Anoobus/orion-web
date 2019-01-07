@@ -1,16 +1,25 @@
 version: '3'
 services:
-#  orion-web:
-#    build: .
-#    ports:
-#     - "80:8000"
-  sql:
+  orion-web:
+    build: .
+    environment:
+    - ASPNETCORE_ENVIRONMENT=${ENVIRONMENT}
+    ports:
+     - "80:80"
+     - "443:443"
+    links:
+     - orion-sql
+    volumes:     
+     - ./sql-mount-001:/mssql
+    depends_on:
+     - orion-sql
+  orion-sql:
     image: "microsoft/mssql-server-linux:2017-CU12"
     environment:
      - ACCEPT_EULA=Y
-     - SA_PASSWORD=g!Yl69a4l5muZ3fJ
+     - SA_PASSWORD=${SA_PASSWORD}
      - MSSQL_PID=Express
     volumes:     
-     - ./sql-mount:/var/opt/mssql
+     - ./sql-mount-001:/var/opt/mssql
     ports:
      - "1433:1433"

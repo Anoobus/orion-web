@@ -1,12 +1,15 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using orion.web.AspNetCoreIdentity;
 using orion.web.DataAccess.EF;
 using Serilog;
 using Serilog.Events;
 using System;
+using System.IO;
+using System.Threading;
 
 namespace orion.web.ApplicationStartup
 {
@@ -15,37 +18,57 @@ namespace orion.web.ApplicationStartup
         public static void Main(string[] args)
         {
             Log.Logger = new LoggerConfiguration()
-          .MinimumLevel.Debug()
-          .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
-          .Enrich.FromLogContext()
-          .WriteTo.Console()
+            .MinimumLevel.Debug()
+            .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+            .Enrich.FromLogContext()
+            .WriteTo.Console()
       // Add this line:
-      .WriteTo.File(
-          @"orion.app.logs",
-      fileSizeLimitBytes: 1_000_000,
-      shared: true,
-      flushToDiskInterval: TimeSpan.FromSeconds(1))
-          .CreateLogger();
+            .WriteTo.File(
+                @"orion.app.logs",
+                fileSizeLimitBytes: 1_000_000,
+                shared: true,
+                flushToDiskInterval: TimeSpan.FromSeconds(1))
+            .CreateLogger();
+
+            Log.Information("Starting web site");
+
+            var host = CreateWebHostBuilder(args).Build();
+
             try
             {
-                Log.Information("Starting web site");
-
-                var host = CreateWebHostBuilder(args).Build();
-                using(var serviceScope = host.Services.CreateScope())
+                var retryCount = 0;
+                var isInitialized = false;
+                while (retryCount < 3 && isInitialized == false)
                 {
-                    //if the DB is not yet migrated just do it now
-                    //this can be more elaborate as needed down the road
-                    serviceScope.ServiceProvider.GetService<ApplicationDbContext>().Database.Migrate();
+                    try
+                    {
+                        using (var serviceScope = host.Services.CreateScope())
+                        {
+                            //if the DB is not yet migrated just do it now
+                            //this can be more elaborate as needed down the road
+                            serviceScope.ServiceProvider.GetService<ApplicationDbContext>().Database.Migrate();
 
-                    //if the DB is not yet migrated just do it now
-                    //this can be more elaborate as needed down the road
-                    serviceScope.ServiceProvider.GetService<OrionDbContext>().Database.Migrate();
-                    var seed = new SeedDataRepository(serviceScope.ServiceProvider);
-                    seed.IntializeSeedData().Wait();
+                            //if the DB is not yet migrated just do it now
+                            //this can be more elaborate as needed down the road
+                            serviceScope.ServiceProvider.GetService<OrionDbContext>().Database.Migrate();
+                            var seed = new SeedDataRepository(serviceScope.ServiceProvider);
+                            seed.IntializeSeedData().Wait();
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Error(e, "Error while trying to initialize DB");
+                        if (retryCount >= 3)
+                        {
+                            throw;
+                        }
+                        Log.Warning("Waiting 25 seconds before retry");
+                        Thread.Sleep(25_000);
+                    }
+                    retryCount++;
                 }
-                host.Run();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Log.Fatal(e, "Host terminated unexpectedly");
                 throw;
@@ -54,6 +77,8 @@ namespace orion.web.ApplicationStartup
             {
                 Log.CloseAndFlush();
             }
+
+            host.Run();
         }
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>

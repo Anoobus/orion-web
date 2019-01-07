@@ -37,6 +37,10 @@ namespace orion.web.ApplicationStartup
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
+            Serilog.Log.Information("STARTING DB STUFF UP");
+            Serilog.Log.Information($"Site DB SETTINGS => {Configuration.GetConnectionString("SiteConnection")}");
+            Serilog.Log.Information($"Identity DB SETTINGS => {Configuration.GetConnectionString("SiteConnection")}");
+
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("IdentityConnection")));

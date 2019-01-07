@@ -4,7 +4,6 @@ using orion.web.TimeEntries;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using static orion.web.TimeEntries.TimeApprovalController;
 
 namespace orion.web.TimeApproval
 {
@@ -28,17 +27,19 @@ namespace orion.web.TimeApproval
         private readonly ITimeApprovalService timeApprovalService;
         private readonly ITimeService timeService;
         private readonly IEmployeeService employeeService;
+        private readonly ISmtpProxy smtpProxy;
 
-        public ApproveTimeCommand(ITimeApprovalService timeApprovalService, ITimeService timeService, IEmployeeService employeeService)
+        public ApproveTimeCommand(ITimeApprovalService timeApprovalService, ITimeService timeService, IEmployeeService employeeService, ISmtpProxy smtpProxy)
         {
             this.timeApprovalService = timeApprovalService;
             this.timeService = timeService;
             this.employeeService = employeeService;
+            this.smtpProxy = smtpProxy;
         }
 
         public async Task<CommandResult> ApplyApproval(TimeApprovalRequest request)
         {
-            var current = await timeApprovalService.GetAsync( request.WeekId, request.EmployeeId);
+            var current = await timeApprovalService.GetAsync(request.WeekId, request.EmployeeId);
             var isValidSubmit = request.NewApprovalState == TimeEntries.TimeApprovalStatus.Submitted &&
                 !(current.TimeApprovalStatus == TimeApprovalStatus.Submitted || current.TimeApprovalStatus == TimeApprovalStatus.Approved);
             var isValidReject = request.NewApprovalState == TimeEntries.TimeApprovalStatus.Rejected
@@ -48,15 +49,15 @@ namespace orion.web.TimeApproval
                 && request.ApprovingUserIsAdmin;
 
             var sendNotification = false;
-            if(isValidSubmit)
+            if (isValidSubmit)
             {
-                var time = await timeService.GetAsync( request.WeekId, request.EmployeeId);
+                var time = await timeService.GetAsync(request.WeekId, request.EmployeeId);
                 var totalOt = time.Sum(x => x.OvertimeHours);
                 var totalReg = time.Sum(x => x.Hours);
                 current.TotalOverTimeHours = totalOt;
                 current.TotalRegularHours = totalReg;
-                
-                if(totalOt > 0 || totalReg > 40)
+
+                if (totalOt > 0 || totalReg > 40)
                 {
                     current.TimeApprovalStatus = TimeApprovalStatus.Submitted;
                     sendNotification = true;
@@ -66,23 +67,26 @@ namespace orion.web.TimeApproval
                     current.TimeApprovalStatus = TimeApprovalStatus.Approved;
                 }
             }
-            if(isValidReject || isValidApprove)
+            if (isValidReject || isValidApprove)
             {
                 current.TimeApprovalStatus = request.NewApprovalState;
+                sendNotification = true;
             }
-            if(isValidApprove)
+            if (isValidApprove)
             {
                 var approver = await employeeService.GetSingleEmployeeAsync(request.ApprovingUserId);
                 current.ApproverName = approver.UserName;
                 current.ApprovalDate = DateTime.Now;
             }
-            if(sendNotification)
+            if (sendNotification)
             {
-                //SmtpProxy.Test();
+                var emp = await employeeService.GetSingleEmployeeAsync(request.EmployeeId);
+                var recipient = emp.UserName;
+                smtpProxy.SendMail("tim.thelen@gmail.com","THIS IS A TEST OF THE EMAIL SYSTEM", "THIS IS A SUBJECT FOR THE THING");
             }
             await timeApprovalService.Save(current);
             return new CommandResult(true);
-         
+
         }
     }
 }
