@@ -9,8 +9,8 @@ services:
      - "443:443"
     links:
      - orion-sql
-    volumes:     
-     - ./sql-mount-001:/mssql
+#    volumes:     
+#     - ./sql-mount-001:/mssql
     depends_on:
      - orion-sql
   orion-sql:
