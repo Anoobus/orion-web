@@ -5,7 +5,7 @@ services:
     environment:
     - ASPNETCORE_ENVIRONMENT=${ENVIRONMENT}
     ports:
-     - "80:80"
+     - "8080:80"
     links:
      - orion-sql
 #    volumes:     
@@ -21,4 +21,4 @@ services:
     volumes:     
      - ./sql-mount-001:/var/opt/mssql
     ports:
-     - "1433:1433"
+     - "1533:1433"
