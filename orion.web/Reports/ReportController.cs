@@ -34,7 +34,7 @@ namespace orion.web.Reports
         {
             var criteria = request.PayPeriodReportCriteria.Criteria;
             var rpt = await reportCreator.CreatePayPeriodReportAsync(criteria);
-            var (Steam, MimeType, Name) = reportWriter.GetFinishedResult(criteria, "Pay Period Report", rpt);
+            var (Steam, MimeType, Name) = reportWriter.GetFinishedResult(criteria,  rpt);
             return File(Steam, MimeType, Name);
         }
 
@@ -45,17 +45,17 @@ namespace orion.web.Reports
         {
             var criteria = request.ProjectStatusReportCriteria.Criteria;
             var rpt = await reportCreator.CreateJobSummaryReportAsync(criteria);
-            var (Steam, MimeType, Name) = reportWriter.GetFinishedResult(criteria, "Job Summary Report", rpt);
+            var (Steam, MimeType, Name) = reportWriter.GetFinishedResult(criteria,  rpt);
             return File(Steam, MimeType, Name);
         }
 
         [HttpPost]
         [Route("RunReport/" + ReportNames.JOB_DETAIL_REPORT)]
-        public ActionResult JobDetailReport(ReportSelectionViewModel request)
+        public async Task<ActionResult> JobDetailReport(ReportSelectionViewModel request)
         {
             var criteria = request.QuickJobTimeReportCriteria.Criteria;
-            var rpt = reportCreator.CreateJobDetailReport(criteria);
-            var (Steam, MimeType, Name) = reportWriter.GetFinishedResult(criteria, "Job Detail Report", rpt);
+            var rpt = await reportCreator.CreateQuickJobTimeReportAsync(criteria);
+            var (Steam, MimeType, Name) = reportWriter.GetFinishedResult(criteria, rpt);
             return File(Steam, MimeType, Name);
         }
     }

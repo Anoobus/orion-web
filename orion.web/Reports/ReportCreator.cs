@@ -15,21 +15,21 @@ namespace orion.web.Reports
     {
         Task<ReportDTO<PayPeriodReportDTO>> CreatePayPeriodReportAsync(PayPeriodReportCriteria settings);
         Task<ReportDTO<ProjectStatusReportDTO>> CreateJobSummaryReportAsync(ProjectStatusReportCriteria settings);
-        ReportDTO<DataTable> CreateJobDetailReport(QuickJobTimeReportCriteria settings);
+        Task<ReportDTO<QuickJobTimeReportDTO>> CreateQuickJobTimeReportAsync(QuickJobTimeReportCriteria settings);
     }
 
     public class ReportCreator : IReportCreator
     {
         private readonly IJobService jobService;
         private readonly IJobSummaryQuery jobSummaryQuery;
-        private readonly ISingleJobDetailQuery singleJobDetailQuery;
+        private readonly IQuickJobTimeReportQuery quickJobTimeReportQuery;
         private readonly IPayPeriodReportQuery payPeriodReportQuery;
 
-        public ReportCreator(IJobService jobService, IJobSummaryQuery jobSummaryQuery, ISingleJobDetailQuery singleJobDetailQuery, IPayPeriodReportQuery payPeriodReportQuery)
+        public ReportCreator(IJobService jobService, IJobSummaryQuery jobSummaryQuery, IQuickJobTimeReportQuery quickJobTimeReportQuery, IPayPeriodReportQuery payPeriodReportQuery)
         {
             this.jobService = jobService;
             this.jobSummaryQuery = jobSummaryQuery;
-            this.singleJobDetailQuery = singleJobDetailQuery;
+            this.quickJobTimeReportQuery = quickJobTimeReportQuery;
             this.payPeriodReportQuery = payPeriodReportQuery;
         }
 
@@ -47,12 +47,9 @@ namespace orion.web.Reports
                 int.Parse(settings.SelectedJobId));
         }
 
-        public ReportDTO<DataTable> CreateJobDetailReport(QuickJobTimeReportCriteria settings)
+        public async Task<ReportDTO<QuickJobTimeReportDTO>> CreateQuickJobTimeReportAsync(QuickJobTimeReportCriteria settings)
         {
-            return singleJobDetailQuery.Run(settings.PeriodSettings.Start,
-                settings.PeriodSettings.End,
-                int.Parse(settings.SelectedJobId),
-                "Job Detail Report");
+            return await quickJobTimeReportQuery.RunAsync(settings);
         }
     }
 }

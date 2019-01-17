@@ -60,7 +60,6 @@ namespace orion.web.ApplicationStartup
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             
             services.AddTransient<IJobSummaryQuery, ProjectStatusReportQuery>();
-            services.AddTransient<ISingleJobDetailQuery, SingleJobDetailQuery>();
             services.AddTransient<IUpdateEmployeeCommand, UpdateEmployeeCommand>();
             services.AddTransient<ICreateEmployeeCommand, CreateEmployeeCommand>();
             services.AddTransient<IClientService, ClientService>();

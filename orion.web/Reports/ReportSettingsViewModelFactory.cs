@@ -38,7 +38,7 @@ namespace orion.web.Reports
         {
             var vm = new ProjectStatusReportCriteria();
             vm.PeriodSettings = GetDefaultPeriodSettings();
-            vm.AvailableJobs = (await jobService.GetAsync()).ToList();
+            vm.AvailableJobs = (await jobService.GetAsync()).OrderBy(x => x.FullJobCodeWithName).ToList();
             var rpt = new ExcelReport<ProjectStatusReportCriteria>(ProjectStatusReportCriteria.PROJECT_STATUS_REPORT_NAME, vm, isCurrentUserAdmin);
             return rpt;
         }
@@ -47,7 +47,7 @@ namespace orion.web.Reports
         {
             var vm = new QuickJobTimeReportCriteria();
             vm.PeriodSettings = GetDefaultPeriodSettings();
-            vm.AvailableJobs = (await jobService.GetAsync()).ToList();
+            vm.AvailableJobs = (await jobService.GetAsync()).OrderBy(x => x.FullJobCodeWithName).ToList();
             var rpt = new ExcelReport<QuickJobTimeReportCriteria>(QuickJobTimeReportCriteria.QUICK_JOB_TIME_REPORT_NAME, vm, true);
             return rpt;
         }
@@ -58,7 +58,7 @@ namespace orion.web.Reports
             {
                 PayPeriodReportCriteria = GetPayPeriodReportViewModel(isCurrentUserAdmin),
                 QuickJobTimeReportCriteria = await GetJobDetailreportAsync(),
-                ProjectStatusReportCriteria = await GetProjectStatusReportCriteria(isCurrentUserAdmin)
+                ProjectStatusReportCriteria = await GetProjectStatusReportCriteria(false)
             };
             return vm;
         }
