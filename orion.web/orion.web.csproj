@@ -23,6 +23,7 @@
     <None Remove="docs\PayPeriodReport.xlsx" />
     <None Remove="docs\ProjectStatusReport.xlsx" />
     <None Remove="docs\QuickJobTimeReport.xlsx" />
+    <None Remove="orion.app.logs" />
   </ItemGroup>
 
   <ItemGroup>
