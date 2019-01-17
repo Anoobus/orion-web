@@ -10,7 +10,7 @@ namespace orion.web.TimeEntries
 {
     public interface ITimeApprovalService : IRegisterByConvention
     {
-        Task<TimeApprovalDTO> GetAsync( int weekId, int employeeId);
+        Task<TimeApprovalDTO> GetAsync(int weekId, int employeeId);
         Task Save(TimeApprovalDTO timeApprovalDTO);
         Task<IEnumerable<TimeApprovalDTO>> GetByStatus(DateTime? beginDateInclusive = null, DateTime? endDateInclusive = null, params TimeApprovalStatus[] withTimeApprovalStatus);
         Task UpdateTimeTotals(int weekId, int employeeId, decimal overtime, decimal regular);
@@ -27,12 +27,12 @@ namespace orion.web.TimeEntries
             this.db = db;
             //this.weekService = weekService;
         }
-        public async Task<TimeApprovalDTO> GetAsync( int weekId, int employeeId)
+        public async Task<TimeApprovalDTO> GetAsync(int weekId, int employeeId)
         {
             var emp = await db.Employees.SingleAsync(x => x.EmployeeId == employeeId);
 
-            var match = await db.TimeSheetApprovals.SingleOrDefaultAsync(x =>  x.WeekId == weekId && x.EmployeeId == employeeId);
-            if (match == null)
+            var match = await db.TimeSheetApprovals.SingleOrDefaultAsync(x => x.WeekId == weekId && x.EmployeeId == employeeId);
+            if(match == null)
             {
                 return new TimeApprovalDTO()
                 {
@@ -55,6 +55,9 @@ namespace orion.web.TimeEntries
                     ResponseReason = match.ResponseReason,
                     TimeApprovalStatus = mapped,
                     WeekId = match.WeekId,
+                    TotalOverTimeHours = match.TotalOverTimeHours,
+                    TotalRegularHours = match.TotalRegularHours,
+                    SubmittedDate = match.SubmittedDate,
                 };
             }
         }
@@ -66,16 +69,16 @@ namespace orion.web.TimeEntries
                                     .Include(z => z.Employee)
                                     .Where(x => statusAsString.Contains(x.TimeApprovalStatus));
 
-            if (beginDateInclusive.HasValue)
+            if(beginDateInclusive.HasValue)
             {
                 var week = WeekDTO.CreateWithWeekContaining(beginDateInclusive.Value);
-                baseQuery = baseQuery.Where(x =>  x.WeekId >= week.WeekId.Value);
+                baseQuery = baseQuery.Where(x => x.WeekId >= week.WeekId.Value);
             }
 
-            if (endDateInclusive.HasValue)
+            if(endDateInclusive.HasValue)
             {
                 var week = WeekDTO.CreateWithWeekContaining(endDateInclusive.Value);
-                baseQuery = baseQuery.Where(x =>  x.WeekId <= week.WeekId.Value);
+                baseQuery = baseQuery.Where(x => x.WeekId <= week.WeekId.Value);
             }
 
             var match = await baseQuery.ToListAsync();
@@ -114,7 +117,7 @@ namespace orion.web.TimeEntries
             var empId = db.Employees.FirstOrDefault(x => x.UserName == timeApprovalDTO.EmployeeName)?.EmployeeId ?? -1;
 
             var match = await db.TimeSheetApprovals.SingleOrDefaultAsync(x => x.WeekId == timeApprovalDTO.WeekId && x.EmployeeId == empId);
-            if (match == null)
+            if(match == null)
             {
                 match = new TimeSheetApproval()
                 {
@@ -124,10 +127,10 @@ namespace orion.web.TimeEntries
                 db.TimeSheetApprovals.Add(match);
             }
             var approver = db.Employees.FirstOrDefault(x => x.UserName == timeApprovalDTO.ApproverName)?.EmployeeId ?? 0;
-            if (timeApprovalDTO.TimeApprovalStatus == TimeApprovalStatus.Approved)
+            if(timeApprovalDTO.TimeApprovalStatus == TimeApprovalStatus.Approved)
             {
                 match.ApprovalDate = DateTime.Now;
-                if (match.SubmittedDate == null)
+                if(match.SubmittedDate == null)
                 {
                     match.SubmittedDate = DateTime.Now;
                 }
@@ -136,7 +139,7 @@ namespace orion.web.TimeEntries
             {
                 match.ApprovalDate = null;
             }
-            if (timeApprovalDTO.TimeApprovalStatus == TimeApprovalStatus.Submitted)
+            if(timeApprovalDTO.TimeApprovalStatus == TimeApprovalStatus.Submitted)
             {
                 match.SubmittedDate = DateTime.Now;
             }

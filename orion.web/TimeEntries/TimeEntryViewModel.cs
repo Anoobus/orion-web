@@ -27,47 +27,33 @@ namespace orion.web.TimeEntries
         }
     }
 
-    public class TimeEntryViewModel : Week<TimeSpentViewModel>
+    public class NewJobTaskCombo 
     {
-
-        public int? SelectedJobId { get; set; }
-        public int? SelectedTaskId { get; set; }
-        public string SelectedTaskCategory { get; set; }
-        public string RowId => $"{SelectedJobId}.{SelectedTaskId}";
         public IEnumerable<JobDTO> AvailableJobs { get; set; }
-        public IEnumerable<string> AvailableCategories { get
+        public IEnumerable<string> AvailableCategories
+        {
+            get
             {
                 if(AvailableTasks != null)
                 {
-                    return AvailableTasks.Select(x => x.TaskCategoryName).Distinct();
+                    return AvailableTasks.Select(x => x.Category.Name).Distinct();
                 }
                 return Enumerable.Empty<string>();
             }
         }
         public IEnumerable<TaskDTO> AvailableTasks { get; set; }
-         
-
-        public string SelectedJobCode()
-        {
-            var job = AvailableJobs.FirstOrDefault(x => x.JobId == SelectedJobId);
-            if(job != null)
-            {
-                return $"{job.Client.ClientCode}-{job.JobCode}";
-            }
-            return string.Empty;
-        }
-
-        public string SelectedEntryJobName()
-        {
-            var job = AvailableJobs.FirstOrDefault(x => x.JobId == SelectedJobId)?.JobName;
-            return job;
-        }
-
-        public string SelectedEntryTaskName()
-        {
-            return AvailableTasks.FirstOrDefault(x => x.TaskId == SelectedTaskId)?.Name;
-        }
-
-
+        public int? SelectedJobId { get; set; }
+        public int? SelectedTaskId { get; set; }
+        public string SelectedTaskCategory { get; set; }
+    }
+    public class TimeEntryViewModel : Week<TimeSpentViewModel>
+    {
+        public int? SelectedJobId { get; set; }
+        public int? SelectedTaskId { get; set; }
+        public string SelectedTaskCategory { get; set; }
+        public string RowId => $"{SelectedJobId}.{SelectedTaskId}";
+        public string SelectedJobCode { get; set; }
+        public string SelectedEntryJobName { get; set; }
+        public string SelectedEntryTaskName { get; set; }
     }
 }

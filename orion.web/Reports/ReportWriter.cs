@@ -10,15 +10,15 @@ namespace orion.web.Reports
 {
     public interface IReportWriter : IRegisterByConvention
     {
-        (MemoryStream Steam, string MimeType, string Name) GetFinishedResult<T>(T reportSettings, string fileName, ReportDTO<PayPeriodDataDTO> rpt) where T : new();
-        (MemoryStream Steam, string MimeType, string Name) GetFinishedResult<T>(T reportSettings, string fileName, ReportDTO<JobSummaryReportDataDTO> rpt) where T : new();
+        (MemoryStream Steam, string MimeType, string Name) GetFinishedResult<T>(T reportSettings, string fileName, ReportDTO<PayPeriodReportDTO> rpt) where T : new();
+        (MemoryStream Steam, string MimeType, string Name) GetFinishedResult<T>(T reportSettings, string fileName, ReportDTO<ProjectStatusReportDTO> rpt) where T : new();
         (MemoryStream Steam, string MimeType, string Name) GetFinishedResult<T>(T reportSettings, string fileName, ReportDTO<DataTable> rpt) where T : new();
     }
     public class ReportWriter : IReportWriter
     {
-        public (MemoryStream Steam, string MimeType, string Name) GetFinishedResult<T>(T reportSettings, string fileName, ReportDTO<PayPeriodDataDTO> rpt) where T : new()
+        public (MemoryStream Steam, string MimeType, string Name) GetFinishedResult<T>(T reportSettings, string fileName, ReportDTO<PayPeriodReportDTO> rpt) where T : new()
         {
-            var export = new PayPeriodExcelExport();
+            var export = new PayPeriodReportExcelExport();
             var memoryStream = export.AsXls(rpt);
             return (memoryStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"{fileName}.xlsx");
         }
@@ -30,9 +30,9 @@ namespace orion.web.Reports
             return (memoryStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"{fileName}.xlsx");
         }
 
-        public (MemoryStream Steam, string MimeType, string Name) GetFinishedResult<T>(T reportSettings, string fileName, ReportDTO<JobSummaryReportDataDTO> rpt) where T : new()
+        public (MemoryStream Steam, string MimeType, string Name) GetFinishedResult<T>(T reportSettings, string fileName, ReportDTO<ProjectStatusReportDTO> rpt) where T : new()
         {
-            var export = new JobSummaryExcelExport();
+            var export = new ProjectStatusReportExcelExport();
             var memoryStream = export.AsXls(rpt);
             return (memoryStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"{fileName}.xlsx");
 

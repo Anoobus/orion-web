@@ -7,24 +7,24 @@ using System.Linq;
 
 namespace orion.web.Reports
 {
-    public class JobSummaryExcelExport
+    public class ProjectStatusReportExcelExport
     {
         public const int LAST_ROW = 6;
         public const int EMPLOYEE_ROW_START = 5;
 
-        public MemoryStream AsXls(ReportDTO<JobSummaryReportDataDTO> rpt)
+        public MemoryStream AsXls(ReportDTO<ProjectStatusReportDTO> rpt)
         {
             var ms2 = new MemoryStream();
             var copy = new MemoryStream();
             var fName = $"fname-1-{Guid.NewGuid()}";
             var fName2 = $"fname-2-{Guid.NewGuid()}";
-            File.Copy("docs/JobReport.xlsx", $"{fName2}.xlsx");
+            File.Copy("docs/ProjectStatusReport.xlsx", $"{fName2}.xlsx");
 
             XSSFWorkbook workbook = new XSSFWorkbook($"{fName2}.xlsx");
             try
             {
 
-                ISheet excelSheet = workbook.GetSheet("JobReport");
+                ISheet excelSheet = workbook.GetSheet("ProjectStatusReport");
                 SetHeaderValues(rpt, excelSheet);
 
                 var totalRecs = 0;
@@ -92,7 +92,7 @@ namespace orion.web.Reports
 
         }
 
-        private static void SetHeaderValues(ReportDTO<JobSummaryReportDataDTO> rpt, ISheet excelSheet)
+        private static void SetHeaderValues(ReportDTO<ProjectStatusReportDTO> rpt, ISheet excelSheet)
         {
             var row1 = excelSheet.GetRow(0);
             row1.GetCell(1).SetCellValue(rpt.Data.JobCode);
@@ -104,7 +104,7 @@ namespace orion.web.Reports
             row3.GetCell(3).SetCellValue($"{rpt.Data.PeriodStart.ToShortDateString()} thru {rpt.Data.PeriodEnd.ToShortDateString()}");
         }
 
-        private static void WriteReportMetadata(ReportDTO<JobSummaryReportDataDTO> report, ISheet excelSheet,  int lastRow)
+        private static void WriteReportMetadata(ReportDTO<ProjectStatusReportDTO> report, ISheet excelSheet,  int lastRow)
         {
             var rowCount = 0;
             foreach (var item in report.RunSettings)

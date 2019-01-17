@@ -28,13 +28,13 @@
         <a href="@Url.Action(nameof(TimeEntryController.Edit),"TimeEntry",new { employeeId = Model.EmployeeId, weekId = Model.Week.WeekId + 1 })" class="btn btn-default"> Next Week <span class="glyphicon glyphicon-chevron-right"></span></a>
     </div>
 </div>
-<form asp-action="Save" method="post"  >
+<form asp-action="Save" method="post">
 
     <div class="row">
         <div class="col-md-12">
             <div asp-validation-summary="All" class="text-danger"></div>
-            @if (Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Approved
-             || Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Submitted)
+            @if(Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Approved
+            || Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Submitted)
             {
                 <div class="row">
                     <div class="col-md-12">
@@ -102,7 +102,7 @@
                 </tr>
                 @{
                     int i = 0;
-                    foreach (var thing in Model.TimeEntryRow)
+                    foreach(var thing in Model.TimeEntryRow)
                     {
                         @Html.EditorFor(m => thing, "~/Views/TimeEntry/TimeEntryRow.cshtml", "TimeEntryRow[" + i++ + "]")
                     }
@@ -137,24 +137,27 @@
     <div>
         <div class="form-group">
             <a asp-action="Index" class="btn btn-default">Back to List</a>
-            @if (Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Unkown
-    || Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Rejected)
+            @if(Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Unkown
+  || Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Rejected)
             {
                 <input type="submit" name="postType" value="Copy Job/Tasks From Previous Week" class="btn btn-default" />
-                <input type="submit" name="postType" value="Save" class="btn btn-default" />
+                <input id="save-btn" type="submit" name="postType" value="Save" class="btn btn-default" />
                 <input type="submit" name="postType" value="RemoveRow" class="btn btn-default" style="display:none" />
-                <input type="submit" name="postType" value="Submit" class="btn btn-success" />
+                <a href="#Submit" data-toggle="modal" id="SubmitData" class="btn btn-success" data-target="#submitModal"> Submit</a>
+
+                @*<input type="submit" name="postType" value="Submit" class="btn btn-success" />*@
+
             }
 
-            @if (User.IsInRole(UserRoleName.Admin))
+            @if(User.IsInRole(UserRoleName.Admin))
             {
-                @if (Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Submitted)
+                @if(Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Submitted)
                 {
                     <input type="submit" name="postType" class="btn btn-success" value="Approve" id="btnApprove" />
                 }
 
-                @if (Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Submitted
-         || Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Approved)
+                @if(Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Submitted
+       || Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Approved)
                 {
                     <input type="submit" name="postType" class="btn btn-warning" value="Reject" id="btnReject" />
                 }
@@ -163,6 +166,22 @@
         </div>
     </div>
 
+    <div class="modal fade" id="submitModal" tabindex="-1" role="dialog" aria-labelledby="submitModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="submitModalLabel">Submit Time</h4>
+                </div>
+                <div class="modal-body">
+                   Are you sure you want to submit your time?
+                </div>
+                <div class="modal-footer">
+                    <input type="submit" name="postType" value="Submit" class="btn btn-success" />
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Modal -->
     <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -172,7 +191,7 @@
                     <h4 class="modal-title" id="exampleModalLabel">Add Job To Time Sheet</h4>
                 </div>
                 <div class="modal-body">
-                    @if (Model.NewEntry.AvailableJobs.Any())
+                    @if(Model.NewEntry.AvailableJobs.Any())
                     {
                         <div class="form-group">
 
@@ -186,10 +205,10 @@
                             </select>
                             <select asp-for="NewEntry.SelectedTaskId" class="form-control">
                                 <option>Select Task</option>
-                                @foreach (var task in Model.NewEntry.AvailableTasks)
+                                @foreach(var task in Model.NewEntry.AvailableTasks)
                                 {
-                                    <option value="@task.TaskId" class="@task.TaskCategoryName">
-                                        @task.Name
+                                    <option value="@task.TaskId" class="@task.Category.Name">
+                                        @task.LegacyCode - @task.Name
                                     </option>
                                 }
                             </select>
@@ -211,7 +230,7 @@
     </div>
 
     <input asp-for="ApprovalStatus" type="hidden" />
-    @if (User.IsInRole(UserRoleName.Admin))
+    @if(User.IsInRole(UserRoleName.Admin))
     {
         <input type="hidden" id="IsAdmin" value="true" />
     }
@@ -272,7 +291,14 @@
                     $('#ModalSubmit').val("Add Task");
                 }, 300);
             });
-
+            //enter key
+            $('form').bind('keypress', function (e) {
+                if (e.keyCode == 13) {
+                    e.preventDefault();
+                    $('#save-btn').click();
+                }
+            });
+            
             $('#NewEntry_SelectedTaskCategory').change((event) => {
                 const target = event.target.value;
                 $('#NewEntry_SelectedTaskId option').hide().removeAttr("selected");

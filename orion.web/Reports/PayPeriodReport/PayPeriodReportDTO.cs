@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace orion.web.Reports
 {
-    public class PayPeriodDataDTO
+    public class PayPeriodReportDTO
     {
         public IEnumerable<PayPeriodEmployees> Employees { get; set; }
         public DateTime PayPeriodState { get; set; }
@@ -17,10 +17,9 @@ namespace orion.web.Reports
         public bool IsExempt { get; set; }
         public decimal Regular { get; set; }
         public decimal Overtime { get; set; }
-        public decimal Vacation { get; set; }
-        public decimal Sick { get; set; }
-        public decimal Personal { get; set; }
+        public decimal PTO { get; set; }
         public decimal Holiday { get; set; }
+        public decimal ExcusedWithPay { get; set; }
         public decimal ExcusedNoPay { get; set; }
         public decimal Combined { get; set; }
     }

@@ -49,7 +49,7 @@ namespace orion.web.Jobs
                 AllJobsWithAssociationStatus = jobs.OrderBy(x => x.FullJobCode).ToDictionary(x => x, x => myJobs.Any(z => z.JobId == x.JobId)),
                 HeaderHelp = new JobDTO()
             };
-            return View("List", vm);
+            return View("JobList", vm);
         }
 
         public async System.Threading.Tasks.Task<ActionResult> AddJobForCurrentUser(int id)
@@ -76,8 +76,7 @@ namespace orion.web.Jobs
             return RedirectToAction(nameof(List));
         }
 
-        // GET: Client/Details/5
-        public async System.Threading.Tasks.Task<ActionResult> EditAsync(int id)
+        public async System.Threading.Tasks.Task<ActionResult> Edit(int id)
         {
             var job = (await jobService.GetAsync()).SingleOrDefault(x => x.JobId == id);
             return View("Details", job);

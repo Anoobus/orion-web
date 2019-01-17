@@ -7,38 +7,67 @@
     <div class="col-md-3">
         <ul class="nav nav-stacked">
 
-            @foreach (var rpt in Model.AvailableReports)
+            @foreach(var rpt in Model.AvailableReports())
             {
-                <li class="active">
-                    <a href="#">   @rpt </a>
+                <li >
+                    <a href="#" class="rpt-link btn btn-default" rpt-name="@rpt" >   @rpt </a>
                 </li>
             }
         </ul>
 
     </div>
     <div class="col-md-9">
-        <div class="panel panel-default report-panel" id="pay-period-report">
-            <div class="panel-heading">Pay Period report </div>
-            <div class="panel-body">
-                @Html.EditorFor(m => Model.PayPeriodReport, "~/Views/Reports/PayPeriodReport.cshtml")
+        @if(Model.PayPeriodReportCriteria.CanView)
+        {
+            <div class="panel panel-default report-panel" id="pay-period-report" rpt-section="@Model.PayPeriodReportCriteria.ReportName" style="display:none">
+                <div class="panel-heading">Pay Period report </div>
+                <div class="panel-body">
+                    @Html.EditorFor(m => Model.PayPeriodReportCriteria.Criteria, "~/Views/Reports/PayPeriodReportCriteria.cshtml" )
+                </div>
             </div>
-        </div>
+        }
 
-        <div class="panel panel-default report-panel" id="job-summary-report">
-            <div class="panel-heading">Job Summary Report </div>
-            <div class="panel-body">
-                @Html.EditorFor(m => Model.JobSummaryReport, "~/Views/Reports/JobSummaryReport.cshtml")
+        @if(Model.ProjectStatusReportCriteria.CanView)
+        {
+            <div class="panel panel-default report-panel" id="job-summary-report" rpt-section="@Model.ProjectStatusReportCriteria.ReportName" style="display:none">
+                <div class="panel-heading">Job Summary Report </div>
+                <div class="panel-body">
+                    @Html.EditorFor(m => Model.ProjectStatusReportCriteria.Criteria, "~/Views/Reports/JobSummaryReport.cshtml")
+                </div>
             </div>
-        </div>
+        }
 
-        <div class="panel panel-default  report-panel" id="job-detail-report">
-            <div class="panel-heading">Job Detail Report </div>
-            <div class="panel-body">
-                @Html.EditorFor(m => Model.JobDetailReport, "~/Views/Reports/JobDetailReport.cshtml")
+        @if(Model.QuickJobTimeReportCriteria.CanView)
+        {
+            <div class="panel panel-default  report-panel" id="job-detail-report" rpt-section="@Model.QuickJobTimeReportCriteria.ReportName" style="display:none">
+                <div class="panel-heading">Job Detail Report </div>
+                <div class="panel-body">
+                    @Html.EditorFor(m => Model.QuickJobTimeReportCriteria.Criteria, "~/Views/Reports/JobDetailReport.cshtml")
+                </div>
             </div>
-        </div>
+        }
     </div>
 </div>
+
+
+@section scripts {
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            $("a.rpt-link").click(function (e) {
+                e.preventDefault();
+                let selection = $(e.target).attr('rpt-name');
+                $('div[rpt-section]:not(div[rpt-section="' + selection + '"])').hide();
+                $('div[rpt-section="' + selection + '"]').show();
+            });
+
+            $("div[rpt-section]:first").show();
+        });
+
+
+
+    </script>
+}
 
 
 

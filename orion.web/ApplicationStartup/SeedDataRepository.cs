@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using System.Threading;
+using Microsoft.EntityFrameworkCore;
 
 namespace orion.web.ApplicationStartup
 {
@@ -90,6 +91,9 @@ namespace orion.web.ApplicationStartup
                 }
                 Log.Information("Initialize seed data complete");
                 await db.SaveChangesAsync();
+
+
+              
             }
         }
     }

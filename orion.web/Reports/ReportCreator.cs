@@ -1,5 +1,8 @@
 ﻿using orion.web.Common;
 using orion.web.Jobs;
+using orion.web.Reports.PayPeriodReport;
+using orion.web.Reports.ProjectStatusReport;
+using orion.web.Reports.QuickJobTimeReport;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -10,9 +13,9 @@ namespace orion.web.Reports
 {
     public interface IReportCreator : IRegisterByConvention
     {
-        Task<ReportDTO<PayPeriodDataDTO>> CreatePayPeriodReportAsync(PayPeriodReport settings);
-        Task<ReportDTO<JobSummaryReportDataDTO>> CreateJobSummaryReportAsync(JobSummaryReportSettings settings);
-        ReportDTO<DataTable> CreateJobDetailReport(JobDetailReport settings);
+        Task<ReportDTO<PayPeriodReportDTO>> CreatePayPeriodReportAsync(PayPeriodReportCriteria settings);
+        Task<ReportDTO<ProjectStatusReportDTO>> CreateJobSummaryReportAsync(ProjectStatusReportCriteria settings);
+        ReportDTO<DataTable> CreateJobDetailReport(QuickJobTimeReportCriteria settings);
     }
 
     public class ReportCreator : IReportCreator
@@ -30,12 +33,12 @@ namespace orion.web.Reports
             this.payPeriodReportQuery = payPeriodReportQuery;
         }
 
-        public async Task<ReportDTO<PayPeriodDataDTO>> CreatePayPeriodReportAsync(PayPeriodReport settings)
+        public async Task<ReportDTO<PayPeriodReportDTO>> CreatePayPeriodReportAsync(PayPeriodReportCriteria settings)
         {
             return await payPeriodReportQuery.RunAsync(settings.PayPeriodEnd);
         }
 
-        public async Task<ReportDTO<JobSummaryReportDataDTO>> CreateJobSummaryReportAsync(JobSummaryReportSettings settings)
+        public async Task<ReportDTO<ProjectStatusReportDTO>> CreateJobSummaryReportAsync(ProjectStatusReportCriteria settings)
         {
             return await jobSummaryQuery.RunAsync(settings.PeriodSettings.Start,
                 settings.PeriodSettings.End,
@@ -44,7 +47,7 @@ namespace orion.web.Reports
                 int.Parse(settings.SelectedJobId));
         }
 
-        public ReportDTO<DataTable> CreateJobDetailReport(JobDetailReport settings)
+        public ReportDTO<DataTable> CreateJobDetailReport(QuickJobTimeReportCriteria settings)
         {
             return singleJobDetailQuery.Run(settings.PeriodSettings.Start,
                 settings.PeriodSettings.End,

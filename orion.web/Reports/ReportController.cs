@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using orion.web.Employees;
 using System.Threading.Tasks;
 
 namespace orion.web.Reports
@@ -23,7 +24,7 @@ namespace orion.web.Reports
 
         public async Task<ActionResult> Index()
         {
-            var vm = await reportSettingsViewModelFactory.GetReportSelectionViewModelAsync();
+            var vm = await reportSettingsViewModelFactory.GetReportSelectionViewModelAsync(User.IsInRole(UserRoleName.Admin));
             return View("ReportsIndex", vm);
         }
 
@@ -31,8 +32,9 @@ namespace orion.web.Reports
         [Route("RunReport/" + ReportNames.PAY_PERIOD_REPORT)]
         public async Task<ActionResult> PayPeriodReport(ReportSelectionViewModel request)
         {
-            var rpt = await reportCreator.CreatePayPeriodReportAsync(request.PayPeriodReport);
-            var (Steam, MimeType, Name) = reportWriter.GetFinishedResult(request.PayPeriodReport, "Pay Period Report", rpt);
+            var criteria = request.PayPeriodReportCriteria.Criteria;
+            var rpt = await reportCreator.CreatePayPeriodReportAsync(criteria);
+            var (Steam, MimeType, Name) = reportWriter.GetFinishedResult(criteria, "Pay Period Report", rpt);
             return File(Steam, MimeType, Name);
         }
 
@@ -41,8 +43,9 @@ namespace orion.web.Reports
         [Route("RunReport/" + ReportNames.JOBS_SUMMARY_REPORT)]
         public async Task<ActionResult> JobSummaryReport(ReportSelectionViewModel request)
         {
-            var rpt = await reportCreator.CreateJobSummaryReportAsync(request.JobSummaryReport);
-            var (Steam, MimeType, Name) = reportWriter.GetFinishedResult(request.JobSummaryReport,"Job Summary Report", rpt);
+            var criteria = request.ProjectStatusReportCriteria.Criteria;
+            var rpt = await reportCreator.CreateJobSummaryReportAsync(criteria);
+            var (Steam, MimeType, Name) = reportWriter.GetFinishedResult(criteria, "Job Summary Report", rpt);
             return File(Steam, MimeType, Name);
         }
 
@@ -50,8 +53,9 @@ namespace orion.web.Reports
         [Route("RunReport/" + ReportNames.JOB_DETAIL_REPORT)]
         public ActionResult JobDetailReport(ReportSelectionViewModel request)
         {
-            var rpt = reportCreator.CreateJobDetailReport(request.JobDetailReport);
-            var (Steam, MimeType, Name) = reportWriter.GetFinishedResult(request.JobDetailReport, "Job Detail Report", rpt);
+            var criteria = request.QuickJobTimeReportCriteria.Criteria;
+            var rpt = reportCreator.CreateJobDetailReport(criteria);
+            var (Steam, MimeType, Name) = reportWriter.GetFinishedResult(criteria, "Job Detail Report", rpt);
             return File(Steam, MimeType, Name);
         }
     }

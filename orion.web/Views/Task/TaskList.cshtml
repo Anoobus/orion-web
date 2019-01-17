@@ -1,0 +1,69 @@
+﻿@model orion.web.JobsTasks.TaskListViewModel
+<ol class="breadcrumb">
+    <li class="breadcrumb-item active"> Task List</li>
+</ol>
+<div class="row">
+
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <div class="form-group ">
+                <a class="btn  btn-default  btn-margin-right pull-right " asp-action="Create">Create New</a>
+                <input id="quick-filter" type="text" placeholder="quick filter rows" class="input form-control" />
+            </div>
+        </div>
+
+
+        <div class="panel-body">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th class="job-code-link-cell">
+                            @Html.DisplayNameFor(model => model.HeaderHelp.Category)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.HeaderHelp.Name)
+                        </th>
+                        <th class="job-code-link-cell">
+                            @Html.DisplayNameFor(model => model.HeaderHelp.UsageStatus)
+                        </th>
+                    </tr>
+
+                </thead>
+                <tbody id="table-data">
+                    @foreach(var item in Model.Tasks)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Category.Name)
+                            </td>
+                            <td>
+                                @Html.ActionLink($"{item.LegacyCode}-{item.Name}", "Edit", new { id = item.TaskId })
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.UsageStatus.Name)
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+
+
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#quick-filter").on("keyup", function () {
+                var value = $(this).val().toLowerCase();
+                $("#table-data tr").filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+        });
+
+    </script>
+}

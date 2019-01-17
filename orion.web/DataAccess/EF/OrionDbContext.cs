@@ -19,6 +19,7 @@ namespace orion.web.DataAccess.EF
         public DbSet<Site> Sites { get; set; }
         public DbSet<JobTask> JobTasks { get; set; }
         public DbSet<TaskCategory> TaskCategories { get; set; }
+        public DbSet<UsageStatus> UsageStatuses { get; set; }
         public DbSet<TimeEntry> TimeEntries { get; set; }
         public DbSet<TimeSheetApproval> TimeSheetApprovals { get; set; }
 

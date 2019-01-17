@@ -7,6 +7,7 @@ using orion.web.AspNetCoreIdentity;
 using orion.web.DataAccess.EF;
 using Serilog;
 using Serilog.Events;
+using Serilog.Sinks.SystemConsole.Themes;
 using System;
 using System.IO;
 using System.Threading;
@@ -21,7 +22,7 @@ namespace orion.web.ApplicationStartup
             .MinimumLevel.Debug()
             .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
             .Enrich.FromLogContext()
-            .WriteTo.Console()
+            .WriteTo.Console(theme: Serilog.Sinks.SystemConsole.Themes.AnsiConsoleTheme.Code)
       // Add this line:
             .WriteTo.File(
                 @"orion.app.logs",
@@ -54,6 +55,7 @@ namespace orion.web.ApplicationStartup
                             var seed = new SeedDataRepository(serviceScope.ServiceProvider);
                             seed.IntializeSeedData().Wait();
                         }
+                        isInitialized = true;
                     }
                     catch (Exception e)
                     {

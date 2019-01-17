@@ -6,7 +6,7 @@ namespace orion.web.TimeEntries
     {
         public WeekIdentifier Week { get; set; }
         public List<TimeEntryViewModel> TimeEntryRow { get; set; }
-        public TimeEntryViewModel NewEntry { get; set; }
+        public NewJobTaskCombo NewEntry { get; set; }
         public int EmployeeId { get; set; }
         public TimeApprovalStatus ApprovalStatus { get; set; }
         public string SelectedRowId { get; set; }

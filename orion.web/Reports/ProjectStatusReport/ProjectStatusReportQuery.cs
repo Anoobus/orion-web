@@ -12,17 +12,17 @@ namespace orion.web.Reports
 {
     public interface IJobSummaryQuery
     {
-        Task<ReportDTO<JobSummaryReportDataDTO>> RunAsync(DateTime start, DateTime end, bool showEmptyJobs, string reportDisplayName, int jobId);
+        Task<ReportDTO<ProjectStatusReportDTO>> RunAsync(DateTime start, DateTime end, bool showEmptyJobs, string reportDisplayName, int jobId);
     }
-    public class JobSummaryQuery : IJobSummaryQuery
+    public class ProjectStatusReportQuery : IJobSummaryQuery
     {
         private readonly IConfiguration configuration;
 
-        public JobSummaryQuery(IConfiguration configuration)
+        public ProjectStatusReportQuery(IConfiguration configuration)
         {
             this.configuration = configuration;
         }
-        public async Task<ReportDTO<JobSummaryReportDataDTO>> RunAsync(DateTime start, DateTime end, bool showEmptyJobs, string reportDisplayName, int jobId)
+        public async Task<ReportDTO<ProjectStatusReportDTO>> RunAsync(DateTime start, DateTime end, bool showEmptyJobs, string reportDisplayName, int jobId)
         {
             using(var conn = new SqlConnection(configuration.GetConnectionString("SiteConnection")))
             using(var cmd = conn.CreateCommand())
@@ -34,13 +34,13 @@ namespace orion.web.Reports
 
 Select " +
 
- $"	min(Convert(varchar(10),Isnull(te.Date,@WeekStart), 101)) as  {nameof(JobSummaryReportDataDTO.PeriodStart)}, " 
-+ $"	max(Convert(varchar(10),isnull( te.Date,@WeekEnd),101)) as {nameof(JobSummaryReportDataDTO.PeriodEnd)},    "
+ $"	min(Convert(varchar(10),Isnull(te.Date,@WeekStart), 101)) as  {nameof(ProjectStatusReportDTO.PeriodStart)}, " 
++ $"	max(Convert(varchar(10),isnull( te.Date,@WeekEnd),101)) as {nameof(ProjectStatusReportDTO.PeriodEnd)},    "
 + $"	e.First + ', ' + e.Last  as  {nameof(JobEmployees.EmployeeName)}, "
-+ $"	c.clientcode + '-' + j.JobCode  as  {nameof(JobSummaryReportDataDTO.JobCode)}, "
-+ $"	j.JobName as  {nameof(JobSummaryReportDataDTO.JobName)},"
-+ $"	c.ClientName as  {nameof(JobSummaryReportDataDTO.ClientName)}, " 
-+ $"    s.SiteName as  {nameof(JobSummaryReportDataDTO.SiteName)}, "
++ $"	c.clientcode + '-' + j.JobCode  as  {nameof(ProjectStatusReportDTO.JobCode)}, "
++ $"	j.JobName as  {nameof(ProjectStatusReportDTO.JobName)},"
++ $"	c.ClientName as  {nameof(ProjectStatusReportDTO.ClientName)}, " 
++ $"    s.SiteName as  {nameof(ProjectStatusReportDTO.SiteName)}, "
 + $"	jt.ShortName as {nameof(JobEmployees.TaskName)}, "
 + $"	tc.Name as {nameof(JobEmployees.TaskCategory)}, "
 + $"	isnull(sum(te.hours),0) as {nameof(JobEmployees.Regular)}, "
@@ -78,7 +78,7 @@ where
                 var rdr = cmd.ExecuteReader();
 
                 var map = GetColumnMap(rdr.GetColumnSchema());
-                var rpt = new JobSummaryReportDataDTO()
+                var rpt = new ProjectStatusReportDTO()
                 {
                     PeriodEnd = end,
                     PeriodStart = start
@@ -91,10 +91,10 @@ where
 
                     if(!firstRowSettingsRetrieved)
                     {
-                        rpt.JobCode = rdr.GetSqlString(map[nameof(JobSummaryReportDataDTO.JobCode)]).Value;
-                        rpt.JobName = rdr.GetSqlString(map[nameof(JobSummaryReportDataDTO.JobName)]).Value;
-                        rpt.SiteName = rdr.GetSqlString(map[nameof(JobSummaryReportDataDTO.SiteName)]).Value;
-                        rpt.ClientName = rdr.GetSqlString(map[nameof(JobSummaryReportDataDTO.ClientName)]).Value;
+                        rpt.JobCode = rdr.GetSqlString(map[nameof(ProjectStatusReportDTO.JobCode)]).Value;
+                        rpt.JobName = rdr.GetSqlString(map[nameof(ProjectStatusReportDTO.JobName)]).Value;
+                        rpt.SiteName = rdr.GetSqlString(map[nameof(ProjectStatusReportDTO.SiteName)]).Value;
+                        rpt.ClientName = rdr.GetSqlString(map[nameof(ProjectStatusReportDTO.ClientName)]).Value;
                         firstRowSettingsRetrieved = true;
                     }
                     employeeRows.Add(new JobEmployees()
@@ -108,7 +108,7 @@ where
                     });
                 }
                 rpt.Employees = employeeRows;
-                return new ReportDTO<JobSummaryReportDataDTO>()
+                return new ReportDTO<ProjectStatusReportDTO>()
                 {
                     Data = rpt,
                     ReportName = "Pay Period Report",
@@ -131,7 +131,7 @@ where
             {
                 if (!ColumnMap.Any())
                 {
-                    var rptPropNames = typeof(JobSummaryReportDataDTO).GetProperties();
+                    var rptPropNames = typeof(ProjectStatusReportDTO).GetProperties();
                     foreach (var prop in rptPropNames)
                     {
                         var match = cols.SingleOrDefault(x => x.ColumnName == prop.Name);

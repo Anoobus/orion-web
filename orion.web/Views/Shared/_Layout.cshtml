@@ -11,16 +11,16 @@
     <link rel="stylesheet" href="~/css/lib/animate.css" />
 
     @*<environment include="Development">
-        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
-        <link rel="stylesheet" href="~/css/site.css" />
-        <link rel="stylesheet" href="~/css/lib/animate.css" />
-    </environment>
-    <environment exclude="Development">
-        <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/css/bootstrap.min.css"
-              asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
-              asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
-        <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
-    </environment>*@
+            <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+            <link rel="stylesheet" href="~/css/site.css" />
+            <link rel="stylesheet" href="~/css/lib/animate.css" />
+        </environment>
+        <environment exclude="Development">
+            <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/css/bootstrap.min.css"
+                  asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
+                  asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
+            <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
+        </environment>*@
 
 
 
@@ -37,8 +37,8 @@
                     <span class="icon-bar"></span>
                 </button>
                 <div class="navbar-brand ">
-                        <img src="~/images/orion_logo_brand.png" style="margin:0px;padding:0px;height:1.5em"/>
-                    
+                    <img src="~/images/orion_logo_brand.png" style="margin:0px;padding:0px;height:1.5em" />
+
                 </div>
             </div>
 
@@ -47,22 +47,29 @@
                 {
                 <ul class="nav navbar-nav">
                     <li><a asp-controller="Home" asp-action="Index">Home</a></li>
-                    @if (User.IsInRole(UserRoleName.Admin))
+                    @if(User.IsInRole(UserRoleName.Admin))
                     {
-                        <li><a asp-controller="Jobs" asp-action="Index">Jobs</a></li>
+                        <li>
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">System Management <b class="caret"></b></a>
+                            <ul class="dropdown-menu multi-level">
+                                <li><a asp-controller="Jobs" asp-action="Index">Jobs</a></li>
+                                <li><a asp-controller="Task" asp-action="List">Tasks</a></li>
+                                <li><a asp-controller="Employee" asp-action="List">Employees</a></li>
+                                <li><a asp-controller="Jobs" asp-action="Index">Create New Job</a></li>
+                            </ul>
+                        </li>
                     }
                     else
                     {
                         <li><a asp-controller="Jobs" asp-action="Index">My Jobs</a></li>
                     }
                     <li><a asp-controller="TimeEntry" asp-action="Index">Time Entry</a></li>
-                    @if (User.IsInRole(UserRoleName.Admin))
+                    @if(User.IsInRole(UserRoleName.Admin))
                     {
-                        <li><a asp-controller="Employee" asp-action="List">Employees</a></li>
-                        <li><a asp-controller="TimeApproval" asp-action="Index">Time Approval</a></li>
-                        <li><a asp-controller="Reports" asp-action="Index">View Reports</a></li>
-                    }
 
+                        <li><a asp-controller="TimeApproval" asp-action="Index">Time Approval</a></li>
+                    }
+                    <li><a asp-controller="Reports" asp-action="Index">View Reports</a></li>
                 </ul>
                 }
                 @await Html.PartialAsync("_LoginPartial")

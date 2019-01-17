@@ -5,13 +5,17 @@
         <div style="vertical-align:middle; display:inline-block">
             <a class="row-action" href="#edit" row-id="@Model.RowId" data-toggle="modal" data-target="#exampleModal"><span class="glyphicon glyphicon-edit"></span></a>
             <a class="row-action" href="#remove" row-id="@Model.RowId"><span class="glyphicon glyphicon-trash"></span></a>
+            @Html.HiddenFor(model => model.RowId)
+            @Html.HiddenFor(model => model.SelectedTaskId)
+            @Html.HiddenFor(model => model.SelectedJobId)
         </div>
         <div style="vertical-align:middle; display:inline-block; text-align:left">
             <label for="row-@Model.RowId">
-                @Model.SelectedJobCode() / @Model.SelectedEntryTaskName()
+                @Model.SelectedJobCode / <span class="text-muted">@Model.SelectedEntryJobName</span>
             </label>
-            <label for="row-@Model.RowId" class="text-muted">
-                @Model.SelectedEntryJobName()
+            <br />
+            <label for="row-@Model.RowId">
+                @Model.SelectedEntryTaskName
             </label>
         </div>       
     </td>

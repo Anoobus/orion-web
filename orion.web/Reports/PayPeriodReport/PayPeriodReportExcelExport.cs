@@ -7,14 +7,14 @@ using System.Linq;
 
 namespace orion.web.Reports
 {
-    public class PayPeriodExcelExport
+    public class PayPeriodReportExcelExport
     {
         public const int LAST_ROW = 11;
         public const int EXEMPT_START = 3;
         public const int NON_EXEMPT_START = 5;
         public const int GRAND_TOTAL_ROW = 8;
 
-        public MemoryStream AsXls(ReportDTO<PayPeriodDataDTO> rpt)
+        public MemoryStream AsXls(ReportDTO<PayPeriodReportDTO> rpt)
         {
             var ms2 = new MemoryStream();
             var copy = new MemoryStream();
@@ -98,7 +98,7 @@ namespace orion.web.Reports
 
         }
 
-        private static void WriteReportMetadata(ReportDTO<PayPeriodDataDTO> report, ISheet excelSheet, int exemptRows, int nonExemptRows, int lastRow)
+        private static void WriteReportMetadata(ReportDTO<PayPeriodReportDTO> report, ISheet excelSheet, int exemptRows, int nonExemptRows, int lastRow)
         {
             var rowCount = 0;
             foreach (var item in report.RunSettings)
@@ -112,7 +112,7 @@ namespace orion.web.Reports
         {
 
             var totalRow = excelSheet.GetRow(GRAND_TOTAL_ROW + exemptRows + nonExemptRows);
-            var columns = new string[] { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K" };
+            var columns = new string[] { "A", "B", "C", "D", "E", "F", "G", "H", "I" };
             foreach (var totalCell in totalRow.Cells.Skip(1))
             {
                 //SUM(B6,B4)
@@ -122,7 +122,7 @@ namespace orion.web.Reports
             }
         }
 
-        private static void WriteNonExemptEmployees(ReportDTO<PayPeriodDataDTO> rpt, ISheet excelSheet, int lastRow, int exemptRows, int nonExemptRows)
+        private static void WriteNonExemptEmployees(ReportDTO<PayPeriodReportDTO> rpt, ISheet excelSheet, int lastRow, int exemptRows, int nonExemptRows)
         {
             int newRows = 0;
             var startingRow = NON_EXEMPT_START + exemptRows;
@@ -136,12 +136,11 @@ namespace orion.web.Reports
                 var cell = row.CreateCell(2);
                 cell.CellStyle.FillBackgroundColor = HSSFColor.Grey25Percent.Index;
                 row.CreateCell(3).SetCellValue((double)employeeRow.Overtime);
-                row.CreateCell(4).SetCellValue((double)employeeRow.Vacation);
-                row.CreateCell(5).SetCellValue((double)employeeRow.Sick);
-                row.CreateCell(6).SetCellValue((double)employeeRow.Personal);
-                row.CreateCell(7).SetCellValue((double)employeeRow.Holiday);
-                row.CreateCell(8).SetCellValue((double)employeeRow.ExcusedNoPay);
-                row.CreateCell(9).SetCellValue((double)employeeRow.Combined);               
+                row.CreateCell(4).SetCellValue((double)employeeRow.PTO);
+                row.CreateCell(5).SetCellValue((double)employeeRow.Holiday);
+                row.CreateCell(6).SetCellValue((double)employeeRow.ExcusedWithPay);
+                row.CreateCell(7).SetCellValue((double)employeeRow.ExcusedNoPay);
+                row.CreateCell(8).SetCellValue((double)employeeRow.Combined);               
             }
             PopulateSummaryRow(excelSheet, newRows, startingRow, "C");
         }
@@ -149,7 +148,7 @@ namespace orion.web.Reports
         private static void PopulateSummaryRow(ISheet excelSheet, int newRows, int startingRow, string skipCell)
         {
             var totalRow = excelSheet.GetRow(startingRow + newRows);
-            var columns = new string[] { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K" };
+            var columns = new string[] { "A", "B", "C", "D", "E", "F", "G", "H", "I" };
             foreach (var totalCell in totalRow.Cells.Skip(1))
             {
                 if (columns[totalCell.ColumnIndex] != skipCell)
@@ -160,7 +159,7 @@ namespace orion.web.Reports
         }
 
 
-        private static void WriteExemptEmployees(ReportDTO<PayPeriodDataDTO> rpt, ISheet excelSheet, int lastRow, int exemptRows)
+        private static void WriteExemptEmployees(ReportDTO<PayPeriodReportDTO> rpt, ISheet excelSheet, int lastRow, int exemptRows)
         {
             var newRows = 0;
             excelSheet.ShiftRows(EXEMPT_START, lastRow, exemptRows);
@@ -173,12 +172,11 @@ namespace orion.web.Reports
                 //skip non-exempt
                 var cell = row.CreateCell(3);
                 cell.CellStyle.FillBackgroundColor = HSSFColor.Grey25Percent.Index;
-                row.CreateCell(4).SetCellValue((double)employeeRow.Vacation);
-                row.CreateCell(5).SetCellValue((double)employeeRow.Sick);
-                row.CreateCell(6).SetCellValue((double)employeeRow.Personal);
-                row.CreateCell(7).SetCellValue((double)employeeRow.Holiday);
-                row.CreateCell(8).SetCellValue((double)employeeRow.ExcusedNoPay);
-                row.CreateCell(9).SetCellValue((double)employeeRow.Combined);            
+                row.CreateCell(4).SetCellValue((double)employeeRow.PTO);
+                row.CreateCell(5).SetCellValue((double)employeeRow.Holiday);
+                row.CreateCell(6).SetCellValue((double)employeeRow.ExcusedWithPay);
+                row.CreateCell(7).SetCellValue((double)employeeRow.ExcusedNoPay);
+                row.CreateCell(8).SetCellValue((double)employeeRow.Combined);            
             }
             PopulateSummaryRow(excelSheet, newRows, EXEMPT_START, "D");
         }

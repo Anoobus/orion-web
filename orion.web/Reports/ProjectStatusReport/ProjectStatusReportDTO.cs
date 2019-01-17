@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace orion.web.Reports
 {
-    public class JobSummaryReportDataDTO
+    public class ProjectStatusReportDTO
     {
         public string JobCode { get; set; }
         public string JobName { get; set; }

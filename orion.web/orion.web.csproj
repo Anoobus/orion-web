@@ -21,6 +21,8 @@
   <ItemGroup>
     <None Remove="docs\JobReport.xlsx" />
     <None Remove="docs\PayPeriodReport.xlsx" />
+    <None Remove="docs\ProjectStatusReport.xlsx" />
+    <None Remove="docs\QuickJobTimeReport.xlsx" />
   </ItemGroup>
 
   <ItemGroup>
@@ -37,16 +39,16 @@
     <Content Update="Views\Employee\List.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
-    <Content Update="Views\Reports\PayPeriodReport.cshtml">
+    <Content Update="Views\Reports\PayPeriodReportCriteria.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
-    <Content Update="Views\Reports\PeriodBasedReportSettings.cshtml">
+    <Content Update="Views\Reports\ReportingPeriod.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
     <Content Update="Views\Reports\ViewCompletedReport.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
-    <Content Update="Views\Reports\JobSummaryReport.cshtml">
+    <Content Update="Views\Reports\ProjectStatusReportCriteria.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
     <Content Update="Views\Shared\Error.cshtml">
@@ -68,6 +70,9 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
+    <Content Update="Views\Task\TaskList.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
     <Content Update="Views\TimeApproval\List.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
@@ -85,10 +90,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="docs\JobReport.xlsx">
+    <Content Include="docs\PayPeriodReport.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="docs\PayPeriodReport.xlsx">
+    <Content Include="docs\ProjectStatusReport.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="docs\QuickJobTimeReport.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

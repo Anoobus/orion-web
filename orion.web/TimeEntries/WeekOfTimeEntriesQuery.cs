@@ -1,11 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using orion.web.Common;
+﻿using orion.web.Common;
 using orion.web.Employees;
 using orion.web.Jobs;
 using orion.web.JobsTasks;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -31,8 +29,8 @@ namespace orion.web.TimeEntries
         private readonly ITimeApprovalService timeApprovalService;
         private readonly IEmployeeService employeeService;
 
-        public WeekOfTimeEntriesQuery(ITimeService timeService, 
-            IJobService jobService, 
+        public WeekOfTimeEntriesQuery(ITimeService timeService,
+            IJobService jobService,
             ITaskService taskService,
             ITimeApprovalService timeApprovalService,
             IEmployeeService employeeService
@@ -47,7 +45,7 @@ namespace orion.web.TimeEntries
 
         public async Task<FullTimeEntryViewModel> GetFullTimeEntryViewModelAsync(WeekOfTimeEntriesRequest request)
         {
-            
+
             var employeeForWeek = await employeeService.GetSingleEmployeeAsync(request.EmployeeId);
             if(!request.RequestingUserIsAdmin && employeeForWeek.UserName != request.RequestingUserName)
             {
@@ -58,38 +56,49 @@ namespace orion.web.TimeEntries
 
             var timeEntries = await timeService.GetAsync(request.WeekId, request.EmployeeId);
             var jobList = (await jobService.GetAsync(request.EmployeeId)).ToList();
-            var taskList = taskService.GetTasks().ToList();
+            var taskList = (await taskService.GetTasks()).ToList().OrderBy(x => x.Name).ThenBy(x => x.Description);
             var entries = new List<TimeEntryViewModel>();
-            var status = await timeApprovalService.GetAsync(request.WeekId,request.EmployeeId);
+            var status = await timeApprovalService.GetAsync(request.WeekId, request.EmployeeId);
 
             foreach(var entry in timeEntries.GroupBy(x => new { x.JobId, x.JobTaskId }))
             {
+                var tasky = taskList.FirstOrDefault(x => x.TaskId == entry.Key.JobTaskId);
+                var SelectedEntryTaskName = $"{tasky?.LegacyCode} - {tasky?.Name}";
+
+                var SelectedEntryJob = jobList.FirstOrDefault(x => x.JobId == entry.Key.JobId);
+                var jobCode = "";
+                if(SelectedEntryJob != null)
+                {
+                    jobCode = $"{SelectedEntryJob.Client?.ClientCode}-{SelectedEntryJob.JobCode}";
+                }
                 var item = new TimeEntryViewModel()
                 {
                     SelectedJobId = entry.Key.JobId,
                     SelectedTaskId = entry.Key.JobTaskId,
-                    AvailableJobs = jobList.Where(x => x.JobId == entry.Key.JobId),
-                    AvailableTasks = taskList,
-                    Monday = MapToViewModel(currentWeek,  DayOfWeek.Monday, entry),
-                    Tuesday = MapToViewModel(currentWeek,  DayOfWeek.Tuesday, entry),
-                    Wednesday = MapToViewModel(currentWeek,  DayOfWeek.Wednesday, entry),
-                    Thursday = MapToViewModel(currentWeek,  DayOfWeek.Thursday, entry),
-                    Friday = MapToViewModel(currentWeek,  DayOfWeek.Friday, entry),
-                    Saturday = MapToViewModel(currentWeek,  DayOfWeek.Saturday, entry),
-                    Sunday = MapToViewModel(currentWeek,  DayOfWeek.Sunday, entry),
-                     
+                    SelectedEntryTaskName = SelectedEntryTaskName,
+                    SelectedEntryJobName = SelectedEntryJob?.JobName,
+                    SelectedJobCode = jobCode,
+                    SelectedTaskCategory = tasky?.Category?.Name,
+                    Monday = MapToViewModel(currentWeek, DayOfWeek.Monday, entry),
+                    Tuesday = MapToViewModel(currentWeek, DayOfWeek.Tuesday, entry),
+                    Wednesday = MapToViewModel(currentWeek, DayOfWeek.Wednesday, entry),
+                    Thursday = MapToViewModel(currentWeek, DayOfWeek.Thursday, entry),
+                    Friday = MapToViewModel(currentWeek, DayOfWeek.Friday, entry),
+                    Saturday = MapToViewModel(currentWeek, DayOfWeek.Saturday, entry),
+                    Sunday = MapToViewModel(currentWeek, DayOfWeek.Sunday, entry),
+
                 };
                 entries.Add(item);
             }
 
-            entries = entries.OrderBy(x => x.SelectedJobCode()).ToList();
+            entries = entries.OrderBy(x => x.SelectedJobCode).ToList();
             var nextWeek = currentWeek.Next();
             var prevWeek = currentWeek.Previous();
             return new FullTimeEntryViewModel()
             {
                 TimeEntryRow = entries,
                 EmployeeId = employeeForWeek.EmployeeId,
-                NewEntry = await GenerateEmptyJobTaskAsync( request.WeekId, request.EmployeeId),
+                NewEntry = await GenerateEmptyJobTaskAsync(request.WeekId, request.EmployeeId),
                 Week = new WeekIdentifier()
                 {
                     WeekEnd = currentWeek.WeekEnd,
@@ -97,32 +106,23 @@ namespace orion.web.TimeEntries
                     WeekId = currentWeek.WeekId.Value,
                     Year = currentWeek.Year
                 },
-                //NextWeekUrl = urlHelper.RouteUrl(editRouteName, new { id = nextWeek.WeekId.Value }) ,
-                //PreviousWeekUrl = urlHelper.RouteUrl(editRouteName, new {  id = prevWeek.WeekId.Value }),
                 ApprovalStatus = status.TimeApprovalStatus
             };
 
-            
+
         }
 
-        private async Task<TimeEntryViewModel> GenerateEmptyJobTaskAsync(int weekId, int employeeId)
+        private async Task<NewJobTaskCombo> GenerateEmptyJobTaskAsync(int weekId, int employeeId)
         {
             var jobList = (await jobService.GetAsync(employeeId)).ToList();
-            var taskList = taskService.GetTasks().ToList();
+            var taskList = (await taskService.GetTasks()).Where(x => x.UsageStatus.Enum == JobTasks.UsageStatus.Enabled).ToList().OrderBy(x => x.LegacyCode).ThenBy(x => x.Name);
             var week = WeekDTO.CreateForWeekId(weekId);
-            return new TimeEntryViewModel()
+            return new NewJobTaskCombo()
             {
                 SelectedJobId = null,
                 SelectedTaskId = null,
                 AvailableJobs = jobList,
                 AvailableTasks = taskList,
-                Monday = EmptyViewModel(DayOfWeek.Monday, week),
-                Tuesday = EmptyViewModel(DayOfWeek.Tuesday, week),
-                Wednesday = EmptyViewModel(DayOfWeek.Wednesday, week),
-                Thursday = EmptyViewModel(DayOfWeek.Thursday, week),
-                Friday = EmptyViewModel(DayOfWeek.Friday, week),
-                Saturday = EmptyViewModel(DayOfWeek.Saturday, week),
-                Sunday = EmptyViewModel(DayOfWeek.Sunday, week),
             };
         }
 
@@ -130,22 +130,22 @@ namespace orion.web.TimeEntries
         {
             return new TimeSpentViewModel()
             {
-                Date = GetDateFor(week,dayOfWeek),
+                Date = GetDateFor(week, dayOfWeek),
                 Hours = 0
             };
         }
-      
+
         private DateTime GetDateFor(WeekDTO week, DayOfWeek dayOfWeek)
         {
-            
+
             var candidateDay = week.WeekStart;
-            while (candidateDay.DayOfWeek != dayOfWeek)
+            while(candidateDay.DayOfWeek != dayOfWeek)
             {
                 candidateDay = candidateDay.AddDays(1);
             }
             return candidateDay;
         }
-        private TimeSpentViewModel MapToViewModel(WeekDTO week,  DayOfWeek dayOfWeek, IEnumerable<TimeEntryDTO> allEntriesThisWeek)
+        private TimeSpentViewModel MapToViewModel(WeekDTO week, DayOfWeek dayOfWeek, IEnumerable<TimeEntryDTO> allEntriesThisWeek)
         {
             var thisDaysEntry = allEntriesThisWeek.SingleOrDefault(x => x.Date.DayOfWeek == dayOfWeek);
             var date = GetDateFor(week, dayOfWeek);
@@ -158,6 +158,6 @@ namespace orion.web.TimeEntries
                 TimeEntryId = thisDaysEntry?.TimeEntryId ?? 0
             };
         }
-       
+
     }
 }

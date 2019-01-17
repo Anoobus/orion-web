@@ -1,5 +1,9 @@
 ﻿using orion.web.Common;
 using orion.web.Jobs;
+using orion.web.Reports.Common;
+using orion.web.Reports.PayPeriodReport;
+using orion.web.Reports.ProjectStatusReport;
+using orion.web.Reports.QuickJobTimeReport;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +14,7 @@ namespace orion.web.Reports
 
     public interface IReportSettingsViewModelFactory : IRegisterByConvention
     {
-        Task<ReportSelectionViewModel> GetReportSelectionViewModelAsync();
+        Task<ReportSelectionViewModel> GetReportSelectionViewModelAsync(bool isCurrentUserAdmin);
     }
 
     public class ReportSettingsViewModelFactory : IReportSettingsViewModelFactory
@@ -21,50 +25,47 @@ namespace orion.web.Reports
         {
             this.jobService = jobService;
         }
-        private PayPeriodReport GetPayPeriodReportViewModel()
+
+        private ExcelReport<PayPeriodReportCriteria> GetPayPeriodReportViewModel(bool isCurrentUserAdmin)
         {
-            var vm2 = new PayPeriodReport();
-            vm2.PayPeriodEnd = WeekDTO.CreateWithWeekContaining(DateTime.Now).WeekEnd;          
-            return vm2;
+            var vm2 = new PayPeriodReportCriteria();
+            vm2.PayPeriodEnd = WeekDTO.CreateWithWeekContaining(DateTime.Now).WeekEnd;
+            var rpt = new ExcelReport<PayPeriodReportCriteria>(PayPeriodReportCriteria.PAY_PERIOD_REPORT_NAME, vm2, isCurrentUserAdmin);
+            return rpt;
         }
 
-        private async Task<JobSummaryReportSettings> GetJobSummaryreportAsync()
+        private async Task<ExcelReport<ProjectStatusReportCriteria>> GetProjectStatusReportCriteria(bool isCurrentUserAdmin)
         {
-            var vm = new JobSummaryReportSettings();
+            var vm = new ProjectStatusReportCriteria();
             vm.PeriodSettings = GetDefaultPeriodSettings();
             vm.AvailableJobs = (await jobService.GetAsync()).ToList();
-            return vm;
+            var rpt = new ExcelReport<ProjectStatusReportCriteria>(ProjectStatusReportCriteria.PROJECT_STATUS_REPORT_NAME, vm, isCurrentUserAdmin);
+            return rpt;
         }
 
-        private async Task<JobDetailReport> GetJobDetailreportAsync()
+        private async Task<ExcelReport<QuickJobTimeReportCriteria>> GetJobDetailreportAsync()
         {
-            var vm = new JobDetailReport();
+            var vm = new QuickJobTimeReportCriteria();
             vm.PeriodSettings = GetDefaultPeriodSettings();
             vm.AvailableJobs = (await jobService.GetAsync()).ToList();
-            return vm;
+            var rpt = new ExcelReport<QuickJobTimeReportCriteria>(QuickJobTimeReportCriteria.QUICK_JOB_TIME_REPORT_NAME, vm, true);
+            return rpt;
         }
-        public async Task<ReportSelectionViewModel> GetReportSelectionViewModelAsync()
+        public async Task<ReportSelectionViewModel> GetReportSelectionViewModelAsync(bool isCurrentUserAdmin)
         {
-            var allReports = new List<string>()
-            {
-                "All Jobs For Period Report",
-                 "Job Details Period Report",
-                "Pay Period Report"
-            };
           
             var vm = new ReportSelectionViewModel()
             {
-                AvailableReports = allReports,
-                PayPeriodReport = GetPayPeriodReportViewModel(),
-                JobDetailReport = await GetJobDetailreportAsync(),
-                JobSummaryReport = await GetJobSummaryreportAsync()
+                PayPeriodReportCriteria = GetPayPeriodReportViewModel(isCurrentUserAdmin),
+                QuickJobTimeReportCriteria = await GetJobDetailreportAsync(),
+                ProjectStatusReportCriteria = await GetProjectStatusReportCriteria(isCurrentUserAdmin)
             };
             return vm;
         }
-        private PeriodBasedReportSettings GetDefaultPeriodSettings()
+        private ReportingPeriod GetDefaultPeriodSettings()
         {
             var wk = WeekDTO.CreateWithWeekContaining(DateTime.Now);
-            var ps = new PeriodBasedReportSettings()
+            var ps = new ReportingPeriod()
             {
                 Start = wk.WeekStart,
                 End = wk.WeekEnd

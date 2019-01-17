@@ -48,7 +48,6 @@ namespace orion.web.TimeApproval
             var isValidApprove = request.NewApprovalState == TimeApprovalStatus.Approved
                 && request.ApprovingUserIsAdmin;
 
-            var sendNotification = false;
             if (isValidSubmit)
             {
                 var time = await timeService.GetAsync(request.WeekId, request.EmployeeId);
@@ -60,7 +59,6 @@ namespace orion.web.TimeApproval
                 if (totalOt > 0 || totalReg > 40)
                 {
                     current.TimeApprovalStatus = TimeApprovalStatus.Submitted;
-                    sendNotification = true;
                 }
                 else
                 {
@@ -70,7 +68,6 @@ namespace orion.web.TimeApproval
             if (isValidReject || isValidApprove)
             {
                 current.TimeApprovalStatus = request.NewApprovalState;
-                sendNotification = true;
             }
             if (isValidApprove)
             {
@@ -78,13 +75,27 @@ namespace orion.web.TimeApproval
                 current.ApproverName = approver.UserName;
                 current.ApprovalDate = DateTime.Now;
             }
-            if (sendNotification)
-            {
-                var emp = await employeeService.GetSingleEmployeeAsync(request.EmployeeId);
-                var recipient = emp.UserName;
-                smtpProxy.SendMail("tim.thelen@gmail.com","THIS IS A TEST OF THE EMAIL SYSTEM", "THIS IS A SUBJECT FOR THE THING");
-            }
+           
             await timeApprovalService.Save(current);
+
+            if(isValidSubmit && current.TimeApprovalStatus == TimeApprovalStatus.Submitted)
+            {
+                var week = WeekDTO.CreateForWeekId(request.WeekId);
+                var emp = await employeeService.GetSingleEmployeeAsync(request.EmployeeId);
+                var approver = await employeeService.GetSingleEmployeeAsync(request.ApprovingUserId);
+                var recipient = emp.UserName;
+                smtpProxy.SendMail(recipient, $"{emp.Last}, {emp.First} has submitted thier timesheet for approval for week {week.WeekStart.ToShortDateString()}-{week.WeekEnd.ToShortDateString()}.", $"Timesheet submitted for approval ({emp.UserName})");
+
+            }
+
+            if(isValidReject)
+            {
+                var week = WeekDTO.CreateForWeekId(request.WeekId);
+                var emp = await employeeService.GetSingleEmployeeAsync(request.EmployeeId);
+                var approver = await employeeService.GetSingleEmployeeAsync(request.ApprovingUserId);
+                var recipient = emp.UserName;
+                smtpProxy.SendMail(recipient, $"Your time sheet for {week.WeekStart.ToShortDateString()}-{week.WeekEnd.ToShortDateString()} has been {request.NewApprovalState} by {approver.First}.", $"Timesheet has been {request.NewApprovalState}");
+            }
             return new CommandResult(true);
 
         }

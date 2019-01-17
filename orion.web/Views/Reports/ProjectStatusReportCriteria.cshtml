@@ -1,12 +1,12 @@
 ﻿@using orion.web.Reports
-@model orion.web.Reports.JobSummaryReportSettings
+@model orion.web.Reports.ProjectStatusReport.ProjectStatusReportCriteria
 
 
 <form asp-action="JobSummaryReport">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <div class="row">
         <div class="col-md-6">
-            @Html.EditorFor(x => x.PeriodSettings, "~/Views/Reports/PeriodBasedReportSettings.cshtml")
+            @Html.EditorFor(x => x.PeriodSettings, "~/Views/Reports/ReportingPeriod.cshtml")
             <div class="form-group">
                 <label asp-for="SelectedJobId"> For Job(s) </label>
                 <select asp-for="SelectedJobId" class="form-control"

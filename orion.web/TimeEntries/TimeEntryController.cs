@@ -5,6 +5,7 @@ using orion.web.Employees;
 using orion.web.Notifications;
 using orion.web.TimeApproval;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace orion.web.TimeEntries
@@ -92,7 +93,41 @@ namespace orion.web.TimeEntries
                 }
                 else
                 {
-                    NotificationsController.AddNotification(this.User.SafeUserName(), $"Timesheet was not saved {string.Join(",", res.Errors)}");
+                    var req = new WeekOfTimeEntriesRequest()
+                    {
+                        EmployeeId = employeeId,
+                        RequestingUserIsAdmin = User.IsInRole(UserRoleName.Admin),
+                        RequestingUserName = User.Identity.Name,
+                        WeekId = weekId
+                    };
+                    var vmDefault = await weekOfTimeEntriesQuery.GetFullTimeEntryViewModelAsync(req);
+                    foreach(var day in vmDefault.TimeEntryRow)
+                    {
+                        var match = vm.TimeEntryRow.Single(x => x.RowId == day.RowId);
+
+                        day.Monday.Hours = match.Monday.Hours;
+                        day.Tuesday.Hours = match.Tuesday.Hours;
+                        day.Wednesday.Hours = match.Wednesday.Hours;
+                        day.Thursday.Hours = match.Thursday.Hours;
+                        day.Friday.Hours = match.Friday.Hours;
+                        day.Saturday.Hours = match.Saturday.Hours;
+                        day.Sunday.Hours = match.Sunday.Hours;
+
+                        day.Monday.OvertimeHours = match.Monday.OvertimeHours;
+                        day.Tuesday.OvertimeHours = match.Tuesday.OvertimeHours;
+                        day.Wednesday.OvertimeHours = match.Wednesday.OvertimeHours;
+                        day.Thursday.OvertimeHours = match.Thursday.OvertimeHours;
+                        day.Friday.OvertimeHours = match.Friday.OvertimeHours;
+                        day.Saturday.OvertimeHours = match.Saturday.OvertimeHours;
+                        day.Sunday.OvertimeHours = match.Sunday.OvertimeHours;
+                    }
+                    NotificationsController.AddNotification(this.User.SafeUserName(), $"Timesheet was not saved {string.Join("<br />", res.Errors)}");
+                    this.ModelState.Clear();
+                    foreach(var err in res.Errors)
+                    {
+                        this.ModelState.AddModelError("", err);
+                    }
+                    return View("Week", vmDefault);
                 }
             }
 

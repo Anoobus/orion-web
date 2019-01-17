@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using orion.web.Common;
 using orion.web.DataAccess.EF;
 using System;
@@ -13,19 +14,21 @@ namespace orion.web.Reports
 {
     public interface IPayPeriodReportQuery
     {
-        Task<ReportDTO<PayPeriodDataDTO>> RunAsync(DateTime payPeriodEnd);
+        Task<ReportDTO<PayPeriodReportDTO>> RunAsync(DateTime payPeriodEnd);
     }
     public class PayPeriodReportQuery : IPayPeriodReportQuery
     {
         private readonly IConfiguration configuration;
         private readonly OrionDbContext db;
+        private readonly ILogger<PayPeriodReportQuery> logger;
 
-        public PayPeriodReportQuery(IConfiguration configuration, OrionDbContext db)
+        public PayPeriodReportQuery(IConfiguration configuration, OrionDbContext db, ILogger<PayPeriodReportQuery> logger)
         {
             this.configuration = configuration;
             this.db = db;
+            this.logger = logger;
         }
-        public async Task<ReportDTO<PayPeriodDataDTO>> RunAsync(DateTime payPeriodEnd)
+        public async Task<ReportDTO<PayPeriodReportDTO>> RunAsync(DateTime payPeriodEnd)
         {
 
 
@@ -37,32 +40,36 @@ namespace orion.web.Reports
 
                 cmd.CommandText = @"
 declare @vacationRowId as int
-select @vacationRowId = JobTaskId from dbo.JobTasks where ShortName = '87 - Vacation'
+select @vacationRowId = JobTaskId from dbo.JobTasks where [LegacyCode] = '87'
 
 declare @sickRowId as int
-select @sickRowId = JobTaskId from dbo.JobTasks where ShortName = '85 - Sick Time'
+select @sickRowId = JobTaskId from dbo.JobTasks where [LegacyCode] = '85'
 
 
 declare @personalTime as int
-select @personalTime = JobTaskId from dbo.JobTasks where ShortName = '83 - Personal Time'
+select @personalTime = JobTaskId from dbo.JobTasks where [LegacyCode] = '83'
 
 declare @holidayTime as int
-select @holidayTime = JobTaskId from dbo.JobTasks where ShortName = '88 - Holiday'
+select @holidayTime = JobTaskId from dbo.JobTasks where [LegacyCode] = '88'
+
+declare @excusedWithPay as int
+select @excusedWithPay = JobTaskId from dbo.JobTasks where [LegacyCode] = '86'
 
 declare @excusedWithoutPay as int
-select @excusedWithoutPay = JobTaskId from dbo.JobTasks where ShortName = '89 - Excused WITHOUT Pay'
+select @excusedWithoutPay = JobTaskId from dbo.JobTasks where [LegacyCode] = '89'
 
+declare @ptoPay as int
+select @ptoPay = JobTaskId from dbo.JobTasks where [LegacyCode] = '93'
 
 Select "
 + $"	e.{nameof(PayPeriodEmployees.EmployeeId)}, "
 + $"    e.First + ', ' + e.Last as {nameof(PayPeriodEmployees.EmployeeName)},"
 + $"	IsNull(sum(regular.hours), 0) as {nameof(PayPeriodEmployees.Regular)}, "
 + $"	IsNull(sum(regular.overtimehours), 0) as {nameof(PayPeriodEmployees.Overtime)}, "
-+ $"	IsNull(sum(vacation.hours) + sum(vacation.overtimehours), 0) as {nameof(PayPeriodEmployees.Vacation)},"
-+ $"	IsNull(sum(sick.hours) + sum(sick.overtimehours), 0) as {nameof(PayPeriodEmployees.Sick)},"
-+ $"	IsNull(sum(personal.hours) + sum(personal.overtimehours), 0) as {nameof(PayPeriodEmployees.Personal)},"
++ $"	IsNull(sum(pto.hours) + sum(pto.overtimehours), 0) as {nameof(PayPeriodEmployees.PTO)},"
 + $"	IsNull(sum(holiday.hours) + sum(holiday.overtimehours), 0) as {nameof(PayPeriodEmployees.Holiday)},"
 + $"	IsNull(sum(excusedNoPay.hours) + sum(excusedNoPay.overtimehours), 0) as {nameof(PayPeriodEmployees.ExcusedNoPay)},"
++ $"	IsNull(sum(excusedWithPay.hours) + sum(excusedWithPay.overtimehours), 0) as {nameof(PayPeriodEmployees.ExcusedWithPay)},"
 + $"	e.{nameof(PayPeriodEmployees.IsExempt)},"
 + $"	IsNull(sum(te.hours) + sum(te.overtimehours),0) as {nameof(PayPeriodEmployees.Combined)} "
 +
@@ -72,24 +79,20 @@ left outer join [dbo].TimeEntries te
 	on e.EmployeeId = te.EmployeeId
 left outer join dbo.TimeEntries regular
 	on te.TimeEntryId = regular.TimeEntryId
-	and te.TaskId not in (@vacationRowId, @sickRowId, @personalTime, @holidayTime, @excusedWithoutPay)
-left outer join dbo.TimeEntries vacation
-	on te.TimeEntryId = vacation.TimeEntryId
-	and vacation.TaskId = @vacationRowId
-left outer join dbo.TimeEntries sick
-	on te.TimeEntryId = sick.TimeEntryId
-	and sick.TaskId = @sickRowId
-left outer join dbo.TimeEntries personal
-	on te.TimeEntryId = personal.TimeEntryId
-	and personal.TaskId = @personalTime
+	and te.TaskId not in (@ptoPay, @holidayTime, @excusedWithoutPay, @excusedWithPay)
+left outer join dbo.TimeEntries pto
+	on te.TimeEntryId = pto.TimeEntryId
+	and pto.TaskId = @ptoPay
 left outer join dbo.TimeEntries holiday
 	on te.TimeEntryId = holiday.TimeEntryId
 	and holiday.TaskId = @holidayTime
 left outer join dbo.TimeEntries excusedNoPay
 	on te.TimeEntryId = excusedNoPay.TimeEntryId
-	and excusedNoPay.TaskId = @excusedWithoutPay	
+	and excusedNoPay.TaskId = @excusedWithoutPay
+left outer join dbo.TimeEntries excusedWithPay
+	on te.TimeEntryId = excusedWithPay.TimeEntryId
+	and excusedWithPay.TaskId = @excusedWithPay
 where 
-    te.Date is null OR
     (te.Date >= @payPeriodStart and te.Date <= @payPeriodEnd)
 group by e.EmployeeId, 
 	e.First + ', ' + e.Last,
@@ -102,12 +105,15 @@ group by e.EmployeeId,
                 cmd.Parameters.Add(new SqlParameter("payPeriodStart", end.Previous().WeekStart));
                 cmd.Parameters.Add(new SqlParameter("payPeriodEnd", end.WeekEnd));
 
-                var data = new PayPeriodDataDTO()
+                var data = new PayPeriodReportDTO()
                 {
                     PayPeriodEnd = ppe,
                     PayPeriodState = pps
                 };
                 var emps = new List<PayPeriodEmployees>();
+                try
+                {
+
                 var rdr = await cmd.ExecuteReaderAsync();
                 var map = GetColumnMap(rdr.GetColumnSchema());
                 while (await rdr.ReadAsync())
@@ -117,17 +123,16 @@ group by e.EmployeeId,
                         Combined = rdr.GetDecimal(map[nameof(PayPeriodEmployees.Combined)]),
                         EmployeeName = rdr.IsDBNull(map[nameof(PayPeriodEmployees.EmployeeName)]) ? "" : rdr.GetSqlString(map[nameof(PayPeriodEmployees.EmployeeName)]).Value,
                         ExcusedNoPay = rdr.GetDecimal(map[nameof(PayPeriodEmployees.ExcusedNoPay)]),
+                        ExcusedWithPay = rdr.GetDecimal(map[nameof(PayPeriodEmployees.ExcusedWithPay)]),
                         Holiday = rdr.GetDecimal(map[nameof(PayPeriodEmployees.Holiday)]),
                         IsExempt = rdr.GetBoolean(map[nameof(PayPeriodEmployees.IsExempt)]),
                         Overtime = rdr.GetDecimal(map[nameof(PayPeriodEmployees.Overtime)]),
-                        Personal = rdr.GetDecimal(map[nameof(PayPeriodEmployees.Personal)]),
                         Regular = rdr.GetDecimal(map[nameof(PayPeriodEmployees.Regular)]),
-                        Sick = rdr.GetDecimal(map[nameof(PayPeriodEmployees.Sick)]),
-                        Vacation = rdr.GetDecimal(map[nameof(PayPeriodEmployees.Vacation)]),
+                        PTO = rdr.GetDecimal(map[nameof(PayPeriodEmployees.PTO)]),
                     });
                 }
                 data.Employees = emps;
-                return new ReportDTO<PayPeriodDataDTO>()
+                return new ReportDTO<PayPeriodReportDTO>()
                 {
                     Data = data,
                     ReportName = "Pay Period Report",
@@ -139,6 +144,12 @@ group by e.EmployeeId,
                     { "Company", $"Orion Engineering Co., Inc." },
                 }
                 };
+                }
+                catch(Exception e)
+                {
+                    logger.LogError(e, $"Error while running {cmd.CommandText}");
+                    throw;
+                }
             }
         }
         private static readonly Dictionary<string, int> ColumnMap = new Dictionary<string, int>();
