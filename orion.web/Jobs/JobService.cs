@@ -28,12 +28,17 @@ namespace orion.web.Jobs
         {
             var thisEmpJobsGlob = await db.Employees.Include(x => x.EmployeeJobs).SingleOrDefaultAsync(x => x.EmployeeId == employeeId);
             var thisEmpJobs = thisEmpJobsGlob?.EmployeeJobs?.Select(z => z.JobId)?.ToArray();
-            return await db.Jobs.Where(x => thisEmpJobs.Contains(x.JobId))
-                     .Include(x => x.Client)
-                     .Include(x => x.Site)
-                     ?.Select(job => MapToDTO(job))
-                     ?.ToListAsync() ?? new List<JobDTO>();
-
+            var basePull = await db.Jobs.Include(x => x.Client)
+                                .Include(x => x.Site)
+                                .Where(x => thisEmpJobs.Contains(x.JobId))
+                                .Select(x => new {Job = x, x.Site, x.Client })
+                                .ToListAsync();
+            var mapped = new List<JobDTO>();
+            foreach(var item in basePull)
+            {
+                mapped.Add(MapToDTO(item.Job));
+            }
+            return mapped.OrderBy(x => x.JobCode).ToList();
         }
 
         public async Task<IEnumerable<JobDTO>> GetAsync()
