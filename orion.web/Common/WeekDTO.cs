@@ -9,9 +9,11 @@ namespace orion.web.Common
 
     public class WeekDTO
     {
+        private static readonly ConcurrentDictionary<WeekDTO, bool> PPEStatusByWeek = new ConcurrentDictionary<WeekDTO, bool>(); 
         private static readonly ConcurrentDictionary<int, WeekDTO> weeksByWeekId = new ConcurrentDictionary<int, WeekDTO>();
         private static readonly ConcurrentDictionary<WeekDTO,int> weekIdsByWeek = new ConcurrentDictionary<WeekDTO, int>();
         public static readonly DateTime WeekEpoch = new DateTime(2000, 1, 1);
+        
         public const DayOfWeek WEEK_START = DayOfWeek.Saturday;
         public const DayOfWeek WEEK_END = DayOfWeek.Friday;
 
@@ -19,6 +21,12 @@ namespace orion.web.Common
         public readonly DateTime WeekStart;
         public int Year => WeekStart.Year;
         public Lazy<int> WeekId => new Lazy<int>(() => GetWeekId());
+        public Lazy<bool> IsPPE => new Lazy<bool>(() => GetPPEStatus());
+
+        private bool GetPPEStatus()
+        {
+            return WeekId.Value % 2 == 0;
+        }
 
         public WeekDTO(DateTime weekStart)
         {
