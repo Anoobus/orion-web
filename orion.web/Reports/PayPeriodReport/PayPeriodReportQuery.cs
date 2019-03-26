@@ -140,6 +140,7 @@ group by e.EmployeeId,
                 new Dictionary<string, string>()
                 {
                     { "Pay Period", $"{pps.ToShortDateString()} thru {ppe.ToShortDateString()}" },
+                    { "Check Date/Pay Date", $"{ppe.AddDays(7).ToShortDateString()}" },
                     { "Generated", $"{DateTime.Now.ToShortDateString()} at {DateTime.Now.ToShortTimeString()}"},
                     { "Company", $"Orion Engineering Co., Inc." },
                 }
