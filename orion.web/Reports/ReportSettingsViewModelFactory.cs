@@ -1,5 +1,6 @@
 ﻿using orion.web.Common;
 using orion.web.Jobs;
+using orion.web.PayPeriod;
 using orion.web.Reports.Common;
 using orion.web.Reports.PayPeriodReport;
 using orion.web.Reports.ProjectStatusReport;
@@ -30,6 +31,7 @@ namespace orion.web.Reports
         {
             var vm2 = new PayPeriodReportCriteria();
             vm2.PayPeriodEnd = WeekDTO.CreateWithWeekContaining(DateTime.Now).WeekEnd;
+            vm2.PayPeriodList = PayPeriodRepository.GetPPRange(rangeSize: 25 );
             var rpt = new ExcelReport<PayPeriodReportCriteria>(PayPeriodReportCriteria.PAY_PERIOD_REPORT_NAME, vm2, isCurrentUserAdmin);
             return rpt;
         }

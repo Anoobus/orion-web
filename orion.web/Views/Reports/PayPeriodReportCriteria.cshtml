@@ -7,10 +7,29 @@
         <div class="col-md-6">
 
             <div class="form-group">
-                <label asp-for="PayPeriodEnd" class="control-label"></label>
-                <input asp-for="PayPeriodEnd" type="date" class="form-control" />
-                <span asp-validation-for="PayPeriodEnd" class="text-danger"></span>
-            </div>            
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text" for="select-thing">PayPeriod</label>
+                    </div>
+                    <select class="custom-select form-control" id="PayPeriodReportCriteria_Criteria_PayPeriodEnd"
+                            name="PayPeriodReportCriteria.Criteria.PayPeriodEnd">
+                        @foreach(var pp in Model.PayPeriodList.PayPeriodList)
+                        {
+                            @if(pp.StartWeekId == Model.PayPeriodList.SelectedPayPeriod.StartWeekId)
+                            {
+                                <option value="@pp.PayPeriodEnd" selected> @pp.PayPeriodStart.ToString("MM/dd/yy") - @pp.PayPeriodEnd.ToString("MM/dd/yy")</option>
+                            }
+                            else
+                            {
+                                <option value="@pp.PayPeriodEnd"> @pp.PayPeriodStart.ToString("MM/dd/yy") - @pp.PayPeriodEnd.ToString("MM/dd/yy")</option>
+                            }
+                        }
+                    </select>
+                </div>
+
+
+                
+            </div>
         </div>
     </div>
     <input type="submit" value="Download" class="btn btn-default" />
