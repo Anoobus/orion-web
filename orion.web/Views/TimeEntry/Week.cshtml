@@ -214,7 +214,9 @@
                             </select>
                         </div>
                     }
-
+                    <div id="missing-selection" class="alert alert-danger" role="alert" style="display:none">
+                        A Job and Task combo are required to continue
+                    </div>
                     <blockquote>
                         <h4>Don't see your job? <a asp-controller="Jobs" asp-action="List"> <span class="glyphicon glyphicon-plus"></span> Add a Job</a> to your list.</h4>
                     </blockquote>
@@ -298,7 +300,16 @@
                     $('#save-btn').click();
                 }
             });
-            
+            $('div.modal-footer input[type=submit]').click((event) => {
+                if ($('#NewEntry_SelectedTaskId').prop("selectedIndex") == 0 ||
+                    $('#NewEntry_SelectedJobId').prop("selectedIndex") == 0) {
+                    event.preventDefault();
+                    $('#missing-selection').fadeIn();
+                    return false;
+                }
+                $('#missing-selection').hide();
+            });
+
             $('#NewEntry_SelectedTaskCategory').change((event) => {
                 const target = event.target.value;
                 $('#NewEntry_SelectedTaskId option').hide().removeAttr("selected");
