@@ -38,7 +38,7 @@ namespace orion.web.Jobs
             {
                 mapped.Add(MapToDTO(item.Job));
             }
-            return mapped.OrderBy(x => x.JobCode).ToList();
+            return mapped.OrderBy(x => x.FullJobCodeWithName).ToList();
         }
 
         public async Task<IEnumerable<JobDTO>> GetAsync()
