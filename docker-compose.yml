@@ -1,4 +1,4 @@
-version: '3'
+version: '3.2'
 services:
   orion-web:
     build: .
@@ -8,10 +8,14 @@ services:
      - "8080:80"
     links:
      - orion-sql
-#    volumes:     
-#     - ./sql-mount-001:/mssql
+    volumes:   
+     - type: bind
+       source: ${SQL_DATA_DIR}
+       target: /app/sql-data
     depends_on:
      - orion-sql
+    labels:
+     - "build.no=${BUILD_STAMP}"
   orion-sql:
     image: "microsoft/mssql-server-linux:2017-CU12"
     environment:
@@ -19,6 +23,11 @@ services:
      - SA_PASSWORD=${SA_PASSWORD}
      - MSSQL_PID=Express
     volumes:     
-     - ./sql-mount-001:/var/opt/mssql
+     - type: bind
+       source: ${SQL_DATA_DIR}
+       target: /var/opt/mssql
     ports:
      - "1533:1433"
+    labels:
+     - "build.no:=${BUILD_STAMP}"
+env_file: .env

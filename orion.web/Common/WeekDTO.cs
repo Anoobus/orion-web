@@ -25,7 +25,7 @@ namespace orion.web.Common
 
         private bool GetPPEStatus()
         {
-            return WeekId.Value % 2 == 0;
+            return WeekId.Value % 2 == 1;
         }
 
         public WeekDTO(DateTime weekStart)
