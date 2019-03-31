@@ -126,15 +126,14 @@ namespace orion.web.Reports
         {
             int newRows = 0;
             var startingRow = NON_EXEMPT_START + exemptRows;
-            excelSheet.ShiftRows(startingRow, lastRow + exemptRows, nonExemptRows);
+            excelSheet.ShiftRows(startingRow, lastRow + exemptRows + 1 , nonExemptRows);
             foreach (var employeeRow in rpt.Data.Employees.Where(x => !x.IsExempt))
             {
                 var row = excelSheet.CreateRow(startingRow + newRows++);
                 row.CreateCell(0).SetCellValue(employeeRow.EmployeeName);
                 row.CreateCell(1).SetCellValue((double)employeeRow.Regular);
                 //skip exempt
-                var cell = row.CreateCell(2);
-                cell.CellStyle.FillBackgroundColor = HSSFColor.Grey25Percent.Index;
+                row.CreateCell(2);
                 row.CreateCell(3).SetCellValue((double)employeeRow.Overtime);
                 row.CreateCell(4).SetCellValue((double)employeeRow.PTO);
                 row.CreateCell(5).SetCellValue((double)employeeRow.Holiday);
