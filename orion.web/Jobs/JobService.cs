@@ -13,7 +13,8 @@ namespace orion.web.Jobs
         Task<IEnumerable<JobDTO>> GetAsync(int employeeId);
         Task<IEnumerable<JobDTO>> GetAsync();
         JobDTO Post(JobDTO job);
-        void Put(JobDTO jobDto);
+        Task PutAsync(JobDTO jobDto);
+        Task<IEnumerable<JobStatusDTO>> GetUsageStatusAsync();
     }
     public class JobService : IJobService
     {
@@ -21,7 +22,17 @@ namespace orion.web.Jobs
 
         public JobService(OrionDbContext orionDbContext)
         {
-            this.db = orionDbContext;
+            db = orionDbContext;
+        }
+
+        public async Task<IEnumerable<JobStatusDTO>> GetUsageStatusAsync()
+        {
+            return await db.JobStatuses.Select(x => new JobStatusDTO()
+            {
+                Id = x.JobStatusId,
+                Name = x.Name,
+                Enum = (Jobs.JobStatus)x.JobStatusId
+            }).ToListAsync();
         }
 
         public async Task<IEnumerable<JobDTO>> GetAsync(int employeeId)
@@ -30,8 +41,9 @@ namespace orion.web.Jobs
             var thisEmpJobs = thisEmpJobsGlob?.EmployeeJobs?.Select(z => z.JobId)?.ToArray();
             var basePull = await db.Jobs.Include(x => x.Client)
                                 .Include(x => x.Site)
+                                .Include(x => x.JobStatus)
                                 .Where(x => thisEmpJobs.Contains(x.JobId))
-                                .Select(x => new {Job = x, x.Site, x.Client })
+                                .Select(x => new { Job = x, x.Site, x.Client })
                                 .ToListAsync();
             var mapped = new List<JobDTO>();
             foreach(var item in basePull)
@@ -46,6 +58,7 @@ namespace orion.web.Jobs
             return await db.Jobs
                          .Include(x => x.Client)
                          .Include(x => x.Site)
+                         .Include(x => x.JobStatus)
                          .Select(Job => MapToDTO(Job)).ToListAsync();
         }
 
@@ -67,7 +80,13 @@ namespace orion.web.Jobs
                     SiteID = Job.Site.SiteID,
                     SiteName = Job.Site.SiteName
                 },
-                TargetHours = Job.TargetHours
+                TargetHours = Job.TargetHours,
+                JobStatusDTO = new JobStatusDTO()
+                {
+                    Enum = (Jobs.JobStatus)Job.JobStatus.JobStatusId,
+                    Id = Job.JobStatus.JobStatusId,
+                    Name = Job.JobStatus.Name
+                }
             };
         }
 
@@ -79,7 +98,8 @@ namespace orion.web.Jobs
                 JobCode = job.JobCode,
                 JobName = job.JobName,
                 SiteId = job.Site.SiteID,
-                TargetHours = job.TargetHours
+                TargetHours = job.TargetHours,
+                JobStatusId = job.JobStatusDTO.Id
             };
             db.Jobs.Add(efJob);
             db.SaveChanges();
@@ -87,7 +107,7 @@ namespace orion.web.Jobs
             return job;
         }
 
-        public void Put(JobDTO job)
+        public async Task PutAsync(JobDTO job)
         {
             var efJob = db.Jobs.Single(x => x.JobId == job.JobId);
             efJob.ClientId = job.Client.ClientId;
@@ -95,6 +115,12 @@ namespace orion.web.Jobs
             efJob.JobName = job.JobName;
             efJob.SiteId = job.Site.SiteID;
             efJob.TargetHours = job.TargetHours;
+            efJob.JobStatusId = job.JobStatusDTO.Id;
+            if(job.JobStatusDTO.Id == (int)(Jobs.JobStatus.Archived))
+            {
+                var toRemove = await db.EmployeeJobs.Where(x => x.JobId == job.JobId).ToArrayAsync();
+                db.EmployeeJobs.RemoveRange(toRemove);
+            }
             db.SaveChanges();
         }
     }

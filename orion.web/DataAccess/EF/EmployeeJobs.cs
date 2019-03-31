@@ -5,8 +5,7 @@ namespace orion.web.DataAccess.EF
     {
         public int EmployeeJobId { get; set; }
         public int JobId { get; set; }
-
+        public int EmployeeId { get; set; }
         public virtual Job Job { get; set; }
-
     }
 }

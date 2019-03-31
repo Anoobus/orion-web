@@ -22,6 +22,8 @@ namespace orion.web.DataAccess.EF
         public DbSet<UsageStatus> UsageStatuses { get; set; }
         public DbSet<TimeEntry> TimeEntries { get; set; }
         public DbSet<TimeSheetApproval> TimeSheetApprovals { get; set; }
+        public DbSet<JobStatus> JobStatuses { get; set; }
+        public DbSet<EmployeeJob> EmployeeJobs { get; set; }
 
     }
 }

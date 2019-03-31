@@ -1,8 +1,8 @@
-﻿@model orion.web.Jobs.JobDTO
+﻿@model orion.web.Jobs.EditJobViewModel
 
 <ol class="breadcrumb">
     <li class="breadcrumb-item"><a asp-action="List">Job List</a></li>
-    <li class="breadcrumb-item active"> Edit @Model.FullJobCode</li>
+    <li class="breadcrumb-item active"> Edit @Model.Job.FullJobCode</li>
 </ol>
 <div class="row">
     <div class="col-md-3">
@@ -22,42 +22,46 @@
 
         <form asp-action="Edit">
             <div class="form-group">
-                <label asp-for="JobCode"></label>
-                <input asp-for="JobCode" class="form-control" readonly="readonly" />
+                <label asp-for="Job.JobCode"></label>
+                <input asp-for="Job.JobCode" class="form-control" readonly="readonly" />
             </div>
             <div class="form-group">
-                <label asp-for="Client.ClientName"></label>
+                <label asp-for="Job.Client.ClientName"></label>
                 <select disabled class="form-control">
-                    <option>@Model.Client.ClientName</option>
+                    <option>@Model.Job.Client.ClientName</option>
                 </select>
             </div>
             <div class="form-group">
-                <label asp-for="Site.SiteName" =""></label>
+                <label asp-for="Job.Site.SiteName" =""></label>
                 <select disabled class="form-control">
-                    <option>@Model.Site.SiteName</option>
+                    <option>@Model.Job.Site.SiteName</option>
                 </select>
             </div>
 
+            <div class="form-group">
+                <label asp-for="SelectedJobStatusId" class="control-label"></label>
+                <select asp-for="SelectedJobStatusId" class="form-control"
+                        asp-items="@(new SelectList(Model.AvailableJobStatus,"Id","Name"))"></select>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Description</label>
+                <textarea asp-for="Job.JobName" class="form-control" placeholder="Brief Description"></textarea>
+                <span asp-validation-for="Job.JobName" class="text-danger"></span>
+            </div>
 
-                    <div class="form-group">
-                        <label class="control-label">Description</label>
-                        <textarea asp-for="JobName" class="form-control" placeholder="Brief Description"></textarea>
-                        <span asp-validation-for="JobName" class="text-danger"></span>
-                    </div>
+            <div class="form-group">
+                <label class="control-label">Target Hours</label>
+                <input asp-for="Job.TargetHours" class="form-control" placeholder="XXX.X" />
+                <span asp-validation-for="Job.TargetHours" class="text-danger"></span>
+            </div>
 
-                    <div class="form-group">
-                        <label class="control-label">Target Hours</label>
-                        <input asp-for="TargetHours" class="form-control" placeholder="XXX.X" />
-                        <span asp-validation-for="TargetHours" class="text-danger"></span>
-                    </div>
-
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <div class="form-group">
-                    <a class="btn btn-default" asp-action="List">Back to List</a> <input type="submit" value="Save" class="btn btn-default" />
-                </div>
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <a class="btn btn-default" asp-action="List">Back to List</a> <input type="submit" value="Save" class="btn btn-default" />
+            </div>
 
 
-            <input type="hidden" asp-for="JobId" class="form-control" />
+            <input type="hidden" asp-for="Job.JobId" class="form-control" />
 
         </form>
 

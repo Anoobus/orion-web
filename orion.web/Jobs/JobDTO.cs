@@ -1,5 +1,6 @@
 ﻿using orion.web.Clients;
 using orion.web.JobsTasks;
+using orion.web.JobTasks;
 using System.ComponentModel;
 
 namespace orion.web.Jobs
@@ -20,6 +21,6 @@ namespace orion.web.Jobs
         public string FullJobCodeWithName => $"{Client?.ClientCode}-{JobCode}-{JobName}";
 
         public decimal TargetHours { get; set; }
-
+        public JobStatusDTO JobStatusDTO { get; set; }
     }
 }

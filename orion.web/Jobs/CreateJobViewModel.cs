@@ -10,10 +10,13 @@ namespace orion.web.Jobs
         public JobDTO Job { get; set; }
         public int SelectedSiteId { get; set; }
         public int SelectedClientId { get; set; }
+        public int SelectedJobStatusId { get; set; }
         [BindNever]
         public IEnumerable<SiteDTO> AvailableSites { get; set; }
         [BindNever]
         public IEnumerable<ClientDTO> AvailableClients { get; set; }
+        [BindNever]
+        public IEnumerable<JobStatusDTO> AvailableJobStatus { get; set; }
     }
 
     public class JobListViewModel

@@ -14,6 +14,7 @@
         public Site Site { get; set; }
 
         public decimal TargetHours { get; set; }
-
+        public int JobStatusId { get; set; }
+        public virtual JobStatus JobStatus { get; set; }
     }
 }

@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using orion.web.DataAccess.EF;
 
 namespace orion.web.DataAccess.EF.Migrations
 {
     [DbContext(typeof(OrionDbContext))]
-    partial class OrionDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190331204658_AddJobStatus")]
+    partial class AddJobStatus
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -63,7 +65,7 @@ namespace orion.web.DataAccess.EF.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("EmployeeId");
+                    b.Property<int?>("EmployeeId");
 
                     b.Property<int>("JobId");
 
@@ -73,7 +75,7 @@ namespace orion.web.DataAccess.EF.Migrations
 
                     b.HasIndex("JobId");
 
-                    b.ToTable("EmployeeJobs");
+                    b.ToTable("EmployeeJob");
                 });
 
             modelBuilder.Entity("orion.web.DataAccess.EF.Job", b =>
@@ -263,8 +265,7 @@ namespace orion.web.DataAccess.EF.Migrations
                 {
                     b.HasOne("orion.web.DataAccess.EF.Employee")
                         .WithMany("EmployeeJobs")
-                        .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("EmployeeId");
 
                     b.HasOne("orion.web.DataAccess.EF.Job", "Job")
                         .WithMany()

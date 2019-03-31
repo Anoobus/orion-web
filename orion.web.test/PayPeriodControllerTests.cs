@@ -9,16 +9,4 @@ using System.Threading.Tasks;
 
 namespace orion.web.test
 {
-    [TestClass]
-    public class PayPeriodControllerTests
-    {
-        [TestMethod]
-        public void ByDefaultGet30PP_With2InTheFuture()
-        {
-            var ut = new PayPeriodController();
-            var res = ut.Get();
-            
-            res.
-        }
-    }
 }

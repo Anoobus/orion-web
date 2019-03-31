@@ -78,16 +78,17 @@ namespace orion.web.Employees
                           .Include(x => x.EmployeeJobs)
                           .FirstOrDefault(x => x.UserName == employee.UserName);
 
-            if (match == null)
+            if(match == null)
             {
                 match = new Employee()
                 {
                     UserName = employee.UserName,
+                    EmployeeId = employee.EmployeeId
                 };
                 db.Employees.Add(match);
             }
             match.EmployeeJobs.Clear();
-            foreach (var jobId in employee.AssignJobs)
+            foreach(var jobId in employee.AssignJobs)
             {
                 match.EmployeeJobs.Add(new EmployeeJob()
                 {

@@ -55,7 +55,7 @@ namespace orion.web.TimeEntries
             var currentWeek = WeekDTO.CreateForWeekId(request.WeekId);
 
             var timeEntries = await timeService.GetAsync(request.WeekId, request.EmployeeId);
-            var jobList = (await jobService.GetAsync(request.EmployeeId)).ToList();
+            var allJobList = (await jobService.GetAsync()).ToList();
             var taskList = (await taskService.GetTasks()).ToList().OrderBy(x => x.Name).ThenBy(x => x.Description);
             var entries = new List<TimeEntryViewModel>();
             var status = await timeApprovalService.GetAsync(request.WeekId, request.EmployeeId);
@@ -65,7 +65,7 @@ namespace orion.web.TimeEntries
                 var tasky = taskList.FirstOrDefault(x => x.TaskId == entry.Key.JobTaskId);
                 var SelectedEntryTaskName = $"{tasky?.LegacyCode} - {tasky?.Name}";
 
-                var SelectedEntryJob = jobList.FirstOrDefault(x => x.JobId == entry.Key.JobId);
+                var SelectedEntryJob = allJobList.FirstOrDefault(x => x.JobId == entry.Key.JobId);
                 var jobCode = "";
                 if(SelectedEntryJob != null)
                 {
