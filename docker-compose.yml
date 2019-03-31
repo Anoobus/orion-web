@@ -14,8 +14,6 @@ services:
        target: /app/sql-data
     depends_on:
      - orion-sql
-    labels:
-     - "build.no=${BUILD_STAMP}"
   orion-sql:
     image: "microsoft/mssql-server-linux:2017-CU12"
     environment:
@@ -28,6 +26,3 @@ services:
        target: /var/opt/mssql
     ports:
      - "1533:1433"
-    labels:
-     - "build.no:=${BUILD_STAMP}"
-env_file: .env
