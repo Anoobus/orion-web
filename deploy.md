@@ -1,9 +1,16 @@
-How to re-deploy an update the app
+notes
+we need to bring over the .env & appsettings.Compose.json as they have all the credentials and secrets
 
+How to re-deploy an update the app
 
 1) Backup existing user Db
 2) Backup existing app Db
 3) run re-deploy.ps1
+# this script will download the latest version from github
+# turn off the old version
+# rebuild/deploy the new version
+# we are using a bind mount to keep the sql data consitant across versions
+
 Backing Up a database
 
 1) In ssms, right click db -> tasks -> backup

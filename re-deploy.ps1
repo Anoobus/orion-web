@@ -24,6 +24,9 @@ Move-Item -Path "..\temp\orion-web-master" -Destination "..\$dateId"
 #copy over the .env file
 Copy-Item ".\.env" -Destination "..\$dateId"
 
+#copy over appsettings
+Copy-Item ".\orion.web\appsettings.Compose.json" -Destination "..\$dateId\orion.web"
+
 #delete old zip folder
 Remove-Item "..\orion-web-master.zip"
 Remove-Item "..\temp" -Recurse
