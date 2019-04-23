@@ -42,7 +42,7 @@ Select " +
 
  $"	min(Convert(varchar(10),Isnull(te.Date,@WeekStart), 101)) as  {nameof(QuickJobTimeReportDTO.PeriodStart)}, " 
 + $"	max(Convert(varchar(10),isnull( te.Date,@WeekEnd),101)) as {nameof(QuickJobTimeReportDTO.PeriodEnd)},    "
-+ $"	e.First + ', ' + e.Last  as  {nameof(QuickJobEmployees.EmployeeName)}, "
++ $"	COALESCE(e.Last,'') + ', ' + COALESCE(e.First,'')  as  {nameof(QuickJobEmployees.EmployeeName)}, "
 + $"	c.clientcode + '-' + j.JobCode  as  {nameof(QuickJobTimeReportDTO.JobCode)}, "
 + $"	j.JobName as  {nameof(QuickJobTimeReportDTO.JobName)},"
 + $"	c.ClientName as  {nameof(QuickJobTimeReportDTO.ClientName)}, " 
@@ -74,7 +74,7 @@ where
 	te.Date >= @WeekStart and te.Date <= @WeekEnd
    group by tc.Name,s.SiteName, 
 c.clientcode + '-' + j.JobCode, 
-e.First + ', ' + e.Last , 
+COALESCE(e.Last,'') + ', ' + COALESCE(e.First,'') , 
 c.clientcode + j.JobCode  , 
 j.JobName, c.ClientName , 
 jt.LegacyCode + ' - ' + jt.[Name], 
@@ -109,17 +109,20 @@ j.JobId
                         rpt.ClientName = rdr.GetSqlString(map[nameof(QuickJobTimeReportDTO.ClientName)]).Value;
                         firstRowSettingsRetrieved = true;
                     }
-                    employeeRows.Add(new QuickJobEmployees()
+                    if(rdr.HasRows)
                     {
-                        Combined = rdr.GetDecimal(map[nameof(QuickJobEmployees.Combined)]),
-                        Regular = rdr.GetDecimal(map[nameof(QuickJobEmployees.Regular)]),
-                        Overtime = rdr.GetDecimal(map[nameof(QuickJobEmployees.Overtime)]),
-                        EmployeeName = rdr.GetSqlString(map[nameof(QuickJobEmployees.EmployeeName)]).Value,
-                         TaskCategory = rdr.GetSqlString(map[nameof(QuickJobEmployees.TaskCategory)]).Value,
-                        TaskName = rdr.GetSqlString(map[nameof(QuickJobEmployees.TaskName)]).Value,
-                    });
-                }
-                rpt.Employees = employeeRows;
+                        employeeRows.Add(new QuickJobEmployees()
+                        {
+                            Combined = rdr.GetDecimal(map[nameof(QuickJobEmployees.Combined)]),
+                            Regular = rdr.GetDecimal(map[nameof(QuickJobEmployees.Regular)]),
+                            Overtime = rdr.GetDecimal(map[nameof(QuickJobEmployees.Overtime)]),
+                            EmployeeName = rdr.GetSqlString(map[nameof(QuickJobEmployees.EmployeeName)]).Value,
+                            TaskCategory = rdr.GetSqlString(map[nameof(QuickJobEmployees.TaskCategory)]).Value,
+                            TaskName = rdr.GetSqlString(map[nameof(QuickJobEmployees.TaskName)]).Value,
+                        });
+                    }
+                    }
+                    rpt.Employees = employeeRows;
                 return new ReportDTO<QuickJobTimeReportDTO>()
                 {
                     Data = rpt,

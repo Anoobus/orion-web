@@ -39,7 +39,7 @@ namespace orion.web.ApplicationStartup
 
             Serilog.Log.Information("STARTING DB STUFF UP");
             Serilog.Log.Information($"Site DB SETTINGS => {Configuration.GetConnectionString("SiteConnection")}");
-            Serilog.Log.Information($"Identity DB SETTINGS => {Configuration.GetConnectionString("SiteConnection")}");
+            Serilog.Log.Information($"Identity DB SETTINGS => {Configuration.GetConnectionString("IdentityConnection")}");
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(

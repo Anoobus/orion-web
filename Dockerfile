@@ -15,4 +15,9 @@ RUN dotnet publish "orion.web.csproj" -c Release -o /app
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app .
+
+ENV ASPNETCORE_ENVIRONMENT="Azure"
+ENV ASPNETCORE_URLS="https://+;http://+"
+ENV ASPNETCORE_Kestrel__Certificates__Default__Path="/app/orion-live.eastus.azurecr.io.pfx"
+
 ENTRYPOINT ["dotnet", "orion.web.dll"]

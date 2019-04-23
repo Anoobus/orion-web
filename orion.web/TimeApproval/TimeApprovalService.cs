@@ -109,19 +109,29 @@ namespace orion.web.TimeEntries
                 match.TotalOverTimeHours = overtime;
                 match.TotalRegularHours = regular;
                 await db.SaveChangesAsync();
-            };
+            }
+            else
+            {
+                await Save(new TimeApprovalDTO()
+                {
+                    EmployeeId = employeeId,
+                    TimeApprovalStatus = TimeApprovalStatus.Unkown,
+                    TotalOverTimeHours = overtime,
+                    TotalRegularHours = regular,
+                    WeekId = weekId,
+                    WeekStartDate = WeekDTO.CreateForWeekId(weekId).WeekStart,
+                });
+            }
         }
 
         public async Task Save(TimeApprovalDTO timeApprovalDTO)
         {
-            var empId = db.Employees.FirstOrDefault(x => x.UserName == timeApprovalDTO.EmployeeName)?.EmployeeId ?? -1;
-
-            var match = await db.TimeSheetApprovals.SingleOrDefaultAsync(x => x.WeekId == timeApprovalDTO.WeekId && x.EmployeeId == empId);
+            var match = await db.TimeSheetApprovals.SingleOrDefaultAsync(x => x.WeekId == timeApprovalDTO.WeekId && x.EmployeeId == timeApprovalDTO.EmployeeId);
             if(match == null)
             {
                 match = new TimeSheetApproval()
                 {
-                    EmployeeId = empId,
+                    EmployeeId = timeApprovalDTO.EmployeeId,
                     WeekId = timeApprovalDTO.WeekId,
                 };
                 db.TimeSheetApprovals.Add(match);

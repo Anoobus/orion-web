@@ -222,7 +222,7 @@
                     </blockquote>
 
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer add-task">
                     <input id="ModalSubmit" type="submit" name="postType" value="Add Task" class="btn btn-success" />
                     <input id="ModalSubmit" type="submit" name="postType" value="RemoveRow" class="btn btn-success" style="display:none" />
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
@@ -300,7 +300,7 @@
                     $('#save-btn').click();
                 }
             });
-            $('div.modal-footer input[type=submit]').click((event) => {
+            $('div.modal-footer.add-task input[type=submit]').click((event) => {
                 if ($('#NewEntry_SelectedTaskId').prop("selectedIndex") == 0 ||
                     $('#NewEntry_SelectedJobId').prop("selectedIndex") == 0) {
                     event.preventDefault();

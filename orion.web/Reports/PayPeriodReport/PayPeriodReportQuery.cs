@@ -63,7 +63,7 @@ select @ptoPay = JobTaskId from dbo.JobTasks where [LegacyCode] = '93'
 
 Select "
 + $"	e.{nameof(PayPeriodEmployees.EmployeeId)}, "
-+ $"    e.Last + ', ' + e.First as {nameof(PayPeriodEmployees.EmployeeName)},"
++ $"    COALESCE(e.Last,'') + ', ' + COALESCE(e.First,'') as {nameof(PayPeriodEmployees.EmployeeName)},"
 + $"	IsNull(sum(regular.hours), 0) as {nameof(PayPeriodEmployees.Regular)}, "
 + $"	IsNull(sum(regular.overtimehours), 0) as {nameof(PayPeriodEmployees.Overtime)}, "
 + $"	IsNull(sum(pto.hours) + sum(pto.overtimehours), 0) as {nameof(PayPeriodEmployees.PTO)},"
@@ -95,7 +95,7 @@ left outer join dbo.TimeEntries excusedWithPay
 where 
     (te.Date >= @payPeriodStart and te.Date <= @payPeriodEnd)
 group by e.EmployeeId, 
-	e.Last + ', ' + e.First,
+	COALESCE(e.Last,'') + ', ' + COALESCE(e.First,''),
 	e.IsExempt
 	  ";
 
