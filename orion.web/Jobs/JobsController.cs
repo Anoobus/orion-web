@@ -6,7 +6,7 @@ using orion.web.Employees;
 using orion.web.Notifications;
 using orion.web.TimeEntries;
 using System.Linq;
-
+using System.Threading.Tasks;
 
 namespace orion.web.Jobs
 {
@@ -89,19 +89,20 @@ namespace orion.web.Jobs
             {
                 Job = job,
                 SelectedJobStatusId = job.JobStatusDTO.Id,
-                AvailableJobStatus = jobStatus.ToList()
+                AvailableJobStatus = jobStatus.ToList(),
             });
         }
 
 
         [Authorize(Roles = UserRoleName.Admin)]
-        public ActionResult Create()
+        public async Task<ActionResult> Create()
         {
             var vm = new CreateJobViewModel()
             {
                 Job = new JobDTO(),
                 AvailableClients = clientService.Get(),
-                AvailableSites = siteService.Get()
+                AvailableSites = siteService.Get(),
+                AvailableJobStatus = await jobService.GetUsageStatusAsync(),
             };
             return View("Create", vm);
         }
@@ -115,6 +116,7 @@ namespace orion.web.Jobs
             var mappedJob = aLongMotherFuckingNonCollidingName.Job;
             mappedJob.Client = clients.FirstOrDefault(x => x.ClientId == aLongMotherFuckingNonCollidingName.SelectedClientId);
             mappedJob.Site = sites.FirstOrDefault(x => x.SiteID == aLongMotherFuckingNonCollidingName.SelectedSiteId);
+            mappedJob.JobStatusDTO = new JobStatusDTO() { Id = aLongMotherFuckingNonCollidingName.SelectedJobStatusId };
             jobService.Post(mappedJob);
             NotificationsController.AddNotification(User.SafeUserName(), $"Sucessfully created {aLongMotherFuckingNonCollidingName.Job.FullJobCodeWithName}");
             return RedirectToAction(nameof(Index));
