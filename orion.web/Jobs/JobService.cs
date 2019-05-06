@@ -10,6 +10,7 @@ namespace orion.web.Jobs
 {
     public interface IJobService
     {
+        Task<JobDTO> GetForJobId(int jobId);
         Task<IEnumerable<JobDTO>> GetAsync(int employeeId);
         Task<IEnumerable<JobDTO>> GetAsync();
         JobDTO Post(JobDTO job);
@@ -60,6 +61,16 @@ namespace orion.web.Jobs
                          .Include(x => x.Site)
                          .Include(x => x.JobStatus)
                          .Select(Job => MapToDTO(Job)).ToListAsync();
+        }
+
+        public async Task<JobDTO> GetForJobId(int jobId)
+        {
+            return (await db.Jobs
+                         .Include(x => x.Client)
+                         .Include(x => x.Site)
+                         .Include(x => x.JobStatus)
+                         .Where(x => x.JobId == jobId)
+                         .Select(Job => MapToDTO(Job)).ToListAsync()).FirstOrDefault();
         }
 
         private static JobDTO MapToDTO(Job Job)

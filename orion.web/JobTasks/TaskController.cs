@@ -39,7 +39,7 @@ namespace orion.web.JobsTasks
             var vm = new TaskViewModel()
             {
                 AllTaskCategories = cats,
-                AllUsageStatusOptions = usageStats,
+                AllUsageStatusOptions = usageStats.Where(x => x.Enum != JobTasks.UsageStatus.Unkown),
                 IsInCreateModel = existingTask == null,
                 SelectedCategory = existingTask?.Category?.Id ?? 0,
                 SelectedUsageStatus = existingTask?.UsageStatus?.Id ?? 0,

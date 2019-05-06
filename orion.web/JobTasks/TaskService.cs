@@ -48,7 +48,7 @@ namespace orion.web.JobsTasks
 
         public async Task<IEnumerable<TaskDTO>> GetTasks()
         {
-            return await db.JobTasks
+            return (await db.JobTasks
                 .Include(x => x.TaskCategory)
                 .Include(x => x.UsageStatus)
                 .Select(x => new TaskDTO()
@@ -69,7 +69,10 @@ namespace orion.web.JobsTasks
                         Name = x.UsageStatus.Name
                     },
                     TaskId = x.JobTaskId,
-                }).ToListAsync();
+                }).ToListAsync())
+                .OrderBy(x => x.Category.Name)
+                .ThenBy(x => x.LegacyCode)
+                .ThenBy(x => x.Name);
         }
 
         public async Task Upsert(TaskDTO task)
@@ -79,16 +82,16 @@ namespace orion.web.JobsTasks
             {
                 match = new JobTask();
                 db.JobTasks.Add(match);
-                if(await db.JobTasks.AnyAsync(x => x.LegacyCode == match.LegacyCode))
+                if(await db.JobTasks.AnyAsync(x => x.LegacyCode == task.LegacyCode))
                 {
-                    throw new ArgumentException("Supplied code is already in use");
+                    throw new ArgumentException($"Supplied code {task.LegacyCode} is already in use");
                 }
             }
             else
             {
                 if(await db.JobTasks.AnyAsync(x => x.LegacyCode == match.LegacyCode && x.JobTaskId != task.TaskId))
                 {
-                    throw new ArgumentException("Supplied code is already in use");
+                    throw new ArgumentException($"Supplied code {match.LegacyCode} is already in use");
                 }
             }
             

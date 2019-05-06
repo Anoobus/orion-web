@@ -67,6 +67,16 @@ namespace orion.web.Jobs
             return RedirectToAction(nameof(List));
         }
 
+        public async Task<ActionResult> CloseJob(int id)
+        {
+            var me = await employeeService.GetSingleEmployeeAsync(User.Identity.Name);
+            var job = await jobService.GetForJobId(id);
+            job.JobStatusDTO.Id = (int)JobStatus.Archived;
+            await jobService.PutAsync(job);
+            NotificationsController.AddNotification(User.Identity.Name, $"Job {job.FullJobCodeWithName} has been closed");
+            return RedirectToAction(nameof(List));
+        }
+
         public async System.Threading.Tasks.Task<ActionResult> RemoveJobForCurrentUser(int id)
         {
 
