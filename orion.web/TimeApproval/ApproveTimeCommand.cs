@@ -1,4 +1,5 @@
-﻿using orion.web.Common;
+﻿using Microsoft.Extensions.Configuration;
+using orion.web.Common;
 using orion.web.Employees;
 using orion.web.TimeEntries;
 using System;
@@ -28,13 +29,15 @@ namespace orion.web.TimeApproval
         private readonly ITimeService timeService;
         private readonly IEmployeeService employeeService;
         private readonly ISmtpProxy smtpProxy;
+        private readonly IConfiguration configuration;
 
-        public ApproveTimeCommand(ITimeApprovalService timeApprovalService, ITimeService timeService, IEmployeeService employeeService, ISmtpProxy smtpProxy)
+        public ApproveTimeCommand(ITimeApprovalService timeApprovalService, ITimeService timeService, IEmployeeService employeeService, ISmtpProxy smtpProxy, IConfiguration configuration)
         {
             this.timeApprovalService = timeApprovalService;
             this.timeService = timeService;
             this.employeeService = employeeService;
             this.smtpProxy = smtpProxy;
+            this.configuration = configuration;
         }
 
         public async Task<CommandResult> ApplyApproval(TimeApprovalRequest request)
@@ -78,13 +81,16 @@ namespace orion.web.TimeApproval
            
             await timeApprovalService.Save(current);
 
+            var baseUrl = configuration.GetValue<string>("BaseHostAddress");
             if(isValidSubmit && current.TimeApprovalStatus == TimeApprovalStatus.Submitted)
             {
                 var week = WeekDTO.CreateForWeekId(request.WeekId);
                 var emp = await employeeService.GetSingleEmployeeAsync(request.EmployeeId);
                 var approver = await employeeService.GetSingleEmployeeAsync(request.ApprovingUserId);
                 var recipient = emp.UserName;
-                smtpProxy.SendMail(recipient, $"{emp.Last}, {emp.First} has submitted thier timesheet for approval for week {week.WeekStart.ToShortDateString()}-{week.WeekEnd.ToShortDateString()}.", $"Timesheet submitted for approval ({emp.UserName})");
+                
+                smtpProxy.SendMail(recipient, $"{emp.Last}, {emp.First} has submitted thier timesheet for approval for week {week.WeekStart.ToShortDateString()}-{week.WeekEnd.ToShortDateString()}." +
+                    Environment.NewLine + $"Timesheet can be located here: {baseUrl}/Edit/Employee/{emp.EmployeeId}/Week/{week.WeekId.Value}", $"Timesheet submitted for approval ({emp.UserName})");
 
             }
 
@@ -94,7 +100,8 @@ namespace orion.web.TimeApproval
                 var emp = await employeeService.GetSingleEmployeeAsync(request.EmployeeId);
                 var approver = await employeeService.GetSingleEmployeeAsync(request.ApprovingUserId);
                 var recipient = emp.UserName;
-                smtpProxy.SendMail(recipient, $"Your time sheet for {week.WeekStart.ToShortDateString()}-{week.WeekEnd.ToShortDateString()} has been {request.NewApprovalState} by {approver.First}.", $"Timesheet has been {request.NewApprovalState}");
+                smtpProxy.SendMail(recipient, $"Your time sheet for {week.WeekStart.ToShortDateString()}-{week.WeekEnd.ToShortDateString()} has been {request.NewApprovalState} by {approver.First}." +
+                    Environment.NewLine + $"Timesheet can be located here: {baseUrl}/Edit/Employee/{emp.EmployeeId}/Week/{week.WeekId.Value}", $"Timesheet has been {request.NewApprovalState}");
             }
             return new CommandResult(true);
 
