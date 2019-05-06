@@ -141,7 +141,7 @@ group by e.EmployeeId,
                 {
                     { "Pay Period", $"{pps.ToShortDateString()} thru {ppe.ToShortDateString()}" },
                     { "Check Date/Pay Date", $"{ppe.AddDays(7).ToShortDateString()}" },
-                    { "Generated", $"{DateTime.Now.ToShortDateString()} at {DateTime.Now.ToShortTimeString()}"},
+                    { "Generated", $"{DateTimeWithZone.EasternStandardTime.ToShortDateString()} at {DateTimeWithZone.EasternStandardTime.ToShortTimeString()}"},
                     { "Company", $"Orion Engineering Co., Inc." },
                 }
                 };

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using orion.web.Common;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -115,12 +116,10 @@ where
                     RunSettings =
                 new Dictionary<string, string>()
                 {                   
-                    { "Generated", $"{DateTime.Now.ToShortDateString()} at {DateTime.Now.ToShortTimeString()}"},
+                    { "Generated", $"{DateTimeWithZone.EasternStandardTime.ToShortDateString()} at {DateTimeWithZone.EasternStandardTime.ToShortTimeString()}"},
                     { "Company", $"Orion Engineering Co., Inc." },
                 }
                 };
-
-
             }
         }
         private static readonly Dictionary<string, int> ColumnMap = new Dictionary<string, int>();
