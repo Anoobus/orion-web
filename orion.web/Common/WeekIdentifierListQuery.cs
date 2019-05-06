@@ -7,7 +7,7 @@ namespace orion.web.Common
 {
     public interface IWeekIdentifierListQuery : IRegisterByConvention
     {
-        Task<WeekListViewModel> GetWeeksAsync(int entriesToShow, int employeeId);
+        Task<WeekListViewModel> GetWeeksAsync(int entriesToShow, int employeeId, DateTime? startDate = null);
     }
     public class WeekIdentifierListQuery : IWeekIdentifierListQuery
     {
@@ -20,11 +20,11 @@ namespace orion.web.Common
             //this.weekService = weekService;
             this.timeSummaryService = timeSummaryService;
         }
-        public async Task<WeekListViewModel> GetWeeksAsync(int entriesToShow, int employeeId)
+        public async Task<WeekListViewModel> GetWeeksAsync(int entriesToShow, int employeeId, DateTime? startDate = null)
         {
             var dt = DateTime.Now;
-            var thisWeek = WeekDTO.CreateWithWeekContaining(DateTime.Now);
-            var isCurrent = true;
+            var thisWeek = WeekDTO.CreateWithWeekContaining(startDate ?? DateTime.Now);
+            var currWeek = WeekDTO.CreateWithWeekContaining(DateTime.Now).WeekId.Value;
             var weeks = new List<DetailedWeekIdentifier>();
             while(entriesToShow-- > 0)
             {
@@ -39,15 +39,16 @@ namespace orion.web.Common
                     ApprovalStatus = thisWeekTimeSummary.ApprovalStatus,
                     TotalOverTime = thisWeekTimeSummary.OvertimeHours,
                     TotalRegular = thisWeekTimeSummary.Hours,
-                     IsCurrentWeek = isCurrent
+                     IsCurrentWeek = currWeek == temp.WeekId.Value
                 });
                 thisWeek = thisWeek.Previous();// weekService.Previous(thisWeek.Year, thisWeek.WeekId); 
-                isCurrent = false;
             }
             return new WeekListViewModel()
             {
                 Weeks = weeks,
-                 EmployeeId = employeeId
+                EmployeeId = employeeId,
+                WeeksToShow = entriesToShow,
+                StartWithDate = startDate ?? DateTime.Now
             };
         }
     }

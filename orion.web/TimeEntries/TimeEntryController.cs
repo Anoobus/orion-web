@@ -49,9 +49,13 @@ namespace orion.web.TimeEntries
             this.sessionAdapter = sessionAdapter;
         }
 
-        public async Task<ActionResult> Index()
+        public async Task<ActionResult> Index(int? weeksToShow, string startWithDate)
         {
-            return View("WeekList", await weekIdentifierListQuery.GetWeeksAsync(5, await sessionAdapter.EmployeeIdAsync()));
+            if(!DateTime.TryParse(startWithDate, out var startDate))
+            {
+                startDate = DateTime.Now;
+            }
+            return View("WeekList", await weekIdentifierListQuery.GetWeeksAsync(weeksToShow ?? 5, await sessionAdapter.EmployeeIdAsync(), startDate));
         }
 
 
