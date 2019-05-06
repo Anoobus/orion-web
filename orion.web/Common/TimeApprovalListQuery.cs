@@ -69,7 +69,7 @@ namespace orion.web.Common
                                     new TimeApprovalDTO()
                                     {
                                         EmployeeId =  p.emp.EmployeeId,
-                                        EmployeeName = p.emp.UserName,
+                                        EmployeeName = $"{p.emp.Last}, {p.emp.First}",
                                         TimeApprovalStatus = TimeApprovalStatus.Unkown,
                                         WeekId = p.week.WeekId.Value,
                                         WeekStartDate = p.week.WeekStart,
