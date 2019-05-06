@@ -36,6 +36,9 @@
                         <th>
                             @Html.DisplayNameFor(model => model.HeaderHelp.Site.SiteName)
                         </th>
+                        <th>
+                            Status
+                        </th>
                         <th class="action-links-cell"></th>
                     </tr>
 
@@ -43,40 +46,45 @@
                 <tbody id="table-data">
                     @foreach(var item in Model.AllJobsWithAssociationStatus)
                     {
-                        <tr>
-                            <td>
-                                @if(User.IsInRole(UserRoleName.Admin))
-                                {
-                                    @Html.ActionLink(item.Key.FullJobCode, "Edit", new { id = item.Key.JobId })
-                                }
-                                else
-                                {
-                                    @Html.DisplayFor(modelItem => item.Key.FullJobCode)
-                                }
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Key.JobName)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Key.Client.ClientName)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Key.Site.SiteName)
-                            </td>
-                            <td>
+                    <tr>
+                        <td>
+                            @if(User.IsInRole(UserRoleName.Admin))
+                            {
+                                @Html.ActionLink(item.Key.FullJobCode, "Edit", new { id = item.Key.JobId })
+                            }
+                            else
+                            {
+                                @Html.DisplayFor(modelItem => item.Key.FullJobCode)
+                            }
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Key.JobName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Key.Client.ClientName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Key.Site.SiteName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Key.JobStatusDTO.Name)
+                        </td>
+                        <td>
+                            @if(item.Key.JobStatusDTO.Enum == orion.web.Jobs.JobStatus.Enabled)
+                            {
+                                @Html.ActionLink("Close Job", "CloseJob", new { id = item.Key.JobId })<text> |</text>
+                            }
+                            @if(item.Value)
+                            {
+                                @Html.ActionLink("Remove From My Jobs", "RemoveJobForCurrentUser", new { id = item.Key.JobId })
 
-                                Delete |
-                                @if(item.Value)
-                                {
-                                    @Html.ActionLink("Remove From My Jobs", "RemoveJobForCurrentUser", new { id = item.Key.JobId })
-
-                                }
-                                else
-                                {
-                                    @Html.ActionLink("Add To My Jobs", "AddJobForCurrentUser", new { id = item.Key.JobId })
-                                }
-                            </td>
-                        </tr>
+                            }
+                            else
+                            {
+                                @Html.ActionLink("Add To My Jobs", "AddJobForCurrentUser", new { id = item.Key.JobId })
+                            }
+                        </td>
+                    </tr>
                     }
                 </tbody>
             </table>
