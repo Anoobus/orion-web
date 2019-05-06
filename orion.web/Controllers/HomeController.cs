@@ -11,9 +11,17 @@ namespace orion.web.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly IEmployeeService employeeService;
+
+        public HomeController(IEmployeeService employeeService)
+        {
+            this.employeeService = employeeService;
+        }
         [Authorize]
-        public IActionResult Index()
-        {            
+        public async Task<IActionResult> Index()
+        {
+            var emp =await  employeeService.GetSingleEmployeeAsync(User.Identity.Name);
+            ViewData["first"] = emp.First;
             return View();
         }
 
