@@ -17,11 +17,8 @@
             </div>
         </div>
     </div>
-    <div class="col-md-9">
-
-        <form asp-action="Create" method="post" class="orion-form">
-
-
+    <form asp-action="Create" method="post" class="orion-form">
+        <div class="col-md-4">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Job.JobId" class="form-control" />
             <div class="form-group">
@@ -63,8 +60,16 @@
             <div class="form-group">
                 <a class="btn btn-default" asp-action="List">Back to List</a> <input type="submit" value="Save" class="btn btn-default" />
             </div>
-        </form>
 
 
-    </div>
+
+        </div>
+        <div class="col-md-5">
+            <div class="form-group">
+                <label asp-for="Job.ProjectManager" class="control-label"></label>
+                <select asp-for="SelectedProjectManagerEmployeeId" class="form-control"
+                        asp-items="@(new SelectList(Model.AvailableProjectManagers,"EmployeeId","EmployeeName"))"></select>
+            </div>
+        </div>
+    </form>
 </div>

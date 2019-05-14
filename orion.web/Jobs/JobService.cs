@@ -69,6 +69,7 @@ namespace orion.web.Jobs
                          .Include(x => x.Client)
                          .Include(x => x.Site)
                          .Include(x => x.JobStatus)
+                         .Include(x => x.ProjectManager)
                          .Where(x => x.JobId == jobId)
                          .Select(Job => MapToDTO(Job)).ToListAsync()).FirstOrDefault();
         }
@@ -97,6 +98,11 @@ namespace orion.web.Jobs
                     Enum = (Jobs.JobStatus)Job.JobStatus.JobStatusId,
                     Id = Job.JobStatus.JobStatusId,
                     Name = Job.JobStatus.Name
+                },
+                ProjectManager = new ProjectManagerDTO()
+                {
+                    EmployeeId = Job.EmployeeId,
+                    EmployeeName = Job?.ProjectManager != null ? $"{Job.ProjectManager.Last}, {Job.ProjectManager.First}" : string.Empty
                 }
             };
         }
@@ -110,7 +116,8 @@ namespace orion.web.Jobs
                 JobName = job.JobName,
                 SiteId = job.Site.SiteID,
                 TargetHours = job.TargetHours,
-                JobStatusId = job.JobStatusDTO.Id
+                JobStatusId = job.JobStatusDTO.Id,
+                EmployeeId = job.ProjectManager.EmployeeId
             };
             db.Jobs.Add(efJob);
             db.SaveChanges();
@@ -127,6 +134,7 @@ namespace orion.web.Jobs
             efJob.SiteId = job.Site.SiteID;
             efJob.TargetHours = job.TargetHours;
             efJob.JobStatusId = job.JobStatusDTO.Id;
+            efJob.EmployeeId = job.ProjectManager.EmployeeId;
             if(job.JobStatusDTO.Id == (int)(Jobs.JobStatus.Archived))
             {
                 var toRemove = await db.EmployeeJobs.Where(x => x.JobId == job.JobId).ToArrayAsync();

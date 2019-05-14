@@ -29,6 +29,7 @@ namespace orion.web.Jobs
             this.timeService = timeService;
             this.sessionAdapter = sessionAdapter;
         }
+
         public ActionResult Index()
         {
             if(User.IsInRole(UserRoleName.Admin))
@@ -40,6 +41,7 @@ namespace orion.web.Jobs
                 return RedirectToAction(nameof(List));
             }
         }
+
         public async System.Threading.Tasks.Task<ActionResult> List()
         {
             var isAdmin = User.IsInRole(UserRoleName.Admin);
@@ -99,10 +101,15 @@ namespace orion.web.Jobs
             {
                 Job = job,
                 SelectedJobStatusId = job.JobStatusDTO.Id,
+                SelectedProjectManagerEmployeeId = job.ProjectManager.EmployeeId,
                 AvailableJobStatus = jobStatus.ToList(),
+                AvailableProjectManagers = (await employeeService.GetAllEmployees()).Select(x => new ProjectManagerDTO()
+                {
+                    EmployeeId = x.EmployeeId,
+                    EmployeeName = $"{x.Last}, {x.First}"
+                })
             });
         }
-
 
         [Authorize(Roles = UserRoleName.Admin)]
         public async Task<ActionResult> Create()
@@ -113,25 +120,30 @@ namespace orion.web.Jobs
                 AvailableClients = clientService.Get(),
                 AvailableSites = siteService.Get(),
                 AvailableJobStatus = await jobService.GetUsageStatusAsync(),
+                AvailableProjectManagers = (await employeeService.GetAllEmployees()).Select(x => new ProjectManagerDTO()
+                {
+                    EmployeeId = x.EmployeeId,
+                    EmployeeName = $"{x.Last}, {x.First}"
+                })
             };
             return View("Create", vm);
         }
 
         [Authorize(Roles = UserRoleName.Admin)]
         [HttpPost]
-        public ActionResult Create(CreateJobViewModel aLongMotherFuckingNonCollidingName)
+        public ActionResult Create(CreateJobViewModel jobToCreate)
         {
             var clients = clientService.Get();
             var sites = siteService.Get();
-            var mappedJob = aLongMotherFuckingNonCollidingName.Job;
-            mappedJob.Client = clients.FirstOrDefault(x => x.ClientId == aLongMotherFuckingNonCollidingName.SelectedClientId);
-            mappedJob.Site = sites.FirstOrDefault(x => x.SiteID == aLongMotherFuckingNonCollidingName.SelectedSiteId);
-            mappedJob.JobStatusDTO = new JobStatusDTO() { Id = aLongMotherFuckingNonCollidingName.SelectedJobStatusId };
+            var mappedJob = jobToCreate.Job;
+            mappedJob.Client = clients.FirstOrDefault(x => x.ClientId == jobToCreate.SelectedClientId);
+            mappedJob.Site = sites.FirstOrDefault(x => x.SiteID == jobToCreate.SelectedSiteId);
+            mappedJob.JobStatusDTO = new JobStatusDTO() { Id = jobToCreate.SelectedJobStatusId };
+            mappedJob.ProjectManager = new ProjectManagerDTO() { EmployeeId = jobToCreate.SelectedProjectManagerEmployeeId };
             jobService.Post(mappedJob);
-            NotificationsController.AddNotification(User.SafeUserName(), $"Sucessfully created {aLongMotherFuckingNonCollidingName.Job.FullJobCodeWithName}");
+            NotificationsController.AddNotification(User.SafeUserName(), $"Sucessfully created {jobToCreate.Job.FullJobCodeWithName}");
             return RedirectToAction(nameof(Index));
         }
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -142,6 +154,7 @@ namespace orion.web.Jobs
             jobSaved.JobName = model.Job.JobName;
             jobSaved.TargetHours = model.Job.TargetHours;
             jobSaved.JobStatusDTO.Id = model.SelectedJobStatusId;
+            jobSaved.ProjectManager.EmployeeId = model.SelectedProjectManagerEmployeeId;
             await jobService.PutAsync((jobSaved));
             NotificationsController.AddNotification(User.SafeUserName(), $"Updated {jobSaved.FullJobCodeWithName}");
             return RedirectToAction(nameof(Index));

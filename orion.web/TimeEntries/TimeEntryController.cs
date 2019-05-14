@@ -86,14 +86,14 @@ namespace orion.web.TimeEntries
         [HttpPost]
         [Route("Edit/Employee/{employeeId}/Week/{weekId:int}")]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Save( int weekId, int employeeId, FullTimeEntryViewModel vm, string postType)
+        public async Task<ActionResult> Save(int weekId, int employeeId, FullTimeEntryViewModel vm, string postType)
         {
-            if (postType == "Save" || postType == "Add Task" || postType == "Submit")
+            if(postType == "Save" || postType == "Add Task" || postType == "Submit")
             {
                 var res = await saveTimeEntriesCommand.SaveTimeEntriesAsync(employeeId, weekId, vm);
-                if (res.Successful)
+                if(res.Successful)
                 {
-                    NotificationsController.AddNotification(this.User.SafeUserName(), "Timesheet has been saved");
+                    NotificationsController.AddNotification(User.SafeUserName(), "Timesheet has been saved");
                 }
                 else
                 {
@@ -125,77 +125,74 @@ namespace orion.web.TimeEntries
                         day.Saturday.OvertimeHours = match.Saturday.OvertimeHours;
                         day.Sunday.OvertimeHours = match.Sunday.OvertimeHours;
                     }
-                    NotificationsController.AddNotification(this.User.SafeUserName(), $"Timesheet was not saved {string.Join("<br />", res.Errors)}");
-                    this.ModelState.Clear();
+                    NotificationsController.AddNotification(User.SafeUserName(), $"Timesheet was not saved {string.Join("<br />", res.Errors)}");
+                    ModelState.Clear();
                     foreach(var err in res.Errors)
                     {
-                        this.ModelState.AddModelError("", err);
+                        ModelState.AddModelError("", err);
                     }
                     return View("Week", vmDefault);
                 }
             }
 
-            if (postType == "Add Task")
+            if(postType == "Add Task")
             {
                 var res = await addNewJobTaskComboCommand.AddNewJobTaskCombo(employeeId, weekId, vm.NewEntry.SelectedTaskId ?? 0, vm.NewEntry.SelectedJobId ?? 0);
-                if (res.Successful)
+                if(res.Successful)
                 {
-                    NotificationsController.AddNotification(this.User.SafeUserName(), "The selected task has been added.");
+                    NotificationsController.AddNotification(User.SafeUserName(), "The selected task has been added.");
                 }
                 else
                 {
-                    NotificationsController.AddNotification(this.User.SafeUserName(), "Select task could not be added.");
+                    NotificationsController.AddNotification(User.SafeUserName(), "Select task could not be added.");
                 }
             }
 
-            if (postType == "Copy Job/Tasks From Previous Week")
+            if(postType == "Copy Job/Tasks From Previous Week")
             {
                 await copyPreviousWeekTimeCommand.CopyPreviousWeekTime(employeeId, weekId);
             }
 
-            if (postType == "Submit")
+            if(postType == "Submit")
             {
-                var req = new TimeApprovalRequest()
-                {
-                    ApprovingUserId = await sessionAdapter.EmployeeIdAsync(),
-                    ApprovingUserIsAdmin = User.IsInRole(UserRoleName.Admin),
-                    EmployeeId = employeeId,
-                    NewApprovalState = TimeApprovalStatus.Submitted,
-                    WeekId = weekId
-                };
+                var req = new TimeApprovalRequest(
+                    approvingUserId: await sessionAdapter.EmployeeIdAsync(),
+                    approvingUserIsAdmin: User.IsInRole(UserRoleName.Admin),
+                    employeeId: employeeId,
+                    newApprovalState: TimeApprovalStatus.Submitted,
+                    weekId: weekId
+                );
                 var res = await approveTimeCommand.ApplyApproval(req);
-                NotificationsController.AddNotification(this.User.SafeUserName(), $"Timesheet is {TimeApprovalStatus.Submitted}");
+                NotificationsController.AddNotification(User.SafeUserName(), $"Timesheet is {TimeApprovalStatus.Submitted}");
             }
 
-            if (postType == "Approve")
+            if(postType == "Approve")
             {
-                var req = new TimeApprovalRequest()
-                {
-                    ApprovingUserId = await sessionAdapter.EmployeeIdAsync(),
-                    ApprovingUserIsAdmin = User.IsInRole(UserRoleName.Admin),
-                    EmployeeId = employeeId,
-                    NewApprovalState = TimeApprovalStatus.Approved,
-                    WeekId = weekId
-                };
+                var req = new TimeApprovalRequest(
+                    approvingUserId: await sessionAdapter.EmployeeIdAsync(),
+                    approvingUserIsAdmin: User.IsInRole(UserRoleName.Admin),
+                    employeeId: employeeId,
+                    newApprovalState: TimeApprovalStatus.Approved,
+                    weekId: weekId
+                );
                 var res = await approveTimeCommand.ApplyApproval(req);
-                NotificationsController.AddNotification(this.User.SafeUserName(), $"Timesheet is {TimeApprovalStatus.Submitted}");
+                NotificationsController.AddNotification(User.SafeUserName(), $"Timesheet is {TimeApprovalStatus.Submitted}");
             }
 
-            if (postType == "Reject")
+            if(postType == "Reject")
             {
-                var req = new TimeApprovalRequest()
-                {
-                    ApprovingUserId = await sessionAdapter.EmployeeIdAsync(),
-                    ApprovingUserIsAdmin = User.IsInRole(UserRoleName.Admin),
-                    EmployeeId = employeeId,
-                    NewApprovalState = TimeApprovalStatus.Rejected,
-                    WeekId = weekId
-                };
+                var req = new TimeApprovalRequest(
+                    approvingUserId: await sessionAdapter.EmployeeIdAsync(),
+                    approvingUserIsAdmin: User.IsInRole(UserRoleName.Admin),
+                    employeeId: employeeId,
+                    newApprovalState: TimeApprovalStatus.Rejected,
+                    weekId: weekId
+                );
                 var res = await approveTimeCommand.ApplyApproval(req);
-                NotificationsController.AddNotification(this.User.SafeUserName(), $"Timesheet is {TimeApprovalStatus.Rejected}");
+                NotificationsController.AddNotification(User.SafeUserName(), $"Timesheet is {TimeApprovalStatus.Rejected}");
 
             }
-            if (postType == "Save New Combination")
+            if(postType == "Save New Combination")
             {
                 var rowId = vm.SelectedRowId;
                 var oldJobId = int.Parse(rowId.Substring(0, rowId.IndexOf(".")));
@@ -203,14 +200,14 @@ namespace orion.web.TimeEntries
                 var res = await modifyJobTaskComboCommand.ModifyJobTaskCombo(employeeId, weekId, vm.NewEntry.SelectedTaskId ?? 0, vm.NewEntry.SelectedJobId ?? 0, oldTaskId, oldJobId);
             }
 
-            if (postType == "RemoveRow")
+            if(postType == "RemoveRow")
             {
                 var rowId = vm.SelectedRowId;
                 var jobId = rowId.Substring(0, rowId.IndexOf("."));
                 var taskId = rowId.Substring(rowId.IndexOf(".") + 1);
                 var res = await removeRowCommand.RemoveRow(employeeId, weekId, int.Parse(taskId), int.Parse(jobId));
             }
-            return RedirectToAction(nameof(Edit), new { weekId = weekId, employeeId = employeeId});
+            return RedirectToAction(nameof(Edit), new { weekId = weekId, employeeId = employeeId });
         }
     }
 

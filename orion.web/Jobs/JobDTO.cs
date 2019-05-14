@@ -20,7 +20,10 @@ namespace orion.web.Jobs
         [DisplayName("Job")]
         public string FullJobCodeWithName => $"{Client?.ClientCode}-{JobCode}-{JobName}";
 
-        public decimal TargetHours { get; set; }
+        public decimal TargetHours { get; set; }       
+        [DisplayName("Status")]
         public JobStatusDTO JobStatusDTO { get; set; }
+        [DisplayName("Project Manager")]
+        public ProjectManagerDTO ProjectManager { get; set; }
     }
 }

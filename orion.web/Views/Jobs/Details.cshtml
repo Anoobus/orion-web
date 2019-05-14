@@ -15,12 +15,10 @@
                     <a class="btn btn-default" asp-action="Create" asp-controller="Client">Create Client</a>
                 </div>
             </div>
-            </div>
+        </div>
     </div>
-    <div class="col-md-9">
-
-
-        <form asp-action="Edit">
+    <form asp-action="Edit">
+        <div class="col-md-4">
             <div class="form-group">
                 <label asp-for="Job.JobCode"></label>
                 <input asp-for="Job.JobCode" class="form-control" readonly="readonly" />
@@ -62,18 +60,14 @@
                 <a class="btn btn-default" asp-action="List">Back to List</a> <input type="submit" value="Save" class="btn btn-default" />
             </div>
 
-
             <input type="hidden" asp-for="Job.JobId" class="form-control" />
-
-        </form>
-
-
-
-
-
-    </div>
+        </div>
+        <div class="col-md-5">
+            <div class="form-group">
+                <label asp-for="Job.ProjectManager" class="control-label"></label>
+                <select asp-for="SelectedProjectManagerEmployeeId" class="form-control"
+                        asp-items="@(new SelectList(Model.AvailableProjectManagers,"EmployeeId","EmployeeName"))"></select>
+            </div>
+        </div>
+    </form>
 </div>
-
-
-
-

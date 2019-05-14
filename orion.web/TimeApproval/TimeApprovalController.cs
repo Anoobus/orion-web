@@ -59,14 +59,13 @@ namespace orion.web.TimeEntries
         [Route("TimeApproval/{newApprovalState}", Name = APPROVAL_ROUTE)]
         public async Task<ActionResult> ApplyApproval(TimeApprovalModel request)
         {
-            var req = new TimeApprovalRequest()
-            {
-                ApprovingUserId = await sessionAdapter.EmployeeIdAsync(),
-                ApprovingUserIsAdmin = User.IsInRole(UserRoleName.Admin),
-                EmployeeId = request.EmployeeId,
-                NewApprovalState = request.NewApprovalState,
-                WeekId = request.WeekId
-            };
+            var req = new TimeApprovalRequest(            
+                approvingUserId : await sessionAdapter.EmployeeIdAsync(),
+                approvingUserIsAdmin : User.IsInRole(UserRoleName.Admin),
+                employeeId: request.EmployeeId,
+                weekId : request.WeekId,
+                newApprovalState : request.NewApprovalState
+            );
             var res = await approveTimeCommand.ApplyApproval(req);
             if(res.Successful)
             {

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using orion.web.Common;
 using orion.web.Employees;
+using orion.web.Jobs;
 using orion.web.TimeEntries;
 using System;
 using System.Linq;
@@ -10,9 +11,20 @@ namespace orion.web.TimeApproval
 {
     public class TimeApprovalRequest
     {
+        public TimeApprovalRequest(int approvingUserId, 
+            bool approvingUserIsAdmin, 
+            int weekId, 
+            int employeeId, 
+            TimeApprovalStatus newApprovalState)
+        {
+            ApprovingUserId = approvingUserId;
+            ApprovingUserIsAdmin = approvingUserIsAdmin;
+            WeekId = weekId;
+            EmployeeId = employeeId;
+            NewApprovalState = newApprovalState;
+        }
         public int ApprovingUserId { get; set; }
         public bool ApprovingUserIsAdmin { get; set; }
-
         public int WeekId { get; set; }
         public int EmployeeId { get; set; }
         public TimeApprovalStatus NewApprovalState { get; set; }
@@ -30,14 +42,16 @@ namespace orion.web.TimeApproval
         private readonly IEmployeeService employeeService;
         private readonly ISmtpProxy smtpProxy;
         private readonly IConfiguration configuration;
+        private readonly IJobService jobService;
 
-        public ApproveTimeCommand(ITimeApprovalService timeApprovalService, ITimeService timeService, IEmployeeService employeeService, ISmtpProxy smtpProxy, IConfiguration configuration)
+        public ApproveTimeCommand(ITimeApprovalService timeApprovalService, ITimeService timeService, IEmployeeService employeeService, ISmtpProxy smtpProxy, IConfiguration configuration, IJobService jobService)
         {
             this.timeApprovalService = timeApprovalService;
             this.timeService = timeService;
             this.employeeService = employeeService;
             this.smtpProxy = smtpProxy;
             this.configuration = configuration;
+            this.jobService = jobService;
         }
 
         public async Task<CommandResult> ApplyApproval(TimeApprovalRequest request)
@@ -83,15 +97,21 @@ namespace orion.web.TimeApproval
 
             var baseUrl = configuration.GetValue<string>("BaseHostAddress");
             if(isValidSubmit && current.TimeApprovalStatus == TimeApprovalStatus.Submitted)
-            {
+            { 
+                var time = await timeService.GetAsync(request.WeekId, request.EmployeeId);
+                var JobsThatCauseApprovalRequired = time.Where(x => x.OvertimeHours > 0).GroupBy(x => x.JobId);
+                var jobDetails = await Task.WhenAll(JobsThatCauseApprovalRequired.Select(async x => await jobService.GetForJobId(x.Key)));
+                int[] projectManagersToNotifiy = jobDetails.Select(x => x.ProjectManager.EmployeeId).ToArray();
                 var week = WeekDTO.CreateForWeekId(request.WeekId);
-                var emp = await employeeService.GetSingleEmployeeAsync(request.EmployeeId);
-                var approver = await employeeService.GetSingleEmployeeAsync(request.ApprovingUserId);
-                var recipient = emp.UserName;
-                
-                smtpProxy.SendMail(recipient, $"{emp.Last}, {emp.First} has submitted thier timesheet for approval for week {week.WeekStart.ToShortDateString()}-{week.WeekEnd.ToShortDateString()}." +
-                    Environment.NewLine + $"Timesheet can be located here: {baseUrl}/Edit/Employee/{emp.EmployeeId}/Week/{week.WeekId.Value}", $"Timesheet submitted for approval ({emp.UserName})");
+                foreach(var pm in projectManagersToNotifiy)
+                {
+                    var emp = await employeeService.GetSingleEmployeeAsync(request.EmployeeId);
+                    var approver = await employeeService.GetSingleEmployeeAsync(pm);
+                    var recipient = approver.UserName;
 
+                    smtpProxy.SendMail(recipient, $"{emp.Last}, {emp.First} has submitted their timesheet for approval for week {week.WeekStart.ToShortDateString()}-{week.WeekEnd.ToShortDateString()}." +
+                        Environment.NewLine + $"Timesheet can be located here: {baseUrl}/Edit/Employee/{emp.EmployeeId}/Week/{week.WeekId.Value}", $"Timesheet submitted for approval ({emp.UserName})");
+                }
             }
 
             if(isValidReject)

@@ -250,7 +250,7 @@
             const approvalStatus = $('#ApprovalStatus').val();
             const isAdmin = $('#IsAdmin').val() == "true";
             if ((approvalStatus == "Approved" || approvalStatus == "Submitted")) {
-                $("form :input").prop("disabled", true);
+                $("form :input").not('.navbar-btn').prop("disabled", true);
                 $('#AddJob').hide();
                 $('a.row-action').hide();
                 if (isAdmin) {
