@@ -33,8 +33,8 @@
     <div class="row">
         <div class="col-md-12">
             <div asp-validation-summary="All" class="text-danger"></div>
-            @if(Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Approved
-            || Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Submitted)
+            @if (Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Approved
+          || Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Submitted)
             {
                 <div class="row">
                     <div class="col-md-12">
@@ -102,7 +102,7 @@
                 </tr>
                 @{
                     int i = 0;
-                    foreach(var thing in Model.TimeEntryRow)
+                    foreach (var thing in Model.TimeEntryRow)
                     {
                         @Html.EditorFor(m => thing, "~/Views/TimeEntry/TimeEntryRow.cshtml", "TimeEntryRow[" + i++ + "]")
                     }
@@ -133,12 +133,42 @@
             </table>
         </div>
     </div>
-
+    <div class="row">
+        <div class="col-md-12">
+            <div class="well well-sm">
+                <h4> Expense Items</h4>
+                <table class="table table-condensed table-hover">
+                    <thead>
+                        <tr>
+                            <th>Effort</th>
+                            <th>Expense Name</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var exp in Model.Expenses)
+                        {
+                            <tr>
+                                <td> @exp.RelatedJob.FullJobCodeWithName </td>
+                                <td><a asp-controller="Expense" asp-action="Download" asp-route-expenseItemId="@exp.ExpenseItemId"> @exp.AttatchmentName </a></td>
+                                <td> @exp.Amount  </td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3"><a asp-controller="Expense" asp-action="Index" asp-route-weekid="@Model.Week.WeekId" asp-route-originUrl="@Context.Request.Path"> <span class="glyphicon glyphicon-plus"></span> Add Expense/Attachment</a></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
     <div>
         <div class="form-group">
             <a asp-action="Index" class="btn btn-default">Back to List</a>
-            @if(Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Unkown
-  || Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Rejected)
+            @if (Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Unkown
+|| Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Rejected)
             {
                 <input type="submit" name="postType" value="Copy Job/Tasks From Previous Week" class="btn btn-default" />
                 <input id="save-btn" type="submit" name="postType" value="Save" class="btn btn-default" />
@@ -149,15 +179,15 @@
 
             }
 
-            @if(User.IsInRole(UserRoleName.Admin))
+            @if (User.IsInRole(UserRoleName.Admin))
             {
-                @if(Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Submitted)
+                @if (Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Submitted)
                 {
                     <input type="submit" name="postType" class="btn btn-success" value="Approve" id="btnApprove" />
                 }
 
-                @if(Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Submitted
-       || Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Approved)
+                @if (Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Submitted
+     || Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Approved)
                 {
                     <input type="submit" name="postType" class="btn btn-warning" value="Reject" id="btnReject" />
                 }
@@ -173,7 +203,7 @@
                     <h4 class="modal-title" id="submitModalLabel">Submit Time</h4>
                 </div>
                 <div class="modal-body">
-                   Are you sure you want to submit your time?
+                    Are you sure you want to submit your time?
                 </div>
                 <div class="modal-footer">
                     <input type="submit" name="postType" value="Submit" class="btn btn-success" />
@@ -191,7 +221,7 @@
                     <h4 class="modal-title" id="exampleModalLabel">Add Job To Time Sheet</h4>
                 </div>
                 <div class="modal-body">
-                    @if(Model.NewEntry.AvailableJobs.Any())
+                    @if (Model.NewEntry.AvailableJobs.Any())
                     {
                         <div class="form-group">
 
@@ -205,7 +235,7 @@
                             </select>
                             <select asp-for="NewEntry.SelectedTaskId" class="form-control">
                                 <option>Select Task</option>
-                                @foreach(var task in Model.NewEntry.AvailableTasks)
+                                @foreach (var task in Model.NewEntry.AvailableTasks)
                                 {
                                     <option value="@task.TaskId" class="@task.Category.Name">
                                         @task.LegacyCode - @task.Name
@@ -232,7 +262,7 @@
     </div>
 
     <input asp-for="ApprovalStatus" type="hidden" />
-    @if(User.IsInRole(UserRoleName.Admin))
+    @if (User.IsInRole(UserRoleName.Admin))
     {
         <input type="hidden" id="IsAdmin" value="true" />
     }
@@ -243,7 +273,7 @@
     <script type="text/javascript" src="~/js/TimeEntry/weekTableSumDefinition.js"></script>
     <script type="text/javascript" src="~/js/TimeEntry/weekTimeEntryTableSummation.js"></script>
     <script type="text/javascript" src="~/js/TimeEntry/weekTimeEntryOvertimeToggle.js"></script>
-    
+
     <script type="text/javascript">
 
         $(document).ready(function () {

@@ -8,10 +8,13 @@ services:
      - "8080:80"
     links:
      - orion-sql
-    volumes:   
+    volumes:
      - type: bind
        source: ${SQL_DATA_DIR}
        target: /app/sql-data
+     - type: bind
+       source: ${UPLOAD_DATA_DIR}
+       target: /app/upload-data
     depends_on:
      - orion-sql
   orion-sql:
@@ -20,7 +23,7 @@ services:
      - ACCEPT_EULA=Y
      - SA_PASSWORD=${SA_PASSWORD}
      - MSSQL_PID=Express
-    volumes:     
+    volumes:
      - type: bind
        source: ${SQL_DATA_DIR}
        target: /var/opt/mssql

@@ -28,12 +28,14 @@ namespace orion.web.TimeEntries
         private readonly ITaskService taskService;
         private readonly ITimeApprovalService timeApprovalService;
         private readonly IEmployeeService employeeService;
+        private readonly IExpenseService _expenseService;
 
         public WeekOfTimeEntriesQuery(ITimeService timeService,
             IJobService jobService,
             ITaskService taskService,
             ITimeApprovalService timeApprovalService,
-            IEmployeeService employeeService
+            IEmployeeService employeeService,
+            IExpenseService expenseService
             )
         {
             this.timeService = timeService;
@@ -41,6 +43,7 @@ namespace orion.web.TimeEntries
             this.taskService = taskService;
             this.timeApprovalService = timeApprovalService;
             this.employeeService = employeeService;
+            _expenseService = expenseService;
         }
 
         public async Task<FullTimeEntryViewModel> GetFullTimeEntryViewModelAsync(WeekOfTimeEntriesRequest request)
@@ -94,6 +97,7 @@ namespace orion.web.TimeEntries
             entries = entries.OrderBy(x => x.SelectedJobCode).ToList();
             var nextWeek = currentWeek.Next();
             var prevWeek = currentWeek.Previous();
+
             return new FullTimeEntryViewModel()
             {
                 TimeEntryRow = entries,
@@ -106,7 +110,9 @@ namespace orion.web.TimeEntries
                     WeekId = currentWeek.WeekId.Value,
                     Year = currentWeek.Year
                 },
-                ApprovalStatus = status.TimeApprovalStatus
+                ApprovalStatus = status.TimeApprovalStatus,
+
+                Expenses = await _expenseService.GetExpensesForEmployee(request.EmployeeId,request.WeekId)
             };
 
 

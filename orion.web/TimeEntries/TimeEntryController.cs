@@ -25,6 +25,7 @@ namespace orion.web.TimeEntries
         private readonly IRemoveRowCommand removeRowCommand;
         private readonly IModifyJobTaskComboCommand modifyJobTaskComboCommand;
         private readonly ISessionAdapter sessionAdapter;
+        private readonly IExpenseService _expenseService;
 
         public TimeEntryController(//IWeekService weekService,
             ICopyPreviousWeekTimeCommand copyPreviousWeekTimeCommand,
@@ -35,7 +36,8 @@ namespace orion.web.TimeEntries
             IApproveTimeCommand approveTimeCommand,
             IRemoveRowCommand removeRowCommand,
             IModifyJobTaskComboCommand modifyJobTaskComboCommand,
-            ISessionAdapter sessionAdapter)
+            ISessionAdapter sessionAdapter,
+            IExpenseService expenseService)
         {
             //this.weekService = weekService;
             this.copyPreviousWeekTimeCommand = copyPreviousWeekTimeCommand;
@@ -47,6 +49,7 @@ namespace orion.web.TimeEntries
             this.removeRowCommand = removeRowCommand;
             this.modifyJobTaskComboCommand = modifyJobTaskComboCommand;
             this.sessionAdapter = sessionAdapter;
+            _expenseService = expenseService;
         }
 
         public async Task<ActionResult> Index(int? weeksToShow, string startWithDate)

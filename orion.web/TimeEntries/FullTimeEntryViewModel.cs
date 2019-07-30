@@ -10,5 +10,6 @@ namespace orion.web.TimeEntries
         public int EmployeeId { get; set; }
         public TimeApprovalStatus ApprovalStatus { get; set; }
         public string SelectedRowId { get; set; }
+        public IEnumerable<Expense.ExpenseDTO> Expenses { get; set; }
     }
 }
