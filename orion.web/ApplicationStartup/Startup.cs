@@ -10,14 +10,17 @@ using orion.web.AspNetCoreIdentity;
 using orion.web.Clients;
 using orion.web.Jobs;
 using orion.web.JobsTasks;
-using orion.web.TimeEntries;
 using orion.web.Employees;
 using orion.web.Common;
 using orion.web.Reports;
 using orion.web.DataAccess.EF;
+using System.Data.SqlClient;
+using System.IO;
 
 namespace orion.web.ApplicationStartup
 {
+
+
     public class Startup
     {
         public Startup(IConfiguration configuration)
@@ -26,6 +29,7 @@ namespace orion.web.ApplicationStartup
         }
 
         public IConfiguration Configuration { get; }
+
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -38,18 +42,9 @@ namespace orion.web.ApplicationStartup
             });
 
             Serilog.Log.Information("STARTING DB STUFF UP");
-            Serilog.Log.Information($"Site DB SETTINGS => {Configuration.GetConnectionString("SiteConnection")}");
-            Serilog.Log.Information($"Identity DB SETTINGS => {Configuration.GetConnectionString("IdentityConnection")}");
 
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(
-                    Configuration.GetConnectionString("IdentityConnection")));
-
-
-
-            services.AddDbContext<OrionDbContext>(options =>
-                options.UseSqlServer(
-                    Configuration.GetConnectionString("SiteConnection")));
+            SetupLocalDbBasedEntityFramework<OrionDbContext>(services, "SiteConnection");
+            SetupLocalDbBasedEntityFramework<ApplicationDbContext>(services, "IdentityConnection");
 
             services.AddIdentity<IdentityUser, IdentityRole>()
             .AddDefaultUI()
@@ -58,7 +53,7 @@ namespace orion.web.ApplicationStartup
 
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-            
+
             services.AddTransient<IJobSummaryQuery, ProjectStatusReportQuery>();
             services.AddTransient<IUpdateEmployeeCommand, UpdateEmployeeCommand>();
             services.AddTransient<ICreateEmployeeCommand, CreateEmployeeCommand>();
@@ -70,10 +65,21 @@ namespace orion.web.ApplicationStartup
             services.AddHttpContextAccessor();
         }
 
+        private void SetupLocalDbBasedEntityFramework<TContext>(IServiceCollection services, string connectionName) where TContext : DbContext
+        {
+            var cnb = new SqlConnectionStringBuilder(Configuration.GetConnectionString(connectionName));
+            cnb.AttachDBFilename = MDFBootstrap.CreateDbFileIfNotPresent(Configuration.GetValue<string>("SqlDataPath"), cnb.InitialCatalog);
+            Configuration.GetSection("ConnectionStrings")[connectionName] = cnb.ConnectionString;
+            Serilog.Log.Information($"{connectionName} DB SETTINGS => {Configuration.GetConnectionString(connectionName)}");
+            services.AddDbContext<TContext>(options =>
+                options.UseSqlServer(
+                    Configuration.GetConnectionString(connectionName)));
+        }
+
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            if(env.IsDevelopment())
+            if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
@@ -89,7 +95,7 @@ namespace orion.web.ApplicationStartup
             app.UseCookiePolicy();
 
             app.UseAuthentication();
-     
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

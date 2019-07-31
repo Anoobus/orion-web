@@ -17,5 +17,6 @@ WORKDIR /app
 COPY --from=publish /app .
 
 ENV ASPNETCORE_URLS="https://+;http://+"
+ENV ASPNETCORE_Kestrel__Certificates__Default__Path="/app/self-cert.pfx"
 
 ENTRYPOINT ["dotnet", "orion.web.dll"]
