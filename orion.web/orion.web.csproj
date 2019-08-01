@@ -108,7 +108,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="deploy-latest.ps1">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="orion-live.eastus.azurecr.io.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="run.ps1">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="self-cert.pfx">

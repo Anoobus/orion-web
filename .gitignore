@@ -266,3 +266,5 @@ __pycache__/
 /orion.web/appsettings.Development.json
 /sql-mount-001.bu
 orion.app.logs
+/sql-data
+/orion.web/sql-data

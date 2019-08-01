@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using System.IO;
 using orion.web.Employees;
+using Microsoft.Extensions.Configuration;
 
 namespace orion.web.Expense
 {
@@ -17,12 +18,14 @@ namespace orion.web.Expense
         private readonly IJobService _jobsService;
         private readonly ISessionAdapter _sessionAdapter;
         private readonly IExpenseService _expenseService;
+        private readonly IConfiguration _config;
 
-        public ExpenseController(IJobService jobsService, ISessionAdapter sessionAdapter, IExpenseService expenseService)
+        public ExpenseController(IJobService jobsService, ISessionAdapter sessionAdapter, IExpenseService expenseService, IConfiguration config)
         {
             _jobsService = jobsService;
             _sessionAdapter = sessionAdapter;
             _expenseService = expenseService;
+            _config = config;
         }
 
         public async Task<ActionResult> Index(int weekid, string originUrl)
@@ -45,7 +48,7 @@ namespace orion.web.Expense
             var employee = await _sessionAdapter.EmployeeIdAsync();
             var item = await _expenseService.GetExpenseById(expenseItemId);
             var currentLocation = new FileInfo(this.GetType().Assembly.Location);
-            var dir = Path.Combine(currentLocation.DirectoryName, "upload-data");
+            var dir = GetUploadsDirectory(currentLocation);
             return File(new FileStream(Path.Combine(dir, item.AttachmentId.Value.ToString()), FileMode.Open), "application/octet-stream", item.AttatchmentName);
         }
 
@@ -58,11 +61,7 @@ namespace orion.web.Expense
                 uploadId = Guid.NewGuid();
                 var currentLocation = new FileInfo(this.GetType().Assembly.Location);
                 var thisItemId = uploadId.ToString();
-                var dir = Path.Combine(currentLocation.DirectoryName, "upload-data");
-                if (!Directory.Exists(dir))
-                {
-                    Directory.CreateDirectory(dir);
-                }
+                var dir = GetUploadsDirectory(currentLocation);
                 using (var fs = new FileStream(Path.Combine(dir, thisItemId), FileMode.Create))
                 {
                     await vm.UploadFile.CopyToAsync(fs);
@@ -87,6 +86,17 @@ namespace orion.web.Expense
             return Redirect(vm.CancelUrl);
         }
 
+        private string GetUploadsDirectory(FileInfo currentLocation)
+        {
+            var overridePath = _config.GetValue<string>("OverrideUploadDataPath");
+            var dir = Path.Combine(overridePath ?? currentLocation.DirectoryName, "upload-data");
+            if (!Directory.Exists(dir))
+            {
+                Directory.CreateDirectory(dir);
+            }
+
+            return dir;
+        }
     }
 
 }

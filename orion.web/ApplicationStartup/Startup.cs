@@ -68,7 +68,8 @@ namespace orion.web.ApplicationStartup
         private void SetupLocalDbBasedEntityFramework<TContext>(IServiceCollection services, string connectionName) where TContext : DbContext
         {
             var cnb = new SqlConnectionStringBuilder(Configuration.GetConnectionString(connectionName));
-            cnb.AttachDBFilename = MDFBootstrap.CreateDbFileIfNotPresent(Configuration.GetValue<string>("SqlDataPath"), cnb.InitialCatalog);
+            var runningLocation = Path.Combine(new DirectoryInfo(Path.GetDirectoryName(this.GetType().Assembly.Location)).Parent.FullName, @"sql-data");
+            cnb.AttachDBFilename = MDFBootstrap.SetupLocalDbFile(Configuration.GetValue<string>("OverrideSqlDataPath") ?? runningLocation, cnb.InitialCatalog);
             Configuration.GetSection("ConnectionStrings")[connectionName] = cnb.ConnectionString;
             Serilog.Log.Information($"{connectionName} DB SETTINGS => {Configuration.GetConnectionString(connectionName)}");
             services.AddDbContext<TContext>(options =>

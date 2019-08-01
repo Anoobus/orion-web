@@ -1,25 +1,39 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
+﻿using System.Data.SqlClient;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace orion.web.ApplicationStartup
 {
     public class MDFBootstrap
     {
-        public static string CreateDbFileIfNotPresent(string filePath, string dbName)
+        public static string SetupLocalDbFile(string filePath, string dbName)
         {
-            var fullFileName = Path.Combine(filePath, $"{dbName}.mdf");
-            if (!File.Exists(fullFileName))
+            var dbFileName = Path.Combine(filePath, $"{dbName}.mdf");
+            var backupFileName = Path.Combine(filePath, $"{dbName}.bak");
+            using (var connection = new SqlConnection(@"server=(localdb)\mssqllocaldb;Initial Catalog=master"))
             {
-                var connection = new SqlConnection(@"server=(localdb)\mssqllocaldb");
-                using (connection)
+                connection.Open();
+                //detatch only when the file is mounted currently from a different location
+                DetatchExistingDb(dbName,dbFileName, connection);
+                if (!File.Exists(dbFileName))
                 {
-                    connection.Open();
+                    if (File.Exists(backupFileName))
+                    {
+                        string restore = string.Format("RESTORE DATABASE [" + dbName + @"] FROM DISK='{0}\{1}.bak'", filePath, dbName);
+                        var command = new SqlCommand(restore, connection);
+                        command.ExecuteNonQuery();
+                    }
+                    else
+                    {
+                        CreateNewEmptyMdf(filePath, dbName, connection);
+                    }
+                }
+            }
 
-                    string sql = string.Format(@"
+            return dbFileName;
+        }
+        private static void CreateNewEmptyMdf(string filePath, string dbName, SqlConnection connection)
+        {
+            string sql = string.Format(@"
                     CREATE DATABASE
                         [" + dbName + @"]
                     ON PRIMARY (
@@ -30,15 +44,32 @@ namespace orion.web.ApplicationStartup
                         NAME=Test_log,
                         FILENAME = '{0}\{1}.ldf'
                     )",
-                        filePath,
-                        dbName
-                    );
+                filePath,
+                dbName
+            );
 
-                    SqlCommand command = new SqlCommand(sql, connection);
-                    command.ExecuteNonQuery();
-                }
-            }
-            return fullFileName;
+            SqlCommand command = new SqlCommand(sql, connection);
+            command.ExecuteNonQuery();
         }
+
+        private static SqlCommand DetatchExistingDb(string dbName, string dbFileName, SqlConnection connection)
+        {
+            string detatch = @"
+                    if exists(select * from sys.databases where [name] = '" + dbName + @"')
+                    begin
+	                    if not exists(select * from sys.master_files where physical_name = '" + dbFileName + @"')
+	                    begin
+		                    ALTER DATABASE [" + dbName + @"] SET  SINGLE_USER WITH ROLLBACK IMMEDIATE
+                            EXEC master.dbo.sp_detach_db @dbname = N'" + dbName + @"', @skipchecks = 'false'
+	                    end
+                    end";
+
+            var command = new SqlCommand(detatch, connection);
+            command.CommandType = System.Data.CommandType.Text;
+            command.ExecuteNonQuery();
+            return command;
+        }
+
+
     }
 }
