@@ -9,6 +9,7 @@ namespace orion.web.ApplicationStartup
         {
             var dbFileName = Path.Combine(filePath, $"{dbName}.mdf");
             var backupFileName = Path.Combine(filePath, $"{dbName}.bak");
+            var logFileName = Path.Combine(filePath, $"{dbName}.ldf");
             Serilog.Log.Information($"Opening connection to [server=(localdb)\\mssqllocaldb;Initial Catalog=master] to ensure {dbFileName} is mounted");
             using (var connection = new SqlConnection(@"server=(localdb)\mssqllocaldb;Initial Catalog=master"))
             {
@@ -17,11 +18,16 @@ namespace orion.web.ApplicationStartup
                 DetatchExistingDb(dbName,dbFileName, connection);
                 if (!File.Exists(dbFileName))
                 {
+                    //orion.web_Data
                     Serilog.Log.Information($"{dbFileName} does not exist yet");
                     if (File.Exists(backupFileName))
                     {
                         Serilog.Log.Information($"creating {dbFileName} from {backupFileName}");
-                        string restore = string.Format("RESTORE DATABASE [" + dbName + @"] FROM DISK='{0}\{1}.bak'", filePath, dbName);
+                        string restore = string.Format(@"RESTORE DATABASE [{1}] FROM DISK='{0}\{1}.bak'
+                        WITH FILE = 1,
+                        MOVE N'{1}_Data' TO N'{0}\{1}.mdf',
+                        MOVE N'{1}_Log' TO N'{0}\{1}.ldf',
+                        NOUNLOAD,  REPLACE,  STATS = 1", filePath, dbName);
                         var command = new SqlCommand(restore, connection);
                         command.ExecuteNonQuery();
                     }
