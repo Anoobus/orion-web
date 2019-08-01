@@ -9,7 +9,7 @@ namespace orion.web.ApplicationStartup
         {
             var dbFileName = Path.Combine(filePath, $"{dbName}.mdf");
             var backupFileName = Path.Combine(filePath, $"{dbName}.bak");
-            Serilog.Log.Information($"Opening connection to [server=(localdb)\mssqllocaldb;Initial Catalog=master] to ensure {dbFileName} is mounted");
+            Serilog.Log.Information($"Opening connection to [server=(localdb)\\mssqllocaldb;Initial Catalog=master] to ensure {dbFileName} is mounted");
             using (var connection = new SqlConnection(@"server=(localdb)\mssqllocaldb;Initial Catalog=master"))
             {
                 connection.Open();
