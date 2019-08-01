@@ -140,19 +140,22 @@
                 <table class="table table-condensed table-hover">
                     <thead>
                         <tr>
-                            <th>Effort</th>
-                            <th>Expense Name</th>
+                            <th colspan="2">Item</th>
                             <th>Amount</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach (var exp in Model.Expenses)
                         {
-                            <tr>
-                                <td> @exp.RelatedJob.FullJobCodeWithName </td>
-                                <td><a asp-controller="Expense" asp-action="Download" asp-route-expenseItemId="@exp.ExpenseItemId"> @exp.AttatchmentName </a></td>
-                                <td> @exp.Amount  </td>
-                            </tr>
+                        <tr>
+                            <td colspan="2">
+                                <a asp-controller="Expense" asp-action="Edit" asp-route-expenseItemId="@exp.ExpenseItemId" asp-route-weekid="@Model.Week.WeekId" asp-route-originUrl="@Context.Request.Path"> @exp.RelatedJob.FullJobCodeWithName | @exp.AttatchmentName </a>
+                            </td>
+                            <td> @exp.Amount  </td>
+
+                            <td><a asp-controller="Expense" asp-action="Download"  asp-route-expenseItemId="@exp.ExpenseItemId"> <span class="glyphicon glyphicon-download"></span> Download Attachment</a></td>
+                        </tr>
                         }
                     </tbody>
                     <tfoot>

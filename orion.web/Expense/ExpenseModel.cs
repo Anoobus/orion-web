@@ -8,6 +8,11 @@ using System.Threading.Tasks;
 
 namespace orion.web.Expense
 {
+    public class EditExpenseViewModel : AddExpenseViewModel
+    {
+        public int ExpenseItemId { get; set; }
+        public Guid? AttachmentId { get; set; }
+    }
     public class AddExpenseViewModel
     {
         public ExpenseModel ExpenseToSave { get; set; }

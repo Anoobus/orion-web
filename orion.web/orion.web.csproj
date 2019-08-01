@@ -40,6 +40,9 @@
     <Content Update="Views\Employee\List.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
+    <Content Update="Views\Expense\Edit.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
     <Content Update="Views\Reports\PayPeriodReportCriteria.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>

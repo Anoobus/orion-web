@@ -5,6 +5,7 @@ using orion.web.Expense;
 using orion.web.Jobs;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -15,7 +16,8 @@ namespace orion.web.Employees
     {
         Task<IEnumerable<ExpenseDTO>> GetExpensesForEmployee(int employeeId, int weekId);
         Task SaveExpensesForEmployee(ExpenseDTO expense);
-        Task<ExpenseDTO> GetExpenseById(int ExpenseItemId);
+        Task<ExpenseDTO> DeleteExpense(int expenseItemId);
+        Task<ExpenseDTO> GetExpenseById(int expenseItemId);
     }
     public class ExpenseService : IExpenseService
     {
@@ -28,13 +30,29 @@ namespace orion.web.Employees
             _jobService = jobService;
         }
 
+        public async Task<ExpenseDTO> DeleteExpense(int expenseItemId)
+        {
+            var match = await db.Expenses.SingleOrDefaultAsync(x => x.ExpenseItemId == expenseItemId);
+            if(match != null)
+            {
+                db.Expenses.Remove(match);
+                await db.SaveChangesAsync();
+                return await MapToExpenseDTO(match);
+            }
+            return null;
+        }
+
         public async Task<ExpenseDTO> GetExpenseById(int ExpenseItemId)
         {
             var x = await db.Expenses.Where(z => z.ExpenseItemId == ExpenseItemId).SingleOrDefaultAsync();
             if (x == null)
                 return null;
+            return await MapToExpenseDTO(x);
+        }
 
-            return  new ExpenseDTO()
+        private async Task<ExpenseDTO> MapToExpenseDTO(ExpenseItem x)
+        {
+            return new ExpenseDTO()
             {
                 AddtionalNotes = x.AdditionalNotes,
                 Amount = x.Amount,
@@ -45,7 +63,7 @@ namespace orion.web.Employees
                 AttachmentId = Guid.TryParse(x.AttachmentUploadId, out var temp) ? temp : new Guid?(),
                 EmployeeId = x.EmployeeId,
                 WeekId = x.WeekId,
-                 ExpenseItemId = x.ExpenseItemId
+                ExpenseItemId = x.ExpenseItemId
             };
         }
 
@@ -69,18 +87,23 @@ namespace orion.web.Employees
 
         public async Task SaveExpensesForEmployee(ExpenseDTO expense)
         {
-            db.Expenses.Add(new ExpenseItem()
+            var existing = await db.Expenses.SingleOrDefaultAsync(x => x.ExpenseItemId == expense.ExpenseItemId);
+            if (existing == null)
             {
-                AdditionalNotes = expense.AddtionalNotes,
-                Amount = expense.Amount,
-                AttachmentName = expense.AttatchmentName,
-                AttachmentUploadId = expense.AttachmentId.HasValue ? expense.AttachmentId.Value.ToString() : null,
-                Classification = expense.Classification,
-                CreateDate = DateTimeOffset.Now,
-                EmployeeId = expense.EmployeeId,
-                JobId = expense.RelatedJob.JobId,
-                WeekId = expense.WeekId
-            });
+                existing = new ExpenseItem();
+                db.Expenses.Add(existing);
+            }
+
+            existing.AdditionalNotes = expense.AddtionalNotes;
+            existing.Amount = expense.Amount;
+            existing.AttachmentName = expense.AttatchmentName;
+            existing.AttachmentUploadId = expense.AttachmentId.HasValue ? expense.AttachmentId.Value.ToString() : null;
+            existing.Classification = expense.Classification;
+            existing.CreateDate = DateTimeOffset.Now;
+            existing.EmployeeId = expense.EmployeeId;
+            existing.JobId = expense.RelatedJob.JobId;
+            existing.WeekId = expense.WeekId;
+
             await db.SaveChangesAsync();
         }
     }

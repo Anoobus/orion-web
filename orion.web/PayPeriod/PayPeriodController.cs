@@ -12,7 +12,7 @@ using orion.web.PayPeriod;
 
 namespace orion.web.Controllers
 {
-    
+
     [Authorize]
     [Route("api/PayPeriod")]
     public class PayPeriodController : Controller
@@ -23,7 +23,6 @@ namespace orion.web.Controllers
             var midDatePoint = DateTime.Now;
             var allEntries = new List<PayPeriodDTO>();
 
-            PayPeriodDTO startPP = null;
             if(!string.IsNullOrWhiteSpace(startDateIdentifier))
             {
                 var expr = @"(?<year>[0-9]{4})\.(?<month>[0-9]{2})\.(?<day>[0-9]{2})";
@@ -34,7 +33,5 @@ namespace orion.web.Controllers
 
             return Json(all);
         }
-
-      
     }
 }
