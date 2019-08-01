@@ -1,20 +1,13 @@
-ls
 $ErrorActionPreference = "Stop"
 
-(Get-ChildItem "self-cert.pfx").FullName
-
-
-#move db over too?
-#yes i think so!
-
 #get date identifier
-$dateId=Get-Date -Format "MMM-dd-yyyy" 
+$dateId=Get-Date -Format "MMM-dd-yyyy"
 $dateId="build-$dateId"
 
 #create sql data dir for this build
 mkdir "..\$dateId\sql-data"
 
-Copy-Item -Path "..\upload-data" -Destination  "..\$dateId\upload-data"
+Copy-Item -Path "upload-data" -Destination  "..\$dateId\upload-data"
 
 #backup our current DB into our build folder
 $backupCmd=[string]::Format("BACKUP DATABASE [orion.web] TO DISK='{0}\{1}\sql-data\orion.web.bak'", ((Get-Item (Get-Location).Path).Parent).FullName, $dateId);

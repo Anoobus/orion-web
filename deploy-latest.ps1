@@ -1,8 +1,4 @@
-ls
 $ErrorActionPreference = "Stop"
-
-(Get-ChildItem "self-cert.pfx").FullName
-
 
 #move db over too?
 #yes i think so!
