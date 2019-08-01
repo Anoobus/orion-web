@@ -69,6 +69,8 @@ namespace orion.web.ApplicationStartup
         {
             var cnb = new SqlConnectionStringBuilder(Configuration.GetConnectionString(connectionName));
             var runningLocation = Path.Combine(new DirectoryInfo(Path.GetDirectoryName(this.GetType().Assembly.Location)).Parent.FullName, @"sql-data");
+
+            Serilog.Log.Information($"Using run location {runningLocation} for {connectionName}");
             cnb.AttachDBFilename = MDFBootstrap.SetupLocalDbFile(Configuration.GetValue<string>("OverrideSqlDataPath") ?? runningLocation, cnb.InitialCatalog);
             Configuration.GetSection("ConnectionStrings")[connectionName] = cnb.ConnectionString;
             Serilog.Log.Information($"{connectionName} DB SETTINGS => {Configuration.GetConnectionString(connectionName)}");
