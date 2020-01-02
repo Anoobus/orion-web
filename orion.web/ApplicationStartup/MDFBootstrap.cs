@@ -71,11 +71,7 @@ namespace orion.web.ApplicationStartup
             string detatch = @"
                     if exists(select * from sys.databases where [name] = '" + dbName + @"')
                     begin
-	                    if not exists(select * from sys.master_files where physical_name = '" + dbFileName + @"')
-	                    begin
-		                    ALTER DATABASE [" + dbName + @"] SET  SINGLE_USER WITH ROLLBACK IMMEDIATE
-                            EXEC master.dbo.sp_detach_db @dbname = N'" + dbName + @"', @skipchecks = 'false'
-	                    end
+                        EXEC master.dbo.sp_detach_db @dbname = N'" + dbName + @"', @skipchecks = 'true'
                     end";
 
             var command = new SqlCommand(detatch, connection);

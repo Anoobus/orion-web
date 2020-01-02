@@ -39,7 +39,7 @@ namespace orion.web.ApplicationStartup
             {
                 var retryCount = 0;
                 var isInitialized = false;
-                while (retryCount < 3 && isInitialized == false)
+                while (retryCount < 2 && isInitialized == false)
                 {
                     try
                     {
@@ -60,12 +60,12 @@ namespace orion.web.ApplicationStartup
                     catch (Exception e)
                     {
                         Log.Error(e, "Error while trying to initialize DB");
-                        if (retryCount >= 3)
+                        if (retryCount >= 2)
                         {
                             throw;
                         }
-                        Log.Warning("Waiting 25 seconds before retry");
-                        Thread.Sleep(25_000);
+                        Log.Warning("Waiting 5 seconds before retry");
+                        Thread.Sleep(5_000);
                     }
                     retryCount++;
                 }

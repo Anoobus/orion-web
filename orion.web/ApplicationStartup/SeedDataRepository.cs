@@ -21,7 +21,7 @@ namespace orion.web.ApplicationStartup
         {
             this.services = services;
         }
-       
+
         public async Task IntializeSeedData()
         {
                     await SeedDbData();
@@ -65,7 +65,7 @@ namespace orion.web.ApplicationStartup
                     Log.Information("Admin account not found, creating one");
                     var pass = config.GetValue<string>("AdminPassword");
                     act = new IdentityUser(adminEmail);
-                    act.Email = adminEmail;                    
+                    act.Email = adminEmail;
                     await manager.CreateAsync(act, pass);
                 }
                 if (!await manager.IsInRoleAsync(act, UserRoleName.Admin))
@@ -82,7 +82,7 @@ namespace orion.web.ApplicationStartup
                     {
                         UserName = adminEmail,
                         First = "Admin",
-                        Last = "Admin"                         
+                        Last = "Admin"
                     };
                     Log.Information("Admin account missing in Orion.Web");
                     db.Employees.Add(adminAccount);
@@ -91,9 +91,6 @@ namespace orion.web.ApplicationStartup
                 }
                 Log.Information("Initialize seed data complete");
                 await db.SaveChangesAsync();
-
-
-              
             }
         }
     }
