@@ -52,12 +52,6 @@ select @personalTime = JobTaskId from dbo.JobTasks where [LegacyCode] = '83'
 declare @holidayTime as int
 select @holidayTime = JobTaskId from dbo.JobTasks where [LegacyCode] = '88'
 
-declare @excusedWithPay as int
-select @excusedWithPay = JobTaskId from dbo.JobTasks where [LegacyCode] = '86'
-
-declare @excusedWithoutPay as int
-select @excusedWithoutPay = JobTaskId from dbo.JobTasks where [LegacyCode] = '89'
-
 declare @ptoPay as int
 select @ptoPay = JobTaskId from dbo.JobTasks where [LegacyCode] = '93'
 
@@ -68,8 +62,6 @@ Select "
 + $"	IsNull(sum(regular.overtimehours), 0) as {nameof(PayPeriodEmployees.Overtime)}, "
 + $"	IsNull(sum(pto.hours) + sum(pto.overtimehours), 0) as {nameof(PayPeriodEmployees.PTO)},"
 + $"	IsNull(sum(holiday.hours) + sum(holiday.overtimehours), 0) as {nameof(PayPeriodEmployees.Holiday)},"
-+ $"	IsNull(sum(excusedNoPay.hours) + sum(excusedNoPay.overtimehours), 0) as {nameof(PayPeriodEmployees.ExcusedNoPay)},"
-+ $"	IsNull(sum(excusedWithPay.hours) + sum(excusedWithPay.overtimehours), 0) as {nameof(PayPeriodEmployees.ExcusedWithPay)},"
 + $"	e.{nameof(PayPeriodEmployees.IsExempt)},"
 + $"	IsNull(sum(te.hours) + sum(te.overtimehours),0) as {nameof(PayPeriodEmployees.Combined)} "
 +
@@ -79,19 +71,13 @@ left outer join [dbo].TimeEntries te
 	on e.EmployeeId = te.EmployeeId
 left outer join dbo.TimeEntries regular
 	on te.TimeEntryId = regular.TimeEntryId
-	and te.TaskId not in (@ptoPay, @holidayTime, @excusedWithoutPay, @excusedWithPay)
+	and te.TaskId not in (@ptoPay, @holidayTime)
 left outer join dbo.TimeEntries pto
 	on te.TimeEntryId = pto.TimeEntryId
 	and pto.TaskId = @ptoPay
 left outer join dbo.TimeEntries holiday
 	on te.TimeEntryId = holiday.TimeEntryId
 	and holiday.TaskId = @holidayTime
-left outer join dbo.TimeEntries excusedNoPay
-	on te.TimeEntryId = excusedNoPay.TimeEntryId
-	and excusedNoPay.TaskId = @excusedWithoutPay
-left outer join dbo.TimeEntries excusedWithPay
-	on te.TimeEntryId = excusedWithPay.TimeEntryId
-	and excusedWithPay.TaskId = @excusedWithPay
 where 
     (te.Date >= @payPeriodStart and te.Date <= @payPeriodEnd)
 group by e.EmployeeId, 
@@ -122,8 +108,6 @@ group by e.EmployeeId,
                     {
                         Combined = rdr.GetDecimal(map[nameof(PayPeriodEmployees.Combined)]),
                         EmployeeName = rdr.IsDBNull(map[nameof(PayPeriodEmployees.EmployeeName)]) ? "" : rdr.GetSqlString(map[nameof(PayPeriodEmployees.EmployeeName)]).Value,
-                        ExcusedNoPay = rdr.GetDecimal(map[nameof(PayPeriodEmployees.ExcusedNoPay)]),
-                        ExcusedWithPay = rdr.GetDecimal(map[nameof(PayPeriodEmployees.ExcusedWithPay)]),
                         Holiday = rdr.GetDecimal(map[nameof(PayPeriodEmployees.Holiday)]),
                         IsExempt = rdr.GetBoolean(map[nameof(PayPeriodEmployees.IsExempt)]),
                         Overtime = rdr.GetDecimal(map[nameof(PayPeriodEmployees.Overtime)]),
