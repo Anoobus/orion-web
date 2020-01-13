@@ -47,7 +47,8 @@ namespace orion.web.Employees
                     AssignJobs = employeesJobs,
                     Role = userRole,
                     First = employee.FirstName,
-                    Last = employee.LastName
+                    Last = employee.LastName,
+                    IsExempt = employee.IsExempt,
                 });
                 return new CommandResult(true);
             }
