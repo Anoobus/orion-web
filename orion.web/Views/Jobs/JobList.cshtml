@@ -77,7 +77,7 @@
                                 }
                             </td>
                             <td>
-                                @if(item.Key.JobStatusDTO.Enum == orion.web.Jobs.JobStatus.Enabled)
+                                @if(item.Key.JobStatusDTO.Enum == orion.web.Jobs.JobStatus.Enabled && User.IsInRole(UserRoleName.Admin))
                                 {
                                     @Html.ActionLink("Close Job", "CloseJob", new { id = item.Key.JobId })<text> |</text>
                                 }
