@@ -19,6 +19,8 @@ namespace orion.web.Reports
         public decimal Overtime { get; set; }
         public decimal PTO { get; set; }
         public decimal Holiday { get; set; }
+        public decimal ExcusedWithPay { get; set; }
+        public decimal ExcusedNoPay { get; set; }
         public decimal Combined { get; set; }
     }
 
