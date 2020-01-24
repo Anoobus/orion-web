@@ -19,7 +19,7 @@ namespace orion.web.TimeEntries
         private readonly ITimeApprovalListQuery timeApprovalListQuery;
         private readonly ISessionAdapter sessionAdapter;
 
-        public TimeApprovalController(ITimeApprovalService timeApprovalService, 
+        public TimeApprovalController(ITimeApprovalService timeApprovalService,
             IApproveTimeCommand approveTimeCommand,
             IWeekOfTimeEntriesQuery weekOfTimeEntriesQuery,
             ITimeApprovalListQuery timeApprovalListQuery,
@@ -47,6 +47,14 @@ namespace orion.web.TimeEntries
             return View("List", vm);
         }
 
+        [HttpGet("[Controller]/Hide/{employeeId:int}/week/{weekId:int}")]
+        public async Task<ActionResult> HideEntry([FromRoute] int employeeId, [FromRoute] int weekId)
+        {
+            await timeApprovalService.Hide(weekId, employeeId);
+            var vm = await timeApprovalListQuery.GetApprovalListAsync();
+            return View("List", vm);
+        }
+
         [HttpPost]
         public async Task<ActionResult> Index(DateTime PeriodStartData, DateTime PeriodEndDate)
         {
@@ -54,12 +62,12 @@ namespace orion.web.TimeEntries
             return View("List", vm);
         }
 
-        
-    [HttpPost]
+
+        [HttpPost]
         [Route("TimeApproval/{newApprovalState}", Name = APPROVAL_ROUTE)]
         public async Task<ActionResult> ApplyApproval(TimeApprovalModel request)
         {
-            var req = new TimeApprovalRequest(            
+            var req = new TimeApprovalRequest(
                 approvingUserId : await sessionAdapter.EmployeeIdAsync(),
                 approvingUserIsAdmin : User.IsInRole(UserRoleName.Admin),
                 employeeId: request.EmployeeId,
@@ -77,7 +85,7 @@ namespace orion.web.TimeEntries
                 NotificationsController.AddNotification(this.User.SafeUserName(), $"{string.Join(",",res.Errors)}");
                 return Unauthorized();
             }
-            
+
         }
     }
 }

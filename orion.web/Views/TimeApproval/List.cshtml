@@ -52,10 +52,14 @@
             <div class="panel-heading" data-toggle="collapse" data-target="#approved">Approved <span class="glyphicon glyphicon-resize-vertical" style="float:right"></span></div>
             <div class="panel-body collapse in" id="approved" aria-expanded="true">
                 @Html.EditorFor(model => model.ApprovedEntries, "~/Views/TimeApproval/TimeApprovalSection.cshtml")
-
-
             </div>
         </div>
 
+        <div class="panel panel-default">
+            <div class="panel-heading" data-toggle="collapse" data-target="#hidden">Hidden <span class="glyphicon glyphicon-resize-vertical" style="float:right"></span></div>
+            <div class="panel-body collapse" id="hidden" aria-expanded="false">
+                @Html.EditorFor(model => model.HiddenEntries, "~/Views/TimeApproval/TimeApprovalSection.cshtml")
+            </div>
+        </div>
     </div>
 </div>

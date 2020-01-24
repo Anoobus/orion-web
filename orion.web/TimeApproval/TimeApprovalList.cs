@@ -14,6 +14,6 @@ namespace orion.web.TimeApproval
         public IEnumerable<TimeApprovalDTO> SubmittedEntries { get; set; }
         public IEnumerable<TimeApprovalDTO> MissingEntries { get; set; }
         public IEnumerable<TimeApprovalDTO> RejectedEntries { get; set; }
-        
+        public IEnumerable<TimeApprovalDTO> HiddenEntries { get; set; }
     }
 }

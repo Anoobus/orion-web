@@ -33,8 +33,8 @@ namespace orion.web.ApplicationStartup
                     }
                     else
                     {
-                        Serilog.Log.Information($"creating {dbFileName} using an empty db");
-                        CreateNewEmptyMdf(filePath, dbName, connection);
+                        //Serilog.Log.Information($"creating {dbFileName} using an empty db");
+                        //CreateNewEmptyMdf(filePath, dbName, connection);
                     }
                 }
                 else

@@ -5,7 +5,7 @@ namespace orion.web.TimeEntries
 {
     public enum TimeApprovalStatus
     {
-        Unkown,        
+        Unkown,
         Submitted,
         Rejected,
         Approved
@@ -30,5 +30,7 @@ namespace orion.web.TimeEntries
         public decimal TotalRegularHours { get; set; }
         [Display(Name ="Total Overtime")]
         public decimal TotalOverTimeHours { get; set; }
+
+        public bool IsHidden { get; set; }
     }
 }

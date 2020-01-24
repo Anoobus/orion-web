@@ -14,17 +14,14 @@ namespace orion.web.Common
     }
     public class TimeApprovalListQuery : ITimeApprovalListQuery
     {
-        //private readonly IWeekService weekService;
         private readonly ITimeSummaryService timeSummaryService;
         private readonly ITimeApprovalService timeApprovalService;
         private readonly IEmployeeService employeeService;
 
         public TimeApprovalListQuery(
-            //IWeekService weekService, 
             ITimeSummaryService timeSummaryService, ITimeApprovalService timeApprovalService,
             IEmployeeService employeeService)
         {
-            //this.weekService = weekService;
             this.timeSummaryService = timeSummaryService;
             this.timeApprovalService = timeApprovalService;
             this.employeeService = employeeService;
@@ -61,8 +58,8 @@ namespace orion.web.Common
                     }
                 }
             }
-            var allMissing =    from p in missing
-                                join c in entries.Where(x => x.TimeApprovalStatus == TimeApprovalStatus.Unkown).ToList() 
+            var allMissing =    (from p in missing
+                                join c in entries.Where(x => x.TimeApprovalStatus == TimeApprovalStatus.Unkown).ToList()
                                     on new { p.emp.EmployeeId, WeekId = p.week.WeekId.Value } equals new { c.EmployeeId, c.WeekId } into ps
                                 from x in ps.DefaultIfEmpty()
                                 select
@@ -74,18 +71,19 @@ namespace orion.web.Common
                                         WeekId = p.week.WeekId.Value,
                                         WeekStartDate = p.week.WeekStart,
                                         TotalOverTimeHours = x == null ? 0 : x.TotalOverTimeHours,
-                                        TotalRegularHours = x == null ? 0 : x.TotalRegularHours
-                                    };
-                                
+                                        TotalRegularHours = x == null ? 0 : x.TotalRegularHours,
+                                        IsHidden = x == null ? false : x.IsHidden
+                                    }).ToList();
 
             return new TimeApprovalList()
             {
                 PeriodEndDate = endDate.Value,
                 PeriodStartData = beginDate.Value,
-                ApprovedEntries = entries.Where(x => x.TimeApprovalStatus == TimeApprovalStatus.Approved),
-                RejectedEntries = entries.Where(x => x.TimeApprovalStatus == TimeApprovalStatus.Rejected),
-                SubmittedEntries = entries.Where(x => x.TimeApprovalStatus == TimeApprovalStatus.Submitted),
-                MissingEntries = allMissing.OrderBy(x => x.WeekId).ToList()
+                ApprovedEntries = entries.Where(x => x.TimeApprovalStatus == TimeApprovalStatus.Approved && !x.IsHidden),
+                RejectedEntries = entries.Where(x => x.TimeApprovalStatus == TimeApprovalStatus.Rejected && !x.IsHidden),
+                SubmittedEntries = entries.Where(x => x.TimeApprovalStatus == TimeApprovalStatus.Submitted && !x.IsHidden),
+                MissingEntries = allMissing.Where(x => !x.IsHidden).OrderBy(x => x.WeekId).ToList(),
+                HiddenEntries = entries.Where(x => x.IsHidden).ToList()
             };
 
         }

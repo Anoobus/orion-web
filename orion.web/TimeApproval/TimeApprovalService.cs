@@ -12,20 +12,17 @@ namespace orion.web.TimeEntries
     {
         Task<TimeApprovalDTO> GetAsync(int weekId, int employeeId);
         Task Save(TimeApprovalDTO timeApprovalDTO);
+        Task Hide(int weekId, int employeeId);
         Task<IEnumerable<TimeApprovalDTO>> GetByStatus(DateTime? beginDateInclusive = null, DateTime? endDateInclusive = null, params TimeApprovalStatus[] withTimeApprovalStatus);
         Task UpdateTimeTotals(int weekId, int employeeId, decimal overtime, decimal regular);
     }
     public class TimeApprovalService : ITimeApprovalService
     {
         private readonly OrionDbContext db;
-        //private readonly IWeekService weekService;
 
-        public TimeApprovalService(OrionDbContext db
-            //IWeekService weekService
-            )
+        public TimeApprovalService(OrionDbContext db)
         {
             this.db = db;
-            //this.weekService = weekService;
         }
         public async Task<TimeApprovalDTO> GetAsync(int weekId, int employeeId)
         {
@@ -39,7 +36,8 @@ namespace orion.web.TimeEntries
                     EmployeeName = emp.UserName,
                     EmployeeId = emp.EmployeeId,
                     WeekId = weekId,
-                    TimeApprovalStatus = TimeApprovalStatus.Unkown
+                    TimeApprovalStatus = TimeApprovalStatus.Unkown,
+                    IsHidden = false
                 };
             }
             else
@@ -58,6 +56,7 @@ namespace orion.web.TimeEntries
                     TotalOverTimeHours = match.TotalOverTimeHours,
                     TotalRegularHours = match.TotalRegularHours,
                     SubmittedDate = match.SubmittedDate,
+                    IsHidden = match.IsHidden
                 };
             }
         }
@@ -97,7 +96,8 @@ namespace orion.web.TimeEntries
                 WeekStartDate = WeekDTO.CreateForWeekId(x.WeekId).WeekStart,
                 SubmittedDate = x.SubmittedDate,
                 TotalOverTimeHours = x.TotalOverTimeHours,
-                TotalRegularHours = x.TotalRegularHours
+                TotalRegularHours = x.TotalRegularHours,
+                IsHidden = x.IsHidden
             }).ToList();
         }
 
@@ -158,7 +158,15 @@ namespace orion.web.TimeEntries
             match.ApproverEmployeeId = approver;
             match.ResponseReason = match.ResponseReason ?? "" + timeApprovalDTO.ResponseReason;
             match.TimeApprovalStatus = timeApprovalDTO.TimeApprovalStatus.ToString();
+            match.IsHidden = timeApprovalDTO.IsHidden;
             await db.SaveChangesAsync();
+        }
+
+        public async Task Hide(int weekId, int employeeId)
+        {
+            var rec = await GetAsync(weekId, employeeId);
+            rec.IsHidden = true;
+            await Save(rec);
         }
     }
 }

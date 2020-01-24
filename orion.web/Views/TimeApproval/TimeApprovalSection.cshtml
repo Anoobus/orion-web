@@ -49,7 +49,11 @@
                         @item.TotalOverTimeHours
                     </td>
                     <td>
-                        @Html.ActionLink("Details", nameof(TimeEntryController.Edit),"TimeEntry", new { WeekId = item.WeekId, employeeId = item.EmployeeId })
+                        @Html.ActionLink("Details", nameof(TimeEntryController.Edit), "TimeEntry", new { WeekId = item.WeekId, employeeId = item.EmployeeId })
+                        @if(!item.IsHidden)
+                        {
+                            <TEXT>| </TEXT> @Html.ActionLink("Hide", nameof(TimeApprovalController.HideEntry), "TimeApproval", new { weekId = item.WeekId, employeeId = item.EmployeeId })
+                        }
                     </td>
                 </tr>
                 }
