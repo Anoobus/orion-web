@@ -69,9 +69,9 @@ namespace orion.web.Jobs
             return RedirectToAction(nameof(List));
         }
 
+        [Authorize(Roles = UserRoleName.Admin)]
         public async Task<ActionResult> CloseJob(int id)
         {
-            var me = await employeeService.GetSingleEmployeeAsync(User.Identity.Name);
             var job = await jobService.GetForJobId(id);
             job.JobStatusDTO.Id = (int)JobStatus.Archived;
             await jobService.PutAsync(job);
