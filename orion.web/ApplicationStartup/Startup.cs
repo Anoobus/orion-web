@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Mvc.Razor;
 using orion.web.UI;
 using orion.web.Util.IoC;
 using orion.web.BLL.AutoMapper;
+using System;
 
 namespace orion.web.ApplicationStartup
 {
@@ -21,6 +22,13 @@ namespace orion.web.ApplicationStartup
 
     public class Startup
     {
+        public static readonly Lazy<string> AppVersion = new Lazy<string>(() =>
+        {
+            var assm = typeof(Startup).Assembly;
+            var name = assm.GetName().Name;
+            return $"{name}: {assm.GetName().Version}";
+        });
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -79,7 +87,7 @@ namespace orion.web.ApplicationStartup
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             Serilog.Log.Information($"Configuring: {env.ApplicationName} for env {env.EnvironmentName}");
-            if (env.IsDevelopment())
+            if(env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();

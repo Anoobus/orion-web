@@ -6,16 +6,22 @@
     <DockerTargetOS>Linux</DockerTargetOS>
     <StartupObject></StartupObject>
     <LangVersion>7.1</LangVersion>
+    <AssemblyVersion>1.0.1.0</AssemblyVersion>
+    <FileVersion>1.0.1.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Remove="Account\**" />
+    <Compile Remove="api\**" />
     <Compile Remove="Authorization\**" />
     <Content Remove="Account\**" />
+    <Content Remove="api\**" />
     <Content Remove="Authorization\**" />
     <EmbeddedResource Remove="Account\**" />
+    <EmbeddedResource Remove="api\**" />
     <EmbeddedResource Remove="Authorization\**" />
     <None Remove="Account\**" />
+    <None Remove="api\**" />
     <None Remove="Authorization\**" />
   </ItemGroup>
 
@@ -117,7 +123,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="api\" />
     <Folder Include="Areas\Identity\Services\" />
   </ItemGroup>
 

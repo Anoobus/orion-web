@@ -1,4 +1,7 @@
 ﻿@using orion.web.Employees
+@using System.Reflection
+@using orion.web.ApplicationStartup
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -45,33 +48,33 @@
             <div class="navbar-collapse collapse">
                 @if(User.Identity.IsAuthenticated)
                 {
-                <ul class="nav navbar-nav">
-                    <li><a asp-controller="Home" asp-action="Index">Home</a></li>
-                    @if(User.IsInRole(UserRoleName.Admin))
-                    {
-                        <li>
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">System Management <b class="caret"></b></a>
-                            <ul class="dropdown-menu multi-level">
-                                <li><a asp-controller="Jobs" asp-action="Index">Jobs</a></li>
-                                <li><a asp-controller="Task" asp-action="List">Tasks</a></li>
-                                <li><a asp-controller="Clients" asp-action="ListClients">Clients</a></li>
-                                <li><a asp-controller="Employee" asp-action="List">Employees</a></li>
-                                <li><a asp-controller="Jobs" asp-action="Create">Create New Job</a></li>
-                            </ul>
-                        </li>
-                    }
-                    else
-                    {
-                        <li><a asp-controller="Jobs" asp-action="Index">My Jobs</a></li>
-                    }
-                    <li><a asp-controller="TimeEntry" asp-action="Index">Time Entry</a></li>
-                    @if(User.IsInRole(UserRoleName.Admin))
-                    {
+                    <ul class="nav navbar-nav">
+                        <li><a asp-controller="Home" asp-action="Index">Home</a></li>
+                        @if(User.IsInRole(UserRoleName.Admin))
+                        {
+                            <li>
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">System Management <b class="caret"></b></a>
+                                <ul class="dropdown-menu multi-level">
+                                    <li><a asp-controller="Jobs" asp-action="Index">Jobs</a></li>
+                                    <li><a asp-controller="Task" asp-action="List">Tasks</a></li>
+                                    <li><a asp-controller="Clients" asp-action="ListClients">Clients</a></li>
+                                    <li><a asp-controller="Employee" asp-action="List">Employees</a></li>
+                                    <li><a asp-controller="Jobs" asp-action="Create">Create New Job</a></li>
+                                </ul>
+                            </li>
+                        }
+                        else
+                        {
+                            <li><a asp-controller="Jobs" asp-action="Index">My Jobs</a></li>
+                        }
+                        <li><a asp-controller="TimeEntry" asp-action="Index">Time Entry</a></li>
+                        @if(User.IsInRole(UserRoleName.Admin))
+                        {
 
-                        <li><a asp-controller="TimeApproval" asp-action="Index">Time Approval</a></li>
-                    }
-                    <li><a asp-controller="Reports" asp-action="Index">View Reports</a></li>
-                </ul>
+                            <li><a asp-controller="TimeApproval" asp-action="Index">Time Approval</a></li>
+                        }
+                        <li><a asp-controller="Reports" asp-action="Index">View Reports</a></li>
+                    </ul>
                 }
                 @await Html.PartialAsync("_LoginPartial")
             </div>
@@ -84,7 +87,10 @@
         @RenderBody()
         <hr />
         <footer>
-            <p>&copy; 2020 - Pragmatic Software Solutions LLC</p>
+            <p>
+                &copy; 2020 - Pragmatic Software Solutions LLC<br />
+                <span style="font-size:8px">@Startup.AppVersion.Value</span>
+            </p>
         </footer>
     </div>
 
