@@ -16,6 +16,8 @@ using orion.web.Reports;
 using orion.web.DataAccess.EF;
 using System.Data.SqlClient;
 using System.IO;
+using Microsoft.AspNetCore.Mvc.Razor;
+using orion.web.UI;
 
 namespace orion.web.ApplicationStartup
 {
@@ -48,9 +50,9 @@ namespace orion.web.ApplicationStartup
             SetupLocalDbBasedEntityFramework<ApplicationDbContext>(services, "IdentityConnection");
 
             services.AddIdentity<IdentityUser, IdentityRole>()
-            .AddDefaultUI()
-            .AddDefaultTokenProviders()
-            .AddEntityFrameworkStores<ApplicationDbContext>();
+                    .AddDefaultUI()
+                    .AddDefaultTokenProviders()
+                    .AddEntityFrameworkStores<ApplicationDbContext>();
 
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
@@ -63,6 +65,8 @@ namespace orion.web.ApplicationStartup
             services.AddTransient<ISiteService, SiteService>();
             services.AddTransient<ITaskService, TaskService>();
             this.GetType().Assembly.RegisterTypesWithRegisterByConventionMarker(services);
+
+            services.Configure<RazorViewEngineOptions>(config => config.ViewLocationExpanders.Add(new ViewLocationExpander()));
             services.AddHttpContextAccessor();
         }
 

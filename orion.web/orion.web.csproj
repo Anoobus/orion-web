@@ -5,6 +5,7 @@
     <UserSecretsId>aspnet-orion.web-FEEF65A2-EA60-42A9-8F69-6C8534D9A130</UserSecretsId>
     <DockerTargetOS>Linux</DockerTargetOS>
     <StartupObject></StartupObject>
+    <LangVersion>7.1</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -27,6 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="9.0.0" />
     <PackageReference Include="DotNetCore.NPOI" Version="1.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.4" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.0.1916590" />
@@ -37,60 +39,60 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="Views\Employee\List.cshtml">
+    <Content Update="UI\Views\Employee\List.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
-    <Content Update="Views\Expense\Edit.cshtml">
+    <Content Update="UI\Views\Expense\Edit.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
-    <Content Update="Views\Reports\PayPeriodReportCriteria.cshtml">
+    <Content Update="UI\Views\Reports\PayPeriodReportCriteria.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
-    <Content Update="Views\Reports\ReportingPeriod.cshtml">
+    <Content Update="UI\Views\Reports\ReportingPeriod.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
-    <Content Update="Views\Reports\ViewCompletedReport.cshtml">
+    <Content Update="UI\Views\Reports\ViewCompletedReport.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
-    <Content Update="Views\Reports\ProjectStatusReportCriteria.cshtml">
+    <Content Update="UI\Views\Reports\ProjectStatusReportCriteria.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
-    <Content Update="Views\Shared\Error.cshtml">
+    <Content Update="UI\Views\Shared\Error.cshtml">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
-    <Content Update="Views\Shared\_CookieConsentPartial.cshtml">
+    <Content Update="UI\Views\Shared\_CookieConsentPartial.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
-    <Content Update="Views\Shared\_Layout.cshtml">
+    <Content Update="UI\Views\Shared\_Layout.cshtml">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
-    <Content Update="Views\Shared\_LoginPartial.cshtml">
+    <Content Update="UI\Views\Shared\_LoginPartial.cshtml">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
-    <Content Update="Views\Shared\_ValidationScriptsPartial.cshtml">
+    <Content Update="UI\Views\Shared\_ValidationScriptsPartial.cshtml">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
-    <Content Update="Views\Task\TaskList.cshtml">
+    <Content Update="UI\Views\Task\TaskList.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
-    <Content Update="Views\TimeApproval\List.cshtml">
+    <Content Update="UI\Views\TimeApproval\List.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
-    <Content Update="Views\TimeApproval\TimeApprovalSection.cshtml">
+    <Content Update="UI\Views\TimeApproval\TimeApprovalSection.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
   </ItemGroup>
 
   <ItemGroup>
-    <UpToDateCheckInput Remove="Views\Shared\_CookieConsentPartial.cshtml" />
+    <UpToDateCheckInput Remove="UI\Views\Shared\_CookieConsentPartial.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
-    <_ContentIncludedByDefault Remove="Views\Shared\_CookieConsentPartial.cshtml" />
+    <_ContentIncludedByDefault Remove="UI\Views\Shared\_CookieConsentPartial.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -108,6 +110,7 @@
   <ItemGroup>
     <Folder Include="api\" />
     <Folder Include="Areas\Identity\Services\" />
+    <Folder Include="Notifications\" />
   </ItemGroup>
 
   <ItemGroup>

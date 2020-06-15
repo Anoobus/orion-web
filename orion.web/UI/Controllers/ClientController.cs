@@ -27,7 +27,7 @@ namespace orion.web.Clients
             try
             {
                 clientService.Post(client);
-                NotificationsController.AddNotification(this.User.SafeUserName(), $"{client.FullName} has been created.");                
+                NotificationsController.AddNotification(this.User.SafeUserName(), $"{client.FullName} has been created.");
                 return RedirectToAction(nameof(Create));
             }
             catch
