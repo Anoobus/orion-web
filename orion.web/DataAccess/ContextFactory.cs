@@ -20,6 +20,7 @@ namespace orion.web.DataAccess
             _dbOptions = new Lazy<DbContextOptions<OrionDbContext>>(() =>
             {
                 var optsBuilder = new DbContextOptionsBuilder<OrionDbContext>();
+
                 optsBuilder.UseSqlServer(configuration.GetConnectionString(OrionDbContext.CONN_STRING_NAME));
                 return optsBuilder.Options;
             });
