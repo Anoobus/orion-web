@@ -25,16 +25,16 @@
                 <thead>
                     <tr>
                         <th class="job-code-link-cell">
-                            @Html.DisplayNameFor(model => model.HeaderHelp.JobCode)
+                            Job Code
                         </th>
                         <th>
-                            @Html.DisplayNameFor(model => model.HeaderHelp.JobName)
+                            Name
                         </th>
                         <th>
-                            @Html.DisplayNameFor(model => model.HeaderHelp.Client.ClientName)
+                            Client
                         </th>
                         <th>
-                            @Html.DisplayNameFor(model => model.HeaderHelp.Site.SiteName)
+                            Site
                         </th>
                         <th>
                             Status
@@ -50,24 +50,24 @@
                             <td>
                                 @if(User.IsInRole(UserRoleName.Admin))
                                 {
-                                    @Html.ActionLink(item.Key.JobCode, "Edit", new { id = item.Key.JobId })
+                                    @Html.ActionLink(item.Key.Item1.JobCode, "Edit", new { id = item.Key.Item1.JobId })
                                 }
                                 else
                                 {
-                                    @Html.DisplayFor(modelItem => item.Key.JobCode)
+                                    @Html.DisplayFor(modelItem => item.Key.Item1.JobCode)
                                 }
                             </td>
                             <td>
-                                @Html.DisplayFor(modelItem => item.Key.JobName)
+                                @Html.DisplayFor(modelItem => item.Key.Item1.JobName)
                             </td>
                             <td>
-                                @Html.DisplayFor(modelItem => item.Key.Client.ClientName)
+                                @Html.DisplayFor(modelItem => item.Key.Item2.Client.ClientName)
                             </td>
                             <td>
-                                @Html.DisplayFor(modelItem => item.Key.Site.SiteName)
+                                @Html.DisplayFor(modelItem => item.Key.Item2.Site.SiteName)
                             </td>
                             <td>
-                                @if(item.Key.JobStatusDTO.Enum == orion.web.Jobs.JobStatus.Enabled)
+                                @if(item.Key.Item1.JobStatusId == orion.web.Jobs.JobStatus.Enabled)
                                 {
                                     <span>Active</span>
                                 }
@@ -77,18 +77,18 @@
                                 }
                             </td>
                             <td>
-                                @if(item.Key.JobStatusDTO.Enum == orion.web.Jobs.JobStatus.Enabled && User.IsInRole(UserRoleName.Admin))
+                                @if(item.Key.Item1.JobStatusId == orion.web.Jobs.JobStatus.Enabled && User.IsInRole(UserRoleName.Admin))
                                 {
-                                    @Html.ActionLink("Close Job", "CloseJob", new { id = item.Key.JobId })<text> |</text>
+                                    @Html.ActionLink("Close Job", "CloseJob", new { id = item.Key.Item1.JobId })<text> |</text>
                                 }
                                 @if(item.Value)
                                 {
-                                    @Html.ActionLink("Remove From My Jobs", "RemoveJobForCurrentUser", new { id = item.Key.JobId })
+                                    @Html.ActionLink("Remove From My Jobs", "RemoveJobForCurrentUser", new { id = item.Key.Item1.JobId })
 
                                 }
                                 else
                                 {
-                                    @Html.ActionLink("Add To My Jobs", "AddJobForCurrentUser", new { id = item.Key.JobId })
+                                    @Html.ActionLink("Add To My Jobs", "AddJobForCurrentUser", new { id = item.Key.Item1.JobId })
                                 }
                             </td>
                         </tr>

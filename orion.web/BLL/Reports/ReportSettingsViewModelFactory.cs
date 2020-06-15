@@ -21,9 +21,9 @@ namespace orion.web.Reports
 
     public class ReportSettingsViewModelFactory : IReportSettingsViewModelFactory, IAutoRegisterAsSingleton
     {
-        private readonly IJobService jobService;
+        private readonly IJobsRepository jobService;
 
-        public ReportSettingsViewModelFactory(IJobService jobService)
+        public ReportSettingsViewModelFactory(IJobsRepository jobService)
         {
             this.jobService = jobService;
         }

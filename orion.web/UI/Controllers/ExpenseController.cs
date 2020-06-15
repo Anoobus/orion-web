@@ -15,13 +15,13 @@ namespace orion.web.Expense
     [Authorize]
     public class ExpenseController : Controller
     {
-        private readonly IJobService _jobsService;
+        private readonly IJobsRepository _jobsService;
         private readonly ISessionAdapter _sessionAdapter;
         private readonly IExpenseService _expenseService;
         private readonly IConfiguration _config;
         private readonly IUploadLocationResolver _uploadLocationResolver;
 
-        public ExpenseController(IJobService jobsService, ISessionAdapter sessionAdapter, IExpenseService expenseService, IConfiguration config, IUploadLocationResolver uploadLocationResolver)
+        public ExpenseController(IJobsRepository jobsService, ISessionAdapter sessionAdapter, IExpenseService expenseService, IConfiguration config, IUploadLocationResolver uploadLocationResolver)
         {
             _jobsService = jobsService;
             _sessionAdapter = sessionAdapter;

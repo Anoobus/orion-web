@@ -27,19 +27,19 @@
                 <span asp-validation-for="Job.JobCode" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Job.Client.ClientName" class="control-label"></label>
+                <label class="control-label">Client</label>
 
                 <select asp-for="SelectedClientId" class="form-control"
                         asp-items="@(new SelectList(Model.AvailableClients,"ClientId","ClientName"))"></select>
             </div>
 
             <div class="form-group">
-                <label asp-for="Job.Site" class="control-label"></label>
+                <label  class="control-label">Site</label>
                 <select asp-for="SelectedSiteId" class="form-control"
                         asp-items="@(new SelectList(Model.AvailableSites,"SiteID","SiteName"))"></select>
             </div>
             <div class="form-group">
-                <label asp-for="Job.JobStatusDTO" class="control-label"></label>
+                <label  class="control-label">Status</label>
                 <select id="SelectedJobStatusId" name="SelectedJobStatusId" data-val="true" data-val-required="The Status field is required." class="form-control">
                     <!option value="1" @(Model.SelectedJobStatusId == 1 ? "selected" : "")>Active</!option>
                     <!option value="2" @(Model.SelectedJobStatusId == 2 ? "selected" : "")>Closed</!option>
@@ -66,7 +66,7 @@
         </div>
         <div class="col-md-5">
             <div class="form-group">
-                <label asp-for="Job.ProjectManager" class="control-label"></label>
+                <label  class="control-label">Project Manager</label>
                 <select asp-for="SelectedProjectManagerEmployeeId" class="form-control"
                         asp-items="@(new SelectList(Model.AvailableProjectManagers,"EmployeeId","EmployeeName"))"></select>
             </div>

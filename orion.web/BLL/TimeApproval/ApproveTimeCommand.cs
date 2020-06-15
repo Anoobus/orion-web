@@ -43,9 +43,9 @@ namespace orion.web.TimeApproval
         private readonly IEmployeeRepository employeeService;
         private readonly ISmtpProxy smtpProxy;
         private readonly IConfiguration configuration;
-        private readonly IJobService jobService;
+        private readonly IJobsRepository jobService;
 
-        public ApproveTimeCommand(ITimeApprovalService timeApprovalService, ITimeService timeService, IEmployeeRepository employeeService, ISmtpProxy smtpProxy, IConfiguration configuration, IJobService jobService)
+        public ApproveTimeCommand(ITimeApprovalService timeApprovalService, ITimeService timeService, IEmployeeRepository employeeService, ISmtpProxy smtpProxy, IConfiguration configuration, IJobsRepository jobService)
         {
             this.timeApprovalService = timeApprovalService;
             this.timeService = timeService;
@@ -102,7 +102,7 @@ namespace orion.web.TimeApproval
                 var time = await timeService.GetAsync(request.WeekId, request.EmployeeId);
                 var JobsThatCauseApprovalRequired = time.Where(x => x.OvertimeHours > 0).GroupBy(x => x.JobId);
                 var jobDetails = await Task.WhenAll(JobsThatCauseApprovalRequired.Select(async x => await jobService.GetForJobId(x.Key)));
-                int[] projectManagersToNotifiy = jobDetails.Select(x => x.ProjectManager.EmployeeId).ToArray();
+                int[] projectManagersToNotifiy = jobDetails.Select(x => x.ProjectManagerEmployeeId).ToArray();
                 var week = WeekDTO.CreateForWeekId(request.WeekId);
                 foreach(var pm in projectManagersToNotifiy)
                 {

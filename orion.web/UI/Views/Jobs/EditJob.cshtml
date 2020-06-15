@@ -21,19 +21,19 @@
         <div class="col-md-4">
             <div class="form-group">
                 <label asp-for="Job.JobCode"></label>
-                <input asp-for="Job.JobCode" class="form-control" readonly="readonly" />
+                <input asp-for="Job.JobCode" class="form-control" />
             </div>
             <div class="form-group">
-                <label asp-for="Job.Client.ClientName"></label>
-                <select disabled class="form-control">
-                    <option>@Model.Job.Client.ClientName</option>
-                </select>
+                <label class="control-label">Client</label>
+
+                <select asp-for="SelectedClientId" class="form-control"
+                        asp-items="@(new SelectList(Model.AvailableClients,"ClientId","ClientName"))"></select>
             </div>
+
             <div class="form-group">
-                <label asp-for="Job.Site.SiteName" =""></label>
-                <select disabled class="form-control">
-                    <option>@Model.Job.Site.SiteName</option>
-                </select>
+                <label  class="control-label">Site</label>
+                <select asp-for="SelectedSiteId" class="form-control"
+                        asp-items="@(new SelectList(Model.AvailableSites,"SiteID","SiteName"))"></select>
             </div>
 
             <div class="form-group">
@@ -64,7 +64,7 @@
         </div>
         <div class="col-md-5">
             <div class="form-group">
-                <label asp-for="Job.ProjectManager" class="control-label"></label>
+                <label  class="control-label">Project Manager</label>
                 <select asp-for="SelectedProjectManagerEmployeeId" class="form-control"
                         asp-items="@(new SelectList(Model.AvailableProjectManagers,"EmployeeId","EmployeeName"))"></select>
             </div>

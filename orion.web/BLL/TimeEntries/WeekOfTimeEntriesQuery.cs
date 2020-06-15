@@ -25,14 +25,14 @@ namespace orion.web.TimeEntries
     public class WeekOfTimeEntriesQuery : IWeekOfTimeEntriesQuery, IAutoRegisterAsSingleton
     {
         private readonly ITimeService timeService;
-        private readonly IJobService jobService;
+        private readonly IJobsRepository jobService;
         private readonly ITaskService taskService;
         private readonly ITimeApprovalService timeApprovalService;
         private readonly IEmployeeRepository employeeService;
         private readonly IExpenseService _expenseService;
 
         public WeekOfTimeEntriesQuery(ITimeService timeService,
-            IJobService jobService,
+            IJobsRepository jobService,
             ITaskService taskService,
             ITimeApprovalService timeApprovalService,
             IEmployeeRepository employeeService,

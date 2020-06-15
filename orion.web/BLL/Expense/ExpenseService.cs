@@ -22,9 +22,9 @@ namespace orion.web.Employees
     public class ExpenseService : IExpenseService, IAutoRegisterAsSingleton
     {
         private readonly IContextFactory _contextFactory;
-        private readonly IJobService _jobService;
+        private readonly IJobsRepository _jobService;
 
-        public ExpenseService(IContextFactory contextFactory, IJobService jobService)
+        public ExpenseService(IContextFactory contextFactory, IJobsRepository jobService)
         {
             _contextFactory = contextFactory;
             _jobService = jobService;

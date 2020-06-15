@@ -17,12 +17,12 @@ namespace orion.web.Reports
 
     public class ReportCreator : IReportCreator, IAutoRegisterAsSingleton
     {
-        private readonly IJobService jobService;
+        private readonly IJobsRepository jobService;
         private readonly IJobSummaryReportQuery jobSummaryQuery;
         private readonly IQuickJobTimeReportQuery quickJobTimeReportQuery;
         private readonly IPayPeriodReportQuery payPeriodReportQuery;
 
-        public ReportCreator(IJobService jobService, IJobSummaryReportQuery jobSummaryQuery, IQuickJobTimeReportQuery quickJobTimeReportQuery, IPayPeriodReportQuery payPeriodReportQuery)
+        public ReportCreator(IJobsRepository jobService, IJobSummaryReportQuery jobSummaryQuery, IQuickJobTimeReportQuery quickJobTimeReportQuery, IPayPeriodReportQuery payPeriodReportQuery)
         {
             this.jobService = jobService;
             this.jobSummaryQuery = jobSummaryQuery;

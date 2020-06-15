@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using orion.web.BLL.Jobs;
 using orion.web.Clients;
 using orion.web.DataAccess;
 using orion.web.DataAccess.EF;
@@ -11,21 +12,21 @@ using System.Threading.Tasks;
 
 namespace orion.web.Jobs
 {
-    public interface IJobService
+    public interface IJobsRepository
     {
         Task<JobDTO> GetForJobId(int jobId);
         Task<IEnumerable<JobDTO>> GetAsync(int employeeId);
         Task<IEnumerable<JobDTO>> GetAsync();
-        JobDTO Post(JobDTO job);
-        Task PutAsync(JobDTO jobDto);
+        Task<JobDTO> Create(CreateJobDto job);
+        Task<JobDTO> Update(UpdateJobDto jobDto);
         Task<IEnumerable<JobStatusDTO>> GetUsageStatusAsync();
     }
-    public class JobService : IJobService, IAutoRegisterAsSingleton
+    public class JobsRepository : IJobsRepository, IAutoRegisterAsSingleton
     {
         private readonly IContextFactory _contextFactory;
         private readonly IMapper _mapper;
 
-        public JobService(IContextFactory contextFactory, IMapper mapper)
+        public JobsRepository(IContextFactory contextFactory, IMapper mapper)
         {
             _contextFactory = contextFactory;
             _mapper = mapper;
@@ -93,71 +94,64 @@ namespace orion.web.Jobs
 
         private JobDTO MapToDTO(Job Job)
         {
-            return new JobDTO()
-            {
-                JobCode = Job.JobCode,
-                JobId = Job.JobId,
-                JobName = Job.JobName,
-                Client = _mapper.Map<ClientDTO>(Job.Client),
-                Site = new SiteDTO()
-                {
-                    SiteID = Job.Site.SiteID,
-                    SiteName = Job.Site.SiteName
-                },
-                TargetHours = Job.TargetHours,
-                JobStatusDTO = new JobStatusDTO()
-                {
-                    Enum = (Jobs.JobStatus)Job.JobStatus.JobStatusId,
-                    Id = Job.JobStatus.JobStatusId,
-                    Name = Job.JobStatus.Name
-                },
-                ProjectManager = new ProjectManagerDTO()
-                {
-                    EmployeeId = Job.EmployeeId,
-                    EmployeeName = Job?.ProjectManager != null ? $"{Job.ProjectManager.Last}, {Job.ProjectManager.First}" : string.Empty
-                }
-            };
+            return _mapper.Map<JobDTO>(Job);
+            //return new JobDTO()
+            //{
+            //    JobCode = Job.JobCode,
+            //    JobId = Job.JobId,
+            //    JobName = Job.JobName,
+            //    //Client = _mapper.Map<ClientDTO>(Job.Client),
+            //    //Site = new SiteDTO()
+            //    //{
+            //    //    SiteID = Job.Site.SiteID,
+            //    //    SiteName = Job.Site.SiteName
+            //    //},
+            //    TargetHours = Job.TargetHours,
+            //    //JobStatusDTO = new JobStatusDTO()
+            //    //{
+            //    //    Enum = (Jobs.JobStatus)Job.JobStatus.JobStatusId,
+            //    //    Id = Job.JobStatus.JobStatusId,
+            //    //    Name = Job.JobStatus.Name
+            //    //},
+            //    //ProjectManager = new ProjectManagerDTO()
+            //    //{
+            //    //    EmployeeId = Job.EmployeeId,
+            //    //    EmployeeName = Job?.ProjectManager != null ? $"{Job.ProjectManager.Last}, {Job.ProjectManager.First}" : string.Empty
+            //    //}
+            //};
         }
 
-        public JobDTO Post(JobDTO job)
+        public async Task<JobDTO> Create(CreateJobDto job)
         {
             using(var db = _contextFactory.CreateDb())
             {
-                var efJob = new Job()
-                {
-                    ClientId = job.Client.ClientId,
-                    JobCode = job.JobCode,
-                    JobName = job.JobName,
-                    SiteId = job.Site.SiteID,
-                    TargetHours = job.TargetHours,
-                    JobStatusId = job.JobStatusDTO.Id,
-                    EmployeeId = job.ProjectManager.EmployeeId
-                };
+                var efJob = _mapper.Map<Job>(job);
                 db.Jobs.Add(efJob);
-                db.SaveChanges();
-                job.JobId = efJob.JobId;
-                return job;
+                await db.SaveChangesAsync();
+
+                return await GetForJobId(efJob.JobId);
             }
         }
 
-        public async Task PutAsync(JobDTO job)
+        public async Task<JobDTO> Update(UpdateJobDto job)
         {
             using(var db = _contextFactory.CreateDb())
             {
                 var efJob = db.Jobs.Single(x => x.JobId == job.JobId);
-                efJob.ClientId = job.Client.ClientId;
+                efJob.ClientId = job.ClientId;
                 efJob.JobCode = job.JobCode;
                 efJob.JobName = job.JobName;
-                efJob.SiteId = job.Site.SiteID;
+                efJob.SiteId = job.SiteId;
                 efJob.TargetHours = job.TargetHours;
-                efJob.JobStatusId = job.JobStatusDTO.Id;
-                efJob.EmployeeId = job.ProjectManager.EmployeeId;
-                if(job.JobStatusDTO.Id == (int)(Jobs.JobStatus.Archived))
+                efJob.JobStatusId = (int)job.JobStatusId;
+                efJob.EmployeeId = job.ProjectManagerEmployeeId;
+                if(job.JobStatusId == Jobs.JobStatus.Archived)
                 {
                     var toRemove = await db.EmployeeJobs.Where(x => x.JobId == job.JobId).ToArrayAsync();
                     db.EmployeeJobs.RemoveRange(toRemove);
                 }
-                db.SaveChanges();
+                await db.SaveChangesAsync();
+                return await GetForJobId(efJob.JobId);
             }
         }
     }

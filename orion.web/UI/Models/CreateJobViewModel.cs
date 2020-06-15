@@ -23,7 +23,6 @@ namespace orion.web.Jobs
 
     public class JobListViewModel
     {
-        public JobDTO HeaderHelp { get; set; }
-        public Dictionary<JobDTO, bool> AllJobsWithAssociationStatus { get; set; }
+        public Dictionary<(JobDTO, JobModelDetail), bool> AllJobsWithAssociationStatus { get; set; }
     }
 }
