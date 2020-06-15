@@ -6,9 +6,9 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace orion.web.Reports.ProjectStatusReport
+namespace orion.web.Reports.JobSummaryReport
 {
-    public class ProjectStatusReportCriteria
+    public class JobSummaryReportCriteria
     {
 
         public const string PROJECT_STATUS_REPORT_NAME = "Project Status Report";

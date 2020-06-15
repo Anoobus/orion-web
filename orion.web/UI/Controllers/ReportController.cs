@@ -43,7 +43,7 @@ namespace orion.web.Reports
         [Route("RunReport/" + ReportNames.JOBS_SUMMARY_REPORT)]
         public async Task<ActionResult> JobSummaryReport(ReportSelectionViewModel request)
         {
-            var criteria = request.ProjectStatusReportCriteria.Criteria;
+            var criteria = request.JobSummaryReportCriteria.Criteria;
             var rpt = await reportCreator.CreateJobSummaryReportAsync(criteria);
             var (Steam, MimeType, Name) = reportWriter.GetFinishedResult(criteria,  rpt);
             return File(Steam, MimeType, Name);

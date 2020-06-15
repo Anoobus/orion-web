@@ -1,12 +1,8 @@
 ﻿using orion.web.Common;
 using orion.web.Jobs;
+using orion.web.Reports.JobSummaryReport;
 using orion.web.Reports.PayPeriodReport;
-using orion.web.Reports.ProjectStatusReport;
 using orion.web.Reports.QuickJobTimeReport;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace orion.web.Reports
@@ -14,18 +10,18 @@ namespace orion.web.Reports
     public interface IReportCreator : IRegisterByConvention
     {
         Task<ReportDTO<PayPeriodReportDTO>> CreatePayPeriodReportAsync(PayPeriodReportCriteria settings);
-        Task<ReportDTO<ProjectStatusReportDTO>> CreateJobSummaryReportAsync(ProjectStatusReportCriteria settings);
+        Task<ReportDTO<JobSummaryReportDTO>> CreateJobSummaryReportAsync(JobSummaryReportCriteria settings);
         Task<ReportDTO<QuickJobTimeReportDTO>> CreateQuickJobTimeReportAsync(QuickJobTimeReportCriteria settings);
     }
 
     public class ReportCreator : IReportCreator
     {
         private readonly IJobService jobService;
-        private readonly IJobSummaryQuery jobSummaryQuery;
+        private readonly IJobSummaryReportQuery jobSummaryQuery;
         private readonly IQuickJobTimeReportQuery quickJobTimeReportQuery;
         private readonly IPayPeriodReportQuery payPeriodReportQuery;
 
-        public ReportCreator(IJobService jobService, IJobSummaryQuery jobSummaryQuery, IQuickJobTimeReportQuery quickJobTimeReportQuery, IPayPeriodReportQuery payPeriodReportQuery)
+        public ReportCreator(IJobService jobService, IJobSummaryReportQuery jobSummaryQuery, IQuickJobTimeReportQuery quickJobTimeReportQuery, IPayPeriodReportQuery payPeriodReportQuery)
         {
             this.jobService = jobService;
             this.jobSummaryQuery = jobSummaryQuery;
@@ -38,7 +34,7 @@ namespace orion.web.Reports
             return await payPeriodReportQuery.RunAsync(settings.PayPeriodEnd);
         }
 
-        public async Task<ReportDTO<ProjectStatusReportDTO>> CreateJobSummaryReportAsync(ProjectStatusReportCriteria settings)
+        public async Task<ReportDTO<JobSummaryReportDTO>> CreateJobSummaryReportAsync(JobSummaryReportCriteria settings)
         {
             return await jobSummaryQuery.RunAsync(settings.PeriodSettings.Start,
                 settings.PeriodSettings.End,

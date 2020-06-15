@@ -2,8 +2,8 @@
 using orion.web.Jobs;
 using orion.web.PayPeriod;
 using orion.web.Reports.Common;
+using orion.web.Reports.JobSummaryReport;
 using orion.web.Reports.PayPeriodReport;
-using orion.web.Reports.ProjectStatusReport;
 using orion.web.Reports.QuickJobTimeReport;
 using System;
 using System.Collections.Generic;
@@ -36,12 +36,12 @@ namespace orion.web.Reports
             return rpt;
         }
 
-        private async Task<ExcelReport<ProjectStatusReportCriteria>> GetProjectStatusReportCriteria(bool isCurrentUserAdmin)
+        private async Task<ExcelReport<JobSummaryReportCriteria>> GetJobSummaryReportCriteria(bool isCurrentUserAdmin)
         {
-            var vm = new ProjectStatusReportCriteria();
+            var vm = new JobSummaryReportCriteria();
             vm.PeriodSettings = GetDefaultPeriodSettings();
             vm.AvailableJobs = (await jobService.GetAsync()).OrderBy(x => x.FullJobCodeWithName).ToList();
-            var rpt = new ExcelReport<ProjectStatusReportCriteria>(ProjectStatusReportCriteria.PROJECT_STATUS_REPORT_NAME, vm, isCurrentUserAdmin);
+            var rpt = new ExcelReport<JobSummaryReportCriteria>(JobSummaryReportCriteria.PROJECT_STATUS_REPORT_NAME, vm, isCurrentUserAdmin);
             return rpt;
         }
 
@@ -55,12 +55,12 @@ namespace orion.web.Reports
         }
         public async Task<ReportSelectionViewModel> GetReportSelectionViewModelAsync(bool isCurrentUserAdmin)
         {
-          
+
             var vm = new ReportSelectionViewModel()
             {
                 PayPeriodReportCriteria = GetPayPeriodReportViewModel(isCurrentUserAdmin),
                 QuickJobTimeReportCriteria = await GetJobDetailreportAsync(),
-                ProjectStatusReportCriteria = await GetProjectStatusReportCriteria(false)
+                JobSummaryReportCriteria = await GetJobSummaryReportCriteria(false)
             };
             return vm;
         }

@@ -27,12 +27,12 @@
             </div>
         }
 
-        @if(Model.ProjectStatusReportCriteria.CanView)
+        @if(Model.JobSummaryReportCriteria.CanView)
         {
-            <div class="panel panel-default report-panel" id="job-summary-report" rpt-section="@Model.ProjectStatusReportCriteria.ReportName" style="display:none">
-                <div class="panel-heading">@Model.ProjectStatusReportCriteria.ReportName </div>
+            <div class="panel panel-default report-panel" id="job-summary-report" rpt-section="@Model.JobSummaryReportCriteria.ReportName" style="display:none">
+                <div class="panel-heading">@Model.JobSummaryReportCriteria.ReportName </div>
                 <div class="panel-body">
-                    @Html.EditorFor(m => Model.ProjectStatusReportCriteria.Criteria, "~/Views/Reports/ProjectStatusReportCriteria.cshtml")
+                    @Html.EditorFor(m => Model.JobSummaryReportCriteria.Criteria, "~/Views/Reports/ProjectStatusReportCriteria.cshtml")
                 </div>
             </div>
         }

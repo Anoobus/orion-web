@@ -7,12 +7,12 @@ using System.Linq;
 
 namespace orion.web.Reports
 {
-    public class ProjectStatusReportExcelExport
+    public class JobSummaryReportExcelExport
     {
         public const int LAST_ROW = 6;
         public const int EMPLOYEE_ROW_START = 5;
 
-        public MemoryStream AsXls(ReportDTO<ProjectStatusReportDTO> rpt)
+        public MemoryStream AsXls(ReportDTO<JobSummaryReportDTO> rpt)
         {
             var ms2 = new MemoryStream();
             var copy = new MemoryStream();
@@ -92,7 +92,7 @@ namespace orion.web.Reports
 
         }
 
-        private static void SetHeaderValues(ReportDTO<ProjectStatusReportDTO> rpt, ISheet excelSheet)
+        private static void SetHeaderValues(ReportDTO<JobSummaryReportDTO> rpt, ISheet excelSheet)
         {
             var row1 = excelSheet.GetRow(0);
             row1.GetCell(1).SetCellValue(rpt.Data.JobCode);
@@ -104,7 +104,7 @@ namespace orion.web.Reports
             row3.GetCell(3).SetCellValue($"{rpt.Data.PeriodStart.ToShortDateString()} thru {rpt.Data.PeriodEnd.ToShortDateString()}");
         }
 
-        private static void WriteReportMetadata(ReportDTO<ProjectStatusReportDTO> report, ISheet excelSheet,  int lastRow)
+        private static void WriteReportMetadata(ReportDTO<JobSummaryReportDTO> report, ISheet excelSheet,  int lastRow)
         {
             var rowCount = 0;
             foreach (var item in report.RunSettings)
@@ -161,6 +161,6 @@ namespace orion.web.Reports
             return newRows;
         }
 
-       
+
     }
 }

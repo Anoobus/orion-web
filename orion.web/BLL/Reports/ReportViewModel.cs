@@ -1,17 +1,14 @@
-﻿using orion.web.Jobs;
-using orion.web.Reports.Common;
+﻿using orion.web.Reports.Common;
+using orion.web.Reports.JobSummaryReport;
 using orion.web.Reports.PayPeriodReport;
-using orion.web.Reports.ProjectStatusReport;
 using orion.web.Reports.QuickJobTimeReport;
-using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 
 namespace orion.web.Reports
 {
     public class ReportSelectionViewModel
     {
-       
+
         public IEnumerable<string> AvailableReports()
         {
             if(PayPeriodReportCriteria.CanView)
@@ -25,14 +22,14 @@ namespace orion.web.Reports
                 yield return QuickJobTimeReportCriteria.ReportName;
             }
 
-            if(ProjectStatusReportCriteria.CanView)
+            if(JobSummaryReportCriteria.CanView)
             {
-                yield return ProjectStatusReportCriteria.ReportName;
+                yield return JobSummaryReportCriteria.ReportName;
             }
         }
-       
+
         public ExcelReport<PayPeriodReportCriteria> PayPeriodReportCriteria { get; set; }
         public ExcelReport<QuickJobTimeReportCriteria> QuickJobTimeReportCriteria { get; set; }
-        public ExcelReport<ProjectStatusReportCriteria> ProjectStatusReportCriteria { get; set; }
+        public ExcelReport<JobSummaryReportCriteria> JobSummaryReportCriteria { get; set; }
     }
 }

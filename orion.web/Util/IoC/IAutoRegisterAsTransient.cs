@@ -4,5 +4,5 @@ using System.Reflection;
 
 namespace orion.web.Util.IoC
 {
-    public interface IAutoRegisterAsSingleton { }
+    public interface IAutoRegisterAsTransient { }
 }

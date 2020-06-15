@@ -3,12 +3,12 @@ using System.Collections.Generic;
 
 namespace orion.web.Reports
 {
-    public class ProjectStatusReportDTO
+    public class JobSummaryReportDTO
     {
         public string JobCode { get; set; }
         public string JobName { get; set; }
         public string SiteName { get; set; }
-        public string ClientName { get; set; }        
+        public string ClientName { get; set; }
 
         public IEnumerable<JobEmployees> Employees { get; set; }
         public DateTime PeriodStart { get; set; }
