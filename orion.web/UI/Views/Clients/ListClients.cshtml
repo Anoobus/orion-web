@@ -1,0 +1,73 @@
+﻿@model orion.web.UI.Models.ClientListModel
+@using orion.web.Employees
+@using orion.web.UI.Controllers
+
+<ol class="breadcrumb">
+    <li class="breadcrumb-item active"> List Clients</li>
+</ol>
+
+<div class="row">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <div class="form-group ">
+                @if(User.IsInRole(UserRoleName.Admin))
+                {
+                    <a class="btn  btn-default  btn-margin-right pull-right " asp-action="Create" asp-controller="Clients">Create Client</a>
+                }
+                <input id="quick-filter" type="text" placeholder="quick filter rows" class="input form-control" />
+            </div>
+        </div>
+
+
+        <div class="panel-body">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>
+                            Name
+                        </th>
+                        <th>
+
+                        </th>
+                    </tr>
+
+                </thead>
+                <tbody id="table-data">
+                    @foreach(var item in Model.Clients)
+                    {
+                        <tr>
+                            <td>
+                                @if(User.IsInRole(UserRoleName.Admin))
+                                {
+                                    @Html.ActionLink(item.ClientName, nameof(ClientsController.EditClient), new { item.ClientId })
+                                }
+                            </td>
+                            <td>
+                                @Html.ActionLink("Delete", nameof(ClientsController.DeleteClient), new { item.ClientId })
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+
+
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#quick-filter").on("keyup", function () {
+                var value = $(this).val().toLowerCase();
+                $("#table-data tr").filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+        });
+
+    </script>
+}
+

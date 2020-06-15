@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using orion.web.Clients;
 using orion.web.Jobs;
+using orion.web.UI.Models;
 
 namespace orion.web.BLL.AutoMapper
 {

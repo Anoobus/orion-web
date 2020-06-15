@@ -56,7 +56,7 @@ namespace orion.web.Jobs
                 AllJobsWithAssociationStatus = jobs.OrderBy(x => x.JobCode).ToDictionary(x => x, x => myJobs.Any(z => z.JobId == x.JobId)),
                 HeaderHelp = new JobDTO()
             };
-            return View("JobList", vm);
+            return View("ListJobs", vm);
         }
 
         public async System.Threading.Tasks.Task<ActionResult> AddJobForCurrentUser(int id)
@@ -97,7 +97,7 @@ namespace orion.web.Jobs
         {
             var job = (await jobService.GetAsync()).SingleOrDefault(x => x.JobId == id);
             var jobStatus = await jobService.GetUsageStatusAsync();
-            return View("Details", new EditJobViewModel()
+            return View("EditJob", new EditJobViewModel()
             {
                 Job = job,
                 SelectedJobStatusId = job.JobStatusDTO.Id,
@@ -117,7 +117,7 @@ namespace orion.web.Jobs
             var vm = new CreateJobViewModel()
             {
                 Job = new JobDTO(),
-                AvailableClients = await clientService.Get(),
+                AvailableClients = await clientService.GetAllClients(),
                 AvailableSites = siteService.Get(),
                 AvailableJobStatus = await jobService.GetUsageStatusAsync(),
                 AvailableProjectManagers = (await employeeService.GetAllEmployees()).Select(x => new ProjectManagerDTO()
@@ -126,14 +126,14 @@ namespace orion.web.Jobs
                     EmployeeName = $"{x.Last}, {x.First}"
                 })
             };
-            return View("Create", vm);
+            return View("CreateJob", vm);
         }
 
         [Authorize(Roles = UserRoleName.Admin)]
         [HttpPost]
         public async Task<ActionResult> Create(CreateJobViewModel jobToCreate)
         {
-            var clients = await clientService.Get();
+            var clients = await clientService.GetAllClients();
             var sites = siteService.Get();
             var mappedJob = jobToCreate.Job;
             mappedJob.Client = clients.FirstOrDefault(x => x.ClientId == jobToCreate.SelectedClientId);

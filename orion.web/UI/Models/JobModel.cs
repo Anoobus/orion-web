@@ -1,4 +1,5 @@
 ﻿using orion.web.Clients;
+using orion.web.UI.Models;
 using System.ComponentModel;
 
 namespace orion.web.Jobs

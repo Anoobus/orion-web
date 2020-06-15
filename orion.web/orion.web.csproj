@@ -39,6 +39,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="UI\Views\Clients\ListClients.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="UI\Views\Clients\EditClient.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
     <Content Update="UI\Views\Employee\List.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>

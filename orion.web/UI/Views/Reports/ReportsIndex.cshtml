@@ -22,7 +22,7 @@
             <div class="panel panel-default report-panel" id="pay-period-report" rpt-section="@Model.PayPeriodReportCriteria.ReportName" style="display:none">
                 <div class="panel-heading">@Model.PayPeriodReportCriteria.ReportName </div>
                 <div class="panel-body">
-                    @Html.EditorFor(m => Model.PayPeriodReportCriteria.Criteria, "~/Views/Reports/PayPeriodReportCriteria.cshtml" )
+                    @Html.EditorFor(m => Model.PayPeriodReportCriteria.Criteria, "~/UI/Views/Reports/PayPeriodReportCriteria.cshtml" )
                 </div>
             </div>
         }
@@ -32,7 +32,7 @@
             <div class="panel panel-default report-panel" id="job-summary-report" rpt-section="@Model.JobSummaryReportCriteria.ReportName" style="display:none">
                 <div class="panel-heading">@Model.JobSummaryReportCriteria.ReportName </div>
                 <div class="panel-body">
-                    @Html.EditorFor(m => Model.JobSummaryReportCriteria.Criteria, "~/Views/Reports/ProjectStatusReportCriteria.cshtml")
+                    @Html.EditorFor(m => Model.JobSummaryReportCriteria.Criteria, "~/UI/Views/Reports/ProjectStatusReportCriteria.cshtml")
                 </div>
             </div>
         }
@@ -42,7 +42,7 @@
             <div class="panel panel-default  report-panel" id="job-detail-report" rpt-section="@Model.QuickJobTimeReportCriteria.ReportName" style="display:none">
                 <div class="panel-heading">@Model.QuickJobTimeReportCriteria.ReportName </div>
                 <div class="panel-body">
-                    @Html.EditorFor(m => Model.QuickJobTimeReportCriteria.Criteria, "~/Views/Reports/QuickJobTimeReportCriteria.cshtml")
+                    @Html.EditorFor(m => Model.QuickJobTimeReportCriteria.Criteria, "~/UI/Views/Reports/QuickJobTimeReportCriteria.cshtml")
                 </div>
             </div>
         }

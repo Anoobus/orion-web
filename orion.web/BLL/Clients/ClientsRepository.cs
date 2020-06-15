@@ -11,8 +11,10 @@ namespace orion.web.Clients
 {
     public interface IClientsRepository
     {
-        Task<IEnumerable<ClientDTO>> Get();
-        ClientDTO Create(ClientDTO client);
+        Task<ClientDTO> GetClient(int ClientId);
+        Task<IEnumerable<ClientDTO>> GetAllClients();
+        Task<ClientDTO> Save(ClientDTO client);
+        Task Delete(int clientId);
     }
     public class ClientsRepository : IClientsRepository, IAutoRegisterAsSingleton
     {
@@ -24,7 +26,8 @@ namespace orion.web.Clients
             _contextFactory = contextFactory;
             _mapper = mapper;
         }
-        public async Task<IEnumerable<ClientDTO>> Get()
+
+        public async Task<IEnumerable<ClientDTO>> GetAllClients()
         {
             using(var db = _contextFactory.CreateDb())
             {
@@ -35,15 +38,48 @@ namespace orion.web.Clients
             }
         }
 
-        public ClientDTO Create(ClientDTO client)
+        public async Task<ClientDTO> Save(ClientDTO client)
         {
             using(var db = _contextFactory.CreateDb())
             {
-                var newClient = _mapper.Map<Client>(client);
-                db.Clients.Add(newClient);
-                db.SaveChanges();
-                client.ClientId = newClient.ClientId;
-                return client;
+                var toUpdate = await db.Clients.SingleOrDefaultAsync(x => x.ClientId == client.ClientId);
+
+                if(toUpdate != null)
+                {
+                    toUpdate.ClientName = client.ClientName;
+                    await db.SaveChangesAsync();
+                    return _mapper.Map<ClientDTO>(toUpdate);
+                }
+                else
+                {
+                    var newClient = _mapper.Map<Client>(client);
+                    db.Clients.Add(newClient);
+                    db.SaveChanges();
+                    client.ClientId = newClient.ClientId;
+                    return client;
+                }
+            }
+        }
+
+        public async Task<ClientDTO> GetClient(int ClientId)
+        {
+            using(var db = _contextFactory.CreateDb())
+            {
+                return _mapper.Map<ClientDTO>(await db.Clients.SingleOrDefaultAsync(x => x.ClientId == ClientId));
+            }
+        }
+
+        public async Task Delete(int clientId)
+        {
+            using(var db = _contextFactory.CreateDb())
+            {
+                var client = await db.Clients.SingleAsync(x => x.ClientId == clientId);
+                var inUse = await db.Jobs.AnyAsync(x => x.ClientId == client.ClientId);
+                if(!inUse)
+                {
+                    db.Clients.Remove(client);
+                    await db.SaveChangesAsync();
+                }
             }
         }
     }
