@@ -1,34 +1,37 @@
-﻿using orion.web.DataAccess;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using orion.web.DataAccess;
 using orion.web.DataAccess.EF;
 using orion.web.Util.IoC;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace orion.web.Clients
 {
     public interface IClientsRepository
     {
-        IEnumerable<ClientDTO> Get();
+        Task<IEnumerable<ClientDTO>> Get();
         ClientDTO Create(ClientDTO client);
     }
     public class ClientsRepository : IClientsRepository, IAutoRegisterAsSingleton
     {
         private readonly IContextFactory _contextFactory;
+        private readonly IMapper _mapper;
 
-        public ClientsRepository(IContextFactory contextFactory)
+        public ClientsRepository(IContextFactory contextFactory, IMapper mapper)
         {
             _contextFactory = contextFactory;
+            _mapper = mapper;
         }
-        public IEnumerable<ClientDTO> Get()
+        public async Task<IEnumerable<ClientDTO>> Get()
         {
             using(var db = _contextFactory.CreateDb())
             {
-                return db.Clients.Select(x => new ClientDTO()
-                {
-                    ClientCode = x.ClientCode,
-                    ClientId = x.ClientId,
-                    ClientName = x.ClientName
-                }).OrderBy(x => x.ClientCode).ToList();
+                return (await db.Clients.ToListAsync())
+                    .Select(x => _mapper.Map<ClientDTO>(x))
+                    .OrderBy(x => x.ClientName)
+                    .ToList();
             }
         }
 
@@ -36,11 +39,7 @@ namespace orion.web.Clients
         {
             using(var db = _contextFactory.CreateDb())
             {
-                var newClient = new Client()
-                {
-                    ClientName = client.ClientName,
-                    ClientCode = client.ClientCode
-                };
+                var newClient = _mapper.Map<Client>(client);
                 db.Clients.Add(newClient);
                 db.SaveChanges();
                 client.ClientId = newClient.ClientId;

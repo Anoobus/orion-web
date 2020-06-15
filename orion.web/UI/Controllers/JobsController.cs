@@ -53,7 +53,7 @@ namespace orion.web.Jobs
             var myJobs = await jobService.GetAsync(await sessionAdapter.EmployeeIdAsync());
             var vm = new JobListViewModel()
             {
-                AllJobsWithAssociationStatus = jobs.OrderBy(x => x.FullJobCode).ToDictionary(x => x, x => myJobs.Any(z => z.JobId == x.JobId)),
+                AllJobsWithAssociationStatus = jobs.OrderBy(x => x.JobCode).ToDictionary(x => x, x => myJobs.Any(z => z.JobId == x.JobId)),
                 HeaderHelp = new JobDTO()
             };
             return View("JobList", vm);
@@ -117,7 +117,7 @@ namespace orion.web.Jobs
             var vm = new CreateJobViewModel()
             {
                 Job = new JobDTO(),
-                AvailableClients = clientService.Get(),
+                AvailableClients = await clientService.Get(),
                 AvailableSites = siteService.Get(),
                 AvailableJobStatus = await jobService.GetUsageStatusAsync(),
                 AvailableProjectManagers = (await employeeService.GetAllEmployees()).Select(x => new ProjectManagerDTO()
@@ -131,9 +131,9 @@ namespace orion.web.Jobs
 
         [Authorize(Roles = UserRoleName.Admin)]
         [HttpPost]
-        public ActionResult Create(CreateJobViewModel jobToCreate)
+        public async Task<ActionResult> Create(CreateJobViewModel jobToCreate)
         {
-            var clients = clientService.Get();
+            var clients = await clientService.Get();
             var sites = siteService.Get();
             var mappedJob = jobToCreate.Job;
             mappedJob.Client = clients.FirstOrDefault(x => x.ClientId == jobToCreate.SelectedClientId);

@@ -25,7 +25,7 @@
                 <thead>
                     <tr>
                         <th class="job-code-link-cell">
-                            @Html.DisplayNameFor(model => model.HeaderHelp.FullJobCode)
+                            @Html.DisplayNameFor(model => model.HeaderHelp.JobCode)
                         </th>
                         <th>
                             @Html.DisplayNameFor(model => model.HeaderHelp.JobName)
@@ -50,11 +50,11 @@
                             <td>
                                 @if(User.IsInRole(UserRoleName.Admin))
                                 {
-                                    @Html.ActionLink(item.Key.FullJobCode, "Edit", new { id = item.Key.JobId })
+                                    @Html.ActionLink(item.Key.JobCode, "Edit", new { id = item.Key.JobId })
                                 }
                                 else
                                 {
-                                    @Html.DisplayFor(modelItem => item.Key.FullJobCode)
+                                    @Html.DisplayFor(modelItem => item.Key.JobCode)
                                 }
                             </td>
                             <td>

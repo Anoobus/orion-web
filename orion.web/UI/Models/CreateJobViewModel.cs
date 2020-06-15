@@ -26,11 +26,4 @@ namespace orion.web.Jobs
         public JobDTO HeaderHelp { get; set; }
         public Dictionary<JobDTO, bool> AllJobsWithAssociationStatus { get; set; }
     }
-
-   
-  
-  
-  
-
-   
 }

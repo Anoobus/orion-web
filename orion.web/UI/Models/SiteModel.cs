@@ -2,9 +2,11 @@
 
 namespace orion.web.Jobs
 {
-    public class SiteDTO
+    public class SiteModel
     {
         public int SiteID { get; set; }
+
+        [DisplayName("Site Name")]
         public string SiteName { get; set; }
     }
 }

@@ -13,6 +13,7 @@ using System.IO;
 using Microsoft.AspNetCore.Mvc.Razor;
 using orion.web.UI;
 using orion.web.Util.IoC;
+using orion.web.BLL.AutoMapper;
 
 namespace orion.web.ApplicationStartup
 {
@@ -57,6 +58,7 @@ namespace orion.web.ApplicationStartup
 
             services.Configure<RazorViewEngineOptions>(config => config.ViewLocationExpanders.Add(new ViewLocationExpander()));
             services.AddHttpContextAccessor();
+            services.AddCustomAutoMapper();
         }
 
         private void SetupLocalDbBasedEntityFramework<TContext>(IServiceCollection services, string connectionName) where TContext : DbContext

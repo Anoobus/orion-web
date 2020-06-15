@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using orion.web.Clients;
 using orion.web.DataAccess;
 using orion.web.DataAccess.EF;
@@ -22,10 +23,12 @@ namespace orion.web.Jobs
     public class JobService : IJobService, IAutoRegisterAsSingleton
     {
         private readonly IContextFactory _contextFactory;
+        private readonly IMapper _mapper;
 
-        public JobService(IContextFactory contextFactory)
+        public JobService(IContextFactory contextFactory, IMapper mapper)
         {
             _contextFactory = contextFactory;
+            _mapper = mapper;
         }
 
         public async Task<IEnumerable<JobStatusDTO>> GetUsageStatusAsync()
@@ -88,19 +91,14 @@ namespace orion.web.Jobs
             }
         }
 
-        private static JobDTO MapToDTO(Job Job)
+        private JobDTO MapToDTO(Job Job)
         {
             return new JobDTO()
             {
                 JobCode = Job.JobCode,
                 JobId = Job.JobId,
                 JobName = Job.JobName,
-                Client = new ClientDTO()
-                {
-                    ClientCode = Job.Client.ClientCode,
-                    ClientId = Job.Client.ClientId,
-                    ClientName = Job.Client.ClientName
-                },
+                Client = _mapper.Map<ClientDTO>(Job.Client),
                 Site = new SiteDTO()
                 {
                     SiteID = Job.Site.SiteID,

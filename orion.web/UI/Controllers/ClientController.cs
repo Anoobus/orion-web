@@ -8,11 +8,11 @@ namespace orion.web.Clients
     [Authorize(Roles = UserRoleName.Admin)]
     public class ClientController : Controller
     {
-        private readonly IClientsRepository clientService;
+        private readonly IClientsRepository _clientRepository;
 
-        public ClientController(IClientsRepository clientService)
+        public ClientController(IClientsRepository clientRepository)
         {
-            this.clientService = clientService;
+            this._clientRepository = clientRepository;
         }
 
         public ActionResult Create()
@@ -26,8 +26,8 @@ namespace orion.web.Clients
         {
             try
             {
-                clientService.Create(client);
-                NotificationsController.AddNotification(this.User.SafeUserName(), $"{client.FullName} has been created.");
+                _clientRepository.Create(client);
+                NotificationsController.AddNotification(this.User.SafeUserName(), $"{client.ClientName} has been created.");
                 return RedirectToAction(nameof(Create));
             }
             catch

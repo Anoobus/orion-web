@@ -23,14 +23,14 @@
             <input type="hidden" asp-for="Job.JobId" class="form-control" />
             <div class="form-group">
                 <label asp-for="Job.JobCode" class="control-label"></label>
-                <input asp-for="Job.JobCode" class="form-control" placeholder="XXXX" />
+                <input asp-for="Job.JobCode" class="form-control" placeholder="XXXX XXXX" />
                 <span asp-validation-for="Job.JobCode" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Job.Client.ClientName" class="control-label"></label>
 
                 <select asp-for="SelectedClientId" class="form-control"
-                        asp-items="@(new SelectList(Model.AvailableClients,"ClientId","FullName"))"></select>
+                        asp-items="@(new SelectList(Model.AvailableClients,"ClientId","ClientName"))"></select>
             </div>
 
             <div class="form-group">

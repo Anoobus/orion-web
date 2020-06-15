@@ -73,7 +73,7 @@ namespace orion.web.TimeEntries
                 var jobCode = "";
                 if(SelectedEntryJob != null)
                 {
-                    jobCode = $"{SelectedEntryJob.Client?.ClientCode}-{SelectedEntryJob.JobCode}";
+                    jobCode = SelectedEntryJob.JobCode;
                 }
                 var item = new TimeEntryViewModel()
                 {
