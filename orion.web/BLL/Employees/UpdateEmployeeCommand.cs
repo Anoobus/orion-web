@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using orion.web.Common;
+using orion.web.Util.IoC;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,12 +13,12 @@ namespace orion.web.Employees
         Task<CommandResult> UpdateAsync(EditEmployeeViewModel employee);
     }
 
-    public class UpdateEmployeeCommand : IUpdateEmployeeCommand
+    public class UpdateEmployeeCommand : IUpdateEmployeeCommand, IAutoRegisterAsTransient
     {
-        private readonly IEmployeeService employeeService;
+        private readonly IEmployeeRepository employeeService;
         private readonly UserManager<IdentityUser> userManager;
 
-        public UpdateEmployeeCommand(IEmployeeService employeeService, UserManager<IdentityUser> userManager)
+        public UpdateEmployeeCommand(IEmployeeRepository employeeService, UserManager<IdentityUser> userManager)
         {
             this.employeeService = employeeService;
             this.userManager = userManager;
@@ -50,7 +51,7 @@ namespace orion.web.Employees
                         if(employee.SelectedRole == UserRoleName.Disabled)
                         {
                             userToUpdate.LockoutEnabled = true;
-                            userToUpdate.LockoutEnd = DateTime.Now.AddYears(100);                            
+                            userToUpdate.LockoutEnd = DateTime.Now.AddYears(100);
                             var res2 = await userManager.UpdateAsync(userToUpdate);
                             allCommandErrors.AddRange(res2.Errors.Select(err => $"{err.Code}-{err.Description}"));
                             if(res2.Succeeded)
@@ -64,7 +65,7 @@ namespace orion.web.Employees
                             allCommandErrors.AddRange(res2.Errors.Select(err => $"{err.Code}-{err.Description}"));
                             if(res2.Succeeded)
                             {
-                                await SaveLocalEmployeeInfo(employee);                               
+                                await SaveLocalEmployeeInfo(employee);
                             }
                         }
                     }

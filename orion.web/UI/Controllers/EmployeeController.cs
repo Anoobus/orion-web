@@ -11,13 +11,13 @@ namespace orion.web.Employees
     [Authorize]
     public class EmployeeController : Controller
     {
-        private readonly IEmployeeService employeeService;
+        private readonly IEmployeeRepository employeeService;
         private readonly UserManager<IdentityUser> userManager;
         private readonly IJobService jobService;
         private readonly ICreateEmployeeCommand createEmployeeCommand;
         private readonly IUpdateEmployeeCommand updateEmployeeCommand;
 
-        public EmployeeController(IEmployeeService employeeService,
+        public EmployeeController(IEmployeeRepository employeeService,
             UserManager<IdentityUser> userManager,
             IJobService jobService,
             ICreateEmployeeCommand createEmployeeCommand,

@@ -1,4 +1,6 @@
-﻿using orion.web.DataAccess.EF;
+﻿using orion.web.DataAccess;
+using orion.web.DataAccess.EF;
+using orion.web.Util.IoC;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -11,30 +13,36 @@ namespace orion.web.Jobs
         void Post(SiteDTO site);
     }
 
-    public class SiteService :  ISiteService
+    public class SiteService :  ISiteService, IAutoRegisterAsSingleton
     {
-        private readonly OrionDbContext db;
+        private readonly IContextFactory _contextFactory;
 
-        public SiteService(OrionDbContext db)
+        public SiteService(IContextFactory contextFactory)
         {
-            this.db = db;
+            _contextFactory = contextFactory;
         }
         public IEnumerable<SiteDTO> Get()
         {
-            return db.Sites.Select(x => new SiteDTO()
+            using(var db = _contextFactory.CreateDb())
             {
-                SiteID = x.SiteID,
-                SiteName = x.SiteName
-            }).OrderBy(x => x.SiteName).ToList();
+                return db.Sites.Select(x => new SiteDTO()
+                {
+                    SiteID = x.SiteID,
+                    SiteName = x.SiteName
+                }).OrderBy(x => x.SiteName).ToList();
+            }
         }
 
         public void Post(SiteDTO site)
-        {           
-            db.Sites.Add(new Site()
+        {
+            using(var db = _contextFactory.CreateDb())
             {
-                SiteName = site.SiteName
-            });
-            db.SaveChanges();
+                db.Sites.Add(new Site()
+                {
+                    SiteName = site.SiteName
+                });
+                db.SaveChanges();
+            }
         }
     }
 }

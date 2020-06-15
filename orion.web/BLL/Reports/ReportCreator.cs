@@ -3,18 +3,19 @@ using orion.web.Jobs;
 using orion.web.Reports.JobSummaryReport;
 using orion.web.Reports.PayPeriodReport;
 using orion.web.Reports.QuickJobTimeReport;
+using orion.web.Util.IoC;
 using System.Threading.Tasks;
 
 namespace orion.web.Reports
 {
-    public interface IReportCreator : IRegisterByConvention
+    public interface IReportCreator
     {
         Task<ReportDTO<PayPeriodReportDTO>> CreatePayPeriodReportAsync(PayPeriodReportCriteria settings);
         Task<ReportDTO<JobSummaryReportDTO>> CreateJobSummaryReportAsync(JobSummaryReportCriteria settings);
         Task<ReportDTO<QuickJobTimeReportDTO>> CreateQuickJobTimeReportAsync(QuickJobTimeReportCriteria settings);
     }
 
-    public class ReportCreator : IReportCreator
+    public class ReportCreator : IReportCreator, IAutoRegisterAsSingleton
     {
         private readonly IJobService jobService;
         private readonly IJobSummaryReportQuery jobSummaryQuery;

@@ -2,6 +2,7 @@
 using orion.web.Employees;
 using orion.web.Jobs;
 using orion.web.JobsTasks;
+using orion.web.Util.IoC;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,24 +18,24 @@ namespace orion.web.TimeEntries
         public bool RequestingUserIsAdmin { get; set; }
     }
 
-    public interface IWeekOfTimeEntriesQuery : IRegisterByConvention
+    public interface IWeekOfTimeEntriesQuery
     {
         Task<FullTimeEntryViewModel> GetFullTimeEntryViewModelAsync(WeekOfTimeEntriesRequest request);
     }
-    public class WeekOfTimeEntriesQuery : IWeekOfTimeEntriesQuery
+    public class WeekOfTimeEntriesQuery : IWeekOfTimeEntriesQuery, IAutoRegisterAsSingleton
     {
         private readonly ITimeService timeService;
         private readonly IJobService jobService;
         private readonly ITaskService taskService;
         private readonly ITimeApprovalService timeApprovalService;
-        private readonly IEmployeeService employeeService;
+        private readonly IEmployeeRepository employeeService;
         private readonly IExpenseService _expenseService;
 
         public WeekOfTimeEntriesQuery(ITimeService timeService,
             IJobService jobService,
             ITaskService taskService,
             ITimeApprovalService timeApprovalService,
-            IEmployeeService employeeService,
+            IEmployeeRepository employeeService,
             IExpenseService expenseService
             )
         {

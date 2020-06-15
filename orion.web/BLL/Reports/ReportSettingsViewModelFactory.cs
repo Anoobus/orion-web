@@ -5,6 +5,7 @@ using orion.web.Reports.Common;
 using orion.web.Reports.JobSummaryReport;
 using orion.web.Reports.PayPeriodReport;
 using orion.web.Reports.QuickJobTimeReport;
+using orion.web.Util.IoC;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,12 +14,12 @@ using System.Threading.Tasks;
 namespace orion.web.Reports
 {
 
-    public interface IReportSettingsViewModelFactory : IRegisterByConvention
+    public interface IReportSettingsViewModelFactory
     {
         Task<ReportSelectionViewModel> GetReportSelectionViewModelAsync(bool isCurrentUserAdmin);
     }
 
-    public class ReportSettingsViewModelFactory : IReportSettingsViewModelFactory
+    public class ReportSettingsViewModelFactory : IReportSettingsViewModelFactory, IAutoRegisterAsSingleton
     {
         private readonly IJobService jobService;
 

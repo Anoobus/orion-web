@@ -13,14 +13,14 @@ namespace orion.web.Jobs
     [Authorize]
     public class JobsController : Controller
     {
-        private readonly IClientService clientService;
+        private readonly IClientsRepository clientService;
         private readonly IJobService jobService;
-        private readonly IEmployeeService employeeService;
+        private readonly IEmployeeRepository employeeService;
         private readonly ISiteService siteService;
         private readonly ITimeService timeService;
         private readonly ISessionAdapter sessionAdapter;
 
-        public JobsController(IClientService clientService, IJobService jobService, IEmployeeService employeeService, ISiteService siteService, ITimeService timeService, ISessionAdapter sessionAdapter)
+        public JobsController(IClientsRepository clientService, IJobService jobService, IEmployeeRepository employeeService, ISiteService siteService, ITimeService timeService, ISessionAdapter sessionAdapter)
         {
             this.clientService = clientService;
             this.jobService = jobService;

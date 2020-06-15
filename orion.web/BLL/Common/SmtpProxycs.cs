@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using orion.web.Util.IoC;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,12 +10,12 @@ using System.Threading.Tasks;
 
 namespace orion.web.Common
 {
-    public interface ISmtpProxy : IRegisterByConvention
+    public interface ISmtpProxy
     {
         void SendMail(string recipient, string body, string subject);
     }
 
-    public class SmtpProxy : ISmtpProxy
+    public class SmtpProxy : ISmtpProxy, IAutoRegisterAsSingleton
     {
         private readonly IConfiguration config;
         private readonly ILogger<SmtpProxy> logger;
@@ -30,7 +31,7 @@ namespace orion.web.Common
             try
             {
                 var emailUser = config.GetValue<string>("EmailUserName");
-                var fromAddress = new MailAddress(emailUser, "no-reply@orion-us.com");                
+                var fromAddress = new MailAddress(emailUser, "no-reply@orion-us.com");
                 var toAddress = new MailAddress(recipient);
                 var fromPassword = config.GetValue<string>("EmailPassword");
                 var smtp = new SmtpClient

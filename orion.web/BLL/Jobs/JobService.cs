@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using orion.web.Clients;
+using orion.web.DataAccess;
 using orion.web.DataAccess.EF;
+using orion.web.Util.IoC;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,61 +19,73 @@ namespace orion.web.Jobs
         Task PutAsync(JobDTO jobDto);
         Task<IEnumerable<JobStatusDTO>> GetUsageStatusAsync();
     }
-    public class JobService : IJobService
+    public class JobService : IJobService, IAutoRegisterAsSingleton
     {
-        private readonly OrionDbContext db;
+        private readonly IContextFactory _contextFactory;
 
-        public JobService(OrionDbContext orionDbContext)
+        public JobService(IContextFactory contextFactory)
         {
-            db = orionDbContext;
+            _contextFactory = contextFactory;
         }
 
         public async Task<IEnumerable<JobStatusDTO>> GetUsageStatusAsync()
         {
-            return await db.JobStatuses.Select(x => new JobStatusDTO()
+            using(var db = _contextFactory.CreateDb())
             {
-                Id = x.JobStatusId,
-                Name = x.Name,
-                Enum = (Jobs.JobStatus)x.JobStatusId
-            }).ToListAsync();
+                return await db.JobStatuses.Select(x => new JobStatusDTO()
+                {
+                    Id = x.JobStatusId,
+                    Name = x.Name,
+                    Enum = (Jobs.JobStatus)x.JobStatusId
+                }).ToListAsync();
+            }
         }
 
         public async Task<IEnumerable<JobDTO>> GetAsync(int employeeId)
         {
-            var thisEmpJobsGlob = await db.Employees.Include(x => x.EmployeeJobs).SingleOrDefaultAsync(x => x.EmployeeId == employeeId);
-            var thisEmpJobs = thisEmpJobsGlob?.EmployeeJobs?.Select(z => z.JobId)?.ToArray();
-            var basePull = await db.Jobs.Include(x => x.Client)
-                                .Include(x => x.Site)
-                                .Include(x => x.JobStatus)
-                                .Where(x => thisEmpJobs.Contains(x.JobId))
-                                .Select(x => new { Job = x, x.Site, x.Client })
-                                .ToListAsync();
-            var mapped = new List<JobDTO>();
-            foreach(var item in basePull)
+            using(var db = _contextFactory.CreateDb())
             {
-                mapped.Add(MapToDTO(item.Job));
+                var thisEmpJobsGlob = await db.Employees.Include(x => x.EmployeeJobs).SingleOrDefaultAsync(x => x.EmployeeId == employeeId);
+                var thisEmpJobs = thisEmpJobsGlob?.EmployeeJobs?.Select(z => z.JobId)?.ToArray();
+                var basePull = await db.Jobs.Include(x => x.Client)
+                                    .Include(x => x.Site)
+                                    .Include(x => x.JobStatus)
+                                    .Where(x => thisEmpJobs.Contains(x.JobId))
+                                    .Select(x => new { Job = x, x.Site, x.Client })
+                                    .ToListAsync();
+                var mapped = new List<JobDTO>();
+                foreach(var item in basePull)
+                {
+                    mapped.Add(MapToDTO(item.Job));
+                }
+                return mapped.OrderBy(x => x.FullJobCodeWithName).ToList();
             }
-            return mapped.OrderBy(x => x.FullJobCodeWithName).ToList();
         }
 
         public async Task<IEnumerable<JobDTO>> GetAsync()
         {
-            return await db.Jobs
+            using(var db = _contextFactory.CreateDb())
+            {
+                return await db.Jobs
                          .Include(x => x.Client)
                          .Include(x => x.Site)
                          .Include(x => x.JobStatus)
                          .Select(Job => MapToDTO(Job)).ToListAsync();
+            }
         }
 
         public async Task<JobDTO> GetForJobId(int jobId)
         {
-            return (await db.Jobs
+            using(var db = _contextFactory.CreateDb())
+            {
+                return (await db.Jobs
                          .Include(x => x.Client)
                          .Include(x => x.Site)
                          .Include(x => x.JobStatus)
                          .Include(x => x.ProjectManager)
                          .Where(x => x.JobId == jobId)
                          .Select(Job => MapToDTO(Job)).ToListAsync()).FirstOrDefault();
+            }
         }
 
         private static JobDTO MapToDTO(Job Job)
@@ -109,38 +123,44 @@ namespace orion.web.Jobs
 
         public JobDTO Post(JobDTO job)
         {
-            var efJob = new Job()
+            using(var db = _contextFactory.CreateDb())
             {
-                ClientId = job.Client.ClientId,
-                JobCode = job.JobCode,
-                JobName = job.JobName,
-                SiteId = job.Site.SiteID,
-                TargetHours = job.TargetHours,
-                JobStatusId = job.JobStatusDTO.Id,
-                EmployeeId = job.ProjectManager.EmployeeId
-            };
-            db.Jobs.Add(efJob);
-            db.SaveChanges();
-            job.JobId = efJob.JobId;
-            return job;
+                var efJob = new Job()
+                {
+                    ClientId = job.Client.ClientId,
+                    JobCode = job.JobCode,
+                    JobName = job.JobName,
+                    SiteId = job.Site.SiteID,
+                    TargetHours = job.TargetHours,
+                    JobStatusId = job.JobStatusDTO.Id,
+                    EmployeeId = job.ProjectManager.EmployeeId
+                };
+                db.Jobs.Add(efJob);
+                db.SaveChanges();
+                job.JobId = efJob.JobId;
+                return job;
+            }
         }
 
         public async Task PutAsync(JobDTO job)
         {
-            var efJob = db.Jobs.Single(x => x.JobId == job.JobId);
-            efJob.ClientId = job.Client.ClientId;
-            efJob.JobCode = job.JobCode;
-            efJob.JobName = job.JobName;
-            efJob.SiteId = job.Site.SiteID;
-            efJob.TargetHours = job.TargetHours;
-            efJob.JobStatusId = job.JobStatusDTO.Id;
-            efJob.EmployeeId = job.ProjectManager.EmployeeId;
-            if(job.JobStatusDTO.Id == (int)(Jobs.JobStatus.Archived))
+            using(var db = _contextFactory.CreateDb())
             {
-                var toRemove = await db.EmployeeJobs.Where(x => x.JobId == job.JobId).ToArrayAsync();
-                db.EmployeeJobs.RemoveRange(toRemove);
+                var efJob = db.Jobs.Single(x => x.JobId == job.JobId);
+                efJob.ClientId = job.Client.ClientId;
+                efJob.JobCode = job.JobCode;
+                efJob.JobName = job.JobName;
+                efJob.SiteId = job.Site.SiteID;
+                efJob.TargetHours = job.TargetHours;
+                efJob.JobStatusId = job.JobStatusDTO.Id;
+                efJob.EmployeeId = job.ProjectManager.EmployeeId;
+                if(job.JobStatusDTO.Id == (int)(Jobs.JobStatus.Archived))
+                {
+                    var toRemove = await db.EmployeeJobs.Where(x => x.JobId == job.JobId).ToArrayAsync();
+                    db.EmployeeJobs.RemoveRange(toRemove);
+                }
+                db.SaveChanges();
             }
-            db.SaveChanges();
         }
     }
 }

@@ -1,44 +1,40 @@
 ﻿using orion.web.Common;
 using orion.web.Employees;
-using System;
-using System.Collections.Generic;
+using orion.web.Util.IoC;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace orion.web.TimeEntries
 {
-    public interface ICopyPreviousWeekTimeCommand : IRegisterByConvention
+    public interface ICopyPreviousWeekTimeCommand
     {
         Task CopyPreviousWeekTime(int employeeId, int id);
     }
-    public class CopyPreviousWeekTimeCommand : ICopyPreviousWeekTimeCommand
-{
-        //private readonly IWeekService weekService;
-        private readonly ITimeService timeService;
-        private readonly IEmployeeService employeeService;
-        private readonly ITimeSpentRepository timeSpentRepository;
+    public class CopyPreviousWeekTimeCommand : ICopyPreviousWeekTimeCommand, IAutoRegisterAsSingleton
+    {
+        private readonly ITimeService _timeService;
+        private readonly IEmployeeRepository _employeeRepository;
+        private readonly ITimeSpentRepository _timeSpentRepository;
 
         public CopyPreviousWeekTimeCommand(
-            //IWeekService weekService, 
-            ITimeService timeService, 
-            IEmployeeService employeeService,
+            ITimeService timeService,
+            IEmployeeRepository employeeRepository,
             ITimeSpentRepository timeSpentRepository)
         {
-            //this.weekService = weekService;
-            this.timeService = timeService;
-            this.employeeService = employeeService;
-            this.timeSpentRepository = timeSpentRepository;
+            _timeService = timeService;
+            _employeeRepository = employeeRepository;
+            _timeSpentRepository = timeSpentRepository;
         }
         public async Task CopyPreviousWeekTime(int employeeId,  int id)
         {
             var prev = WeekDTO.CreateForWeekId(id).Previous();
-            var timeEntries = await timeService.GetAsync( prev.WeekId.Value, employeeId);
+            var timeEntries = await _timeService.GetAsync( prev.WeekId.Value, employeeId);
             foreach(var entry in timeEntries.GroupBy(x => new { x.JobId, x.JobTaskId }))
             {
-                var entryForEveryDayOfWeek = timeSpentRepository.CreateEmptyWeekForCombo( id, entry.Key.JobTaskId,entry.Key.JobId, employeeId); ;
+                var entryForEveryDayOfWeek = _timeSpentRepository.CreateEmptyWeekForCombo( id, entry.Key.JobTaskId,entry.Key.JobId, employeeId); ;
                 foreach(var day in entryForEveryDayOfWeek)
                 {
-                    await timeService.SaveAsync( id, employeeId, day);
+                    await _timeService.SaveAsync( id, employeeId, day);
                 }
             }
         }

@@ -7,17 +7,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using orion.web.AspNetCoreIdentity;
-using orion.web.Clients;
-using orion.web.Jobs;
-using orion.web.JobsTasks;
-using orion.web.Employees;
-using orion.web.Common;
-using orion.web.Reports;
 using orion.web.DataAccess.EF;
 using System.Data.SqlClient;
 using System.IO;
 using Microsoft.AspNetCore.Mvc.Razor;
 using orion.web.UI;
+using orion.web.Util.IoC;
 
 namespace orion.web.ApplicationStartup
 {
@@ -46,7 +41,7 @@ namespace orion.web.ApplicationStartup
 
             Serilog.Log.Information("STARTING DB STUFF UP");
 
-            SetupLocalDbBasedEntityFramework<OrionDbContext>(services, "SiteConnection");
+            SetupLocalDbBasedEntityFramework<OrionDbContext>(services, OrionDbContext.CONN_STRING_NAME);
             SetupLocalDbBasedEntityFramework<ApplicationDbContext>(services, "IdentityConnection");
 
             services.AddIdentity<IdentityUser, IdentityRole>()
@@ -57,14 +52,8 @@ namespace orion.web.ApplicationStartup
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
-            services.AddTransient<IJobSummaryReportQuery, JobSummaryReportQuery>();
-            services.AddTransient<IUpdateEmployeeCommand, UpdateEmployeeCommand>();
-            services.AddTransient<ICreateEmployeeCommand, CreateEmployeeCommand>();
-            services.AddTransient<IClientService, ClientService>();
-            services.AddTransient<IJobService, JobService>();
-            services.AddTransient<ISiteService, SiteService>();
-            services.AddTransient<ITaskService, TaskService>();
-            this.GetType().Assembly.RegisterTypesWithRegisterByConventionMarker(services);
+            services.AutoRegisterForMarker<IAutoRegisterAsSingleton>(typeof(Startup).Assembly, ServiceLifetime.Singleton);
+            services.AutoRegisterForMarker<IAutoRegisterAsTransient>(typeof(Startup).Assembly, ServiceLifetime.Transient);
 
             services.Configure<RazorViewEngineOptions>(config => config.ViewLocationExpanders.Add(new ViewLocationExpander()));
             services.AddHttpContextAccessor();

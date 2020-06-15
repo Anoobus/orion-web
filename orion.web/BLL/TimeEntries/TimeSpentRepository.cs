@@ -1,4 +1,5 @@
 ﻿using orion.web.Common;
+using orion.web.Util.IoC;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace orion.web.TimeEntries
 {
-    public interface ITimeSpentRepository : IRegisterByConvention
+    public interface ITimeSpentRepository
     {
         IEnumerable<TimeEntryDTO> CreateEmptyWeekForCombo(int weekId, int JobTaskId, int JobId, int employeeId);
     }
-    public class TimeSpentRepository : ITimeSpentRepository
+    public class TimeSpentRepository : ITimeSpentRepository, IAutoRegisterAsSingleton
     {
 
         private TimeEntryDTO CreateDTO(WeekDTO week, int SelectedTaskId, int SelectedJobId,

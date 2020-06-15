@@ -1,6 +1,7 @@
 ﻿using orion.web.Employees;
 using orion.web.TimeApproval;
 using orion.web.TimeEntries;
+using orion.web.Util.IoC;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,19 +9,19 @@ using System.Threading.Tasks;
 
 namespace orion.web.Common
 {
-    public interface ITimeApprovalListQuery : IRegisterByConvention
+    public interface ITimeApprovalListQuery
     {
         Task<TimeApprovalList> GetApprovalListAsync(DateTime? beginDate = null, DateTime? endDate = null);
     }
-    public class TimeApprovalListQuery : ITimeApprovalListQuery
+    public class TimeApprovalListQuery : ITimeApprovalListQuery, IAutoRegisterAsSingleton
     {
         private readonly ITimeSummaryService timeSummaryService;
         private readonly ITimeApprovalService timeApprovalService;
-        private readonly IEmployeeService employeeService;
+        private readonly IEmployeeRepository employeeService;
 
         public TimeApprovalListQuery(
             ITimeSummaryService timeSummaryService, ITimeApprovalService timeApprovalService,
-            IEmployeeService employeeService)
+            IEmployeeRepository employeeService)
         {
             this.timeSummaryService = timeSummaryService;
             this.timeApprovalService = timeApprovalService;

@@ -1,5 +1,6 @@
 ﻿using orion.web.Common;
 using orion.web.Employees;
+using orion.web.Util.IoC;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,18 +8,18 @@ using System.Threading.Tasks;
 
 namespace orion.web.TimeEntries
 {
-    public interface IRemoveRowCommand : IRegisterByConvention
+    public interface IRemoveRowCommand
     {
         Task<CommandResult> RemoveRow(int employeeId, int weekId, int newTaskId, int newJobId);
     }
-    public class RemoveRowCommand : IRemoveRowCommand
+    public class RemoveRowCommand : IRemoveRowCommand, IAutoRegisterAsSingleton
     {
-        private readonly IEmployeeService employeeService;
+        private readonly IEmployeeRepository employeeService;
         //private readonly IWeekService weekService;
         private readonly ITimeService timeService;
         private readonly ITimeSpentRepository timeSpentRepository;
 
-        public RemoveRowCommand(IEmployeeService employeeService,
+        public RemoveRowCommand(IEmployeeRepository employeeService,
           //  IWeekService weekService,
             ITimeService timeService,
             ITimeSpentRepository timeSpentRepository)
@@ -31,9 +32,9 @@ namespace orion.web.TimeEntries
         public async Task<CommandResult> RemoveRow(int employeeId, int weekId, int taskId, int jobId)
         {
             await timeService.DeleteAllEntries( weekId, taskId, jobId, employeeId);
-           
+
             return new CommandResult(true);
-    
+
         }
     }
 }

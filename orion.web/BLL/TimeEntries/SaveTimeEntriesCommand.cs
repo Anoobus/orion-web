@@ -1,15 +1,16 @@
 ﻿using orion.web.Common;
+using orion.web.Util.IoC;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace orion.web.TimeEntries
 {
-    public interface ISaveTimeEntriesCommand : IRegisterByConvention
+    public interface ISaveTimeEntriesCommand
     {
         Task<CommandResult> SaveTimeEntriesAsync(int employeeId, int id, FullTimeEntryViewModel vm);
     }
-    public class SaveTimeEntriesCommand : ISaveTimeEntriesCommand
+    public class SaveTimeEntriesCommand : ISaveTimeEntriesCommand, IAutoRegisterAsSingleton
     {
         private readonly ITimeApprovalService timeApprovalService;
         private readonly ITimeService timeService;

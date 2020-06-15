@@ -1,7 +1,9 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using orion.web.Common;
+using orion.web.DataAccess;
 using orion.web.DataAccess.EF;
+using orion.web.Util.IoC;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -16,16 +18,14 @@ namespace orion.web.Reports
     {
         Task<ReportDTO<PayPeriodReportDTO>> RunAsync(DateTime payPeriodEnd);
     }
-    public class PayPeriodReportQuery : IPayPeriodReportQuery
+    public class PayPeriodReportQuery : IPayPeriodReportQuery, IAutoRegisterAsSingleton
     {
         private readonly IConfiguration configuration;
-        private readonly OrionDbContext db;
         private readonly ILogger<PayPeriodReportQuery> logger;
 
-        public PayPeriodReportQuery(IConfiguration configuration, OrionDbContext db, ILogger<PayPeriodReportQuery> logger)
+        public PayPeriodReportQuery(IConfiguration configuration, ILogger<PayPeriodReportQuery> logger)
         {
             this.configuration = configuration;
-            this.db = db;
             this.logger = logger;
         }
         public async Task<ReportDTO<PayPeriodReportDTO>> RunAsync(DateTime payPeriodEnd)

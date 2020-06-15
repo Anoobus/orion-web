@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using orion.web.DataAccess;
 using orion.web.DataAccess.EF;
 using orion.web.JobTasks;
+using orion.web.Util.IoC;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,39 +18,47 @@ namespace orion.web.JobsTasks
         Task Upsert(TaskDTO task);
     }
 
-    public class TaskService : ITaskService
+    public class TaskService : ITaskService, IAutoRegisterAsSingleton
     {
-        private readonly OrionDbContext db;
+        private readonly IContextFactory _contextFactory;
 
-        public TaskService(OrionDbContext db)
+        public TaskService(IContextFactory contextFactory)
         {
-            this.db = db;
+            _contextFactory = contextFactory;
         }
 
         public async Task<IEnumerable<CategoryDTO>> GetTaskCategoriesAsync()
         {
-            return await db.TaskCategories.Select(x => new CategoryDTO()
+            using(var db = _contextFactory.CreateDb())
             {
-                Id = x.TaskCategoryId,
-                Name = x.Name,
-                Enum = (JobTasks.TaskCategory)x.TaskCategoryId
-            }).ToListAsync();
+                return await db.TaskCategories.Select(x => new CategoryDTO()
+                {
+                    Id = x.TaskCategoryId,
+                    Name = x.Name,
+                    Enum = (JobTasks.TaskCategory)x.TaskCategoryId
+                }).ToListAsync();
+            }
         }
 
 
         public async Task<IEnumerable<UsageStatusDTO>> GetUsageStatusAsync()
         {
-            return await db.UsageStatuses.Select(x => new UsageStatusDTO()
+            using(var db = _contextFactory.CreateDb())
             {
-                Id = x.UsageStatusId,
-                Name = x.Name,
-                Enum = (JobTasks.UsageStatus)x.UsageStatusId
-            }).ToListAsync();
+                return await db.UsageStatuses.Select(x => new UsageStatusDTO()
+                {
+                    Id = x.UsageStatusId,
+                    Name = x.Name,
+                    Enum = (JobTasks.UsageStatus)x.UsageStatusId
+                }).ToListAsync();
+            }
         }
 
         public async Task<IEnumerable<TaskDTO>> GetTasks()
         {
-            return (await db.JobTasks
+            using(var db = _contextFactory.CreateDb())
+            {
+                return (await db.JobTasks
                 .Include(x => x.TaskCategory)
                 .Include(x => x.UsageStatus)
                 .Select(x => new TaskDTO()
@@ -73,35 +83,39 @@ namespace orion.web.JobsTasks
                 .OrderBy(x => x.Category.Name)
                 .ThenBy(x => x.LegacyCode)
                 .ThenBy(x => x.Name);
+            }
         }
 
         public async Task Upsert(TaskDTO task)
         {
-            var match = await db.JobTasks.SingleOrDefaultAsync(x => x.JobTaskId == task.TaskId);
-            if(match == null)
+            using(var db = _contextFactory.CreateDb())
             {
-                match = new JobTask();
-                db.JobTasks.Add(match);
-                if(await db.JobTasks.AnyAsync(x => x.LegacyCode == task.LegacyCode))
+                var match = await db.JobTasks.SingleOrDefaultAsync(x => x.JobTaskId == task.TaskId);
+                if(match == null)
                 {
-                    throw new ArgumentException($"Supplied code {task.LegacyCode} is already in use");
+                    match = new JobTask();
+                    db.JobTasks.Add(match);
+                    if(await db.JobTasks.AnyAsync(x => x.LegacyCode == task.LegacyCode))
+                    {
+                        throw new ArgumentException($"Supplied code {task.LegacyCode} is already in use");
+                    }
                 }
-            }
-            else
-            {
-                if(await db.JobTasks.AnyAsync(x => x.LegacyCode == match.LegacyCode && x.JobTaskId != task.TaskId))
+                else
                 {
-                    throw new ArgumentException($"Supplied code {match.LegacyCode} is already in use");
+                    if(await db.JobTasks.AnyAsync(x => x.LegacyCode == match.LegacyCode && x.JobTaskId != task.TaskId))
+                    {
+                        throw new ArgumentException($"Supplied code {match.LegacyCode} is already in use");
+                    }
                 }
-            }
-            
 
-            match.Description = task.Description;
-            match.LegacyCode = task.LegacyCode;
-            match.Name = task.Name;
-            match.TaskCategoryId = task.Category.Id;
-            match.UsageStatusId = task.UsageStatus.Id;
-            db.SaveChanges();
+
+                match.Description = task.Description;
+                match.LegacyCode = task.LegacyCode;
+                match.Name = task.Name;
+                match.TaskCategoryId = task.Category.Id;
+                match.UsageStatusId = task.UsageStatus.Id;
+                db.SaveChanges();
+            }
         }
 
     }

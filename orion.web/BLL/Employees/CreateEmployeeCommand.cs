@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using orion.web.Common;
+using orion.web.Util.IoC;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,12 +11,12 @@ namespace orion.web.Employees
     {
         Task<CommandResult> Create(CreateEmployeeViewModel employee);
     }
-    public class CreateEmployeeCommand : ICreateEmployeeCommand
+    public class CreateEmployeeCommand : ICreateEmployeeCommand, IAutoRegisterAsTransient
     {
         private readonly UserManager<IdentityUser> userManager;
-        private readonly IEmployeeService employeeService;
+        private readonly IEmployeeRepository employeeService;
 
-        public CreateEmployeeCommand(UserManager<IdentityUser> userManager, IEmployeeService employeeService)
+        public CreateEmployeeCommand(UserManager<IdentityUser> userManager, IEmployeeRepository employeeService)
         {
             this.userManager = userManager;
             this.employeeService = employeeService;

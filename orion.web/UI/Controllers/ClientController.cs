@@ -8,9 +8,9 @@ namespace orion.web.Clients
     [Authorize(Roles = UserRoleName.Admin)]
     public class ClientController : Controller
     {
-        private readonly IClientService clientService;
+        private readonly IClientsRepository clientService;
 
-        public ClientController(IClientService clientService)
+        public ClientController(IClientsRepository clientService)
         {
             this.clientService = clientService;
         }
@@ -26,7 +26,7 @@ namespace orion.web.Clients
         {
             try
             {
-                clientService.Post(client);
+                clientService.Create(client);
                 NotificationsController.AddNotification(this.User.SafeUserName(), $"{client.FullName} has been created.");
                 return RedirectToAction(nameof(Create));
             }

@@ -1,5 +1,6 @@
 ﻿using orion.web.Common;
 using orion.web.Employees;
+using orion.web.Util.IoC;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,18 +8,18 @@ using System.Threading.Tasks;
 
 namespace orion.web.TimeEntries
 {
-    public interface IAddNewJobTaskComboCommand : IRegisterByConvention
+    public interface IAddNewJobTaskComboCommand
     {
         Task<CommandResult> AddNewJobTaskCombo(int employeeId,  int weekId, int newTaskId, int newJobId);
     }
-    public class AddNewJobTaskComboCommand : IAddNewJobTaskComboCommand
+    public class AddNewJobTaskComboCommand : IAddNewJobTaskComboCommand, IAutoRegisterAsSingleton
     {
-        private readonly IEmployeeService employeeService;
+        private readonly IEmployeeRepository employeeService;
         //private readonly IWeekService weekService;
         private readonly ITimeService timeService;
         private readonly ITimeSpentRepository timeSpentRepository;
 
-        public AddNewJobTaskComboCommand(IEmployeeService employeeService,
+        public AddNewJobTaskComboCommand(IEmployeeRepository employeeService,
             //IWeekService weekService,
             ITimeService timeService,
             ITimeSpentRepository timeSpentRepository)

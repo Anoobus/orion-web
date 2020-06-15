@@ -11,9 +11,9 @@ namespace orion.web.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly IEmployeeService employeeService;
+        private readonly IEmployeeRepository employeeService;
 
-        public HomeController(IEmployeeService employeeService)
+        public HomeController(IEmployeeRepository employeeService)
         {
             this.employeeService = employeeService;
         }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using orion.web.Common;
+using orion.web.Util.IoC;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,12 +9,12 @@ using System.Threading.Tasks;
 
 namespace orion.web.Expense
 {
-    public interface IUploadLocationResolver : IRegisterByConvention
+    public interface IUploadLocationResolver
     {
         string GetUploadPath();
     }
 
-    public class UploadLocationResolver : IUploadLocationResolver
+    public class UploadLocationResolver : IUploadLocationResolver, IAutoRegisterAsSingleton
     {
         private readonly IConfiguration _config;
 

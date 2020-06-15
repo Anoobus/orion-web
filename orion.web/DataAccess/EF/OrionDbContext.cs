@@ -4,7 +4,7 @@ namespace orion.web.DataAccess.EF
 {
     public class OrionDbContext : DbContext
     {
-
+        public const string CONN_STRING_NAME = "SiteConnection";
         public OrionDbContext(DbContextOptions<OrionDbContext> options)
             : base(options) { }
 

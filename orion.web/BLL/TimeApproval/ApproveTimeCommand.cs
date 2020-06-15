@@ -3,6 +3,7 @@ using orion.web.Common;
 using orion.web.Employees;
 using orion.web.Jobs;
 using orion.web.TimeEntries;
+using orion.web.Util.IoC;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,10 +12,10 @@ namespace orion.web.TimeApproval
 {
     public class TimeApprovalRequest
     {
-        public TimeApprovalRequest(int approvingUserId, 
-            bool approvingUserIsAdmin, 
-            int weekId, 
-            int employeeId, 
+        public TimeApprovalRequest(int approvingUserId,
+            bool approvingUserIsAdmin,
+            int weekId,
+            int employeeId,
             TimeApprovalStatus newApprovalState)
         {
             ApprovingUserId = approvingUserId;
@@ -30,21 +31,21 @@ namespace orion.web.TimeApproval
         public TimeApprovalStatus NewApprovalState { get; set; }
 
     }
-    public interface IApproveTimeCommand : IRegisterByConvention
+    public interface IApproveTimeCommand
     {
         Task<CommandResult> ApplyApproval(TimeApprovalRequest request);
     }
 
-    public class ApproveTimeCommand : IApproveTimeCommand
+    public class ApproveTimeCommand : IApproveTimeCommand, IAutoRegisterAsSingleton
     {
         private readonly ITimeApprovalService timeApprovalService;
         private readonly ITimeService timeService;
-        private readonly IEmployeeService employeeService;
+        private readonly IEmployeeRepository employeeService;
         private readonly ISmtpProxy smtpProxy;
         private readonly IConfiguration configuration;
         private readonly IJobService jobService;
 
-        public ApproveTimeCommand(ITimeApprovalService timeApprovalService, ITimeService timeService, IEmployeeService employeeService, ISmtpProxy smtpProxy, IConfiguration configuration, IJobService jobService)
+        public ApproveTimeCommand(ITimeApprovalService timeApprovalService, ITimeService timeService, IEmployeeRepository employeeService, ISmtpProxy smtpProxy, IConfiguration configuration, IJobService jobService)
         {
             this.timeApprovalService = timeApprovalService;
             this.timeService = timeService;
@@ -92,12 +93,12 @@ namespace orion.web.TimeApproval
                 current.ApproverName = approver.UserName;
                 current.ApprovalDate = DateTime.Now;
             }
-           
+
             await timeApprovalService.Save(current);
 
             var baseUrl = configuration.GetValue<string>("BaseHostAddress");
             if(isValidSubmit && current.TimeApprovalStatus == TimeApprovalStatus.Submitted)
-            { 
+            {
                 var time = await timeService.GetAsync(request.WeekId, request.EmployeeId);
                 var JobsThatCauseApprovalRequired = time.Where(x => x.OvertimeHours > 0).GroupBy(x => x.JobId);
                 var jobDetails = await Task.WhenAll(JobsThatCauseApprovalRequired.Select(async x => await jobService.GetForJobId(x.Key)));

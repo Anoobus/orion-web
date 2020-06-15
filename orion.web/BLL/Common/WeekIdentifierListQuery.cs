@@ -1,20 +1,21 @@
 ﻿using orion.web.TimeEntries;
+using orion.web.Util.IoC;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace orion.web.Common
 {
-    public interface IWeekIdentifierListQuery : IRegisterByConvention
+    public interface IWeekIdentifierListQuery
     {
         Task<WeekListViewModel> GetWeeksAsync(int entriesToShow, int employeeId, DateTime? startDate = null);
     }
-    public class WeekIdentifierListQuery : IWeekIdentifierListQuery
+    public class WeekIdentifierListQuery : IWeekIdentifierListQuery, IAutoRegisterAsSingleton
     {
         //private readonly IWeekService weekService;
         private readonly ITimeSummaryService timeSummaryService;
 
-        public WeekIdentifierListQuery(//IWeekService weekService, 
+        public WeekIdentifierListQuery(//IWeekService weekService,
             ITimeSummaryService timeSummaryService)
         {
             //this.weekService = weekService;
@@ -41,7 +42,7 @@ namespace orion.web.Common
                     TotalRegular = thisWeekTimeSummary.Hours,
                      IsCurrentWeek = currWeek == temp.WeekId.Value
                 });
-                thisWeek = thisWeek.Previous();// weekService.Previous(thisWeek.Year, thisWeek.WeekId); 
+                thisWeek = thisWeek.Previous();// weekService.Previous(thisWeek.Year, thisWeek.WeekId);
             }
             return new WeekListViewModel()
             {

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using orion.web.Common;
+using orion.web.Util.IoC;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -15,17 +16,17 @@ namespace orion.web.Reports
     {
         Task<ReportDTO<JobSummaryReportDTO>> RunAsync(DateTime start, DateTime end, bool showEmptyJobs, string reportDisplayName, int jobId);
     }
-    public class JobSummaryReportQuery : IJobSummaryReportQuery
+    public class JobSummaryReportQuery : IJobSummaryReportQuery , IAutoRegisterAsSingleton
     {
-        private readonly IConfiguration configuration;
+        private readonly IConfiguration _configuration;
 
         public JobSummaryReportQuery(IConfiguration configuration)
         {
-            this.configuration = configuration;
+            this._configuration = configuration;
         }
         public async Task<ReportDTO<JobSummaryReportDTO>> RunAsync(DateTime start, DateTime end, bool showEmptyJobs, string reportDisplayName, int jobId)
         {
-            using(var conn = new SqlConnection(configuration.GetConnectionString("SiteConnection")))
+            using(var conn = new SqlConnection(_configuration.GetConnectionString("SiteConnection")))
             using(var cmd = conn.CreateCommand())
             {
                 conn.Open();

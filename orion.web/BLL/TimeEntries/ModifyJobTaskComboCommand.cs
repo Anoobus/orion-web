@@ -1,22 +1,23 @@
 ﻿using orion.web.Common;
 using orion.web.Employees;
+using orion.web.Util.IoC;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace orion.web.TimeEntries
 {
-    public interface IModifyJobTaskComboCommand : IRegisterByConvention
+    public interface IModifyJobTaskComboCommand
     {
         Task<CommandResult> ModifyJobTaskCombo(int employeeId,  int weekId, int newTaskId, int newJobId, int oldTaskId, int oldJobId);
     }
-    public class ModifyJobTaskComboCommand : IModifyJobTaskComboCommand
+    public class ModifyJobTaskComboCommand : IModifyJobTaskComboCommand, IAutoRegisterAsSingleton
     {
-        private readonly IEmployeeService employeeService;
+        private readonly IEmployeeRepository employeeService;
         //private readonly IWeekService weekService;
         private readonly ITimeService timeService;
         private readonly ITimeSpentRepository timeSpentRepository;
 
-        public ModifyJobTaskComboCommand(IEmployeeService employeeService,
+        public ModifyJobTaskComboCommand(IEmployeeRepository employeeService,
           //  IWeekService weekService,
             ITimeService timeService,
             ITimeSpentRepository timeSpentRepository)

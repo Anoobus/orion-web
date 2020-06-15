@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using orion.web.Common;
 using orion.web.Reports.QuickJobTimeReport;
+using orion.web.Util.IoC;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -12,11 +13,11 @@ using System.Threading.Tasks;
 
 namespace orion.web.Reports
 {
-    public interface IQuickJobTimeReportQuery : IRegisterByConvention
+    public interface IQuickJobTimeReportQuery
     {
         Task<ReportDTO<QuickJobTimeReportDTO>> RunAsync(QuickJobTimeReportCriteria criteria);
     }
-    public class QuickJobTimeReportQuery : IQuickJobTimeReportQuery
+    public class QuickJobTimeReportQuery : IQuickJobTimeReportQuery, IAutoRegisterAsSingleton
     {
         private readonly IConfiguration configuration;
 
@@ -40,18 +41,18 @@ namespace orion.web.Reports
 
 Select " +
 
- $"	min(Convert(varchar(10),Isnull(te.Date,@WeekStart), 101)) as  {nameof(QuickJobTimeReportDTO.PeriodStart)}, " 
+ $"	min(Convert(varchar(10),Isnull(te.Date,@WeekStart), 101)) as  {nameof(QuickJobTimeReportDTO.PeriodStart)}, "
 + $"	max(Convert(varchar(10),isnull( te.Date,@WeekEnd),101)) as {nameof(QuickJobTimeReportDTO.PeriodEnd)},    "
 + $"	COALESCE(e.Last,'') + ', ' + COALESCE(e.First,'')  as  {nameof(QuickJobEmployees.EmployeeName)}, "
 + $"	c.clientcode + '-' + j.JobCode  as  {nameof(QuickJobTimeReportDTO.JobCode)}, "
 + $"	j.JobName as  {nameof(QuickJobTimeReportDTO.JobName)},"
-+ $"	c.ClientName as  {nameof(QuickJobTimeReportDTO.ClientName)}, " 
++ $"	c.ClientName as  {nameof(QuickJobTimeReportDTO.ClientName)}, "
 + $"    s.SiteName as  {nameof(QuickJobTimeReportDTO.SiteName)}, "
 + $"	jt.LegacyCode + ' - ' + jt.[Name] as {nameof(QuickJobEmployees.TaskName)}, "
 + $"	tc.Name as {nameof(QuickJobEmployees.TaskCategory)}, "
 + $"	isnull(sum(te.hours),0) as {nameof(QuickJobEmployees.Regular)}, "
-+ $"    isnull(sum(te.overtimehours),0) as {nameof(QuickJobEmployees.Overtime)}, " 
-+ $"	isnull(sum(te.hours),0) + isnull(sum(te.overtimehours),0) as  {nameof(QuickJobEmployees.Combined)}" 
++ $"    isnull(sum(te.overtimehours),0) as {nameof(QuickJobEmployees.Overtime)}, "
++ $"	isnull(sum(te.hours),0) + isnull(sum(te.overtimehours),0) as  {nameof(QuickJobEmployees.Combined)}"
 +
 
 @"
@@ -129,7 +130,7 @@ j.JobId
                     ReportName = QuickJobTimeReport.QuickJobTimeReportCriteria.QUICK_JOB_TIME_REPORT_NAME,
                     RunSettings =
                 new Dictionary<string, string>()
-                {                   
+                {
                     { "Generated", $"{DateTimeWithZone.EasternStandardTime.ToShortDateString()} at {DateTimeWithZone.EasternStandardTime.ToShortTimeString()}"},
                     { "Company", $"Orion Engineering Co., Inc." },
                 }
@@ -151,7 +152,7 @@ j.JobId
                     {
                         var match = cols.SingleOrDefault(x => x.ColumnName == prop.Name);
                         if(match != null)
-                        {                        
+                        {
                             ColumnMap.Add(prop.Name, match.ColumnOrdinal.Value);
                         }
                     }
