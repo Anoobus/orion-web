@@ -8,9 +8,9 @@ namespace orion.web.Jobs
     [Authorize(Roles =UserRoleName.Admin)]
     public class SiteController : Controller
     {
-        private readonly ISiteService siteService;
+        private readonly ISitesRepository siteService;
 
-        public SiteController(ISiteService siteService)
+        public SiteController(ISitesRepository siteService)
         {
             this.siteService = siteService;
         }
@@ -35,7 +35,7 @@ namespace orion.web.Jobs
         {
             try
             {
-                siteService.Post(client);
+                siteService.Create(client);
                 NotificationsController.AddNotification(this.User.SafeUserName(), $"{client.SiteName} has been created.");
                 return RedirectToAction(nameof(Create));
             }

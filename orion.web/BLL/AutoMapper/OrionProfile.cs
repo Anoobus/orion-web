@@ -15,6 +15,7 @@ namespace orion.web.BLL.AutoMapper
             CreateMap<SiteModel, SiteDTO>().ReverseMap();
             CreateMap<JobStatusModel, JobStatusDTO>().ReverseMap();
             CreateMap<ProjectManagerModel, ProjectManagerDTO>().ReverseMap();
+            CreateMap<DataAccess.EF.Site, SiteDTO>().ReverseMap();
         }
     }
 }

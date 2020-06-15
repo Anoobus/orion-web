@@ -13,19 +13,19 @@ namespace orion.web.Jobs
     [Authorize]
     public class JobsController : Controller
     {
-        private readonly IClientsRepository clientService;
+        private readonly IClientsRepository clientRepository;
         private readonly IJobService jobService;
-        private readonly IEmployeeRepository employeeService;
-        private readonly ISiteService siteService;
+        private readonly IEmployeeRepository employeeRepository;
+        private readonly ISitesRepository siteRepository;
         private readonly ITimeService timeService;
         private readonly ISessionAdapter sessionAdapter;
 
-        public JobsController(IClientsRepository clientService, IJobService jobService, IEmployeeRepository employeeService, ISiteService siteService, ITimeService timeService, ISessionAdapter sessionAdapter)
+        public JobsController(IClientsRepository clientRepository, IJobService jobService, IEmployeeRepository employeeRepository, ISitesRepository siteRepository, ITimeService timeService, ISessionAdapter sessionAdapter)
         {
-            this.clientService = clientService;
+            this.clientRepository = clientRepository;
             this.jobService = jobService;
-            this.employeeService = employeeService;
-            this.siteService = siteService;
+            this.employeeRepository = employeeRepository;
+            this.siteRepository = siteRepository;
             this.timeService = timeService;
             this.sessionAdapter = sessionAdapter;
         }
@@ -61,9 +61,9 @@ namespace orion.web.Jobs
 
         public async System.Threading.Tasks.Task<ActionResult> AddJobForCurrentUser(int id)
         {
-            var me = await employeeService.GetSingleEmployeeAsync(User.Identity.Name);
+            var me = await employeeRepository.GetSingleEmployeeAsync(User.Identity.Name);
             me.AssignJobs.Add(id);
-            employeeService.Save(me);
+            employeeRepository.Save(me);
             var employeeName = User.Identity.Name;
             NotificationsController.AddNotification(User.Identity.Name, "Job Added");
             return RedirectToAction(nameof(List));
@@ -82,12 +82,12 @@ namespace orion.web.Jobs
         public async System.Threading.Tasks.Task<ActionResult> RemoveJobForCurrentUser(int id)
         {
 
-            var me = await employeeService.GetSingleEmployeeAsync(User.Identity.Name);
+            var me = await employeeRepository.GetSingleEmployeeAsync(User.Identity.Name);
             if(me.AssignJobs.Contains(id))
             {
                 me.AssignJobs.Remove(id);
             }
-            employeeService.Save(me);
+            employeeRepository.Save(me);
 
             NotificationsController.AddNotification(User.SafeUserName(), $"Removed from my jobs");
             return RedirectToAction(nameof(List));
@@ -103,7 +103,7 @@ namespace orion.web.Jobs
                 SelectedJobStatusId = job.JobStatusDTO.Id,
                 SelectedProjectManagerEmployeeId = job.ProjectManager.EmployeeId,
                 AvailableJobStatus = jobStatus.ToList(),
-                AvailableProjectManagers = (await employeeService.GetAllEmployees()).Select(x => new ProjectManagerDTO()
+                AvailableProjectManagers = (await employeeRepository.GetAllEmployees()).Select(x => new ProjectManagerDTO()
                 {
                     EmployeeId = x.EmployeeId,
                     EmployeeName = $"{x.Last}, {x.First}"
@@ -117,10 +117,10 @@ namespace orion.web.Jobs
             var vm = new CreateJobViewModel()
             {
                 Job = new JobDTO(),
-                AvailableClients = await clientService.GetAllClients(),
-                AvailableSites = siteService.Get(),
+                AvailableClients = await clientRepository.GetAllClients(),
+                AvailableSites = await siteRepository.GetAll(),
                 AvailableJobStatus = await jobService.GetUsageStatusAsync(),
-                AvailableProjectManagers = (await employeeService.GetAllEmployees()).Select(x => new ProjectManagerDTO()
+                AvailableProjectManagers = (await employeeRepository.GetAllEmployees()).Select(x => new ProjectManagerDTO()
                 {
                     EmployeeId = x.EmployeeId,
                     EmployeeName = $"{x.Last}, {x.First}"
@@ -133,8 +133,8 @@ namespace orion.web.Jobs
         [HttpPost]
         public async Task<ActionResult> Create(CreateJobViewModel jobToCreate)
         {
-            var clients = await clientService.GetAllClients();
-            var sites = siteService.Get();
+            var clients = await clientRepository.GetAllClients();
+            var sites = await siteRepository.GetAll();
             var mappedJob = jobToCreate.Job;
             mappedJob.Client = clients.FirstOrDefault(x => x.ClientId == jobToCreate.SelectedClientId);
             mappedJob.Site = sites.FirstOrDefault(x => x.SiteID == jobToCreate.SelectedSiteId);

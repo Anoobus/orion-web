@@ -1,47 +1,51 @@
-﻿using orion.web.DataAccess;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using orion.web.DataAccess;
 using orion.web.DataAccess.EF;
 using orion.web.Util.IoC;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace orion.web.Jobs
 {
-
-    public interface ISiteService
+    public interface ISitesRepository
     {
-        IEnumerable<SiteDTO> Get();
-        void Post(SiteDTO site);
+        Task<IEnumerable<SiteDTO>> GetAll();
+        Task<int> Create(SiteDTO site);
     }
 
-    public class SiteService :  ISiteService, IAutoRegisterAsSingleton
+    public class SitesRepository :  ISitesRepository, IAutoRegisterAsSingleton
     {
         private readonly IContextFactory _contextFactory;
+        private readonly IMapper _mapper;
 
-        public SiteService(IContextFactory contextFactory)
+        public SitesRepository(IContextFactory contextFactory, IMapper mapper)
         {
             _contextFactory = contextFactory;
+            _mapper = mapper;
         }
-        public IEnumerable<SiteDTO> Get()
+        public async Task<IEnumerable<SiteDTO>> GetAll()
         {
             using(var db = _contextFactory.CreateDb())
             {
-                return db.Sites.Select(x => new SiteDTO()
+                return (await db.Sites.Select(x => new SiteDTO()
                 {
                     SiteID = x.SiteID,
                     SiteName = x.SiteName
-                }).OrderBy(x => x.SiteName).ToList();
+                }).ToListAsync()).OrderBy(x => x.SiteName)
+                .Select(x => _mapper.Map<SiteDTO>(x)).ToList();
             }
         }
 
-        public void Post(SiteDTO site)
+        public async Task<int> Create(SiteDTO site)
         {
             using(var db = _contextFactory.CreateDb())
             {
-                db.Sites.Add(new Site()
-                {
-                    SiteName = site.SiteName
-                });
-                db.SaveChanges();
+                var newSite = _mapper.Map<Site>(site);
+                db.Sites.Add(newSite);
+                await db.SaveChangesAsync();
+                return newSite.SiteID;
             }
         }
     }

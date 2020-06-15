@@ -91,6 +91,9 @@
     <Content Update="UI\Views\TimeApproval\TimeApprovalSection.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
+    <Content Update="UI\Views\Vue\App.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
