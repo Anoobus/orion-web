@@ -29,9 +29,12 @@ namespace orion.web.ApplicationStartup
             return $"{name}: {assm.GetName().Version}";
         });
 
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IHostingEnvironment environment)
         {
             Configuration = configuration;
+            Serilog.Log.Information($"Running startup for {environment.EnvironmentName}");
+
+
         }
 
         public IConfiguration Configuration { get; }
@@ -71,16 +74,24 @@ namespace orion.web.ApplicationStartup
 
         private void SetupLocalDbBasedEntityFramework<TContext>(IServiceCollection services, string connectionName) where TContext : DbContext
         {
-            var cnb = new SqlConnectionStringBuilder(Configuration.GetConnectionString(connectionName));
-            var runningLocation = Path.Combine(new DirectoryInfo(Path.GetDirectoryName(this.GetType().Assembly.Location)).Parent.FullName, @"sql-data");
+            try
+            {
+                var cnb = new SqlConnectionStringBuilder(Configuration.GetConnectionString(connectionName));
+                var runningLocation = Path.Combine(new DirectoryInfo(Path.GetDirectoryName(this.GetType().Assembly.Location)).Parent.FullName, @"sql-data");
 
-            Serilog.Log.Information($"Using run location {runningLocation} for {connectionName}");
-            cnb.AttachDBFilename = MDFBootstrap.SetupLocalDbFile(Configuration.GetValue<string>("OverrideSqlDataPath") ?? runningLocation, cnb.InitialCatalog);
-            Configuration.GetSection("ConnectionStrings")[connectionName] = cnb.ConnectionString;
-            Serilog.Log.Information($"{connectionName} DB SETTINGS => {Configuration.GetConnectionString(connectionName)}");
-            services.AddDbContext<TContext>(options =>
-                options.UseSqlServer(
-                    Configuration.GetConnectionString(connectionName)));
+                Serilog.Log.Information($"Using run location {runningLocation} for {connectionName}");
+                cnb.AttachDBFilename = MDFBootstrap.SetupLocalDbFile(Configuration.GetValue<string>("OverrideSqlDataPath") ?? runningLocation, cnb.InitialCatalog);
+                Configuration.GetSection("ConnectionStrings")[connectionName] = cnb.ConnectionString;
+                Serilog.Log.Information($"{connectionName} DB SETTINGS => {Configuration.GetConnectionString(connectionName)}");
+                services.AddDbContext<TContext>(options =>
+                    options.UseSqlServer(
+                        Configuration.GetConnectionString(connectionName)));
+            }
+            catch(Exception e)
+            {
+                Serilog.Log.Error(e, "Died setting up DB");
+                throw;
+            }
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

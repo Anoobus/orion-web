@@ -1,4 +1,5 @@
-﻿using System.Data.SqlClient;
+﻿using System;
+using System.Data.SqlClient;
 using System.IO;
 
 namespace orion.web.ApplicationStartup
@@ -22,6 +23,7 @@ namespace orion.web.ApplicationStartup
                     Serilog.Log.Information($"{dbFileName} does not exist yet");
                     if (File.Exists(backupFileName))
                     {
+                        var fileId = Guid.NewGuid().ToString();
                         Serilog.Log.Information($"creating {dbFileName} from {backupFileName}");
                         string restore = string.Format(@"RESTORE DATABASE [{1}] FROM DISK='{0}\{1}.bak'
                         WITH FILE = 1,
