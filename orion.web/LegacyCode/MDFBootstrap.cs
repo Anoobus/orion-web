@@ -12,16 +12,16 @@ namespace orion.web.ApplicationStartup
             var backupFileName = Path.Combine(filePath, $"{dbName}.bak");
             var logFileName = Path.Combine(filePath, $"{dbName}.ldf");
             Serilog.Log.Information($"Opening connection to [server=(localdb)\\mssqllocaldb;Initial Catalog=master] to ensure {dbFileName} is mounted");
-            using (var connection = new SqlConnection(@"server=(localdb)\mssqllocaldb;Initial Catalog=master"))
+            using(var connection = new SqlConnection(@"server=(localdb)\mssqllocaldb;Initial Catalog=master"))
             {
                 connection.Open();
                 //detatch only when the file is mounted currently from a different location
-                DetatchExistingDb(dbName,dbFileName, connection);
-                if (!File.Exists(dbFileName))
+                DetatchExistingDb(dbName, dbFileName, connection);
+                if(!File.Exists(dbFileName))
                 {
                     //orion.web_Data
                     Serilog.Log.Information($"{dbFileName} does not exist yet");
-                    if (File.Exists(backupFileName))
+                    if(File.Exists(backupFileName))
                     {
                         var fileId = Guid.NewGuid().ToString();
                         Serilog.Log.Information($"creating {dbFileName} from {backupFileName}");
@@ -81,7 +81,5 @@ namespace orion.web.ApplicationStartup
             command.ExecuteNonQuery();
             return command;
         }
-
-
     }
 }

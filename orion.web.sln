@@ -7,9 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "orion.web", "orion.web\orio
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3C8779C8-289A-4257-85CC-094B65D65D64}"
 	ProjectSection(SolutionItems) = preProject
-		.dockerignore = .dockerignore
-		docker-compose.yml = docker-compose.yml
-		Dockerfile = Dockerfile
 		nuget.config = nuget.config
 	EndProjectSection
 EndProject

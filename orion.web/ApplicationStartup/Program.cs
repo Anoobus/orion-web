@@ -52,8 +52,6 @@ namespace orion.web.ApplicationStartup
                             //if the DB is not yet migrated just do it now
                             //this can be more elaborate as needed down the road
                             serviceScope.ServiceProvider.GetService<OrionDbContext>().Database.Migrate();
-                            var seed = new SeedDataRepository(serviceScope.ServiceProvider);
-                            seed.IntializeSeedData().Wait();
                         }
                         isInitialized = true;
                     }

@@ -133,10 +133,7 @@
     <None Update="orion-live.eastus.azurecr.io.pfx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="run.ps1">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="self-cert.pfx">
+    <None Update="LegacyCode\run.ps1">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
