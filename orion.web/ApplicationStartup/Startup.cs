@@ -32,8 +32,6 @@ namespace orion.web.ApplicationStartup
         {
             Configuration = configuration;
             Serilog.Log.Information($"Running startup for {environment.EnvironmentName}");
-
-
         }
 
         public IConfiguration Configuration { get; }
@@ -70,6 +68,7 @@ namespace orion.web.ApplicationStartup
             services.AddHttpContextAccessor();
             services.AddCustomAutoMapper();
 
+            LogEmailConfig();
             Serilog.Log.Information($"Services configuration complete");
         }
 
