@@ -11,9 +11,9 @@ Copy-Item -Path "upload-data" -Destination  "..\$dateId\upload-data" -Recurse
 
 Write-Host backup our current DB into our build folder
 $backupCmd=[string]::Format("BACKUP DATABASE [orion.web] TO DISK='{0}\{1}\sql-data-bu\orion.web.{1}.bak'", ((Get-Item (Get-Location).Path).Parent).FullName, $dateId);
-SqlCmd -E -S "(localdb)\mssqllocaldb" -Q "$backupCmd"
+SqlCmd -E -S "localhost\sql2017" -Q "$backupCmd"
 $backupCmd=[string]::Format("BACKUP DATABASE [orion.web.aspnet.identity] TO DISK='{0}\{1}\sql-data-bu\orion.web.aspnet.identity.{1}.bak'", ((Get-Item (Get-Location).Path).Parent).FullName, $dateId);
-SqlCmd -E -S "(localdb)\mssqllocaldb" -Q "$backupCmd"
+SqlCmd -E -S "localhost\sql2017" -Q "$backupCmd"
 
 
 Write-Host get latest source code
