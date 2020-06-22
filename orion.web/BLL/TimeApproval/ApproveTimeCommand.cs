@@ -5,7 +5,9 @@ using orion.web.Jobs;
 using orion.web.TimeEntries;
 using orion.web.Util.IoC;
 using System;
+using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace orion.web.TimeApproval
@@ -66,7 +68,7 @@ namespace orion.web.TimeApproval
             var isValidApprove = request.NewApprovalState == TimeApprovalStatus.Approved
                 && request.ApprovingUserIsAdmin;
 
-            if (isValidSubmit)
+            if(isValidSubmit)
             {
                 var time = await timeService.GetAsync(request.WeekId, request.EmployeeId);
                 var totalOt = time.Sum(x => x.OvertimeHours);
@@ -74,7 +76,7 @@ namespace orion.web.TimeApproval
                 current.TotalOverTimeHours = totalOt;
                 current.TotalRegularHours = totalReg;
 
-                if (totalOt > 0 || totalReg > 40)
+                if(totalOt > 0 || totalReg > 40)
                 {
                     current.TimeApprovalStatus = TimeApprovalStatus.Submitted;
                 }
@@ -83,20 +85,28 @@ namespace orion.web.TimeApproval
                     current.TimeApprovalStatus = TimeApprovalStatus.Approved;
                 }
             }
-            if (isValidReject || isValidApprove)
+            if(isValidReject || isValidApprove)
             {
                 current.TimeApprovalStatus = request.NewApprovalState;
             }
-            if (isValidApprove)
+            if(isValidApprove)
             {
                 var approver = await employeeService.GetSingleEmployeeAsync(request.ApprovingUserId);
                 current.ApproverName = approver.UserName;
                 current.ApprovalDate = DateTime.Now;
+                var week = WeekDTO.CreateForWeekId(request.WeekId);
+                var emp = await employeeService.GetSingleEmployeeAsync(request.EmployeeId);
+                string finalEmailText = await CreateEmailBody(week, emp,
+                      greetingName: emp.First,
+                      action: $"Time sheet approved (for the week {week.WeekStart.ToShortDateString()}-{week.WeekEnd.ToShortDateString()})",
+                      actionBy: $"[AUTO APPROVED BY SYSTEM]", followup: "No further action is required.");
+                var recipient = emp.UserName;
+                smtpProxy.SendMail(recipient, finalEmailText, $"Time approved for week {week.WeekStart.ToShortDateString()}-{week.WeekEnd.ToShortDateString()}");
             }
 
             await timeApprovalService.Save(current);
 
-            var baseUrl = configuration.GetValue<string>("BaseHostAddress");
+
             if(isValidSubmit && current.TimeApprovalStatus == TimeApprovalStatus.Submitted)
             {
                 var time = await timeService.GetAsync(request.WeekId, request.EmployeeId);
@@ -110,8 +120,12 @@ namespace orion.web.TimeApproval
                     var approver = await employeeService.GetSingleEmployeeAsync(pm);
                     var recipient = approver.UserName;
 
-                    smtpProxy.SendMail(recipient, $"{emp.Last}, {emp.First} has submitted their timesheet for approval for week {week.WeekStart.ToShortDateString()}-{week.WeekEnd.ToShortDateString()}." +
-                        Environment.NewLine + $"Timesheet can be located here: {baseUrl}/Edit/Employee/{emp.EmployeeId}/Week/{week.WeekId.Value}", $"Timesheet submitted for approval ({emp.UserName})");
+                    string finalEmailText = await CreateEmailBody( week, emp,
+                        greetingName: emp.First,
+                        action: $"submitted for approval (for the week {week.WeekStart.ToShortDateString()}-{week.WeekEnd.ToShortDateString()})",
+                        actionBy: $"{emp.First} {emp.Last}", followup: $"You will need to review the timesheet as you are marked as a project manager a job in this week.");
+
+                    smtpProxy.SendMail(recipient, finalEmailText, $"Time submitted for week {week.WeekStart.ToShortDateString()}-{week.WeekEnd.ToShortDateString()}");
                 }
             }
 
@@ -121,11 +135,29 @@ namespace orion.web.TimeApproval
                 var emp = await employeeService.GetSingleEmployeeAsync(request.EmployeeId);
                 var approver = await employeeService.GetSingleEmployeeAsync(request.ApprovingUserId);
                 var recipient = emp.UserName;
-                smtpProxy.SendMail(recipient, $"Your time sheet for {week.WeekStart.ToShortDateString()}-{week.WeekEnd.ToShortDateString()} has been {request.NewApprovalState} by {approver.First}." +
-                    Environment.NewLine + $"Timesheet can be located here: {baseUrl}/Edit/Employee/{emp.EmployeeId}/Week/{week.WeekId.Value}", $"Timesheet has been {request.NewApprovalState}");
+
+                string finalEmailText = await CreateEmailBody(week, emp,
+                        greetingName: emp.First,
+                        action: $"{request.NewApprovalState}",
+                        actionBy: $"{approver.First} {approver.Last}",
+                        followup: $"Please review and resubmit for the week {week.WeekStart.ToShortDateString()}-{week.WeekEnd.ToShortDateString()}.");
+
+                smtpProxy.SendMail(recipient, finalEmailText, $"Time {request.NewApprovalState} for week {week.WeekStart.ToShortDateString()}-{week.WeekEnd.ToShortDateString()}");
             }
             return new CommandResult(true);
 
+        }
+
+        private async Task<string> CreateEmailBody(WeekDTO week, EmployeeDTO emp, string greetingName, string action, string actionBy, string followup)
+        {
+            var baseUrl = configuration.GetValue<string>("BaseHostAddress");
+            var template = await File.ReadAllTextAsync(@"wwwroot\email-template.html");
+            var finalEmailText = Regex.Replace(template, "(\\{\\{name}})",greetingName);
+            finalEmailText = Regex.Replace(finalEmailText, "(\\{\\{action}})", action);
+            finalEmailText = Regex.Replace(finalEmailText, "(\\{\\{action-by}})", actionBy);
+            finalEmailText = Regex.Replace(finalEmailText, "(\\{\\{followup}})",followup);
+            finalEmailText = Regex.Replace(finalEmailText, "(\\{\\{link}})", $"{baseUrl}/Edit/Employee/{emp.EmployeeId}/Week/{week.WeekId.Value}");
+            return finalEmailText;
         }
     }
 }

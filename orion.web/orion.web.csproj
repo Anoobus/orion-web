@@ -6,8 +6,8 @@
     <DockerTargetOS>Linux</DockerTargetOS>
     <StartupObject></StartupObject>
     <LangVersion>7.1</LangVersion>
-    <AssemblyVersion>1.0.1.0</AssemblyVersion>
-    <FileVersion>1.0.1.0</FileVersion>
+    <AssemblyVersion>1.0.1.1</AssemblyVersion>
+    <FileVersion>1.0.1.1</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -99,6 +99,9 @@
     </Content>
     <Content Update="UI\Views\Vue\App.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="wwwroot\email-template.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 

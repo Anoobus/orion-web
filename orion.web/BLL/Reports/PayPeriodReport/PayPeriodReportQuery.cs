@@ -94,6 +94,7 @@ left outer join dbo.TimeEntries excusedWithPay
 	and excusedWithPay.TaskId = @excusedWithPay
 where 
     (te.Date >= @payPeriodStart and te.Date <= @payPeriodEnd)
+    and ISNULL(e.[UserName],'') != 'admin@company.com'
 group by e.EmployeeId, 
 	COALESCE(e.Last,'') + ', ' + COALESCE(e.First,''),
 	e.IsExempt

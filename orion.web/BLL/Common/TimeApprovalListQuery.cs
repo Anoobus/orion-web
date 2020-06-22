@@ -38,7 +38,7 @@ namespace orion.web.Common
                 TimeApprovalStatus.Unkown)).ToList();
 
             var allEmployees = await employeeService.GetAllEmployees();
-
+            allEmployees = allEmployees.Where(x => x.UserName != "admin@company.com").ToList();
             var next = WeekDTO.CreateWithWeekContaining(beginDate.Value);
             var end = WeekDTO.CreateWithWeekContaining(endDate.Value);
             var allWeeks = new List<WeekDTO>() { end };

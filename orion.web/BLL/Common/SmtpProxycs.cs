@@ -2,11 +2,8 @@
 using Microsoft.Extensions.Logging;
 using orion.web.Util.IoC;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Mail;
-using System.Threading.Tasks;
 
 namespace orion.web.Common
 {
@@ -43,16 +40,17 @@ namespace orion.web.Common
                     UseDefaultCredentials = false,
                     Credentials = new NetworkCredential(fromAddress.Address, fromPassword)
                 };
-                using (var message = new MailMessage(fromAddress, toAddress)
+                using(var message = new MailMessage(fromAddress, toAddress)
                 {
                     Subject = subject,
-                    Body = body
+                    Body = body,
+                    IsBodyHtml = true,
                 })
                 {
                     smtp.Send(message);
                 }
             }
-            catch (Exception e)
+            catch(Exception e)
             {
                 logger.LogError(e, "Exception while trying to send notification email");
                 throw;

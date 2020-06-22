@@ -5,14 +5,14 @@ $dateId=Get-Date -Format "MMM-dd-yyyy"
 $dateId="build-$dateId"
 
 Write-Host create sql data dir for this build
-mkdir "..\$dateId\sql-data"
+mkdir "..\$dateId\sql-data-bu"
 
 Copy-Item -Path "upload-data" -Destination  "..\$dateId\upload-data" -Recurse
 
 Write-Host backup our current DB into our build folder
-$backupCmd=[string]::Format("BACKUP DATABASE [orion.web] TO DISK='{0}\{1}\sql-data\orion.web.{1}.bak'", ((Get-Item (Get-Location).Path).Parent).FullName, $dateId);
+$backupCmd=[string]::Format("BACKUP DATABASE [orion.web] TO DISK='{0}\{1}\sql-data-bu\orion.web.{1}.bak'", ((Get-Item (Get-Location).Path).Parent).FullName, $dateId);
 SqlCmd -E -S "(localdb)\mssqllocaldb" -Q "$backupCmd"
-$backupCmd=[string]::Format("BACKUP DATABASE [orion.web.aspnet.identity] TO DISK='{0}\{1}\sql-data\orion.web.aspnet.identity.{1}.bak'", ((Get-Item (Get-Location).Path).Parent).FullName, $dateId);
+$backupCmd=[string]::Format("BACKUP DATABASE [orion.web.aspnet.identity] TO DISK='{0}\{1}\sql-data-bu\orion.web.aspnet.identity.{1}.bak'", ((Get-Item (Get-Location).Path).Parent).FullName, $dateId);
 SqlCmd -E -S "(localdb)\mssqllocaldb" -Q "$backupCmd"
 
 
