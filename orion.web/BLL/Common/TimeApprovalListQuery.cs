@@ -29,8 +29,9 @@ namespace orion.web.Common
         }
         public async Task<TimeApprovalList> GetApprovalListAsync(DateTime? beginDate = null, DateTime? endDate = null)
         {
-            beginDate = beginDate ?? DateTime.Now.AddDays(-60);
-            endDate = endDate ?? DateTime.Now;
+            var thisWeek = WeekDTO.CreateWithWeekContaining(endDate ?? DateTime.Now);
+            beginDate = beginDate ?? thisWeek.Previous().WeekStart;
+            endDate = endDate ?? thisWeek.WeekEnd;
             var entries = (await timeApprovalService.GetByStatus(beginDate, endDate,
                 TimeApprovalStatus.Approved,
                 TimeApprovalStatus.Rejected,
