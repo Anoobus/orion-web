@@ -25,6 +25,9 @@ Write-Host unzip the file
 Expand-Archive -LiteralPath "..\orion-web-master.zip" -DestinationPath "..\$dateId"
 del  "..\orion-web-master.zip"
 
+Write-Host copy Prod AppSettings
+Move-Item -Path "app\appsettings.Production.json" -Destination "..\$dateId"
+
 Write-Host set working dir to "new folder"
 cd "..\$dateId"
 
@@ -41,3 +44,6 @@ Write-Host move deploy files to final build folder
 Move-Item -Path "app\deploy-latest.ps1" -Destination "deploy-latest.ps1"
 Write-Host remove sources folder
 Remove-Item -LiteralPath "orion-web-master" -Force -Recurse
+
+Write-Host move prod AppSettings to app folder
+Move-Item -Path "appsettings.Production.json" -Destination "app/appsettings.Production.json"
