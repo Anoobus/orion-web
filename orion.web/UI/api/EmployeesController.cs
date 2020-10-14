@@ -11,22 +11,24 @@ using System.Threading.Tasks;
 namespace orion.web.UI.api
 {
     [Authorize]
-    [Route("api/v1/sites")]
+    [Route("api/v1/employees")]
     [ApiController]
-    public class SiteController : ControllerBase
+    public class EmployeesController : ControllerBase
     {
         private readonly ISitesRepository _sitesRepository;
+        private readonly IEmployeeRepository _employeeRepository;
         private readonly IMapper _mapper;
 
-        public SiteController(ISitesRepository sitesRepository, IMapper mapper)
+        public EmployeesController(IEmployeeRepository employeeRepository, IMapper mapper)
         {
-            _sitesRepository = sitesRepository;
+            _employeeRepository = employeeRepository;
             _mapper = mapper;
         }
 
-        public async Task<ActionResult<IEnumerable<SiteModel>>> Get()
+        public async Task<ActionResult<IEnumerable<EmployeeDTO>>> Get()
         {
-            return Ok(_mapper.Map<IEnumerable<SiteModel>>( await _sitesRepository.GetAll()));
+            var emps = await _employeeRepository.GetAllEmployees();
+            return Ok(emps);
         }
     }
 }
