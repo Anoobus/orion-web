@@ -39,7 +39,7 @@ Select " +
  $"	min(Convert(varchar(10),Isnull(te.Date,@WeekStart), 101)) as  {nameof(JobSummaryReportDTO.PeriodStart)}, "
 + $"	max(Convert(varchar(10),isnull( te.Date,@WeekEnd),101)) as {nameof(JobSummaryReportDTO.PeriodEnd)},    "
 + $"	e.First + ', ' + e.Last  as  {nameof(JobEmployees.EmployeeName)}, "
-+ $"	c.clientcode + '-' + j.JobCode  as  {nameof(JobSummaryReportDTO.JobCode)}, "
++ $"	j.JobCode  as  {nameof(JobSummaryReportDTO.JobCode)}, "
 + $"	j.JobName as  {nameof(JobSummaryReportDTO.JobName)},"
 + $"	c.ClientName as  {nameof(JobSummaryReportDTO.ClientName)}, "
 + $"    s.SiteName as  {nameof(JobSummaryReportDTO.SiteName)}, "
@@ -69,8 +69,8 @@ where
 	(@JobId is null Or te.JobId = @JobId) and
 	te.Date >= @WeekStart and 
     te.Date <= @WeekEnd and 
-    ISNULL(e.[UserName],'') != 'admin@company.com'
-   group by tc.Name,s.SiteName, c.clientcode + '-' + j.JobCode, e.First + ', ' + e.Last , c.clientcode + j.JobCode  , j.JobName, c.ClientName , jt.ShortName, j.JobId
+    ISNULL(e.[UserName],'') != 'admin@company.com' 
+ group by tc.Name,s.SiteName, j.JobCode, e.First + ', ' + e.Last , j.JobCode  , j.JobName, c.ClientName , jt.ShortName, j.JobId
 	";
 
 

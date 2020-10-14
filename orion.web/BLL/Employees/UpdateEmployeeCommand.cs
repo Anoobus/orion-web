@@ -42,6 +42,16 @@ namespace orion.web.Employees
             {
                 var existingRoles = await userManager.GetRolesAsync(userToUpdate);
                 var hasDifferentRolesThenDesired = existingRoles == null || !existingRoles.Any() || existingRoles.Any(x => x != employee.SelectedRole);
+
+                var hasNewEmail = !string.IsNullOrWhiteSpace(employee.NewEmail) && employee.Email != employee.NewEmail;
+                var updatedEmail = hasNewEmail ? employee.NewEmail : null;
+                if(hasNewEmail)
+                {
+                    userToUpdate.Email = employee.NewEmail;
+                    userToUpdate.UserName = employee.NewEmail;
+                    await userManager.UpdateAsync(userToUpdate);
+                }
+
                 if(hasDifferentRolesThenDesired)
                 {
                     var res1 = await userManager.RemoveFromRolesAsync(userToUpdate, existingRoles);
@@ -56,7 +66,7 @@ namespace orion.web.Employees
                             allCommandErrors.AddRange(res2.Errors.Select(err => $"{err.Code}-{err.Description}"));
                             if(res2.Succeeded)
                             {
-                                await SaveLocalEmployeeInfo(employee);
+                                await SaveLocalEmployeeInfo(employee, updatedEmail);
                             }
                         }
                         else
@@ -65,28 +75,28 @@ namespace orion.web.Employees
                             allCommandErrors.AddRange(res2.Errors.Select(err => $"{err.Code}-{err.Description}"));
                             if(res2.Succeeded)
                             {
-                                await SaveLocalEmployeeInfo(employee);
+                                await SaveLocalEmployeeInfo(employee, updatedEmail);
                             }
                         }
                     }
                 }
                 else
                 {
-                    await SaveLocalEmployeeInfo(employee);
+                    await SaveLocalEmployeeInfo(employee, updatedEmail);
                 }
             }
 
             return new CommandResult(allCommandErrors.Any(), allCommandErrors.ToArray());
         }
 
-        private async Task SaveLocalEmployeeInfo(EditEmployeeViewModel employee)
+        private async Task SaveLocalEmployeeInfo(EditEmployeeViewModel employee, string updatedEmail)
         {
             var existingEmp = await employeeService.GetSingleEmployeeAsync(employee.Email);
             existingEmp.Role = employee.SelectedRole;
             existingEmp.First = employee.FirstName;
             existingEmp.Last = employee.LastName;
             existingEmp.IsExempt = employee.IsExempt;
-            employeeService.Save(existingEmp);
+            employeeService.Save(existingEmp, updatedEmail);
         }
     }
 }

@@ -37,7 +37,6 @@ namespace orion.web.Employees
             }
 
             var result = await userManager.CreateAsync(user, employee.Password);
-
             if (result.Succeeded)
             {
                 var employeesJobs = employee.SelectedJobs == null ? new List<int>() : employee.SelectedJobs.Select(x => int.Parse(x)).ToList();

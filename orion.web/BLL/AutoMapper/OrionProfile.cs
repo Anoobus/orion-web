@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using orion.web.BLL.Jobs;
 using orion.web.Clients;
+using orion.web.Employees;
 using orion.web.Jobs;
 using orion.web.UI.Models;
 
@@ -31,7 +32,12 @@ namespace orion.web.BLL.AutoMapper
                 .ForMember(x => x.ProjectManager, opt => opt.Ignore())
                 .ForMember(x => x.Site, opt => opt.Ignore());
             CreateMap<DataAccess.EF.Job, JobDTO>()
+                .ForMember(x => x.ProjectManagerEmployeeId, opt => opt.MapFrom(z => z.EmployeeId))
                 .ForMember(x => x.FullJobCodeWithName, opt => opt.Ignore());
+
+            CreateMap<EmployeeDTO, ProjectManagerModel>()
+                .ForMember(x => x.EmployeeId, opt => opt.MapFrom(x => x.EmployeeId))
+                .ForMember(x => x.EmployeeName, opt => opt.MapFrom(x => $"{x.Last}, {x.First}"));
         }
     }
 }

@@ -15,7 +15,7 @@ namespace orion.web.Employees
         Task<EmployeeDTO> GetSingleEmployeeAsync(string employeeName);
         Task<EmployeeDTO> GetSingleEmployeeAsync(int employeeId);
         Task<IEnumerable<EmployeeDTO>> GetAllEmployees();
-        void Save(EmployeeDTO employee);
+        void Save(EmployeeDTO employee, string updatedEmail = null);
     }
     public class EmployeeRepository : IEmployeeRepository, IAutoRegisterAsSingleton
     {
@@ -84,7 +84,7 @@ namespace orion.web.Employees
             };
         }
 
-        public void Save(EmployeeDTO employee)
+        public void Save(EmployeeDTO employee, string updatedEmail = null)
         {
             using(var db = _contextFactory.CreateDb())
             {
@@ -114,6 +114,8 @@ namespace orion.web.Employees
                 match.First = employee.First;
                 match.Last = employee.Last;
                 match.IsExempt = employee.IsExempt;
+                if(!string.IsNullOrWhiteSpace(updatedEmail))
+                    match.UserName = updatedEmail;
 
                 db.SaveChanges();
             }

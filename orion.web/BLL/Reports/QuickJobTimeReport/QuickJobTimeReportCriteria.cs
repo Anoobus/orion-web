@@ -2,6 +2,7 @@
 using orion.web.Reports.Common;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -14,5 +15,7 @@ namespace orion.web.Reports.QuickJobTimeReport
         public ReportingPeriod PeriodSettings { get; set; }
         public IEnumerable<JobDTO> AvailableJobs { get; set; }
         public string SelectedJobId { get; set; }
+        [Display(Name = "Show All Employees Time For This Job (Not Just Your Time)")]
+        public bool ShowAllEmployeesForJob { get; set; }
     }
 }

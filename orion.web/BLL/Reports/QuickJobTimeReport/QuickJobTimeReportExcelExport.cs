@@ -130,12 +130,22 @@ namespace orion.web.Reports
             totalRow.CreateCell(4);
             totalRow.CreateCell(5);
             totalRow.CreateCell(6);
-            foreach(var totalCell in totalRow.Cells)
+            if(employees.Any())
             {
-                //SUM(B6,B4)
-                var exemptCell = $"{columns[totalCell.ColumnIndex]}{startRow + 2}";
-                var nonExemptCell = $"{columns[totalCell.ColumnIndex]}{startRow + newRows}";
-                totalCell.SetCellFormula($"SUM({exemptCell},{nonExemptCell})");
+                foreach(var totalCell in totalRow.Cells)
+                {
+                    //SUM(B6,B4)
+                    var firstEmployeeRowSumStartCell = $"{columns[totalCell.ColumnIndex]}{startRow + 2}";
+                    var lastEmployeeRowSumEndCell = $"{columns[totalCell.ColumnIndex]}{startRow + newRows}";
+                    if(employees.Count() > 1)
+                    {
+                        totalCell.SetCellFormula($"SUM({firstEmployeeRowSumStartCell},{lastEmployeeRowSumEndCell})");
+                    }
+                    else
+                    {
+                        totalCell.SetCellFormula($"SUM({firstEmployeeRowSumStartCell})");
+                    }
+                }
             }
             return newRows;
         }

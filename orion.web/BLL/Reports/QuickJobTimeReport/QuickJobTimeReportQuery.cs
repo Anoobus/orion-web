@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
+using orion.web.Clients;
 using orion.web.Common;
+using orion.web.Jobs;
 using orion.web.Reports.QuickJobTimeReport;
 using orion.web.Util.IoC;
 using System;
@@ -20,16 +22,28 @@ namespace orion.web.Reports
     public class QuickJobTimeReportQuery : IQuickJobTimeReportQuery, IAutoRegisterAsSingleton
     {
         private readonly IConfiguration configuration;
+        private readonly ISessionAdapter _sessionAdapter;
+        private readonly IJobsRepository _jobsRepository;
+        private readonly ISitesRepository _sitesRepository;
+        private readonly IClientsRepository _clientsRepository;
 
-        public QuickJobTimeReportQuery(IConfiguration configuration)
+        public QuickJobTimeReportQuery(IConfiguration configuration, ISessionAdapter sessionAdapter, IJobsRepository jobsRepository, ISitesRepository sitesRepository, IClientsRepository clientsRepository)
         {
             this.configuration = configuration;
+            _sessionAdapter = sessionAdapter;
+            _jobsRepository = jobsRepository;
+            _sitesRepository = sitesRepository;
+            _clientsRepository = clientsRepository;
         }
         public async Task<ReportDTO<QuickJobTimeReportDTO>> RunAsync(QuickJobTimeReportCriteria criteria)
         {
             DateTime start = criteria.PeriodSettings.Start;
             DateTime end = criteria.PeriodSettings.End;
             int jobId = int.Parse(criteria.SelectedJobId);
+
+            int? limitToEmployeeId = await _sessionAdapter.EmployeeIdAsync();
+            if(criteria.ShowAllEmployeesForJob)
+                limitToEmployeeId = null;
 
             using(var conn = new SqlConnection(configuration.GetConnectionString("SiteConnection")))
             using(var cmd = conn.CreateCommand())
@@ -44,7 +58,7 @@ Select " +
  $"	min(Convert(varchar(10),Isnull(te.Date,@WeekStart), 101)) as  {nameof(QuickJobTimeReportDTO.PeriodStart)}, "
 + $"	max(Convert(varchar(10),isnull( te.Date,@WeekEnd),101)) as {nameof(QuickJobTimeReportDTO.PeriodEnd)},    "
 + $"	COALESCE(e.Last,'') + ', ' + COALESCE(e.First,'')  as  {nameof(QuickJobEmployees.EmployeeName)}, "
-+ $"	c.clientcode + '-' + j.JobCode  as  {nameof(QuickJobTimeReportDTO.JobCode)}, "
++ $"	j.JobCode  as  {nameof(QuickJobTimeReportDTO.JobCode)}, "
 + $"	j.JobName as  {nameof(QuickJobTimeReportDTO.JobName)},"
 + $"	c.ClientName as  {nameof(QuickJobTimeReportDTO.ClientName)}, "
 + $"    s.SiteName as  {nameof(QuickJobTimeReportDTO.SiteName)}, "
@@ -73,11 +87,11 @@ from
 where 
 	(@JobId is null Or te.JobId = @JobId) and
 	te.Date >= @WeekStart and te.Date <= @WeekEnd and
-    ISNULL(e.[UserName],'') != 'admin@company.com'
-   group by tc.Name,s.SiteName, 
-c.clientcode + '-' + j.JobCode, 
+    ISNULL(e.[UserName],'') != 'admin@company.com' "
++ (limitToEmployeeId.HasValue ? $" and te.EmployeeId = { limitToEmployeeId.Value}" : string.Empty)
++ @"  group by tc.Name,s.SiteName, 
+j.JobCode, 
 COALESCE(e.Last,'') + ', ' + COALESCE(e.First,'') , 
-c.clientcode + j.JobCode  , 
 j.JobName, c.ClientName , 
 jt.LegacyCode + ' - ' + jt.[Name], 
 j.JobId
@@ -98,19 +112,17 @@ j.JobId
                     PeriodStart = start
 
                 };
-                var firstRowSettingsRetrieved = false;
+
                 var employeeRows = new List<QuickJobEmployees>();
+
+                var job = (await _jobsRepository.GetAsync()).SingleOrDefault(x => x.JobId == jobId);
+                rpt.JobCode = job.JobCode;
+                rpt.JobName = job.JobName;
+                rpt.SiteName = (await _sitesRepository.GetAll()).SingleOrDefault(x => x.SiteID == job.SiteId)?.SiteName;
+                rpt.ClientName = (await _clientsRepository.GetClient(job.ClientId))?.ClientName;
+
                 while (await rdr.ReadAsync())
                 {
-
-                    if(!firstRowSettingsRetrieved)
-                    {
-                        rpt.JobCode = rdr.GetSqlString(map[nameof(QuickJobTimeReportDTO.JobCode)]).Value;
-                        rpt.JobName = rdr.GetSqlString(map[nameof(QuickJobTimeReportDTO.JobName)]).Value;
-                        rpt.SiteName = rdr.GetSqlString(map[nameof(QuickJobTimeReportDTO.SiteName)]).Value;
-                        rpt.ClientName = rdr.GetSqlString(map[nameof(QuickJobTimeReportDTO.ClientName)]).Value;
-                        firstRowSettingsRetrieved = true;
-                    }
                     if(rdr.HasRows)
                     {
                         employeeRows.Add(new QuickJobEmployees()
@@ -134,6 +146,7 @@ j.JobId
                 {
                     { "Generated", $"{DateTimeWithZone.EasternStandardTime.ToShortDateString()} at {DateTimeWithZone.EasternStandardTime.ToShortTimeString()}"},
                     { "Company", $"Orion Engineering Co., Inc." },
+                    { "Showing Time From", criteria.ShowAllEmployeesForJob ? "All Employees" : "Self"  },
                 }
                 };
 

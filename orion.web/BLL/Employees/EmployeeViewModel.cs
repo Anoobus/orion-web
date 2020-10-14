@@ -36,7 +36,7 @@ namespace orion.web.Employees
         [Required]
         public string SelectedRole { get; set; }
         public IEnumerable<string> AvailableRoles { get; set; }
-
+        public string NewEmail { get; set; }
         public string Email { get; set; }
         [Display(Name="First Name")]
         public string FirstName { get; set; }
@@ -46,8 +46,8 @@ namespace orion.web.Employees
         [DataType(DataType.Password)]
         public string Password { get; set; }
         [DataType(DataType.Password)]
-        public string PasswordConfirm { get; set; }   
-        
+        public string PasswordConfirm { get; set; }
+
         public bool IsExempt { get; set; }
     }
 
@@ -56,5 +56,5 @@ namespace orion.web.Employees
         public EmployeeDTO HeaderHelp { get; set; }
         public List<EmployeeDTO> Employees { get; set; }
     }
-   
+
 }
