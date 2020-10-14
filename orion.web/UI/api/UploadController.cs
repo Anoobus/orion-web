@@ -161,9 +161,9 @@ namespace orion.web.UI.api
                                                                    onNewSiteCreated(site);
                                                                    return site;
                                                                },
-                                                               field: rec.Trim());
+                                                               field: rec);
 
-                sitesBySiteName.TryAdd(matchedSite.SiteName, matchedSite.SiteID);
+                sitesBySiteName.TryAdd(matchedSite.SiteName.Trim(), matchedSite.SiteID);
             }
             return sitesBySiteName;
         }
@@ -185,9 +185,9 @@ namespace orion.web.UI.api
                                                                      onNewClientCreated(client);
                                                                      return client;
                                                                  },
-                                                                 field: rec.Trim());
+                                                                 field: rec);
 
-                clientsByClientName.TryAdd(matchedClient.ClientName, matchedClient.ClientId);
+                clientsByClientName.TryAdd(matchedClient.ClientName.Trim(), matchedClient.ClientId);
             }
             return clientsByClientName;
         }
