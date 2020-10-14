@@ -26,7 +26,7 @@ Expand-Archive -LiteralPath "..\orion-web-master.zip" -DestinationPath "..\$date
 del  "..\orion-web-master.zip"
 
 Write-Host copy Prod AppSettings
-Move-Item -Path "app\appsettings.Production.json" -Destination "..\$dateId"
+Coppy-Item -Path "app\appsettings.Production.json" -Destination "..\$dateId"
 
 Write-Host set working dir to "new folder"
 cd "..\$dateId"

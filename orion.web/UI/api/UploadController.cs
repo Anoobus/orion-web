@@ -61,10 +61,10 @@ namespace orion.web.UI.api
             try
             {
                 var allSites = await _sitesRepository.GetAll();
-                var sitesBySiteName = await BulkSaveSites(allSites, jobs, newSite => res.NewSites.Add(newSite.SiteName, newSite.SiteID));
+                var sitesBySiteName = await BulkSaveSites(allSites, jobs, newSite => res.NewSites.TryAdd(newSite.SiteName, newSite.SiteID));
 
                 var allClients = await _clientsRepository.GetAllClients();
-                var clientsByClientName = await BulkSaveClients(allClients, jobs, newClient => res.NewClients.Add(newClient.ClientName, newClient.ClientId));
+                var clientsByClientName = await BulkSaveClients(allClients, jobs, newClient => res.NewClients.TryAdd(newClient.ClientName, newClient.ClientId));
 
                 var allJobs = await _jobsRepository.GetAsync();
 
@@ -147,10 +147,10 @@ namespace orion.web.UI.api
         {
             var comparer = StringComparer.InvariantCultureIgnoreCase;
             var sitesBySiteName = new Dictionary<string, int >(comparer);
-            foreach(var rec in recs.Select(z => z.SiteName).Distinct())
+            foreach(var rec in recs.Select(z => z.SiteName.Trim()).Distinct())
             {
                 var matchedSite = await SaveForMatchingField(allSites,
-                                                               matchCriteria: (site, field) => site.SiteName.Equals(field, StringComparison.InvariantCultureIgnoreCase),
+                                                               matchCriteria: (site, field) => site.SiteName.Trim().Equals(field, StringComparison.InvariantCultureIgnoreCase),
                                                                factory: async (field) =>
                                                                {
                                                                    var site = new SiteDTO()
@@ -172,18 +172,18 @@ namespace orion.web.UI.api
         {
             var comparer = StringComparer.InvariantCultureIgnoreCase;
             var clientsByClientName = new Dictionary<string, int>(comparer);
-            foreach(var rec in recs.Select(z => z.ClientName).Distinct())
+            foreach(var rec in recs.Select(z => z.ClientName.Trim()).Distinct())
             {
                 var matchedClient = await SaveForMatchingField(allClients,
-                                                                 matchCriteria: (client, field) => client.ClientName.Equals(field, StringComparison.InvariantCultureIgnoreCase),
+                                                                 matchCriteria: (client, field) => client.ClientName.Trim().Equals(field, StringComparison.InvariantCultureIgnoreCase),
                                                                  factory: async (field) =>
                                                                  {
-                                                                     var temp = await _clientsRepository.Save(new ClientDTO()
+                                                                     var client = await _clientsRepository.Save(new ClientDTO()
                                                                      {
                                                                          ClientName = field
                                                                      });
-                                                                     onNewClientCreated(temp);
-                                                                     return temp;
+                                                                     onNewClientCreated(client);
+                                                                     return client;
                                                                  },
                                                                  field: rec.Trim());
 
