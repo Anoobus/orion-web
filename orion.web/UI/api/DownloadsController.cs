@@ -37,9 +37,9 @@ namespace orion.web.UI.api
             {
                 return BadRequest(new
                 {
-                    Error = "Both password and zipFilename are required!"
+                    Error = "Both password and zipFilename are required!",
                     Supplied = dl
-                });
+                }); ;
             }
 
             try
