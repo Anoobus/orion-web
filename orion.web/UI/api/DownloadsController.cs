@@ -123,7 +123,7 @@ namespace orion.web.UI.api
                 {
                     zip.AddFile(file, string.Empty);
                 }
-                zip.Save(zipFullFileName, );
+                zip.Save(zipFullFileName);
             }
         }
     }
