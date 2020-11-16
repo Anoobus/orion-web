@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using orion.web.BLL.JobTasks;
 using orion.web.Employees;
 using orion.web.Notifications;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -36,13 +38,24 @@ namespace orion.web.JobsTasks
         {
             var cats = await taskService.GetTaskCategoriesAsync();
             var usageStats = await taskService.GetUsageStatusAsync();
+            var reportingTypes = Enum.GetValues(typeof(TaskReportingType))
+                                     .OfType<TaskReportingType>()
+                                     .Select(x => new TaskReportingTypeDto()
+                                     {
+                                         Enum = x,
+                                         Id = (int)x,
+                                     }).ToList();
+
+
             var vm = new TaskViewModel()
             {
                 AllTaskCategories = cats,
                 AllUsageStatusOptions = usageStats.Where(x => x.Enum != JobTasks.UsageStatus.Unkown),
+                AllTaskReportingTypes = reportingTypes,
                 IsInCreateModel = existingTask == null,
                 SelectedCategory = existingTask?.Category?.Id ?? 0,
                 SelectedUsageStatus = existingTask?.UsageStatus?.Id ?? 0,
+                SelectedTaskReportingType = existingTask?.ReportingType?.Id ?? 0,
                 Task = existingTask ?? new TaskDTO()
             };
             return vm;
@@ -70,17 +83,19 @@ namespace orion.web.JobsTasks
             var vm = await GetViewModel();
             var category = vm.AllTaskCategories.Single(x => x.Id == submittedTask.SelectedCategory);
             var usageStatus = vm.AllUsageStatusOptions.Single(x => x.Id == submittedTask.SelectedUsageStatus);
+            var reportingType = vm.AllTaskReportingTypes.Single(x => x.Id == submittedTask.SelectedTaskReportingType);
 
-            
             var allTasks = (await taskService.GetTasks()).ToList();
             var isBadCreateLegacyCode = submittedTask.IsInCreateModel
                 && allTasks.Any(x => x.LegacyCode == submittedTask.Task.LegacyCode);
             var isBadUpdateLegacyCode = !submittedTask.IsInCreateModel
                 && allTasks.Any(x => x.LegacyCode == submittedTask.Task.LegacyCode && x.TaskId != submittedTask.Task.TaskId);
+
             if(isBadCreateLegacyCode || isBadUpdateLegacyCode)
             {
                 vm.SelectedCategory = submittedTask.SelectedCategory;
                 vm.SelectedUsageStatus = submittedTask.SelectedUsageStatus;
+                vm.SelectedTaskReportingType = submittedTask.SelectedTaskReportingType;
                 vm.Task.LegacyCode = submittedTask.Task.LegacyCode;
                 vm.Task.Name = submittedTask.Task.Name;
                 ModelState.Clear();
@@ -96,18 +111,12 @@ namespace orion.web.JobsTasks
                     Category = category,
                     LegacyCode = submittedTask.Task.LegacyCode,
                     UsageStatus = usageStatus,
-                    TaskId = submittedTask.Task.TaskId
+                    TaskId = submittedTask.Task.TaskId,
+                    ReportingType = reportingType
                 });
                 NotificationsController.AddNotification(User.SafeUserName(), $"{submittedTask.Task.Name} has been saved");
                 return RedirectToAction("List", "Task");
             }
-
-
-
-
-
         }
-
-
     }
 }

@@ -39,27 +39,12 @@ namespace orion.web.Reports
 
 
                 cmd.CommandText = @"
-declare @vacationRowId as int
-select @vacationRowId = JobTaskId from dbo.JobTasks where [LegacyCode] = '87'
 
-declare @sickRowId as int
-select @sickRowId = JobTaskId from dbo.JobTasks where [LegacyCode] = '85'
-
-
-declare @personalTime as int
-select @personalTime = JobTaskId from dbo.JobTasks where [LegacyCode] = '83'
-
-declare @holidayTime as int
-select @holidayTime = JobTaskId from dbo.JobTasks where [LegacyCode] = '88'
-
-declare @excusedWithPay as int
-select @excusedWithPay = JobTaskId from dbo.JobTasks where [LegacyCode] = '86'
-
-declare @excusedWithoutPay as int
-select @excusedWithoutPay = JobTaskId from dbo.JobTasks where [LegacyCode] = '89'
-
-declare @ptoPay as int
-select @ptoPay = JobTaskId from dbo.JobTasks where [LegacyCode] = '93'
+declare @regularReportingType as int = 0
+declare @PtoReportingType as int = 1
+declare @HolidayReportingType as int = 2
+declare @ExcusedWithPayReportingType as int = 3
+declare @ExcusedWithOutPayReportingType as int = 4
 
 Select "
 + $"	e.{nameof(PayPeriodEmployees.EmployeeId)}, "
@@ -77,21 +62,23 @@ Select "
 [dbo].Employees e
 left outer join [dbo].TimeEntries te
 	on e.EmployeeId = te.EmployeeId
+left outer join [dbo].JobTasks jt
+	on jt.JobTaskId = te.TaskId
 left outer join dbo.TimeEntries regular
 	on te.TimeEntryId = regular.TimeEntryId
-	and te.TaskId not in (@ptoPay, @holidayTime, @excusedWithoutPay, @excusedWithPay)
+	and jt.[ReportingClassificationId] = @regularReportingType
 left outer join dbo.TimeEntries pto
 	on te.TimeEntryId = pto.TimeEntryId
-	and pto.TaskId = @ptoPay
+	and jt.[ReportingClassificationId] = @PtoReportingType
 left outer join dbo.TimeEntries holiday
 	on te.TimeEntryId = holiday.TimeEntryId
-	and holiday.TaskId = @holidayTime
+	and jt.[ReportingClassificationId] = @HolidayReportingType
 left outer join dbo.TimeEntries excusedNoPay
 	on te.TimeEntryId = excusedNoPay.TimeEntryId
-	and excusedNoPay.TaskId = @excusedWithoutPay
+	and jt.[ReportingClassificationId] = @ExcusedWithOutPayReportingType
 left outer join dbo.TimeEntries excusedWithPay
 	on te.TimeEntryId = excusedWithPay.TimeEntryId
-	and excusedWithPay.TaskId = @excusedWithPay
+	and jt.[ReportingClassificationId] = @ExcusedWithOutPayReportingType
 where 
     (te.Date >= @payPeriodStart and te.Date <= @payPeriodEnd)
     and ISNULL(e.[UserName],'') != 'admin@company.com'

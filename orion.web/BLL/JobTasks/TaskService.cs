@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using orion.web.BLL.JobTasks;
 using orion.web.DataAccess;
 using orion.web.DataAccess.EF;
 using orion.web.JobTasks;
@@ -79,6 +80,11 @@ namespace orion.web.JobsTasks
                         Name = x.UsageStatus.Name
                     },
                     TaskId = x.JobTaskId,
+                    ReportingType = new TaskReportingTypeDto()
+                    {
+                        Enum = (TaskReportingType)x.ReportingClassificationId,
+                        Id = x.ReportingClassificationId,
+                    }
                 }).ToListAsync())
                 .OrderBy(x => x.Category.Name)
                 .ThenBy(x => x.LegacyCode)
@@ -114,6 +120,7 @@ namespace orion.web.JobsTasks
                 match.Name = task.Name;
                 match.TaskCategoryId = task.Category.Id;
                 match.UsageStatusId = task.UsageStatus.Id;
+                match.ReportingClassificationId = task.ReportingType.Id;
                 db.SaveChanges();
             }
         }

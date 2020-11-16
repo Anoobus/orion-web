@@ -9,6 +9,7 @@ namespace orion.web.DataAccess.EF
         public string Description { get; set; }
         public int TaskCategoryId { get; set; }
         public int UsageStatusId { get; set; }
+        public int ReportingClassificationId { get; set; }
         public virtual TaskCategory TaskCategory { get; set; }
         public virtual UsageStatus UsageStatus { get; set; }
     }
