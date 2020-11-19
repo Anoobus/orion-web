@@ -75,7 +75,7 @@ left outer join dbo.TimeEntries holiday
 	and jt.[ReportingClassificationId] = @HolidayReportingType
 left outer join dbo.TimeEntries excusedNoPay
 	on te.TimeEntryId = excusedNoPay.TimeEntryId
-	and jt.[ReportingClassificationId] = @ExcusedWithOutPayReportingType
+	and jt.[ReportingClassificationId] = @ExcusedWithPayReportingType
 left outer join dbo.TimeEntries excusedWithPay
 	on te.TimeEntryId = excusedWithPay.TimeEntryId
 	and jt.[ReportingClassificationId] = @ExcusedWithOutPayReportingType
