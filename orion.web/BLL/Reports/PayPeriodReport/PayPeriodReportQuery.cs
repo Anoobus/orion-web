@@ -75,10 +75,10 @@ left outer join dbo.TimeEntries holiday
 	and jt.[ReportingClassificationId] = @HolidayReportingType
 left outer join dbo.TimeEntries excusedNoPay
 	on te.TimeEntryId = excusedNoPay.TimeEntryId
-	and jt.[ReportingClassificationId] = @ExcusedWithPayReportingType
+	and jt.[ReportingClassificationId] = @ExcusedWithOutPayReportingType
 left outer join dbo.TimeEntries excusedWithPay
 	on te.TimeEntryId = excusedWithPay.TimeEntryId
-	and jt.[ReportingClassificationId] = @ExcusedWithOutPayReportingType
+	and jt.[ReportingClassificationId] = @ExcusedWithPayReportingType
 where 
     (te.Date >= @payPeriodStart and te.Date <= @payPeriodEnd)
     and ISNULL(e.[UserName],'') != 'admin@company.com'
