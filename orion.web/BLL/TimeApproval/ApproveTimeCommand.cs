@@ -121,7 +121,7 @@ namespace orion.web.TimeApproval
                     var recipient = approver.UserName;
 
                     string finalEmailText = await CreateEmailBody( week, emp,
-                        greetingName: emp.First,
+                        greetingName: approver.First,
                         action: $"submitted for approval (for the week {week.WeekStart.ToShortDateString()}-{week.WeekEnd.ToShortDateString()})",
                         actionBy: $"{emp.First} {emp.Last}", followup: $"You will need to review the timesheet as you are marked as a project manager a job in this week.");
 
