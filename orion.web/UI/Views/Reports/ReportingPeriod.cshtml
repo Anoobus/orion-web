@@ -3,7 +3,16 @@
 
 <div class="form-group">
     <label asp-for="Start" class="control-label"></label>
-    <input asp-for="Start" type="date" class="form-control" />
+    <div class="form-row">
+        <div class="col">
+            <input asp-for="Start" type="date" class="form-control"/>
+        </div>
+        <div class="col">
+            <input type="button" id="jan-1-btn" value="Set Start Date to Jan 1st" class="btn btn-default" />
+        </div>
+
+    </div>
+
     <span asp-validation-for="Start" class="text-danger"></span>
 </div>
 

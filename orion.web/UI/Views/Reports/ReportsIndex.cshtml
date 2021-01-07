@@ -9,8 +9,8 @@
 
             @foreach(var rpt in Model.AvailableReports())
             {
-                <li >
-                    <a href="#" class="rpt-link btn btn-default" rpt-name="@rpt" >   @rpt </a>
+                <li>
+                    <a href="#" class="rpt-link btn btn-default" rpt-name="@rpt">   @rpt </a>
                 </li>
             }
         </ul>
@@ -22,7 +22,7 @@
             <div class="panel panel-default report-panel" id="pay-period-report" rpt-section="@Model.PayPeriodReportCriteria.ReportName" style="display:none">
                 <div class="panel-heading">@Model.PayPeriodReportCriteria.ReportName </div>
                 <div class="panel-body">
-                    @Html.EditorFor(m => Model.PayPeriodReportCriteria.Criteria, "~/UI/Views/Reports/PayPeriodReportCriteria.cshtml" )
+                    @Html.EditorFor(m => Model.PayPeriodReportCriteria.Criteria, "~/UI/Views/Reports/PayPeriodReportCriteria.cshtml")
                 </div>
             </div>
         }
@@ -62,9 +62,13 @@
             });
 
             $("div[rpt-section]:first").show();
+
+            $("#jan-1-btn").click(function (e) {
+                let date = new Date();
+                let startInput = $('#QuickJobTimeReportCriteria_Criteria_PeriodSettings_Start')[0];
+                startInput.value = date.getFullYear().toString() + '-01-01';
+            });
         });
-
-
 
     </script>
 }
