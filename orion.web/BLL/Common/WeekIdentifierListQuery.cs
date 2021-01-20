@@ -1,4 +1,5 @@
-﻿using orion.web.TimeEntries;
+﻿using orion.web.Employees;
+using orion.web.TimeEntries;
 using orion.web.Util.IoC;
 using System;
 using System.Collections.Generic;
@@ -12,14 +13,14 @@ namespace orion.web.Common
     }
     public class WeekIdentifierListQuery : IWeekIdentifierListQuery, IAutoRegisterAsSingleton
     {
-        //private readonly IWeekService weekService;
         private readonly ITimeSummaryService timeSummaryService;
+        private readonly IEmployeeRepository _employeeRepository;
 
-        public WeekIdentifierListQuery(//IWeekService weekService,
-            ITimeSummaryService timeSummaryService)
+        public WeekIdentifierListQuery(ITimeSummaryService timeSummaryService,
+            IEmployeeRepository employeeRepository)
         {
-            //this.weekService = weekService;
             this.timeSummaryService = timeSummaryService;
+            _employeeRepository = employeeRepository;
         }
         public async Task<WeekListViewModel> GetWeeksAsync(int entriesToShow, int employeeId, DateTime? startDate = null)
         {
@@ -40,14 +41,21 @@ namespace orion.web.Common
                     ApprovalStatus = thisWeekTimeSummary.ApprovalStatus,
                     TotalOverTime = thisWeekTimeSummary.OvertimeHours,
                     TotalRegular = thisWeekTimeSummary.Hours,
-                     IsCurrentWeek = currWeek == temp.WeekId.Value
+                    IsCurrentWeek = currWeek == temp.WeekId.Value
                 });
                 thisWeek = thisWeek.Previous();// weekService.Previous(thisWeek.Year, thisWeek.WeekId);
+            }
+            var user = await _employeeRepository.GetSingleEmployeeAsync(employeeId);
+            var name = string.Empty;
+            if(user != null)
+            {
+                name = $"{user.First} {user.Last}";
             }
             return new WeekListViewModel()
             {
                 Weeks = weeks,
                 EmployeeId = employeeId,
+                EmployeeDisplayName = name,
                 WeeksToShow = entriesToShow,
                 StartWithDate = startDate ?? DateTime.Now
             };

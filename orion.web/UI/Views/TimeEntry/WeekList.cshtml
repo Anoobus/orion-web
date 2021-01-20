@@ -2,12 +2,12 @@
 @using orion.web.Employees
 
 <ol class="breadcrumb">
-    <li class="breadcrumb-item active"> Weekly Listing</li>
+    <li class="breadcrumb-item active"> @Model.EmployeeDisplayName's Weekly Listing</li>
 </ol>
 <div class="row">
     <div class="col-md-3">
         <div class="form-group">
-            <a class="btn btn-success" asp-action="Current">Edit This Weeks Time</a>
+            <a class="btn btn-success" asp-action="Current" asp-route-employeeId="@Model.EmployeeId" >Edit This Weeks Time</a>
         </div>
         @if(User.IsInRole(UserRoleName.Admin))
         {

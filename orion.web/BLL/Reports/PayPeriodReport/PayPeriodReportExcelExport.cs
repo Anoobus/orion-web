@@ -139,7 +139,7 @@ namespace orion.web.Reports
                 row.CreateCell(5).SetCellValue((double)employeeRow.Holiday);
                 row.CreateCell(6).SetCellValue((double)employeeRow.ExcusedWithPay);
                 row.CreateCell(7).SetCellValue((double)employeeRow.ExcusedNoPay);
-                row.CreateCell(8).SetCellValue((double)employeeRow.Combined);               
+                row.CreateCell(8).SetCellValue((double)employeeRow.Combined);
             }
             PopulateSummaryRow(excelSheet, newRows, startingRow, "C");
         }
@@ -175,11 +175,11 @@ namespace orion.web.Reports
                 row.CreateCell(5).SetCellValue((double)employeeRow.Holiday);
                 row.CreateCell(6).SetCellValue((double)employeeRow.ExcusedWithPay);
                 row.CreateCell(7).SetCellValue((double)employeeRow.ExcusedNoPay);
-                row.CreateCell(8).SetCellValue((double)employeeRow.Combined);            
+                row.CreateCell(8).SetCellValue((double)employeeRow.Combined);
             }
             PopulateSummaryRow(excelSheet, newRows, EXEMPT_START, "D");
         }
 
-       
+
     }
 }

@@ -9,6 +9,7 @@ namespace orion.web.TimeEntries
     {
         public IEnumerable<DetailedWeekIdentifier> Weeks { get; set; }
         public int EmployeeId { get; set; }
+        public string EmployeeDisplayName { get; set; }
         public int WeeksToShow { get; set; }
         public DateTime StartWithDate { get; set; }
     }

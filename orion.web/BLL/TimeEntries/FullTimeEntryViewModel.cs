@@ -8,6 +8,7 @@ namespace orion.web.TimeEntries
         public List<TimeEntryViewModel> TimeEntryRow { get; set; }
         public NewJobTaskCombo NewEntry { get; set; }
         public int EmployeeId { get; set; }
+        public string EmployeeDisplayName { get; set; }
         public TimeApprovalStatus ApprovalStatus { get; set; }
         public string SelectedRowId { get; set; }
         public IEnumerable<Expense.ExpenseDTO> Expenses { get; set; }

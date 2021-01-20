@@ -52,6 +52,7 @@ namespace orion.web.TimeEntries
             _expenseService = expenseService;
         }
 
+
         public async Task<ActionResult> Index(int? weeksToShow, string startWithDate)
         {
             if(!DateTime.TryParse(startWithDate, out var startDate))
@@ -61,11 +62,35 @@ namespace orion.web.TimeEntries
             return View("WeekList", await weekIdentifierListQuery.GetWeeksAsync(weeksToShow ?? 5, await sessionAdapter.EmployeeIdAsync(), startDate));
         }
 
-
-        public async Task<ActionResult> Current()
+        [HttpGet]
+        [Route("TimeEntry/Employee/{employeeId}")]
+        public async Task<ActionResult> IndexForEmployee(int employeeId, int? weeksToShow, string startWithDate)
         {
+            if(!User.IsInRole(UserRoleName.Admin))
+            {
+                return RedirectToAction("Index", new { startWithDate, weeksToShow });
+            }
+
+            if(!DateTime.TryParse(startWithDate, out var startDate))
+            {
+                startDate = DateTime.Now;
+            }
+            return View("WeekList", await weekIdentifierListQuery.GetWeeksAsync(weeksToShow ?? 5, employeeId, startDate));
+        }
+
+
+        public async Task<ActionResult> Current(int? employeeId)
+        {
+            var emp = await sessionAdapter.EmployeeIdAsync();
+
+            if(User.IsInRole(UserRoleName.Admin) && employeeId.HasValue)
+            {
+                emp = employeeId.Value;
+            }
+
             var current = WeekDTO.CreateWithWeekContaining(DateTime.Now);
-            return RedirectToAction("Edit", new { weekId = current.WeekId.Value, employeeId = await sessionAdapter.EmployeeIdAsync() });
+
+            return RedirectToAction("Edit", new { weekId = current.WeekId.Value, employeeId = emp });
         }
 
 
@@ -73,6 +98,12 @@ namespace orion.web.TimeEntries
         [Route("Edit/Employee/{employeeId}/Week/{weekId:int=1}", Name = EDIT_ROUTE)]
         public async Task<ActionResult> Edit(int weekId, int employeeId)
         {
+            var currentUserId = await sessionAdapter.EmployeeIdAsync();
+            if(!User.IsInRole(UserRoleName.Admin) && employeeId != currentUserId)
+            {
+                return RedirectToAction("Edit", new { weekId, employeeId = currentUserId });
+            }
+
             var req = new WeekOfTimeEntriesRequest()
             {
                 EmployeeId = employeeId,
@@ -91,6 +122,12 @@ namespace orion.web.TimeEntries
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Save(int weekId, int employeeId, FullTimeEntryViewModel vm, string postType)
         {
+            var currentUserId = await sessionAdapter.EmployeeIdAsync();
+            if(!User.IsInRole(UserRoleName.Admin) && employeeId != currentUserId)
+            {
+                return RedirectToAction("Index", new { weekId });
+            }
+
             if(postType == "Save" || postType == "Add Task" || postType == "Submit")
             {
                 var res = await saveTimeEntriesCommand.SaveTimeEntriesAsync(employeeId, weekId, vm);

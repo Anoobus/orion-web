@@ -103,6 +103,7 @@ namespace orion.web.TimeEntries
             {
                 TimeEntryRow = entries,
                 EmployeeId = employeeForWeek.EmployeeId,
+                EmployeeDisplayName = $"{employeeForWeek.First} {employeeForWeek.Last}",
                 NewEntry = await GenerateEmptyJobTaskAsync(request.WeekId, request.EmployeeId),
                 Week = new WeekIdentifier()
                 {
