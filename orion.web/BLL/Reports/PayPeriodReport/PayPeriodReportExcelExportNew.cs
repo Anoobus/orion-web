@@ -42,7 +42,7 @@ namespace orion.web.Reports
 
         private static void WriteReportMetadata(ReportDTO<PayPeriodReportDTO> report, IXLWorksheet excelSheet, int exemptRows, int nonExemptRows)
         {
-            var target = GRAND_TOTAL_ROW + exemptRows + nonExemptRows;
+            var target = GRAND_TOTAL_ROW + exemptRows + nonExemptRows + 2;
             excelSheet.Row(target).InsertRowsBelow(report.RunSettings.Count);
             foreach(var item in report.RunSettings.Select((e, index) => (index, e)))
             {
@@ -56,8 +56,8 @@ namespace orion.web.Reports
             var columns = new string[] { "A", "B", "C", "D", "E", "F", "G", "H", "I" };
             for(int colIndex = 1; colIndex < columns.Length; colIndex++)
             {
-                var exemptCell = $"{columns[colIndex - 1]}{INITIAL_EXEMPT_TOTAL_ROW + exemptRows }";
-                var nonExemptCell = $"{columns[colIndex - 1]}{INITIAL_NON_EXEMPT_TOTAL_ROW + exemptRows + nonExemptRows }";
+                var exemptCell = $"{columns[colIndex]}{INITIAL_EXEMPT_TOTAL_ROW + exemptRows }";
+                var nonExemptCell = $"{columns[colIndex]}{INITIAL_NON_EXEMPT_TOTAL_ROW + exemptRows + nonExemptRows }";
                 excelSheet.Cell(GRAND_TOTAL_ROW + exemptRows + nonExemptRows, colIndex + 1).SetFormulaA1($"SUM({exemptCell},{nonExemptCell})");
             }
         }
