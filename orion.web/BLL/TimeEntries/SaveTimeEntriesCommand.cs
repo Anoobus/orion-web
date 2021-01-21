@@ -48,12 +48,8 @@ namespace orion.web.TimeEntries
                         await timeService.SaveAsync(id, employeeId, match);
                     }
                 }
-
             }
-            var time = await timeService.GetAsync(id, employeeId);
-            var totalOt = time.Sum(x => x.OvertimeHours);
-            var totalReg = time.Sum(x => x.Hours);
-            await timeApprovalService.UpdateTimeTotals(id, employeeId, totalOt, totalReg);
+
             return new CommandResult(true);
         }
 

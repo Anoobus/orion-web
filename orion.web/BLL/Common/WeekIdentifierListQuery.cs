@@ -31,7 +31,7 @@ namespace orion.web.Common
             while(entriesToShow-- > 0)
             {
                 var temp = thisWeek;
-                var thisWeekTimeSummary = await timeSummaryService.GetAsync(temp.Year, temp.WeekId.Value, employeeId);
+                var thisWeekTimeSummary = await timeSummaryService.GetAsync(temp.WeekId.Value, employeeId);
                 weeks.Add(new DetailedWeekIdentifier()
                 {
                     WeekEnd = thisWeek.WeekEnd,//weekService.GetWeekDate(temp.Year, temp.WeekId, WeekIdentifier.WEEK_END),

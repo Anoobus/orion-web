@@ -72,8 +72,8 @@ namespace orion.web.Common
                                         TimeApprovalStatus = TimeApprovalStatus.Unkown,
                                         WeekId = p.week.WeekId.Value,
                                         WeekStartDate = p.week.WeekStart,
-                                        TotalOverTimeHours = x == null ? 0 : x.TotalOverTimeHours,
-                                        TotalRegularHours = x == null ? 0 : x.TotalRegularHours,
+                                        TotalOverTimeHours = x == null ? 0.00m : x.TotalOverTimeHours,
+                                        TotalRegularHours = x == null ? 0.00m : x.TotalRegularHours,
                                         IsHidden = x == null ? false : x.IsHidden
                                     }).ToList();
 

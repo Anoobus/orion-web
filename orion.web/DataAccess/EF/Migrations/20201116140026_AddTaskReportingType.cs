@@ -11,6 +11,12 @@ namespace orion.web.DataAccess.EF.Migrations
                 table: "JobTasks",
                 nullable: false,
                 defaultValue: 0);
+
+            migrationBuilder.Sql(@"CREATE VIEW [dbo].[vEmployeeeWeeklySummary]
+                                    AS
+                                    SELECT EmployeeId, SUM(ISNULL(Hours, 0)) AS TotalRegularHours, SUM(ISNULL(OvertimeHours, 0)) AS TotalOverTimeHours, WeekId
+                                    FROM     dbo.TimeEntries
+                                    GROUP BY EmployeeId, WeekId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -18,6 +24,8 @@ namespace orion.web.DataAccess.EF.Migrations
             migrationBuilder.DropColumn(
                 name: "ReportingClassificationId",
                 table: "JobTasks");
+
+            migrationBuilder.Sql(@"DROP VIEW [dbo].[vEmployeeeWeeklySummary]");
         }
     }
 }

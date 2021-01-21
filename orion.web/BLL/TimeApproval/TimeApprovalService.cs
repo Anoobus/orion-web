@@ -16,7 +16,6 @@ namespace orion.web.TimeEntries
         Task Save(TimeApprovalDTO timeApprovalDTO);
         Task Hide(int weekId, int employeeId);
         Task<IEnumerable<TimeApprovalDTO>> GetByStatus(DateTime? beginDateInclusive = null, DateTime? endDateInclusive = null, params TimeApprovalStatus[] withTimeApprovalStatus);
-        Task UpdateTimeTotals(int weekId, int employeeId, decimal overtime, decimal regular);
     }
     public class TimeApprovalService : ITimeApprovalService, IAutoRegisterAsSingleton
     {
@@ -33,6 +32,7 @@ namespace orion.web.TimeEntries
                 var emp = await db.Employees.SingleAsync(x => x.EmployeeId == employeeId);
 
                 var match = await db.TimeSheetApprovals.SingleOrDefaultAsync(x => x.WeekId == weekId && x.EmployeeId == employeeId);
+                var hours = await db.WeeklyData.SingleOrDefaultAsync(x => x.EmployeeId == employeeId && x.WeekId == weekId);
                 if(match == null)
                 {
                     return new TimeApprovalDTO()
@@ -41,7 +41,9 @@ namespace orion.web.TimeEntries
                         EmployeeId = emp.EmployeeId,
                         WeekId = weekId,
                         TimeApprovalStatus = TimeApprovalStatus.Unkown,
-                        IsHidden = false
+                        IsHidden = false,
+                        TotalOverTimeHours = 0.00m,
+                        TotalRegularHours = 0.00m
                     };
                 }
                 else
@@ -57,8 +59,8 @@ namespace orion.web.TimeEntries
                         ResponseReason = match.ResponseReason,
                         TimeApprovalStatus = mapped,
                         WeekId = match.WeekId,
-                        TotalOverTimeHours = match.TotalOverTimeHours,
-                        TotalRegularHours = match.TotalRegularHours,
+                        TotalOverTimeHours = hours.TotalOverTimeHours,
+                        TotalRegularHours = hours.TotalRegularHours,
                         SubmittedDate = match.SubmittedDate,
                         IsHidden = match.IsHidden
                     };
@@ -70,6 +72,7 @@ namespace orion.web.TimeEntries
         {
             using(var db = _contextFactory.CreateDb())
             {
+
                 var statusAsString = withTimeApprovalStatus.Select(z => z.ToString()).ToArray();
                 var baseQuery = db.TimeSheetApprovals
                                         .Include(z => z.Employee)
@@ -87,11 +90,13 @@ namespace orion.web.TimeEntries
                     baseQuery = baseQuery.Where(x => x.WeekId <= week.WeekId.Value);
                 }
 
+
+
                 var match = await baseQuery.ToListAsync();
 
                 var approverIds = match.Select(x => x.ApproverEmployeeId).Where(x => x.HasValue).Distinct().ToArray();
                 var approverNames = await db.Employees.Where(x => approverIds.Contains(x.EmployeeId)).ToListAsync();
-                return match.Select(x => new TimeApprovalDTO()
+                var matches =  match.Select(x => new TimeApprovalDTO()
                 {
                     ApprovalDate = x.ApprovalDate,
                     ApproverName = approverNames.FirstOrDefault(z => z.EmployeeId == x.ApproverEmployeeId)?.UserName,
@@ -102,36 +107,25 @@ namespace orion.web.TimeEntries
                     WeekId = x.WeekId,
                     WeekStartDate = WeekDTO.CreateForWeekId(x.WeekId).WeekStart,
                     SubmittedDate = x.SubmittedDate,
-                    TotalOverTimeHours = x.TotalOverTimeHours,
-                    TotalRegularHours = x.TotalRegularHours,
+                    TotalOverTimeHours = 0.00m,
+                    TotalRegularHours = 0.00m,
                     IsHidden = x.IsHidden
                 }).ToList();
-            }
-        }
 
-        public async Task UpdateTimeTotals(int weekId, int employeeId, decimal overtime, decimal regular)
-        {
-            using(var db = _contextFactory.CreateDb())
-            {
-                var match = await db.TimeSheetApprovals.SingleOrDefaultAsync(x => x.WeekId == weekId && x.EmployeeId == employeeId);
-                if(match != null)
+
+                var weeks = matches.Select(x => x.WeekId).Distinct();
+                var allWeeks = await db.WeeklyData.Where(x => weeks.Contains(x.WeekId)).ToListAsync();
+                var employeeWeeks = allWeeks.ToDictionary(x => (x.EmployeeId, x.WeekId), x => (x.TotalOverTimeHours, x.TotalRegularHours));
+
+                foreach(var emp in matches)
                 {
-                    match.TotalOverTimeHours = overtime;
-                    match.TotalRegularHours = regular;
-                    await db.SaveChangesAsync();
-                }
-                else
-                {
-                    await Save(new TimeApprovalDTO()
+                    if(employeeWeeks.TryGetValue((emp.EmployeeId, emp.WeekId), out var fromDb))
                     {
-                        EmployeeId = employeeId,
-                        TimeApprovalStatus = TimeApprovalStatus.Unkown,
-                        TotalOverTimeHours = overtime,
-                        TotalRegularHours = regular,
-                        WeekId = weekId,
-                        WeekStartDate = WeekDTO.CreateForWeekId(weekId).WeekStart,
-                    });
+                        emp.TotalOverTimeHours = fromDb.TotalOverTimeHours;
+                        emp.TotalRegularHours = fromDb.TotalRegularHours;
+                    }
                 }
+                return matches;
             }
         }
 
@@ -166,8 +160,6 @@ namespace orion.web.TimeEntries
                 {
                     match.SubmittedDate = DateTime.Now;
                 }
-                match.TotalOverTimeHours = timeApprovalDTO.TotalOverTimeHours;
-                match.TotalRegularHours = timeApprovalDTO.TotalRegularHours;
                 match.ApproverEmployeeId = approver;
                 match.ResponseReason = match.ResponseReason ?? "" + timeApprovalDTO.ResponseReason;
                 match.TimeApprovalStatus = timeApprovalDTO.TimeApprovalStatus.ToString();
