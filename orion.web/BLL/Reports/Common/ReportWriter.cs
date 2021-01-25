@@ -26,7 +26,7 @@ namespace orion.web.Reports
 
         public (MemoryStream Steam, string MimeType, string Name) GetFinishedResult<T>(T reportSettings, ReportDTO<QuickJobTimeReportDTO> rpt) where T : new()
         {
-            var export = new QuickJobTimeReportExcelExport();
+            var export = new QuickJobTimeReportExcelExportNew();
             var memoryStream = export.AsXls(rpt);
             return (memoryStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"{rpt.ReportName}.xlsx");
         }
