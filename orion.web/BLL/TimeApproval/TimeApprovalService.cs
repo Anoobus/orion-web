@@ -59,72 +59,92 @@ namespace orion.web.TimeEntries
                         ResponseReason = match.ResponseReason,
                         TimeApprovalStatus = mapped,
                         WeekId = match.WeekId,
-                        TotalOverTimeHours = hours.TotalOverTimeHours,
-                        TotalRegularHours = hours.TotalRegularHours,
+                        TotalOverTimeHours = hours?.TotalOverTimeHours ?? 0.00m,
+                        TotalRegularHours = hours?.TotalRegularHours ?? 0.00m,
                         SubmittedDate = match.SubmittedDate,
                         IsHidden = match.IsHidden
                     };
                 }
             }
         }
+        public const int admin_employee_id = 1;
+
+        private async Task<Dictionary<(int employeeId, int weekId), TimeSheetApproval>> SearchForSavedApprovals(OrionDbContext db, int startWeek, int endWeek, params TimeApprovalStatus[] withTimeApprovalStatus)
+        {
+            var statusAsString = withTimeApprovalStatus.Select(z => z.ToString()).ToArray();
+            var baseQuery = db.TimeSheetApprovals
+                                    .Include(z => z.Employee)
+                                    .Where(x => x.WeekId >= startWeek && x.WeekId <= endWeek && statusAsString.Contains(x.TimeApprovalStatus));
+
+            var approvals = await baseQuery.ToListAsync();
+            var approverIds = approvals.Select(x => x.ApproverEmployeeId).Where(x => x.HasValue).Distinct().ToArray();
+            return approvals.ToDictionary(x => (x.EmployeeId, x.WeekId), x => x);
+        }
 
         public async Task<IEnumerable<TimeApprovalDTO>> GetByStatus(DateTime? beginDateInclusive = null, DateTime? endDateInclusive = null, params TimeApprovalStatus[] withTimeApprovalStatus)
         {
             using(var db = _contextFactory.CreateDb())
             {
+                var allEmps = await db.Employees.Where(x => x.EmployeeId != admin_employee_id).ToListAsync();
 
-                var statusAsString = withTimeApprovalStatus.Select(z => z.ToString()).ToArray();
-                var baseQuery = db.TimeSheetApprovals
-                                        .Include(z => z.Employee)
-                                        .Where(x => statusAsString.Contains(x.TimeApprovalStatus));
+                var startWeek = beginDateInclusive.HasValue ? WeekDTO.CreateWithWeekContaining(beginDateInclusive.Value).WeekId.Value : WeekDTO.CreateWithWeekContaining(DateTime.Now.AddDays(-7)).WeekId.Value;
+                var endWeek = endDateInclusive.HasValue ? WeekDTO.CreateWithWeekContaining(endDateInclusive.Value).WeekId.Value : WeekDTO.CreateWithWeekContaining(DateTime.Now.AddDays(31)).WeekId.Value;
 
-                if(beginDateInclusive.HasValue)
+                if(startWeek > endWeek)
+                    endWeek = startWeek;
+
+                var approvals = await SearchForSavedApprovals(db, startWeek, endWeek, withTimeApprovalStatus);
+
+                var approverNames = approvals.Values.Select(x => x.ApproverEmployeeId).Where(x => x.HasValue).Distinct().ToDictionary(x => x.Value, x => allEmps.FirstOrDefault(a => a.EmployeeId == x.Value)?.UserName);
+
+
+
+
+                var weeklyHourTotals = await db.WeeklyData.Where(x => x.WeekId >= startWeek && x.WeekId <= endWeek).ToListAsync();
+                var hourTotalsByEmpAndWeek = weeklyHourTotals.ToDictionary(x => (x.EmployeeId, x.WeekId), x => (x.TotalOverTimeHours, x.TotalRegularHours));
+
+
+                var matches = new List<TimeApprovalDTO>();
+                for(int weekid = startWeek; weekid <= endWeek; weekid++)
                 {
-                    var week = WeekDTO.CreateWithWeekContaining(beginDateInclusive.Value);
-                    baseQuery = baseQuery.Where(x => x.WeekId >= week.WeekId.Value);
-                }
-
-                if(endDateInclusive.HasValue)
-                {
-                    var week = WeekDTO.CreateWithWeekContaining(endDateInclusive.Value);
-                    baseQuery = baseQuery.Where(x => x.WeekId <= week.WeekId.Value);
-                }
-
-
-
-                var match = await baseQuery.ToListAsync();
-
-                var approverIds = match.Select(x => x.ApproverEmployeeId).Where(x => x.HasValue).Distinct().ToArray();
-                var approverNames = await db.Employees.Where(x => approverIds.Contains(x.EmployeeId)).ToListAsync();
-                var matches =  match.Select(x => new TimeApprovalDTO()
-                {
-                    ApprovalDate = x.ApprovalDate,
-                    ApproverName = approverNames.FirstOrDefault(z => z.EmployeeId == x.ApproverEmployeeId)?.UserName,
-                    EmployeeName = x.Employee.UserName,
-                    EmployeeId = x.EmployeeId,
-                    ResponseReason = x.ResponseReason,
-                    TimeApprovalStatus = string.IsNullOrWhiteSpace(x.TimeApprovalStatus) ? TimeApprovalStatus.Unkown : Enum.Parse<TimeApprovalStatus>(x.TimeApprovalStatus),
-                    WeekId = x.WeekId,
-                    WeekStartDate = WeekDTO.CreateForWeekId(x.WeekId).WeekStart,
-                    SubmittedDate = x.SubmittedDate,
-                    TotalOverTimeHours = 0.00m,
-                    TotalRegularHours = 0.00m,
-                    IsHidden = x.IsHidden
-                }).ToList();
-
-
-                var weeks = matches.Select(x => x.WeekId).Distinct();
-                var allWeeks = await db.WeeklyData.Where(x => weeks.Contains(x.WeekId)).ToListAsync();
-                var employeeWeeks = allWeeks.ToDictionary(x => (x.EmployeeId, x.WeekId), x => (x.TotalOverTimeHours, x.TotalRegularHours));
-
-                foreach(var emp in matches)
-                {
-                    if(employeeWeeks.TryGetValue((emp.EmployeeId, emp.WeekId), out var fromDb))
+                    foreach(var emp in allEmps)
                     {
-                        emp.TotalOverTimeHours = fromDb.TotalOverTimeHours;
-                        emp.TotalRegularHours = fromDb.TotalRegularHours;
+                        if(!approvals.TryGetValue((emp.EmployeeId, weekid), out var x))
+                        {
+                            x = new TimeSheetApproval()
+                            {
+                                Employee = emp,
+                                EmployeeId = emp.EmployeeId,
+                                IsHidden = false,
+                                WeekId = weekid
+                            };
+                        }
+
+                        var temp = new TimeApprovalDTO()
+                        {
+                            ApprovalDate = x.ApprovalDate,
+                            ApproverName = approverNames.TryGetValue(x.ApproverEmployeeId ?? 0, out var approverName) ? approverName : null,
+                            EmployeeName = $"{x.Employee.Last}, {x.Employee.First}",
+                            EmployeeId = x.EmployeeId,
+                            ResponseReason = x.ResponseReason,
+                            TimeApprovalStatus = string.IsNullOrWhiteSpace(x.TimeApprovalStatus) ? TimeApprovalStatus.Unkown : Enum.Parse<TimeApprovalStatus>(x.TimeApprovalStatus),
+                            WeekId = x.WeekId,
+                            WeekStartDate = WeekDTO.CreateForWeekId(x.WeekId).WeekStart,
+                            SubmittedDate = x.SubmittedDate,
+                            TotalOverTimeHours = 0.00m,
+                            TotalRegularHours = 0.00m,
+                            IsHidden = x.IsHidden
+                        };
+
+                        if(hourTotalsByEmpAndWeek.TryGetValue((emp.EmployeeId, weekid), out var fromDb))
+                        {
+                            temp.TotalOverTimeHours = fromDb.TotalOverTimeHours;
+                            temp.TotalRegularHours = fromDb.TotalRegularHours;
+                        }
+                        matches.Add(temp);
                     }
                 }
+
                 return matches;
             }
         }
