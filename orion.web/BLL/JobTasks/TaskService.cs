@@ -70,7 +70,8 @@ namespace orion.web.JobsTasks
                     {
                         Enum = (JobTasks.TaskCategory)x.TaskCategory.TaskCategoryId,
                         Id = x.TaskCategory.TaskCategoryId,
-                        Name = x.TaskCategory.Name
+                        Name = x.TaskCategory.Name,
+                        IsInternalCategory = x.TaskCategory.IsInternalOnly
                     },
                     LegacyCode = x.LegacyCode,
                     UsageStatus = new UsageStatusDTO()

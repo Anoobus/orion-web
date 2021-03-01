@@ -1,5 +1,6 @@
 ﻿using orion.web.Jobs;
 using orion.web.JobsTasks;
+using orion.web.JobTasks;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -27,20 +28,21 @@ namespace orion.web.TimeEntries
         }
     }
 
-    public class NewJobTaskCombo 
+    public class NewJobTaskCombo
     {
         public IEnumerable<JobDTO> AvailableJobs { get; set; }
-        public IEnumerable<string> AvailableCategories
+        public IEnumerable<CategoryDTO> AvailableCategories
         {
             get
             {
                 if(AvailableTasks != null)
                 {
-                    return AvailableTasks.Select(x => x.Category.Name).Distinct();
+                    return AvailableTasks.Select(x => x.Category).Distinct();
                 }
-                return Enumerable.Empty<string>();
+                return Enumerable.Empty<CategoryDTO>();
             }
         }
+
         public IEnumerable<TaskDTO> AvailableTasks { get; set; }
         public int? SelectedJobId { get; set; }
         public int? SelectedTaskId { get; set; }

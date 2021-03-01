@@ -5,5 +5,6 @@ namespace orion.web.DataAccess.EF
     {
         public int TaskCategoryId { get; set; }
         public string Name { get; set; }
-    }    
+        public bool IsInternalOnly { get; set; }
+    }
 }
