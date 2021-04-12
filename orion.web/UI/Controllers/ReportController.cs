@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using orion.web.Employees;
 using System.Threading.Tasks;
 
@@ -15,11 +16,13 @@ namespace orion.web.Reports
         private readonly IReportCreator reportCreator;
         private readonly IReportWriter reportWriter;
 
+
         public ReportsController(IReportSettingsViewModelFactory reportSettingsViewModelFactory, IReportCreator reportCreator, IReportWriter reportWriter)
         {
             this.reportSettingsViewModelFactory = reportSettingsViewModelFactory;
             this.reportCreator = reportCreator;
             this.reportWriter = reportWriter;
+
         }
 
         public async Task<ActionResult> Index()
@@ -53,10 +56,19 @@ namespace orion.web.Reports
         [Route("RunReport/" + ReportNames.JOB_DETAIL_REPORT)]
         public async Task<ActionResult> JobDetailReport(ReportSelectionViewModel request)
         {
-            var criteria = request.QuickJobTimeReportCriteria.Criteria;
-            var rpt = await reportCreator.CreateQuickJobTimeReportAsync(criteria);
-            var (Steam, MimeType, Name) = reportWriter.GetFinishedResult(criteria, rpt);
-            return File(Steam, MimeType, Name);
+            try
+            {
+                var criteria = request.QuickJobTimeReportCriteria.Criteria;
+                var rpt = await reportCreator.CreateQuickJobTimeReportAsync(criteria);
+                var (Steam, MimeType, Name) = reportWriter.GetFinishedResult(criteria, rpt);
+                return File(Steam, MimeType, Name);
+            }
+            catch(System.Exception e)
+            {
+                Serilog.Log.Error(e, $"Error while handleing {ReportNames.JOB_DETAIL_REPORT}");
+                throw;
+            }
+
         }
     }
 }

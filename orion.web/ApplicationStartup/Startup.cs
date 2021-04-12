@@ -14,6 +14,8 @@ using orion.web.Util.IoC;
 using orion.web.BLL.AutoMapper;
 using System;
 using Newtonsoft.Json;
+using System.IO;
+using System.Diagnostics;
 
 namespace orion.web.ApplicationStartup
 {
@@ -100,6 +102,21 @@ namespace orion.web.ApplicationStartup
             else
             {
                 app.UseExceptionHandler("/Home/Error");
+                app.Use(async (context, next) =>
+                {
+                    try
+                    {
+                        await next();
+                    }
+                    catch(Exception e)
+                    {
+                        var now = DateTimeOffset.Now.ToString();
+                        var trace = Activity.Current?.Id ?? context.TraceIdentifier;
+                        File.AppendAllLines("manual.logs", new[] { $"[{now}] [{trace}]: {e}" });
+                        Serilog.Log.Error(e, $"Error while handleing {context?.Request?.Path}");
+                        throw;
+                    }
+                });
                 app.UseHsts();
             }
 
