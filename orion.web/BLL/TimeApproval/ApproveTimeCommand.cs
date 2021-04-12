@@ -91,6 +91,7 @@ namespace orion.web.TimeApproval
             }
             if(isValidApprove)
             {
+                var approvedBy = request.ApprovingUserId == request.EmployeeId ? "[AUTO APPROVED BY SYSTEM]" : "approved by manager";
                 var approver = await employeeService.GetSingleEmployeeAsync(request.ApprovingUserId);
                 current.ApproverName = approver.UserName;
                 current.ApprovalDate = DateTime.Now;
@@ -99,7 +100,7 @@ namespace orion.web.TimeApproval
                 string finalEmailText = await CreateEmailBody(week, emp,
                       greetingName: emp.First,
                       action: $"Time sheet approved (for the week {week.WeekStart.ToShortDateString()}-{week.WeekEnd.ToShortDateString()})",
-                      actionBy: $"[AUTO APPROVED BY SYSTEM]", followup: "No further action is required.");
+                      actionBy: approvedBy, followup: "No further action is required.");
                 var recipient = emp.UserName;
                 smtpProxy.SendMail(recipient, finalEmailText, $"Time approved for week {week.WeekStart.ToShortDateString()}-{week.WeekEnd.ToShortDateString()}");
             }
