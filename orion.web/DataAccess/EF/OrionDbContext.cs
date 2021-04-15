@@ -10,7 +10,7 @@ namespace orion.web.DataAccess.EF
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            builder.Query<WeekOfHours>().ToView("vEmployeeeWeeklySummary");
+            builder.Entity<WeekOfHours>().ToView("vEmployeeeWeeklySummary").HasNoKey();
         }
 
         public DbSet<Client> Clients { get; set; }
@@ -26,7 +26,7 @@ namespace orion.web.DataAccess.EF
         public DbSet<JobStatus> JobStatuses { get; set; }
         public DbSet<EmployeeJob> EmployeeJobs { get; set; }
         public DbSet<ExpenseItem> Expenses { get; set; }
-        public DbQuery<WeekOfHours> WeeklyData { get; set; }
+        public DbSet<WeekOfHours> WeeklyData { get; set; }
 
     }
 }

@@ -1,5 +1,7 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using orion.web.Util;
 using orion.web.Util.IoC;
 using System;
 using System.Net;
@@ -16,11 +18,13 @@ namespace orion.web.Common
     {
         private readonly IConfiguration config;
         private readonly ILogger<SmtpProxy> logger;
+        private readonly IHostingEnvironment _hostingEnvironment;
 
-        public SmtpProxy(IConfiguration config, ILogger<SmtpProxy> logger)
+        public SmtpProxy(IConfiguration config, ILogger<SmtpProxy> logger, IHostingEnvironment hostingEnvironment)
         {
             this.config = config;
             this.logger = logger;
+            _hostingEnvironment = hostingEnvironment;
         }
 
         public void SendMail(string recipient, string body, string subject)
@@ -47,7 +51,21 @@ namespace orion.web.Common
                     IsBodyHtml = true,
                 })
                 {
-                    smtp.Send(message);
+                    if(_hostingEnvironment.EnvironmentName == "Development")
+                    {
+                        var debug = new
+                        {
+                            fromAddress,
+                            toAddress,
+                            subject,
+                            body
+                        };
+                        logger.LogInformation("Email Sent: " + debug.Dump());
+                    }
+                    else
+                    {
+                        //smtp.Send(message);
+                    }
                 }
             }
             catch(Exception e)

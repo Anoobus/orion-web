@@ -60,7 +60,7 @@ namespace orion.web.Jobs
                 var mapped = new List<JobDTO>();
                 foreach(var item in basePull)
                 {
-                    mapped.Add(MapToDTO(item.Job));
+                    mapped.Add(MapToDTO(item.Job, _mapper));
                 }
                 return mapped.OrderBy(x => x.FullJobCodeWithName).ToList();
             }
@@ -74,7 +74,7 @@ namespace orion.web.Jobs
                          .Include(x => x.Client)
                          .Include(x => x.Site)
                          .Include(x => x.JobStatus)
-                         .Select(Job => MapToDTO(Job)).ToListAsync();
+                         .Select(Job => MapToDTO(Job, _mapper)).ToListAsync();
             }
         }
 
@@ -88,13 +88,13 @@ namespace orion.web.Jobs
                          .Include(x => x.JobStatus)
                          .Include(x => x.ProjectManager)
                          .Where(x => x.JobId == jobId)
-                         .Select(Job => MapToDTO(Job)).ToListAsync()).FirstOrDefault();
+                         .Select(Job => MapToDTO(Job,_mapper)).ToListAsync()).FirstOrDefault();
             }
         }
 
-        private JobDTO MapToDTO(Job Job)
+        private static JobDTO MapToDTO(Job Job, IMapper mapper)
         {
-            return _mapper.Map<JobDTO>(Job);
+            return mapper.Map<JobDTO>(Job);
             //return new JobDTO()
             //{
             //    JobCode = Job.JobCode,

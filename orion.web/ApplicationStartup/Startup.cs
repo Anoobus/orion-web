@@ -61,7 +61,12 @@ namespace orion.web.ApplicationStartup
                     .AddEntityFrameworkStores<ApplicationDbContext>();
 
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc(opts => {
+
+                opts.EnableEndpointRouting = false;
+
+
+                });//.SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             services.AutoRegisterForMarker<IAutoRegisterAsSingleton>(typeof(Startup).Assembly, ServiceLifetime.Singleton);
             services.AutoRegisterForMarker<IAutoRegisterAsTransient>(typeof(Startup).Assembly, ServiceLifetime.Transient);

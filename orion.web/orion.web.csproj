@@ -1,27 +1,33 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <UserSecretsId>aspnet-orion.web-FEEF65A2-EA60-42A9-8F69-6C8534D9A130</UserSecretsId>
     <DockerTargetOS>Linux</DockerTargetOS>
     <StartupObject></StartupObject>
     <LangVersion>7.1</LangVersion>
     <AssemblyVersion>1.0.2.12</AssemblyVersion>
     <FileVersion>1.0.2.12</FileVersion>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <IdentityUIFrameworkVersion>Bootstrap3</IdentityUIFrameworkVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Remove="Account\**" />
     <Compile Remove="api\**" />
+    <Compile Remove="Areas\Identity\Services\**" />
     <Compile Remove="Authorization\**" />
     <Content Remove="Account\**" />
     <Content Remove="api\**" />
+    <Content Remove="Areas\Identity\Services\**" />
     <Content Remove="Authorization\**" />
     <EmbeddedResource Remove="Account\**" />
     <EmbeddedResource Remove="api\**" />
+    <EmbeddedResource Remove="Areas\Identity\Services\**" />
     <EmbeddedResource Remove="Authorization\**" />
     <None Remove="Account\**" />
     <None Remove="api\**" />
+    <None Remove="Areas\Identity\Services\**" />
     <None Remove="Authorization\**" />
   </ItemGroup>
 
@@ -34,16 +40,24 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AutoMapper" Version="9.0.0" />
+    <PackageReference Include="AutoMapper" Version="10.1.1" />
     <PackageReference Include="ClosedXML" Version="0.95.4" />
     <PackageReference Include="DotNetCore.NPOI" Version="1.2.2" />
-    <PackageReference Include="DotNetZip" Version="1.14.0" />
-    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.4" />
-    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.0.1916590" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.9" PrivateAssets="All" />
-    <PackageReference Include="Serilog.AspNetCore" Version="3.2.0" />
+    <PackageReference Include="DotNetZip" Version="1.15.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="3.1.13" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.13" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="3.1.13" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.13" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.13" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.13">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.5" PrivateAssets="All" />
+    <PackageReference Include="Serilog.AspNetCore" Version="4.0.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
     <PackageReference Include="Serilog.Sinks.RollingFile" Version="3.3.0" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.2" />
   </ItemGroup>
 
   <ItemGroup>
@@ -125,10 +139,6 @@
     <Content Include="docs\QuickJobTimeReport.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Areas\Identity\Services\" />
   </ItemGroup>
 
   <ItemGroup>
