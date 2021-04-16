@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using orion.web.ApplicationStartup;
+using orion.web.Employees;
 using orion.web.Jobs;
 using System;
 using System.ComponentModel.DataAnnotations;
@@ -27,36 +28,36 @@ namespace orion.web.UI.api
     [ApiController]
     public class TokenController : ControllerBase
     {
-        private readonly ISitesRepository _sitesRepository;
-        private readonly IMapper _mapper;
+        private readonly IEmployeeRepository _employeeRepository;
         private readonly SignInManager<IdentityUser> _signInManager;
 
-        public TokenController(ISitesRepository sitesRepository, IMapper mapper, SignInManager<IdentityUser> signInManager)
+        public TokenController(IEmployeeRepository employeeRepository, SignInManager<IdentityUser> signInManager)
         {
-            _sitesRepository = sitesRepository;
-            _mapper = mapper;
+            _employeeRepository = employeeRepository;
             _signInManager = signInManager;
         }
 
         [HttpPost]
         public async Task<ActionResult> Create([FromBody] TokenLogin login)
         {
-            var user = await _signInManager.UserManager.FindByNameAsync(login.Email);
-            if(user != null)
+            if(!string.IsNullOrWhiteSpace(login?.Email))
             {
-                if(await _signInManager.UserManager.CheckPasswordAsync(user, login.Password))
+                var user = await _signInManager.UserManager.FindByNameAsync(login.Email);
+                if(user != null)
                 {
-                    var toke = GenerateJSONWebToken();
-                    if(toke != null)
+                    if(await _signInManager.UserManager.CheckPasswordAsync(user, login.Password))
                     {
-                        return new ObjectResult(toke)
+                        var toke = await GenerateJSONWebToken(user);
+                        if(toke != null)
                         {
-                            StatusCode = StatusCodes.Status201Created
-                        };
+                            return new ObjectResult(toke)
+                            {
+                                StatusCode = StatusCodes.Status201Created
+                            };
 
+                        }
                     }
                 }
-
             }
 
             return new StatusCodeResult(StatusCodes.Status400BadRequest);
@@ -68,13 +69,16 @@ namespace orion.web.UI.api
             public DateTimeOffset ValidTo { get; set; }
         }
 
-        private GenerateTokenResult GenerateJSONWebToken()
+        private async Task<GenerateTokenResult> GenerateJSONWebToken(IdentityUser user)
         {
+            var emp = await _employeeRepository.GetSingleEmployeeAsync(user.UserName);
             var claims = new[] {
-                        new Claim("sub","admin@company.com"),
-                        new Claim(ClaimTypes.Role,"Admin"),
-                        new Claim(ClaimTypes.Name, "admin@company.com"),
-                        new Claim("orion:employee-id",12.ToString())
+                        new Claim("sub",emp.UserName),
+                        new Claim("orion:first",emp.First),
+                        new Claim("orion:last",emp.Last),
+                        new Claim(ClaimTypes.Role, emp.Role),
+                        new Claim(ClaimTypes.Name, emp.UserName),
+                        new Claim("orion:employee-id",emp.EmployeeId.ToString())
                         };
 
             var token = new JwtSecurityToken(JwtWithCookieAuthMiddleware.Issuer,
