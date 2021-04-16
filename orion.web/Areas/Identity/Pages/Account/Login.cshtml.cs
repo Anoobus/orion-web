@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
+using System.Security.Claims;
+using orion.web.Employees;
 
 namespace orion.web.Areas.Identity.Pages.Account
 {
@@ -16,11 +18,13 @@ namespace orion.web.Areas.Identity.Pages.Account
     public class LoginModel : PageModel
     {
         private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly IEmployeeRepository _employeeRepository;
         private readonly ILogger<LoginModel> _logger;
 
-        public LoginModel(SignInManager<IdentityUser> signInManager, ILogger<LoginModel> logger)
+        public LoginModel(SignInManager<IdentityUser> signInManager, IEmployeeRepository employeeRepository, ILogger<LoginModel> logger)
         {
             _signInManager = signInManager;
+            _employeeRepository = employeeRepository;
             _logger = logger;
         }
 
@@ -76,7 +80,7 @@ namespace orion.web.Areas.Identity.Pages.Account
                     // To enable password failures to trigger account lockout, set lockoutOnFailure: true
                     var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: true);
                     if (result.Succeeded)
-                    {                        
+                    {
                         _logger.LogInformation("User logged in.");
                         return LocalRedirect(returnUrl);
                     }
@@ -102,7 +106,7 @@ namespace orion.web.Areas.Identity.Pages.Account
                 _logger.LogError(e,"failed on login");
                 throw;
             }
-           
+
 
             // If we got this far, something failed, redisplay form
             return Page();

@@ -16,6 +16,7 @@ using System;
 using Newtonsoft.Json;
 using System.IO;
 using System.Diagnostics;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace orion.web.ApplicationStartup
 {
@@ -42,13 +43,21 @@ namespace orion.web.ApplicationStartup
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(config =>
+            {
+                config.Cookie.Name = "TimT.Testy";
+                config.LoginPath = "/Identity/Account/Login";
+            });
+
+
 
             services.Configure<CookiePolicyOptions>(options =>
-            {
+                {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
                 //options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
-            });
+                });
 
             Serilog.Log.Information("STARTING DB STUFF UP");
 
@@ -61,12 +70,13 @@ namespace orion.web.ApplicationStartup
                     .AddEntityFrameworkStores<ApplicationDbContext>();
 
 
-            services.AddMvc(opts => {
+            services.AddMvc(opts =>
+            {
 
                 opts.EnableEndpointRouting = false;
 
 
-                });//.SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            });
 
             services.AutoRegisterForMarker<IAutoRegisterAsSingleton>(typeof(Startup).Assembly, ServiceLifetime.Singleton);
             services.AutoRegisterForMarker<IAutoRegisterAsTransient>(typeof(Startup).Assembly, ServiceLifetime.Transient);
@@ -129,6 +139,7 @@ namespace orion.web.ApplicationStartup
             app.UseStaticFiles();
             app.UseCookiePolicy();
 
+            app.UseMiddleware<JwtWithCookieAuthMiddleware>();
             app.UseAuthentication();
 
             app.UseMvc(routes =>
