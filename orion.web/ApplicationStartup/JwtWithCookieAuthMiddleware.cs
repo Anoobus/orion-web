@@ -21,9 +21,10 @@ namespace orion.web.ApplicationStartup
         public static readonly SymmetricSecurityKey securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(MehKey));
         public static readonly SigningCredentials Credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
         public const string Issuer = "orion-web";
-        private static HashSet<string> ExcludeFromAuthPaths = new HashSet<string>()
+        private static HashSet<string> ExcludeFromJwtAuthPaths = new HashSet<string>()
         {
-            "/api/token"
+            "/api/token",
+            "api/Notifications"
         };
 
         public JwtWithCookieAuthMiddleware(RequestDelegate next, ILogger<JwtWithCookieAuthMiddleware> logger)
@@ -35,11 +36,10 @@ namespace orion.web.ApplicationStartup
 
         public async Task InvokeAsync(HttpContext context)
         {
-            if(context.Request.Path.StartsWithSegments("/api"))
+            if(context.Request.Path.StartsWithSegments("/api") && !ExcludeFromJwtAuthPaths.Contains(context.Request.Path.ToString()))
             {
-                if(ExcludeFromAuthPaths.Contains(context.Request.Path.ToString()) || await IsAuthorized(context))
+                if(await IsAuthorized(context))
                 {
-
                     await _next(context);
                 }
                 else
@@ -83,11 +83,11 @@ namespace orion.web.ApplicationStartup
                     ValidIssuer = Issuer
                 }, out var toke);
 
-                var fullToken = toke as System.IdentityModel.Tokens.Jwt.JwtSecurityToken;
-
-                var signInManager = context.RequestServices.GetService<SignInManager<IdentityUser>>();
-                var user = await signInManager.UserManager.FindByNameAsync(fullToken.Subject);
-                await signInManager.SignInAsync(user, true);
+                //var fullToken = toke as System.IdentityModel.Tokens.Jwt.JwtSecurityToken;
+                //var signInManager = context.RequestServices.GetService<SignInManager<IdentityUser>>();
+                //var user = await signInManager.UserManager.FindByNameAsync(fullToken.Subject);
+                //await signInManager.SignInAsync(user, true);
+                context.User = principal;
                 return true;
 
             }

@@ -25,10 +25,12 @@ namespace orion.web.test
             var stillNext2 = WeekDTO.CreateWithWeekContaining(next2.WeekEnd.AddDays(-2));
             Assert.AreEqual(next2, stillNext2);
         }
+
         [TestMethod]
         public void PayPeriodsWork()
         {
-            var start = WeekDTO.CreateWithWeekContaining(new DateTime(2019,2,20));
+            var start = WeekDTO.CreateWithWeekContaining(new DateTime(2021,4,20));
+
             Assert.IsTrue(start.IsPPE.Value);
 
             var next = start.Next();
@@ -37,8 +39,6 @@ namespace orion.web.test
 
             var next2 = next.Next();
             Assert.IsTrue(next2.IsPPE.Value);
-
-            Assert.IsTrue( WeekDTO.CreateWithWeekContaining(new DateTime(2019, 2, 22)).IsPPE.Value);
 
         }
     }

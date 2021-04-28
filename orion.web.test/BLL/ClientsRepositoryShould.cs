@@ -16,28 +16,29 @@ namespace orion.web.test.BLL
         private class TestContext
         {
             private static NoRecursionFixture _fixture = new NoRecursionFixture();
-            public ClientDTO SavedModelNoJob { get; set; }
-            public ClientDTO SaveModelWithJob { get; set; }
+            public ClientDTO JoblessClient { get; set; }
+            public ClientDTO ClientWithJob { get; set; }
             public TestDbFactory DbFactory { get; } = new TestDbFactory(Guid.NewGuid());
 
             public TestContext()
             {
-                SavedModelNoJob = _fixture.Build<ClientDTO>().With(x => x.ClientId, 0).Create();
-                SaveModelWithJob = _fixture.Build<ClientDTO>().With(x => x.ClientId, 0).Create();
+                JoblessClient = _fixture.Build<ClientDTO>().With(x => x.ClientId, 0).Create();
+                ClientWithJob = _fixture.Build<ClientDTO>().With(x => x.ClientId, 0).Create();
                 using(var inMemDb = DbFactory.CreateDb())
                 {
 
-                    SaveClient(inMemDb, SaveModelWithJob);
-                    SaveClient(inMemDb, SavedModelNoJob);
-                    var js = _fixture.Build<JobStatus>().With(x => x.JobStatusId, 1).Create();
-                    var site = _fixture.Build<Site>().With(x => x.SiteID, 1).Create();
+                    var js = _fixture.Build<JobStatus>().With(x => x.JobStatusId, 0).Create();
+                    var site = _fixture.Build<Site>().With(x => x.SiteID, 0).Create();
                     inMemDb.Sites.Add(site);
                     inMemDb.SaveChanges();
                     inMemDb.JobStatuses.Add(js);
                     inMemDb.SaveChanges();
+
+                    SaveClient(inMemDb, ClientWithJob);
+                    SaveClient(inMemDb, JoblessClient);
                     inMemDb.Jobs.Add(new Job()
                     {
-                        ClientId = SaveModelWithJob.ClientId,
+                        ClientId = ClientWithJob.ClientId,
                         JobCode = "01234",
                         JobName = "CoolName",
                         JobStatusId = js.JobStatusId,
@@ -49,6 +50,7 @@ namespace orion.web.test.BLL
 
             private void SaveClient(OrionDbContext inMemDb, ClientDTO dto)
             {
+                dto.ClientId = 0;
                 var client = TestAutoMapper.Instance.Map<Client>(dto);
                 inMemDb.Clients.Add(client);
                 inMemDb.SaveChanges();
@@ -67,11 +69,11 @@ namespace orion.web.test.BLL
             var ctx = new TestContext();
             var underTest = ctx.GetItemToTest();
 
-            var res = await underTest.GetClient(ctx.SavedModelNoJob.ClientId);
-            res.Should().BeEquivalentTo(ctx.SavedModelNoJob);
+            var res = await underTest.GetClient(ctx.JoblessClient.ClientId);
+            res.Should().BeEquivalentTo(ctx.JoblessClient);
 
-            var res2 = await underTest.GetClient(ctx.SaveModelWithJob.ClientId);
-            res2.Should().BeEquivalentTo(ctx.SaveModelWithJob);
+            var res2 = await underTest.GetClient(ctx.ClientWithJob.ClientId);
+            res2.Should().BeEquivalentTo(ctx.ClientWithJob);
         }
 
         [TestMethod]
@@ -91,8 +93,8 @@ namespace orion.web.test.BLL
             var underTest = ctx.GetItemToTest();
 
             var res = await underTest.GetAllClients();
-            res.Should().Contain(ctx.SavedModelNoJob);
-            res.Should().Contain(ctx.SaveModelWithJob);
+            res.Should().Contain(ctx.JoblessClient);
+            res.Should().Contain(ctx.ClientWithJob);
         }
 
         [TestMethod]
@@ -116,10 +118,10 @@ namespace orion.web.test.BLL
             var ctx = new TestContext();
             var underTest = ctx.GetItemToTest();
 
-            ctx.SavedModelNoJob.ClientName = Guid.NewGuid().ToString();
+            ctx.JoblessClient.ClientName = Guid.NewGuid().ToString();
 
-            var actual = await underTest.Save(ctx.SavedModelNoJob);
-            actual.ClientName.Should().Be(ctx.SavedModelNoJob.ClientName);
+            var actual = await underTest.Save(ctx.JoblessClient);
+            actual.ClientName.Should().Be(ctx.JoblessClient.ClientName);
         }
 
         [TestMethod]
@@ -128,11 +130,11 @@ namespace orion.web.test.BLL
             var ctx = new TestContext();
             var underTest = ctx.GetItemToTest();
 
-            await underTest.Delete(ctx.SaveModelWithJob.ClientId);
+            await underTest.Delete(ctx.ClientWithJob.ClientId);
 
             using(var db = ctx.DbFactory.CreateDb())
             {
-                db.Clients.Any(x => x.ClientId == ctx.SaveModelWithJob.ClientId).Should().BeTrue();
+                db.Clients.Any(x => x.ClientId == ctx.ClientWithJob.ClientId).Should().BeTrue();
             }
         }
 
@@ -142,11 +144,11 @@ namespace orion.web.test.BLL
             var ctx = new TestContext();
             var underTest = ctx.GetItemToTest();
 
-            await underTest.Delete(ctx.SavedModelNoJob.ClientId);
+            await underTest.Delete(ctx.JoblessClient.ClientId);
 
             using(var db = ctx.DbFactory.CreateDb())
             {
-                db.Clients.Any(x => x.ClientId == ctx.SavedModelNoJob.ClientId).Should().BeFalse();
+                db.Clients.Any(x => x.ClientId == ctx.JoblessClient.ClientId).Should().BeFalse();
             }
         }
 

@@ -13,7 +13,7 @@ namespace orion.web.Notifications
             return user?.Identity?.Name ?? "NOT AUTHED";
         }
     }
-    [Route("api/[controller]")]
+    [Route("api/Notifications")]
     [Authorize]
     public class NotificationsController : Controller
     {
@@ -22,7 +22,7 @@ namespace orion.web.Notifications
         public static void AddNotification(string userName, string msg)
         {
             notifications.AddOrUpdate(userName,
-                new Queue<string>(new string[] { msg }), 
+                new Queue<string>(new string[] { msg }),
                 (username, queue) =>
                  {
                      queue.Enqueue(msg);
@@ -43,6 +43,6 @@ namespace orion.web.Notifications
             }
             return allNotifications;
         }
-     
+
     }
 }

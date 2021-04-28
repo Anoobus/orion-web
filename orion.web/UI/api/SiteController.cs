@@ -24,6 +24,7 @@ namespace orion.web.UI.api
             _mapper = mapper;
         }
 
+        [HttpGet]
         public async Task<ActionResult<IEnumerable<SiteModel>>> Get()
         {
             return Ok(_mapper.Map<IEnumerable<SiteModel>>( await _sitesRepository.GetAll()));

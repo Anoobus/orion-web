@@ -24,7 +24,10 @@ namespace orion.web.test.BLL
             {
                 using(var inMemDb = DbFactory.CreateDb())
                 {
-                    SavedSites = Enumerable.Range(0, 3).Select(z => _fixture.Build<SiteDTO>().With(x => x.SiteID, 0).Create());
+                    SavedSites = Enumerable.Range(0, 3)
+                                            .Select(z => _fixture.Build<SiteDTO>().With(x => x.SiteID, 0).Create())
+                                            .ToList();
+
                     foreach(var site in SavedSites)
                     {
                         SaveSite(inMemDb, site);
