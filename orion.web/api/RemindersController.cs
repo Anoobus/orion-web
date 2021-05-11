@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using orion.web.Common;
 using orion.web.DataAccess.EF;
 using orion.web.Employees;
@@ -23,13 +24,15 @@ namespace orion.web.api
         private readonly ISmtpProxy _smtpProxy;
         private readonly IEmployeeRepository _employeeRepository;
         private readonly IScheduledTaskRepo _scheduleTaskRepo;
+        private readonly ILogger _logger;
 
-        public RemindersController(ITimeApprovalService timeApprovalService, ISmtpProxy smtpProxy, IEmployeeRepository employeeRepository, IScheduledTaskRepo scheduleTaskRepo)
+        public RemindersController(ITimeApprovalService timeApprovalService, ISmtpProxy smtpProxy, IEmployeeRepository employeeRepository, IScheduledTaskRepo scheduleTaskRepo, ILogger logger)
         {
             _timeApprovalService = timeApprovalService;
             _smtpProxy = smtpProxy;
             _employeeRepository = employeeRepository;
             _scheduleTaskRepo = scheduleTaskRepo;
+            _logger = logger;
         }
 
         [HttpPost("on-ppe-missing-time-email")]
@@ -40,6 +43,7 @@ namespace orion.web.api
 
             if(await ShouldRun(reminderTask))
             {
+                await _scheduleTaskRepo.RecordTaskCompletion(reminderTask.ScheduleTaskId);
                 await SendReminders();
             }
 
@@ -75,8 +79,16 @@ namespace orion.web.api
                 var template = await System.IO.File.ReadAllTextAsync(@"wwwroot\email-submit-time-reminder.html");
                 foreach(var entry in entries.GroupBy(x => x.EmployeeId))
                 {
-                    var emp = await _employeeRepository.GetSingleEmployeeAsync(entry.Key);
-                    _smtpProxy.SendMail(emp.UserName, template, $"Reminder to submit time for {beginDate.ToShortDateString()}-{endDate.ToShortDateString()}");
+                    try
+                    {
+                        var emp = await _employeeRepository.GetSingleEmployeeAsync(entry.Key);
+                        _smtpProxy.SendMail(emp.UserName, template, $"Reminder to submit time for {beginDate.ToShortDateString()}-{endDate.ToShortDateString()}");
+                    }
+                    catch(Exception  e)
+                    {
+                        _logger.LogError(e, "error trying to send reminder");
+                    }
+
                 }
             }
         }

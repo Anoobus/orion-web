@@ -17,6 +17,7 @@ using Newtonsoft.Json;
 using System.IO;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.Extensions.Logging;
 
 namespace orion.web.ApplicationStartup
 {
@@ -68,7 +69,6 @@ namespace orion.web.ApplicationStartup
                     .AddDefaultUI()
                     .AddDefaultTokenProviders()
                     .AddEntityFrameworkStores<ApplicationDbContext>();
-
 
             services.AddMvc(opts =>
             {

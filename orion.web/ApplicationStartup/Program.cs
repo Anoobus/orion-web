@@ -33,7 +33,7 @@ namespace orion.web.ApplicationStartup
 
             Log.Information("Starting web site");
 
-            var host = CreateWebHostBuilder(args).Build();
+            var host = CreateWebHostBuilder(Log.Logger).Build();
 
             try
             {
@@ -81,9 +81,9 @@ namespace orion.web.ApplicationStartup
             host.Run();
         }
 
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
+        public static IWebHostBuilder CreateWebHostBuilder(ILogger logger) =>
+            WebHost.CreateDefaultBuilder()
                 .UseStartup<Startup>()
-                .UseSerilog();
+                .UseSerilog(logger);
     }
 }
