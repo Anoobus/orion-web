@@ -28,7 +28,8 @@
         $('td[' + dayIdentifier + '="' + colName + '"] input[type="text"]').each(function (index, inputVal) {
             total = total + Number($(inputVal).val());
         });
-        $('tr:last th[' + dayIdentifier + '="' + colName + '"]').html(total.toFixed(1));
+        console.log('looking for [' + dayIdentifier + '="' + colName + '"] to set text to amt' + total.toFixed(1))
+        $('#time-entry tfoot tr:last th[' + dayIdentifier + '="' + colName + '"]').html(total.toFixed(1));
     }
 
     function applyGrandTotal() {

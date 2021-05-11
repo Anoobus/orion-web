@@ -24,7 +24,8 @@ namespace orion.web.ApplicationStartup
         private static HashSet<string> ExcludeFromJwtAuthPaths = new HashSet<string>()
         {
             "/api/token",
-            "api/Notifications"
+            "/api/Notifications",
+            "/api/notifications"
         };
 
         public JwtWithCookieAuthMiddleware(RequestDelegate next, ILogger<JwtWithCookieAuthMiddleware> logger)

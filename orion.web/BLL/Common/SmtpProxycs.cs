@@ -64,7 +64,7 @@ namespace orion.web.Common
                     }
                     else
                     {
-                        //smtp.Send(message);
+                        smtp.Send(message);
                     }
                 }
             }

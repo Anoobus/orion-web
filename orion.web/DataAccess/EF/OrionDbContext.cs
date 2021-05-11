@@ -28,5 +28,9 @@ namespace orion.web.DataAccess.EF
         public DbSet<ExpenseItem> Expenses { get; set; }
         public DbSet<WeekOfHours> WeeklyData { get; set; }
 
+        public DbSet<ScheduleTask> ScheduleTasks { get; set; }
+        public DbSet<ScheduleTaskRunLog> ScheduleTaskRunLogs { get; set; }
+
+
     }
 }
