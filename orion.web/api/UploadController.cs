@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace orion.web.UI.api
+namespace orion.web.api
 {
     public class JobUploadResults
     {

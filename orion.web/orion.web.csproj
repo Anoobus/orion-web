@@ -14,19 +14,15 @@
 
   <ItemGroup>
     <Compile Remove="Account\**" />
-    <Compile Remove="api\**" />
     <Compile Remove="Areas\Identity\Services\**" />
     <Compile Remove="Authorization\**" />
     <Content Remove="Account\**" />
-    <Content Remove="api\**" />
     <Content Remove="Areas\Identity\Services\**" />
     <Content Remove="Authorization\**" />
     <EmbeddedResource Remove="Account\**" />
-    <EmbeddedResource Remove="api\**" />
     <EmbeddedResource Remove="Areas\Identity\Services\**" />
     <EmbeddedResource Remove="Authorization\**" />
     <None Remove="Account\**" />
-    <None Remove="api\**" />
     <None Remove="Areas\Identity\Services\**" />
     <None Remove="Authorization\**" />
   </ItemGroup>

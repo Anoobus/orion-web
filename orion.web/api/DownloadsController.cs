@@ -9,7 +9,7 @@ using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 
-namespace orion.web.UI.api
+namespace orion.web.api
 {
 
     public class DownloadModel
