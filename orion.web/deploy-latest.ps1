@@ -33,13 +33,13 @@ cd "..\$dateId"
 
 Write-Host restore nugets for build
 dotnet restore "orion-web-master\orion.web\orion.web.csproj"
-Write-Host build in release config
-dotnet build "orion-web-master\orion.web\orion.web.csproj" -c Release -o "..\app"
+Write-Host build in release con
+dotnet build "orion-web-master\orion.web\orion.web.csproj" -c Release
 Write-Host publish built project
-dotnet publish "orion-web-master\orion.web\orion.web.csproj" -c Release -o "..\app"
+dotnet publish "orion-web-master\orion.web\orion.web.csproj" -c Release -o "app"
 
-Write-Host move published results to final app folder
-Move-Item -Path "orion-web-master\app" -Destination "app"
+#Write-Host move published results to final app folder
+#Move-Item -Path "orion-web-master\app" -Destination "app"
 Write-Host move deploy files to final build folder
 Move-Item -Path "app\deploy-latest.ps1" -Destination "deploy-latest.ps1"
 Write-Host remove sources folder
