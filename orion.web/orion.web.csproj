@@ -6,8 +6,8 @@
     <DockerTargetOS>Linux</DockerTargetOS>
     <StartupObject></StartupObject>
     <LangVersion>7.1</LangVersion>
-    <AssemblyVersion>1.0.3.0</AssemblyVersion>
-    <FileVersion>1.0.3.0</FileVersion>
+    <AssemblyVersion>1.0.3.1</AssemblyVersion>
+    <FileVersion>1.0.3.1</FileVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <IdentityUIFrameworkVersion>Bootstrap3</IdentityUIFrameworkVersion>
   </PropertyGroup>
@@ -32,6 +32,7 @@
     <None Remove="docs\PayPeriodReport.xlsx" />
     <None Remove="docs\ProjectStatusReport.xlsx" />
     <None Remove="docs\QuickJobTimeReport.xlsx" />
+    <None Remove="docs\QuickJobTimeReportNew.xlsx" />
     <None Remove="orion.app.logs" />
   </ItemGroup>
 
@@ -136,6 +137,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="docs\QuickJobTimeReport.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="docs\QuickJobTimeReportNew.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
