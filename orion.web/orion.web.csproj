@@ -112,6 +112,9 @@
     <Content Update="UI\Views\Vue\App.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
+    <Content Update="wwwroot\email-submit-time-reminder.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Update="wwwroot\email-template.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

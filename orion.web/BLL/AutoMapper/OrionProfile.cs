@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using orion.web.BLL.Jobs;
+using orion.web.BLL.ScheduledTasks;
 using orion.web.Clients;
+using orion.web.DataAccess.EF;
 using orion.web.Employees;
 using orion.web.Jobs;
 using orion.web.UI.Models;
@@ -38,6 +40,9 @@ namespace orion.web.BLL.AutoMapper
             CreateMap<EmployeeDTO, ProjectManagerModel>()
                 .ForMember(x => x.EmployeeId, opt => opt.MapFrom(x => x.EmployeeId))
                 .ForMember(x => x.EmployeeName, opt => opt.MapFrom(x => $"{x.Last}, {x.First}"));
+
+            CreateMap<NewScheduledTask, ScheduleTask>()
+                .ForMember(x => x.ScheduleTaskId, opt => opt.Ignore());
         }
     }
 }
