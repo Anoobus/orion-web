@@ -5,15 +5,15 @@ using System.Text;
 
 namespace orion.web.Common
 {
-    
+
 
     public class WeekDTO
     {
-        private static readonly ConcurrentDictionary<WeekDTO, bool> PPEStatusByWeek = new ConcurrentDictionary<WeekDTO, bool>(); 
+        private static readonly ConcurrentDictionary<WeekDTO, bool> PPEStatusByWeek = new ConcurrentDictionary<WeekDTO, bool>();
         private static readonly ConcurrentDictionary<int, WeekDTO> weeksByWeekId = new ConcurrentDictionary<int, WeekDTO>();
         private static readonly ConcurrentDictionary<WeekDTO,int> weekIdsByWeek = new ConcurrentDictionary<WeekDTO, int>();
         public static readonly DateTime WeekEpoch = new DateTime(2000, 1, 1);
-        
+
         public const DayOfWeek WEEK_START = DayOfWeek.Saturday;
         public const DayOfWeek WEEK_END = DayOfWeek.Friday;
 
@@ -34,8 +34,8 @@ namespace orion.web.Common
             {
                 throw new InvalidOperationException($"Week start must be on a {WEEK_START}");
             }
-            WeekStart = weekStart;
-            WeekEnd = weekStart;
+            WeekStart = weekStart.Date;
+            WeekEnd = weekStart.Date;
             while (WeekEnd.DayOfWeek != WEEK_END)
             {
                 WeekEnd = WeekEnd.AddDays(1);
@@ -54,7 +54,7 @@ namespace orion.web.Common
                      ++weekId;
                  }
                  return weekId;
-             });           
+             });
         }
 
         public WeekDTO Next()
