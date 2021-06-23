@@ -36,17 +36,18 @@
         var total = 0;
         if ($('tr[' + weekTableSumDefinition.rowIdentifier + ']').length) {
             $('td[' + weekTableSumDefinition.dayIdentifier + '="' + weekTableSumDefinition.columnTotoalIdentifier + '"]').each(function (index, totalCell) {
+
                 var innerText = $(totalCell).text();
                 total += Number(innerText);
             });
-            $('tr:last th[' + weekTableSumDefinition.dayIdentifier + '="' + weekTableSumDefinition.columnTotoalIdentifier + '"]').html(total.toFixed(1));
+            $('#time-entry tfoot tr:last th[' + weekTableSumDefinition.dayIdentifier + '="' + weekTableSumDefinition.columnTotoalIdentifier + '"]').html(total.toFixed(1));
 
             var otTotal = 0;
             $('td[' + weekTableSumDefinition.dayIdentifier + '="ot-' + weekTableSumDefinition.columnTotoalIdentifier + '"]').each(function (index, totalCell) {
                 var innerText = $(totalCell).text();
                 otTotal += Number(innerText);
             });
-            $('tr:last th[' + weekTableSumDefinition.dayIdentifier + '="ot-' + weekTableSumDefinition.columnTotoalIdentifier + '"]').html(otTotal.toFixed(1));
+            $('#time-entry tfoot tr:last th[' + weekTableSumDefinition.dayIdentifier + '="ot-' + weekTableSumDefinition.columnTotoalIdentifier + '"]').html(otTotal.toFixed(1));
         }
     }
 

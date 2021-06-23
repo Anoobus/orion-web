@@ -40,9 +40,10 @@ namespace orion.web.api
         {
             var reminderTask = await _scheduleTaskRepo.GetTaskByName(PPE_MISSING_TIME_TASK);
             reminderTask = reminderTask ?? (await CreateReminderTask(PPE_MISSING_TIME_TASK, isPpeOnly: true));
-
+            _logger.LogInformation($"Checking if {reminderTask} should run");
             if(await ShouldRun(reminderTask))
             {
+                _logger.LogInformation($"{reminderTask} now running");
                 await _scheduleTaskRepo.RecordTaskCompletion(reminderTask.ScheduleTaskId);
                 await SendReminders();
             }
@@ -82,6 +83,8 @@ namespace orion.web.api
                     try
                     {
                         var emp = await _employeeRepository.GetSingleEmployeeAsync(entry.Key);
+                        _logger.LogInformation($"sending reminder to {emp.First} {emp.Last} [{emp.UserName}]");
+
                         _smtpProxy.SendMail(emp.UserName, template, $"Reminder to submit time for {beginDate.ToShortDateString()}-{endDate.ToShortDateString()}");
                     }
                     catch(Exception  e)
@@ -120,7 +123,7 @@ namespace orion.web.api
                 if(!thisWeek.IsPPE.Value)
                     thisWeek = thisWeek.Previous();
             }
-
+            _logger.LogInformation($"Creating new Reminder Task [{taskName}]");
             return await _scheduleTaskRepo.CreateNewScheduledTask(new BLL.ScheduledTasks.NewScheduledTask()
             {
                 EndDate = null,
