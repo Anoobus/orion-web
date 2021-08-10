@@ -101,6 +101,16 @@ namespace orion.web.Common
              });
         }
 
+        public DateTime GetDateFor(DayOfWeek dayOfWeek)
+        {
+            var candidateDay = WeekStart;
+            while(candidateDay.DayOfWeek != dayOfWeek)
+            {
+                candidateDay = candidateDay.AddDays(1);
+            }
+            return candidateDay;
+        }
+
         public static bool operator ==(WeekDTO week, WeekDTO other)
         {
             if (ReferenceEquals(week, null))

@@ -1,5 +1,6 @@
 ﻿using orion.web.Common;
 using orion.web.Employees;
+using orion.web.Jobs;
 using orion.web.Util.IoC;
 using System;
 using System.Collections.Generic;
@@ -14,28 +15,34 @@ namespace orion.web.TimeEntries
     }
     public class AddNewJobTaskComboCommand : IAddNewJobTaskComboCommand, IAutoRegisterAsSingleton
     {
-        private readonly IEmployeeRepository employeeService;
-        //private readonly IWeekService weekService;
-        private readonly ITimeService timeService;
-        private readonly ITimeSpentRepository timeSpentRepository;
+        private readonly IEmployeeRepository _employeeService;
+        private readonly IJobsRepository _jobsRepository;
+
+        private readonly ITimeService _timeService;
+        private readonly ITimeSpentRepository _timeSpentRepository;
 
         public AddNewJobTaskComboCommand(IEmployeeRepository employeeService,
-            //IWeekService weekService,
+            IJobsRepository jobsRepository,
             ITimeService timeService,
             ITimeSpentRepository timeSpentRepository)
         {
-            this.employeeService = employeeService;
-            //this.weekService = weekService;
-            this.timeService = timeService;
-            this.timeSpentRepository = timeSpentRepository;
+            _employeeService = employeeService;
+            _jobsRepository = jobsRepository;
+            _timeService = timeService;
+            _timeSpentRepository = timeSpentRepository;
         }
         public async Task<CommandResult> AddNewJobTaskCombo(int employeeId,  int weekId, int newTaskId, int newJobId)
         {
-
-            var entryForEveryDayOfWeek = timeSpentRepository.CreateEmptyWeekForCombo( weekId, newTaskId, newJobId, employeeId).ToList();
+            throw new Exception("Testing logger here!");
+            var j = await _jobsRepository.GetForJobId(newJobId);
+            if(j.JobStatusId != JobStatus.Enabled)
+            {
+                return new CommandResult(false, new[] { $"Job {j.FullJobCodeWithName} has been closed. In order to use it, an administrator must open it." });
+            }
+            var entryForEveryDayOfWeek = _timeSpentRepository.CreateEmptyWeekForCombo( weekId, newTaskId, newJobId, employeeId).ToList();
             foreach (var day in entryForEveryDayOfWeek)
             {
-                await timeService.SaveAsync( weekId, employeeId, day);
+                await _timeService.SaveAsync( weekId, employeeId, day);
             }
             return new CommandResult(true);
 

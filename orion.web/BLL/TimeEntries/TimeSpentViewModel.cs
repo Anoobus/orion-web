@@ -9,7 +9,6 @@ namespace orion.web.TimeEntries
     public class TimeSpentViewModel
     {
         public DayOfWeek DayOfWeek { get; set; }
-        public int TimeEntryId { get; set; }
         public DateTime Date { get; set; }
         [Range(0, double.MaxValue)]
         [RegularExpression(@"([0-9]*\.[0-9])|(([0-9])\.?)")]

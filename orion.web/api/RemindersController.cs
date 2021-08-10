@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using orion.web.Common;
 using orion.web.DataAccess.EF;
 using orion.web.Employees;
 using orion.web.TimeEntries;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,7 +24,7 @@ namespace orion.web.api
         private readonly ISmtpProxy _smtpProxy;
         private readonly IEmployeeRepository _employeeRepository;
         private readonly IScheduledTaskRepo _scheduleTaskRepo;
-        private readonly ILogger _logger;
+        private readonly ILogger _logger = Log.ForContext< RemindersController>();
 
         public RemindersController(ITimeApprovalService timeApprovalService, ISmtpProxy smtpProxy, IEmployeeRepository employeeRepository, IScheduledTaskRepo scheduleTaskRepo, ILogger logger)
         {
@@ -40,10 +40,10 @@ namespace orion.web.api
         {
             var reminderTask = await _scheduleTaskRepo.GetTaskByName(PPE_MISSING_TIME_TASK);
             reminderTask = reminderTask ?? (await CreateReminderTask(PPE_MISSING_TIME_TASK, isPpeOnly: true));
-            _logger.LogInformation($"Checking if {reminderTask} should run");
+            _logger.Information($"Checking if {reminderTask} should run");
             if(await ShouldRun(reminderTask))
             {
-                _logger.LogInformation($"{reminderTask} now running");
+                _logger.Information($"{reminderTask} now running");
                 await _scheduleTaskRepo.RecordTaskCompletion(reminderTask.ScheduleTaskId);
                 await SendReminders();
             }
@@ -83,13 +83,13 @@ namespace orion.web.api
                     try
                     {
                         var emp = await _employeeRepository.GetSingleEmployeeAsync(entry.Key);
-                        _logger.LogInformation($"sending reminder to {emp.First} {emp.Last} [{emp.UserName}]");
+                        _logger.Information($"sending reminder to {emp.First} {emp.Last} [{emp.UserName}]");
 
                         _smtpProxy.SendMail(emp.UserName, template, $"Reminder to submit time for {beginDate.ToShortDateString()}-{endDate.ToShortDateString()}");
                     }
                     catch(Exception  e)
                     {
-                        _logger.LogError(e, "error trying to send reminder");
+                        _logger.Error(e, "error trying to send reminder");
                     }
 
                 }
@@ -123,7 +123,7 @@ namespace orion.web.api
                 if(!thisWeek.IsPPE.Value)
                     thisWeek = thisWeek.Previous();
             }
-            _logger.LogInformation($"Creating new Reminder Task [{taskName}]");
+            _logger.Information($"Creating new Reminder Task [{taskName}]");
             return await _scheduleTaskRepo.CreateNewScheduledTask(new BLL.ScheduledTasks.NewScheduledTask()
             {
                 EndDate = null,

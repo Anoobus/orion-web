@@ -31,9 +31,9 @@ namespace orion.web.TimeEntries
             {
                 var emp = await db.Employees.SingleAsync(x => x.EmployeeId == employeeId);
 
-                var match = await db.TimeSheetApprovals.SingleOrDefaultAsync(x => x.WeekId == weekId && x.EmployeeId == employeeId);
+                var matches = await db.TimeSheetApprovals.Where(x => x.WeekId == weekId && x.EmployeeId == employeeId).ToListAsync();
                 var hours = await db.WeeklyData.SingleOrDefaultAsync(x => x.EmployeeId == employeeId && x.WeekId == weekId);
-                if(match == null)
+                if(!(matches?.Any() ?? false))
                 {
                     return new TimeApprovalDTO()
                     {
@@ -46,25 +46,34 @@ namespace orion.web.TimeEntries
                         TotalRegularHours = 0.00m
                     };
                 }
-                else
+                else if(matches.Count > 1)
                 {
-                    var approver = db.Employees.FirstOrDefault(x => x.EmployeeId == match.ApproverEmployeeId)?.UserName ?? "";
-                    Enum.TryParse<TimeApprovalStatus>(match.TimeApprovalStatus, out var mapped);
-                    return new TimeApprovalDTO()
+                    var matchToKeep = matches.OrderByDescending(x => x.TimeSheetApprovalId).First();
+                    var toClean = matches.Where(x => x.TimeSheetApprovalId != matchToKeep.TimeSheetApprovalId);
+                    foreach(var deleteMe in toClean)
                     {
-                        ApprovalDate = match.ApprovalDate,
-                        ApproverName = approver,
-                        EmployeeName = emp.UserName,
-                        EmployeeId = emp.EmployeeId,
-                        ResponseReason = match.ResponseReason,
-                        TimeApprovalStatus = mapped,
-                        WeekId = match.WeekId,
-                        TotalOverTimeHours = hours?.TotalOverTimeHours ?? 0.00m,
-                        TotalRegularHours = hours?.TotalRegularHours ?? 0.00m,
-                        SubmittedDate = match.SubmittedDate,
-                        IsHidden = match.IsHidden
-                    };
+                        db.TimeSheetApprovals.Remove(deleteMe);
+                    }
+                    await db.SaveChangesAsync();
                 }
+
+                var match = matches.First();
+                var approver = db.Employees.FirstOrDefault(x => x.EmployeeId == match.ApproverEmployeeId)?.UserName ?? "";
+                Enum.TryParse<TimeApprovalStatus>(match.TimeApprovalStatus, out var mapped);
+                return new TimeApprovalDTO()
+                {
+                    ApprovalDate = match.ApprovalDate,
+                    ApproverName = approver,
+                    EmployeeName = emp.UserName,
+                    EmployeeId = emp.EmployeeId,
+                    ResponseReason = match.ResponseReason,
+                    TimeApprovalStatus = mapped,
+                    WeekId = match.WeekId,
+                    TotalOverTimeHours = hours?.TotalOverTimeHours ?? 0.00m,
+                    TotalRegularHours = hours?.TotalRegularHours ?? 0.00m,
+                    SubmittedDate = match.SubmittedDate,
+                    IsHidden = match.IsHidden
+                };
             }
         }
         public const int admin_employee_id = 1;

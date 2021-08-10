@@ -58,15 +58,17 @@ namespace orion.web.TimeEntries
 
             var currentWeek = WeekDTO.CreateForWeekId(request.WeekId);
 
-            var timeEntries = await timeService.GetAsync(request.WeekId, request.EmployeeId);
+            var weekOfTimeEntries = await timeService.GetWeekAsync(request.EmployeeId, request.WeekId);
+            //var timeEntries = await timeService.GetAsync(request.WeekId, request.EmployeeId);
             var allJobList = (await jobService.GetAsync()).ToList();
             var taskList = (await taskService.GetTasks()).ToList().OrderBy(x => x.Name).ThenBy(x => x.Description);
             var entries = new List<TimeEntryViewModel>();
             var status = await timeApprovalService.GetAsync(request.WeekId, request.EmployeeId);
 
-            foreach(var entry in timeEntries.GroupBy(x => new { x.JobId, x.JobTaskId }))
+            var existingJobWithTasks = weekOfTimeEntries.AsEnumerable().GroupBy(x => new JobWithTaskDTO() { JobId = x.JobId, TaskId = x.JobTaskId });
+            foreach(var entry in existingJobWithTasks)
             {
-                var tasky = taskList.FirstOrDefault(x => x.TaskId == entry.Key.JobTaskId);
+                var tasky = taskList.FirstOrDefault(x => x.TaskId == entry.Key.TaskId);
                 var SelectedEntryTaskName = $"{tasky?.LegacyCode} - {tasky?.Name}";
 
                 var SelectedEntryJob = allJobList.FirstOrDefault(x => x.JobId == entry.Key.JobId);
@@ -78,7 +80,7 @@ namespace orion.web.TimeEntries
                 var item = new TimeEntryViewModel()
                 {
                     SelectedJobId = entry.Key.JobId,
-                    SelectedTaskId = entry.Key.JobTaskId,
+                    SelectedTaskId = entry.Key.TaskId,
                     SelectedEntryTaskName = SelectedEntryTaskName,
                     SelectedEntryJobName = SelectedEntryJob?.JobName,
                     SelectedJobCode = jobCode,
@@ -138,32 +140,22 @@ namespace orion.web.TimeEntries
         {
             return new TimeSpentViewModel()
             {
-                Date = GetDateFor(week, dayOfWeek),
+                Date = week.GetDateFor(dayOfWeek),
                 Hours = 0
             };
         }
 
-        private DateTime GetDateFor(WeekDTO week, DayOfWeek dayOfWeek)
-        {
 
-            var candidateDay = week.WeekStart;
-            while(candidateDay.DayOfWeek != dayOfWeek)
-            {
-                candidateDay = candidateDay.AddDays(1);
-            }
-            return candidateDay;
-        }
-        private TimeSpentViewModel MapToViewModel(WeekDTO week, DayOfWeek dayOfWeek, IEnumerable<TimeEntryDTO> allEntriesThisWeek)
+        private TimeSpentViewModel MapToViewModel(WeekDTO week, DayOfWeek dayOfWeek, IEnumerable<TimeEntryBaseDTO> allEntriesThisWeek)
         {
             var thisDaysEntry = allEntriesThisWeek.SingleOrDefault(x => x.Date.DayOfWeek == dayOfWeek);
-            var date = GetDateFor(week, dayOfWeek);
+            var date = week.GetDateFor(dayOfWeek);
             return new TimeSpentViewModel()
             {
                 DayOfWeek = dayOfWeek,
                 Date = date,
                 Hours = thisDaysEntry?.Hours ?? 0,
                 OvertimeHours = thisDaysEntry?.OvertimeHours ?? 0,
-                TimeEntryId = thisDaysEntry?.TimeEntryId ?? 0
             };
         }
 

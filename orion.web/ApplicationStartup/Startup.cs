@@ -26,6 +26,8 @@ namespace orion.web.ApplicationStartup
 
     public class Startup
     {
+        private static readonly Serilog.ILogger _logger = Serilog.Log.Logger.ForContext<Startup>();
+
         public static readonly Lazy<string> AppVersion = new Lazy<string>(() =>
         {
             var assm = typeof(Startup).Assembly;
@@ -46,7 +48,7 @@ namespace orion.web.ApplicationStartup
         public void ConfigureServices(IServiceCollection services)
         {
             //Register Serilog for all Microsoft ILogger and ILogger<T>
-            services.AddLogging(bldr => bldr.AddSerilog());
+            //services.AddLogging();
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(config =>
@@ -96,10 +98,9 @@ namespace orion.web.ApplicationStartup
         private void LogEmailConfig()
         {
             var emailUser = Configuration.GetValue<string>("EmailUserName");
-            var fromPassword = Configuration.GetValue<string>("EmailPassword");
             var host = Configuration.GetValue<string>("EmailHost");
             var port = Configuration.GetValue<int>("EmailPort");
-            Serilog.Log.Information($"Emails will use {JsonConvert.SerializeObject(new { emailUser, fromPassword, host, port })}");
+            Serilog.Log.Information($"Emails will use {JsonConvert.SerializeObject(new { emailUser, host, port })}");
         }
 
         private void SetupLocalDbBasedEntityFramework<TContext>(IServiceCollection services, string connectionName) where TContext : DbContext
@@ -129,10 +130,7 @@ namespace orion.web.ApplicationStartup
                     }
                     catch(Exception e)
                     {
-                        var now = DateTimeOffset.Now.ToString();
-                        var trace = Activity.Current?.Id ?? context.TraceIdentifier;
-                        File.AppendAllLines("manual.logs", new[] { $"[{now}] [{trace}]: {e}" });
-                        Serilog.Log.Error(e, $"Error while handleing {context?.Request?.Path}");
+                        _logger.Error(e, $"Error while handleing {context?.Request?.Path}");
                         throw;
                     }
                 });

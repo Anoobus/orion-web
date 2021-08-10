@@ -137,54 +137,21 @@ namespace orion.web.TimeEntries
                 }
                 else
                 {
-                    var req = new WeekOfTimeEntriesRequest()
-                    {
-                        EmployeeId = employeeId,
-                        RequestingUserIsAdmin = User.IsInRole(UserRoleName.Admin),
-                        RequestingUserName = User.Identity.Name,
-                        WeekId = weekId
-                    };
-                    var vmDefault = await weekOfTimeEntriesQuery.GetFullTimeEntryViewModelAsync(req);
-                    foreach(var day in vmDefault.TimeEntryRow)
-                    {
-                        var match = vm.TimeEntryRow.Single(x => x.RowId == day.RowId);
-
-                        day.Monday.Hours = match.Monday.Hours;
-                        day.Tuesday.Hours = match.Tuesday.Hours;
-                        day.Wednesday.Hours = match.Wednesday.Hours;
-                        day.Thursday.Hours = match.Thursday.Hours;
-                        day.Friday.Hours = match.Friday.Hours;
-                        day.Saturday.Hours = match.Saturday.Hours;
-                        day.Sunday.Hours = match.Sunday.Hours;
-
-                        day.Monday.OvertimeHours = match.Monday.OvertimeHours;
-                        day.Tuesday.OvertimeHours = match.Tuesday.OvertimeHours;
-                        day.Wednesday.OvertimeHours = match.Wednesday.OvertimeHours;
-                        day.Thursday.OvertimeHours = match.Thursday.OvertimeHours;
-                        day.Friday.OvertimeHours = match.Friday.OvertimeHours;
-                        day.Saturday.OvertimeHours = match.Saturday.OvertimeHours;
-                        day.Sunday.OvertimeHours = match.Sunday.OvertimeHours;
-                    }
-                    NotificationsController.AddNotification(User.SafeUserName(), $"Timesheet was not saved {string.Join("<br />", res.Errors)}");
-                    ModelState.Clear();
-                    foreach(var err in res.Errors)
-                    {
-                        ModelState.AddModelError("", err);
-                    }
-                    return View("Week", vmDefault);
+                    return await ReloadPageForErrorCorrection(weekId, employeeId, vm, res);
                 }
             }
 
             if(postType == "Add Task")
             {
-                var res = await addNewJobTaskComboCommand.AddNewJobTaskCombo(employeeId, weekId, vm.NewEntry.SelectedTaskId ?? 0, vm.NewEntry.SelectedJobId ?? 0);
-                if(res.Successful)
+                var AddResult = await addNewJobTaskComboCommand.AddNewJobTaskCombo(employeeId, weekId, vm.NewEntry.SelectedTaskId ?? 0, vm.NewEntry.SelectedJobId ?? 0);
+                if(AddResult.Successful)
                 {
                     NotificationsController.AddNotification(User.SafeUserName(), "The selected task has been added.");
                 }
                 else
                 {
                     NotificationsController.AddNotification(User.SafeUserName(), "Select task could not be added.");
+                    return await ReloadPageForErrorCorrection(weekId, employeeId, vm, AddResult);
                 }
             }
 
@@ -248,6 +215,45 @@ namespace orion.web.TimeEntries
                 var res = await removeRowCommand.RemoveRow(employeeId, weekId, int.Parse(taskId), int.Parse(jobId));
             }
             return RedirectToAction(nameof(Edit), new { weekId = weekId, employeeId = employeeId });
+        }
+
+        private async Task<ActionResult> ReloadPageForErrorCorrection(int weekId, int employeeId, FullTimeEntryViewModel vm, CommandResult res)
+        {
+            var req = new WeekOfTimeEntriesRequest()
+            {
+                EmployeeId = employeeId,
+                RequestingUserIsAdmin = User.IsInRole(UserRoleName.Admin),
+                RequestingUserName = User.Identity.Name,
+                WeekId = weekId
+            };
+            var vmDefault = await weekOfTimeEntriesQuery.GetFullTimeEntryViewModelAsync(req);
+            foreach(var day in vmDefault.TimeEntryRow)
+            {
+                var match = vm.TimeEntryRow.Single(x => x.RowId == day.RowId);
+
+                day.Monday.Hours = match.Monday.Hours;
+                day.Tuesday.Hours = match.Tuesday.Hours;
+                day.Wednesday.Hours = match.Wednesday.Hours;
+                day.Thursday.Hours = match.Thursday.Hours;
+                day.Friday.Hours = match.Friday.Hours;
+                day.Saturday.Hours = match.Saturday.Hours;
+                day.Sunday.Hours = match.Sunday.Hours;
+
+                day.Monday.OvertimeHours = match.Monday.OvertimeHours;
+                day.Tuesday.OvertimeHours = match.Tuesday.OvertimeHours;
+                day.Wednesday.OvertimeHours = match.Wednesday.OvertimeHours;
+                day.Thursday.OvertimeHours = match.Thursday.OvertimeHours;
+                day.Friday.OvertimeHours = match.Friday.OvertimeHours;
+                day.Saturday.OvertimeHours = match.Saturday.OvertimeHours;
+                day.Sunday.OvertimeHours = match.Sunday.OvertimeHours;
+            }
+            NotificationsController.AddNotification(User.SafeUserName(), $"Timesheet was not saved {string.Join("<br />", res.Errors)}");
+            ModelState.Clear();
+            foreach(var err in res.Errors)
+            {
+                ModelState.AddModelError("", err);
+            }
+            return View("Week", vmDefault);
         }
     }
 
