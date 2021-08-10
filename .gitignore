@@ -269,3 +269,5 @@ __pycache__/
 orion.app.logs
 /sql-data
 /orion.web/sql-data
+/orion.web/manual.logs
+/orion.web/serilog-logs/
