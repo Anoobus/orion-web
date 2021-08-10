@@ -33,7 +33,6 @@ namespace orion.web.TimeEntries
         }
         public async Task<CommandResult> AddNewJobTaskCombo(int employeeId,  int weekId, int newTaskId, int newJobId)
         {
-            throw new Exception("Testing logger here!");
             var j = await _jobsRepository.GetForJobId(newJobId);
             if(j.JobStatusId != JobStatus.Enabled)
             {
