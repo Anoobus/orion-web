@@ -97,7 +97,7 @@ namespace orion.web.TimeEntries
                 entries.Add(item);
             }
 
-            entries = entries.OrderBy(x => x.SelectedJobCode).ToList();
+            entries = entries.OrderBy(x => x.SelectedJobCode).ThenBy(x => x.SelectedTaskId).ToList();
             var nextWeek = currentWeek.Next();
             var prevWeek = currentWeek.Previous();
 
