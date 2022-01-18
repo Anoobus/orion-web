@@ -1,0 +1,57 @@
+﻿@using orion.web.Employees
+
+@model string
+<div class="row">
+    <div class="col-md-4">
+        <div id="vue-app">
+
+            <div v-for="item in info" v-if="isLoaded">
+                <span class="placeholder">{{item.name}}</span>
+                <span>{{item.jobCode}}</span>
+            </div>
+            <div>
+                <input type="text" v-on:input="debouncedHandler" typeof="text"/>
+                <span>{{test.out}}</span>
+                <input type="button" v-on:click="save" typeof="button" value="Save!" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--
+      "id": "abb2b53a-e182-24e1-2490-f517a1555246",
+      "lastModified": "2022-01-09T20:19:57.1230496-05:00",
+      "jobCode": "1927-1400",
+      "name": "GM Spring Hill (SEGLC) - Project Nightsky Bid Phase",
+      "siteId": "6e856d76-a6f1-2fb0-93d8-94415e6bfa0e",
+      "clientId": "5fa71634-ea4c-0991-507c-acd8e2f2aefc"
+    -->
+<div class="row">
+    <div class="col-md-4">
+        <div class="form-group">
+            <label class="control-label" for="job-id"></label>
+            <input id="job-id" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label class="control-label" for="job-id"></label>
+            <input id="job-id" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label class="control-label" for="job-id"></label>
+            <input id="job-id" class="form-control" />
+        </div>
+        <input type="button" value="save" />
+
+    </div>
+</div>
+@section scripts {
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script type="text/javascript" src="~/lib/vue/dev.vue.js"></script>
+    <script type="text/javascript" src="~/js/Vue/poc.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"></script>
+    <script type="text/javascript">
+        console.log("testy");
+        const vueComp = genPOC('vue-app');
+    </script>
+
+}

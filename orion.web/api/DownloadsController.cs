@@ -114,6 +114,7 @@ namespace orion.web.api
             }
         }
 
+        [HttpPost]
         public void CreatePasswordProtectedZip(string zipFullFileName, string password, string[] sourcefiles)
         {
             using(var zip = new ZipFile())

@@ -25,6 +25,7 @@ namespace orion.web.api
             _mapper = mapper;
         }
 
+        [HttpGet]
         public async Task<ActionResult<IEnumerable<ClientDTO>>> Get()
         {
             return Ok(await _sitesRepository.GetAllClients());

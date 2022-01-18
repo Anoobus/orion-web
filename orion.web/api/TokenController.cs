@@ -26,6 +26,7 @@ namespace orion.web.api
     }
 
     [Route("api/token")]
+    [Route("orion-api/token")]
     [ApiController]
     public class TokenController : ControllerBase
     {

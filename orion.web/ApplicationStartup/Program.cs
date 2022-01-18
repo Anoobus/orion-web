@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using orion.web.AspNetCoreIdentity;
 using orion.web.DataAccess.EF;
 using Serilog;
@@ -95,5 +96,10 @@ namespace orion.web.ApplicationStartup
             WebHost.CreateDefaultBuilder()
                 .UseSerilog(logger)
                 .UseStartup<Startup>();
+
+        public static IHostBuilder CreateHostBuilder(string[] args)
+       => Host.CreateDefaultBuilder(args)
+           .ConfigureWebHostDefaults(
+               webBuilder => webBuilder.UseStartup<Startup>());
     }
 }

@@ -19,6 +19,8 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.Logging;
 using Serilog;
+using Newtonsoft.Json.Serialization;
+using Microsoft.OpenApi.Models;
 
 namespace orion.web.ApplicationStartup
 {
@@ -47,6 +49,7 @@ namespace orion.web.ApplicationStartup
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
             //Register Serilog for all Microsoft ILogger and ILogger<T>
             //services.AddLogging();
 
@@ -80,8 +83,6 @@ namespace orion.web.ApplicationStartup
             {
 
                 opts.EnableEndpointRouting = false;
-
-
             });
 
             services.AutoRegisterForMarker<IAutoRegisterAsSingleton>(typeof(Startup).Assembly, ServiceLifetime.Singleton);
@@ -91,6 +92,42 @@ namespace orion.web.ApplicationStartup
             services.AddHttpContextAccessor();
             services.AddCustomAutoMapper();
 
+            services.AddSwaggerGen(c =>
+            {
+
+                c.SwaggerDoc("v0", new Microsoft.OpenApi.Models.OpenApiInfo()
+                {
+                    Title = "orion-timetracking.api",
+                    Version = "v0",
+                });
+                c.DocInclusionPredicate((route, descriptor) =>
+                {
+                    if(descriptor.RelativePath.StartsWith("orion-api"))
+                        return true;
+
+                    return false;
+                });
+                c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme()
+                {
+                   Description = "Swashbuckle's AddSecurityDefinition Description...",
+                    Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
+                    In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+                    Name = "Authorization"
+                });
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "Bearer"
+                    }
+                    },
+                    new string[] { }
+                }
+                });
+            });
             LogEmailConfig();
             Serilog.Log.Information($"Services configuration complete");
         }
@@ -144,6 +181,11 @@ namespace orion.web.ApplicationStartup
             app.UseMiddleware<JwtWithCookieAuthMiddleware>();
             app.UseAuthentication();
 
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("v0/swagger.json", "orion-timetracking.api");
+            });
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

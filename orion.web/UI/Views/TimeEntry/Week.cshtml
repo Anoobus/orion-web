@@ -176,7 +176,8 @@
     </div>
     <div>
         <div class="form-group">
-            <a asp-action="IndexForEmployee" asp-route-weekid="@Model.EmployeeId" class="btn btn-default">Back to List</a>
+            <a asp-action="Index" asp-controller="Testing" class="btn btn-default">go-to-testing</a>
+            <input type="button" class="btn btn-default" value="Test Vue Popup" id="vue-test" />
             @if(Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Unkown
 || Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Rejected)
             {
@@ -197,7 +198,7 @@
                 }
 
                 @if(Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Submitted
-   || Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Approved)
+ || Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Approved)
                 {
                     <input type="submit" name="postType" class="btn btn-warning" value="Reject" id="btnReject" />
                 }

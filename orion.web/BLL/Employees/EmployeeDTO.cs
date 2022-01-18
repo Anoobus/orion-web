@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace orion.web.Employees
 { 
     public class EmployeeDTO
     {
         public int EmployeeId { get; set; }
+        public Guid ExternalEmployeeId { get; set; }
         public string UserName { get; set; }
         public string First { get; set; }
         public string Last { get; set; }

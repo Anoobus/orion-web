@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace orion.web.DataAccess.EF
 {
@@ -9,6 +10,7 @@ namespace orion.web.DataAccess.EF
             EmployeeJobs = new HashSet<EmployeeJob>();
         }
         public int EmployeeId { get; set; }
+        public Guid ExternalEmployeeId { get; set; }
         public string UserName { get; set; }
         public string First { get; set; }
         public string Last { get; set; }

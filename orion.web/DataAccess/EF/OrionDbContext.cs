@@ -1,10 +1,26 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 
 namespace orion.web.DataAccess.EF
 {
+    public class MigrationContextFactory : IDesignTimeDbContextFactory<OrionDbContext>
+    {
+        public OrionDbContext CreateDbContext(string[] args)
+        {
+            var optionsBuilder = new DbContextOptionsBuilder<OrionDbContext>();
+            optionsBuilder.UseSqlServer(@"Server=localhost\\sql2017;Integrated Security=true;Database=orion.web;");
+
+            return new OrionDbContext(optionsBuilder.Options);
+        }
+    }
+
     public class OrionDbContext : DbContext
     {
         public const string CONN_STRING_NAME = "SiteConnection";
+        public OrionDbContext()
+            : base(new DbContextOptionsBuilder<OrionDbContext>()
+                  .UseSqlServer(@"Server=localhost\\sql2017;Integrated Security=true;Database=orion.web;")
+                  .Options) { }
         public OrionDbContext(DbContextOptions<OrionDbContext> options)
             : base(options) { }
 
