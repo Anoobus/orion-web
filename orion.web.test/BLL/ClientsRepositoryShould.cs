@@ -70,10 +70,10 @@ namespace orion.web.test.BLL
             var underTest = ctx.GetItemToTest();
 
             var res = await underTest.GetClient(ctx.JoblessClient.ClientId);
-            res.Should().BeEquivalentTo(ctx.JoblessClient);
+            AssertionExtensions.Should(res).BeEquivalentTo(ctx.JoblessClient);
 
             var res2 = await underTest.GetClient(ctx.ClientWithJob.ClientId);
-            res2.Should().BeEquivalentTo(ctx.ClientWithJob);
+            AssertionExtensions.Should(res2).BeEquivalentTo(ctx.ClientWithJob);
         }
 
         [TestMethod]
@@ -83,7 +83,7 @@ namespace orion.web.test.BLL
             var underTest = ctx.GetItemToTest();
 
             var res = await underTest.GetClient(int.MaxValue);
-            res.Should().BeNull();
+            AssertionExtensions.Should(res).BeNull();
         }
 
         [TestMethod]
