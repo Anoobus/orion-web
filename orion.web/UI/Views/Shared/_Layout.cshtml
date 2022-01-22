@@ -8,176 +8,134 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - orion.web</title>
+    <!--Import Google Icon Font-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
-    <link rel="stylesheet" href="~/css/site.css" />
-    <link rel="stylesheet" href="~/css/lib/animate.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
 
-    @*<environment include="Development">
-            <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
-            <link rel="stylesheet" href="~/css/site.css" />
-            <link rel="stylesheet" href="~/css/lib/animate.css" />
-        </environment>
-        <environment exclude="Development">
-            <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/css/bootstrap.min.css"
-                  asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
-                  asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
-            <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
-        </environment>*@
-
-
-
+    
 </head>
 <body>
+    <style>
+        #sys-mgmt-dropdown li a {
+            color: #FFF;
+            font-size: 15px;
+        }
+    </style>
+    @if (User.Identity.IsAuthenticated)
+    {
+        <ul id="sys-mgmt-dropdown" class="dropdown-content grey darken-3 text-white" style="top:64px">
+            <li><a class="waves-effect waves-light text-white" asp-controller="Jobs" asp-action="Index">Jobs</a></li>
+            <li><a class="waves-effect waves-light text-white" asp-controller="Task" asp-action="List">Tasks</a></li>
+            <li><a class="waves-effect waves-light text-white" asp-controller="Clients" asp-action="ListClients">Clients</a></li>
+            <li><a class="waves-effect waves-light text-white" asp-controller="Employee" asp-action="List">Employees</a></li>
+            <li><a class="waves-effect waves-light text-white" asp-controller="Jobs" asp-action="Create">Create New Job</a></li>
+        </ul>
 
-
-    <div class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <div class="navbar-brand ">
-                    <img src="~/images/orion_logo_brand.png" style="margin:0px;padding:0px;height:1.5em" />
-
-                </div>
+        <nav class="grey darken-3">
+            <div class="nav-wrapper">
+                <ul id="nav-mobile" class="">
+                    <li class="valign-wrapper"><img src="/images/orion_logo_brand.png" style="height:32px;margin-top:16px"></li>
+                    <li><a class="waves-effect waves-light" asp-controller="Home" asp-action="Index">Home</a></li>
+                    <li><a class="dropdown-trigger" href="#!" data-target="sys-mgmt-dropdown">System Management <i class="material-icons right">arrow_drop_down</i></a></li>
+                    <li><a class="waves-effect waves-light" asp-controller="TimeEntry" asp-action="Index">Time Entry</a></li>
+                    <li><a class="waves-effect waves-light" asp-controller="TimeApproval" asp-action="Index">Time Approval</a></li>
+                    <li><a class="waves-efect waves-light" asp-controller="Reports" asp-action="Index">View Reports</a></li>
+                    @await Html.PartialAsync("_LoginPartial")
+                </ul>
             </div>
+        </nav>
+    }
 
-            <div class="navbar-collapse collapse">
-                @if(User.Identity.IsAuthenticated)
-                {
-                    <ul class="nav navbar-nav">
-                        <li><a asp-controller="Home" asp-action="Index">Home</a></li>
-                        @if(User.IsInRole(UserRoleName.Admin))
-                        {
-                            <li>
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">System Management <b class="caret"></b></a>
-                                <ul class="dropdown-menu multi-level">
-                                    <li><a asp-controller="Jobs" asp-action="Index">Jobs</a></li>
-                                    <li><a asp-controller="Task" asp-action="List">Tasks</a></li>
-                                    <li><a asp-controller="Clients" asp-action="ListClients">Clients</a></li>
-                                    <li><a asp-controller="Employee" asp-action="List">Employees</a></li>
-                                    <li><a asp-controller="Jobs" asp-action="Create">Create New Job</a></li>
-                                </ul>
-                            </li>
-                        }
-                        else
-                        {
-                            <li><a asp-controller="Jobs" asp-action="Index">My Jobs</a></li>
-                        }
-                        <li><a asp-controller="TimeEntry" asp-action="Index">Time Entry</a></li>
-                        @if(User.IsInRole(UserRoleName.Admin))
-                        {
 
-                            <li><a asp-controller="TimeApproval" asp-action="Index">Time Approval</a></li>
-                        }
-                        <li><a asp-controller="Reports" asp-action="Index">View Reports</a></li>
-                    </ul>
-                }
-                @await Html.PartialAsync("_LoginPartial")
-            </div>
 
-        </div>
-    </div>
+
     <partial name="_CookieConsentPartial" />
 
-    <div class="container body-content">
-        @RenderBody()
-        <hr />
+
+    @RenderBody()
+
+    @if (User.Identity.IsAuthenticated)
+    {
         <footer>
             <p>
                 &copy; 2021 - Pragmatic Software Solutions LLC<br />
                 <span style="font-size:8px">@Startup.AppVersion.Value</span>
             </p>
         </footer>
-    </div>
 
-    <environment include="Development">
-        <script src="~/lib/jquery/dist/jquery.js"></script>
-        <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
-        <script src="~/js/site.js" asp-append-version="true"></script>
-        <script asp-src-include="~/lib/bootstrap-notify/bootstrap-notify.min.js"></script>
-    </environment>
-    <environment exclude="Development">
-        <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.3.1.min.js"
-                asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
-                asp-fallback-test="window.jQuery"
-                crossorigin="anonymous"
-                integrity="sha384-tsQFqpEReu7ZLhBV2VZlAu7zcOV+rXbYlF2cqB8txI/8aZajjp4Bqd+V6D5IgvKT">
-        </script>
-        <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/bootstrap.min.js"
-                asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
-                asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal"
-                crossorigin="anonymous"
-                integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa">
-        </script>
-        <script src="~/js/site.min.js" asp-append-version="true"></script>
-        <script asp-src-include="~/lib/bootstrap-notify/bootstrap-notify.min.js"></script>
-    </environment>
+        }
 
-    <script type="text/javascript">
-        function toastSuccess(data) {
-            $.notify({
-                // options
-                icon: 'glyphicon glyphicon-info-sign',
-                message: data
-            }, {
-                    // settings
-                    type: 'info',
-                    placement: {
-                        from: "bottom",
-                        align: "center"
-                    },
-                    offset: 20,
-                    spacing: 10,
-                    delay: 2000,
-                    timer: 700,
-                    animate: {
-                        enter: 'animated fadeInUp',
-                        exit: 'animated fadeOutDown'
-                    },
+        @*<script type="text/javascript">
+                function toastSuccess(data) {
+                    $.notify({
+                        // options
+                        icon: 'glyphicon glyphicon-info-sign',
+                        message: data
+                    }, {
+                            // settings
+                            type: 'info',
+                            placement: {
+                                from: "bottom",
+                                align: "center"
+                            },
+                            offset: 20,
+                            spacing: 10,
+                            delay: 2000,
+                            timer: 700,
+                            animate: {
+                                enter: 'animated fadeInUp',
+                                exit: 'animated fadeOutDown'
+                            },
+                        });
+                }
+                function toastError(e) {
+                    $.notify({
+                        // options
+                        message: "couldn't get notifications: " + e.status
+                    }, {
+                            // settings
+                            type: 'error',
+                            placement: {
+                                from: "bottom",
+                                align: "center"
+                            },
+                            offset: 20,
+                            spacing: 10,
+                            delay: 2000,
+                            timer: 700,
+                            animate: {
+                                enter: 'animated fadeInUp',
+                                exit: 'animated fadeOutDown'
+                            },
+                        });
+                }
+                $(document).ready(function () {
+                    $.get("/api/Notifications")
+                        .done(function (data) {
+                            if (Object.keys(data).length !== 0) {
+                                toastSuccess(data);
+                            }
+                        })
+                        .fail(function (e) {
+                            @if(User.Identity.IsAuthenticated)
+                            {
+                            <Text>
+                            toastError(e);
+                            </Text>
+                            }
+                        });
                 });
-        }
-        function toastError(e) {
-            $.notify({
-                // options
-                message: "couldn't get notifications: " + e.status
-            }, {
-                    // settings
-                    type: 'error',
-                    placement: {
-                        from: "bottom",
-                        align: "center"
-                    },
-                    offset: 20,
-                    spacing: 10,
-                    delay: 2000,
-                    timer: 700,
-                    animate: {
-                        enter: 'animated fadeInUp',
-                        exit: 'animated fadeOutDown'
-                    },
+            </script>*@
+        @RenderSection("Scripts", required: false)
+        <!-- Compiled and minified JavaScript -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+        <script type="text/javascript">document.addEventListener('DOMContentLoaded', function () {
+                var elems = document.querySelectorAll('.dropdown-trigger');
+                var instances = M.Dropdown.init(elems, {
+
                 });
-        }
-        $(document).ready(function () {
-            $.get("/api/Notifications")
-                .done(function (data) {
-                    if (Object.keys(data).length !== 0) {
-                        toastSuccess(data);
-                    }
-                })
-                .fail(function (e) {
-                    @if(User.Identity.IsAuthenticated)
-                    {
-                    <Text>
-                    toastError(e);
-                    </Text>
-                    }
-                });
-        });
-    </script>
-    @RenderSection("Scripts", required: false)
-</body>
+            });</script>
+    </body>
 </html>

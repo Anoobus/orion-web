@@ -1,63 +1,114 @@
 ﻿@page
 @model LoginModel
-
 @{
     ViewData["Title"] = "Log in";
 }
+<style>
+    #login-image {
+        background-image: url("/images/wind-turbine.jpg");
+        background-size: cover;
+        background-repeat: no-repeat;
+    }
+    #login-controls {
+        height:80vh;
+    }
+    #login-wrapper {
+        margin: 8px;
+        padding: 4%;
+    }
 
-<div class="row">
-    <div class="col-lg-12 text-center">
-        <img src="~/images/orion_logo_large.png" width="705" height="200" />
-    </div>
-    </div>
-    <div class="row">
-        <div class="col-md-4 col-lg-offset-4">
-            
-            <section class="well well-lg">
-                <h4 class="text-center">Login</h4>
-                <form method="post">
-                    <div asp-validation-summary="All" class="text-danger"></div>
-                    <div class="form-group">
-                        <input asp-for="Input.Email" class="form-control" placeholder="Username" />
-                        <span asp-validation-for="Input.Email" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <input asp-for="Input.Password" class="form-control" placeholder="Password" />
-                        <span asp-validation-for="Input.Password" class="text-danger"></span>
-                    </div>
-                    <hr />
-                    @*<div class="form-group">
-                            <div class="checkbox">
-                                <label asp-for="Input.RememberMe">
-                                    <input asp-for="Input.RememberMe" />
-                                    @Html.DisplayNameFor(m => m.Input.RememberMe)
-                                </label>
-                            </div>
-                        </div>*@
-                    <div class="form-group text-center">
-                        <button type="submit" class="btn btn-default">Log in</button>
-                    </div>
-                </form>
-            </section>
+    /* label color */
+    .input-field label {
+        color: #616161;
+    }
 
+    /* active label color 
+    .input-field label[active] {
+        color: #424242 !important;
+    }
+        */
+    /* label focus color */
+    .input-field input:focus + label {
+        color: #424242 !important;
+    }
+    /* label underline focus color */
+    .input-field input:focus {
+        border-bottom: 1px solid #424242 !important;
+        box-shadow: 0 1px 0 0 #424242 !important;
+    }
+    /* valid color */
+    .input-field input.valid {
+        border-bottom: 1px solid #616161 !important;
+        box-shadow: 0 1px 0 0 #616161 !important;
+    }
+    /* invalid color */
+    .input-field input.invalid {
+        border-bottom: 1px solid red !important;
+        box-shadow: 0 2px 0 0 red !important;
+    }
+    /* icon prefix focus color */
+    .input-field .prefix.active {
+        color: #424242 !important;
+    }
+
+
+</style>
+<div class="row grey" style="margin-bottom: 0;height:100vh">
+    <div style="height:100vh" class="col s3 hide-on-small-only red darken-4">
+        <div style="padding-top:15vh">
+            <img src="/images/orion_logo_large_white.png" width="200">
         </div>
-        <div class="col-md-6 col-md-offset-2">
-            <section>
-                <h4>Need an account?</h4>
-                <hr />
+        <h4 class="white-text">Need an account?</h4>
+        <hr class="white-text">
+        <div class="white-text">
+            <p>
+                You will need to work with your administrator to get an account created. They will provide you with credentials to get you started.
+            </p>
+        </div>
+    </div>
+    <div id="login-image" class="col s9 grey darken-3" style="height:100vh;width:100vw">
+        <div class="row">
+            <div class="col s2 hide-on-small-only"></div>
+            <div class="col m8 s12">
 
+                <div id="login-controls" class="valign-wrapper">
 
-                <div>
-                    <p>
-                        You will need to work with your administrator to get an account created. They will provide you with credentials to get you started.
-                    </p>
+                    <div id="login-wrapper" class="white z-depth-5">
+
+                        <form method="post">
+                            <div asp-validation-summary="All" class=""></div>
+                            <div class="input-field">
+
+                                <input asp-for="Input.Email" class="validate" />
+                                <label asp-for="Input.Email">Username</label>
+
+                            </div>
+                            <div class="input-field">
+                                <input asp-for="Input.Password" class="validate" />
+                                <label asp-for="Input.Password">Password</label>
+
+                            </div>
+                            <span asp-validation-for="Input.Email"></span>
+                            <span asp-validation-for="Input.Password"></span>
+                            <div class="">
+                                <button type="submit" class="btn red darken-3 waves-effect waves-white">Log in</button>
+                            </div>
+                        </form>
+                    </div>
+
                 </div>
 
+            </div>
+            <div class="col s2 hide-on-small-only"></div>
 
-            </section>
+
+            @section Scripts {
+                <partial name="_ValidationScriptsPartial" />
+            }
+
         </div>
     </div>
+</div>
 
-    @section Scripts {
-        <partial name="_ValidationScriptsPartial" />
-    }
+
+

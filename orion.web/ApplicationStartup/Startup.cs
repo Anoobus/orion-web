@@ -21,6 +21,7 @@ using Microsoft.Extensions.Logging;
 using Serilog;
 using Newtonsoft.Json.Serialization;
 using Microsoft.OpenApi.Models;
+using Microsoft.Extensions.Hosting;
 
 namespace orion.web.ApplicationStartup
 {
@@ -37,7 +38,7 @@ namespace orion.web.ApplicationStartup
             return $"{name}: {assm.GetName().Version}";
         });
 
-        public Startup(IConfiguration configuration, IHostingEnvironment environment)
+        public Startup(IConfiguration configuration, IWebHostEnvironment environment)
         {
             Configuration = configuration;
             Serilog.Log.Information($"Running startup for {environment.EnvironmentName}");
@@ -148,7 +149,7 @@ namespace orion.web.ApplicationStartup
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             Serilog.Log.Information($"Configuring: {env.ApplicationName} for env {env.EnvironmentName}");
             if(env.IsDevelopment())

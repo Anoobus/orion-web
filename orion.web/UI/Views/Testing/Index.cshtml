@@ -4,7 +4,7 @@
 <div class="row">
     <div class="col-md-4">
         <div id="vue-app">
-
+            Vue is running!
             <div v-for="item in info" v-if="isLoaded">
                 <span class="placeholder">{{item.name}}</span>
                 <span>{{item.jobCode}}</span>
@@ -28,20 +28,15 @@
     -->
 <div class="row">
     <div class="col-md-4">
-        <div class="form-group">
-            <label class="control-label" for="job-id"></label>
-            <input id="job-id" class="form-control" />
+        <div>
+          
+            <ul class="list-group list-group-horizontal">
+                <li class="list-group-item list-group-item-active">Step <span class="badge">1</span></li>
+                <li class="list-group-item">Step <span class="badge">2</span></li>
+                <li class="list-group-item">Step <span class="badge">3</span></li>
+            </ul>
         </div>
-        <div class="form-group">
-            <label class="control-label" for="job-id"></label>
-            <input id="job-id" class="form-control" />
-        </div>
-        <div class="form-group">
-            <label class="control-label" for="job-id"></label>
-            <input id="job-id" class="form-control" />
-        </div>
-        <input type="button" value="save" />
-
+        
     </div>
 </div>
 @section scripts {

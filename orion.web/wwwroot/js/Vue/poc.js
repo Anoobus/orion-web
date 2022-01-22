@@ -15,7 +15,7 @@ const genPOC = function vuePOCApp(targetId) {
                 }
             }
         },
-        templa
+    
         created() {
             this.debouncedHandler = _.debounce(event => {
                 console.log("new value: ", event.target.value);

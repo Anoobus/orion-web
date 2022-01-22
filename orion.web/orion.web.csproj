@@ -9,7 +9,7 @@
     <AssemblyVersion>1.0.4.0</AssemblyVersion>
     <FileVersion>1.0.4.0</FileVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <IdentityUIFrameworkVersion>Bootstrap3</IdentityUIFrameworkVersion>
+    <IdentityUIFrameworkVersion>Bootstrap4</IdentityUIFrameworkVersion>
   </PropertyGroup>
 
   <ItemGroup>

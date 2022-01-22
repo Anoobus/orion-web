@@ -73,7 +73,7 @@ namespace orion.web.ApplicationStartup
         }
         public static readonly string key = Guid.NewGuid().ToString() + Guid.NewGuid().ToString();
 
-        private async Task<bool> SignInFromToken(HttpContext context, string token)
+        private Task<bool> SignInFromToken(HttpContext context, string token)
         {
             try
             {
@@ -89,7 +89,7 @@ namespace orion.web.ApplicationStartup
                 //var user = await signInManager.UserManager.FindByNameAsync(fullToken.Subject);
                 //await signInManager.SignInAsync(user, true);
                 context.User = principal;
-                return true;
+                return Task.FromResult(true);
 
             }
             catch(Exception e)
@@ -97,7 +97,7 @@ namespace orion.web.ApplicationStartup
                 //eat it
                 _logger.LogError(e, "Error trying to validate token");
             }
-            return false;
+            return Task.FromResult(false);
         }
 
     }
