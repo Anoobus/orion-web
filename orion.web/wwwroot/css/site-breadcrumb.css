@@ -1,0 +1,10 @@
+﻿#bread-crumb-bar {
+    height: 30px;
+    line-height: 30px;
+    padding-left: 10vw;
+    margin-bottom: 12px;
+}
+
+#bread-crumb-bar .breadcrumb {
+    font-size: 14px;
+}

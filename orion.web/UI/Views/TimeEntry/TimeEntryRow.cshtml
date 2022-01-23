@@ -1,15 +1,15 @@
 ﻿@model orion.web.TimeEntries.TimeEntryViewModel
 
 <tr auto-sum-row @Html.Raw($"row-{Model.RowId}")>
-    <td colspan="2">
+    <td colspan="2" class="description-cell">
         <div style="vertical-align:middle; display:inline-block">
-            <a class="row-action" href="#edit" row-id="@Model.RowId" data-toggle="modal" data-target="#exampleModal"><span class="glyphicon glyphicon-edit"></span></a>
-            <a class="row-action" href="#remove" row-id="@Model.RowId"><span class="glyphicon glyphicon-trash"></span></a>
+            <a class="row-action" href="#edit" row-id="@Model.RowId" data-toggle="modal" data-target="#exampleModal"><i class="tiny material-icons">create</i></a>
+            <a class="row-action" href="#remove" row-id="@Model.RowId"> <i class="tiny material-icons">delete</i></a>
             @Html.HiddenFor(model => model.RowId)
             @Html.HiddenFor(model => model.SelectedTaskId)
             @Html.HiddenFor(model => model.SelectedJobId)
         </div>
-        <div style="vertical-align:middle; display:inline-block; text-align:left">
+        <div class="text-white" style="vertical-align:middle; display:inline-block; text-align:left; font-size:14px">
             <label for="row-@Model.RowId">
                 @Model.SelectedJobCode / <span class="text-muted">@Model.SelectedEntryJobName</span>
             </label>
@@ -27,7 +27,7 @@
     @Html.EditorFor(model => model.Thursday, "~/UI/Views/TimeEntry/TimeEntryCell.cshtml")
     @Html.EditorFor(model => model.Friday, "~/UI/Views/TimeEntry/TimeEntryCell.cshtml")
     <td class="form-inline" style="display:none" day="ot-col-total"></td>
-    <td class="form-inline" day="col-total"></td>
+    <td class="form-inline hide-on-small-only" day="col-total"></td>
 </tr>
 
 

@@ -1,133 +1,148 @@
 ﻿@model orion.web.TimeEntries.WeekListViewModel
 @using orion.web.Employees
 
-<ol class="breadcrumb">
-    <li class="breadcrumb-item active"> @Model.EmployeeDisplayName's Weekly Listing</li>
-</ol>
-<div class="row">
-    <div class="col-md-3">
-        <div class="form-group">
-            <a class="btn btn-success" asp-action="Current" asp-route-employeeId="@Model.EmployeeId" >Edit This Weeks Time</a>
-        </div>
-        @if(User.IsInRole(UserRoleName.Admin))
-        {
-            <div class="form-group">
-                <a class="btn btn-success" href="@Url.Action("Index", "Reports")">View Reports</a>
-            </div>
-        }
-        <div class="form-group  form-inline ">
-            Start with week containing:  <div class='input-group date' id='startWithDate'>
-                <input type='text' class="form-control" value="@Model.StartWithDate.ToShortDateString()" id="date-picker" />
-                <span class="input-group-addon">
-                    <span class="glyphicon glyphicon-calendar"></span>
-                </span>
-            </div>
-        </div>
-        <div class="form-group  form-inline ">
-            Number of weeks to show: <select class="form-control" id="WeeksToShow" name="WeeksToShow">
-                <!option value="5" @(Model.WeeksToShow == 5 ? "selected" : "")>5</!option>
-                <!option value="10" @(Model.WeeksToShow == 10 ? "selected" : "")>10</!option>
-                <!option value="20" @(Model.WeeksToShow == 20 ? "selected" : "")>20</!option>
-                <!option value="50" @(Model.WeeksToShow == 50 ? "selected" : "")>50</!option>
-            </select>
+
+<nav id="bread-crumb-bar" class="red darken-3">
+    <div class="nav-wrapper ">
+        <div class="col s12">
+            <a href="#!" class="breadcrumb">Home</a>
+            <a href="#!" class="breadcrumb">@Model.EmployeeDisplayName's Weekly Listing</a>
+
         </div>
     </div>
+</nav>
+<div class="row">
+    <div class="container">
 
-    <div class="col-md-9">
 
-        <table class="table table-hover">
-            <thead>
-                <tr class="week-list-row">
-                    <th>
-                        Week Start
-                    </th>
-                    <th>
-                        Week End
-                    </th>
-                    <th>
-                        Reg
-                    </th>
-                    <th>
-                        OT
-                    </th>
-                    <th>
-                        Status
-                    </th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach(var item in Model.Weeks)
+        <div class="row">
+            <div class="col s4">
+                <div class="row">
+                    <a class="grey darken-2 btn text-white waves-effect waves-light" asp-action="Current" asp-route-employeeId="@Model.EmployeeId">Edit This Weeks Time</a>
+                </div>
+                @if (User.IsInRole(UserRoleName.Admin))
                 {
-                    <tr class="week-list-row">
-                        <td>
-                            @item.WeekStart.ToShortDateString()
-                        </td>
-                        <td>
-                            @item.WeekEnd.ToShortDateString()
-                        </td>
-                        <td>
-                            @item.TotalRegular.ToString("0.#")
-                        </td>
-                        <td>
-                            @item.TotalOverTime.ToString("0.#")
-                        </td>
-                        <td>
-                            @if(item.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Unkown)
-                            {
-                                <span class="label label-info">Not submitted</span>
-                            }
-                            else if(item.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Approved)
-                            {
-                                <span class="label label-success">
-                                    @item.ApprovalStatus
-                                </span>
-                            }
-                            else if(item.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Rejected)
-                            {
-                                <span class="label label-danger">
-                                    @item.ApprovalStatus
-                                </span>
-                            }
-                            else if(item.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Submitted)
-                            {
-                                <span class="label label-primary">
-                                    @item.ApprovalStatus
-                                </span>
-                            }
-                        </td>
-                        <td>
-                            <div style="display:inline-block">
-                                @if(item.IsCurrentWeek)
-                                {
-                                    @Html.ActionLink("Details (Current Week)", "Edit", new { weekId = item.WeekId, employeeId = Model.EmployeeId })
-                                }
-                                else
-                                {
-                                    @Html.ActionLink("Details", "Edit", new { weekId = item.WeekId, employeeId = Model.EmployeeId })
-                                }
-                            </div>
-                        </td>
-                    </tr>
+                    <div class="row">
+                        <a class="grey darken-2 btn text-white waves-effect waves-light" href="@Url.Action("Index", "Reports")">View Reports</a>
+                    </div>
                 }
-            </tbody>
-        </table>
+                <div class="row">
+                    <label for="week-date">Start with week containing</label>
+                    <input id="week-date" type="text" class="start-week datepicker" value="@Model.StartWithDate.ToShortDateString()">
+                    
+
+                </div>
+                <div class="row">
+                   <label for="weeks-to-show">Number of weeks to show</label>
+                        <select id="weeks-to-show">
+                            <!option value="5" @(Model.WeeksToShow == 5 ? "selected" : "")>5</!option>
+                            <!option value="10" @(Model.WeeksToShow == 10 ? "selected" : "")>10</!option>
+                            <!option value="20" @(Model.WeeksToShow == 20 ? "selected" : "")>20</!option>
+                            <!option value="50" @(Model.WeeksToShow == 50 ? "selected" : "")>50</!option>
+
+                        </select>
+                        
+                 
+
+
+                </div>
+            </div>
+
+            <div class="col s8">
+
+                <table class="table table-hover">
+                    <thead>
+                        <tr class="week-list-row">
+                            <th>
+                                Week Start
+                            </th>
+                            <th>
+                                Week End
+                            </th>
+                            <th>
+                                Reg
+                            </th>
+                            <th>
+                                OT
+                            </th>
+                            <th>
+                                Status
+                            </th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Weeks)
+                        {
+                            <tr class="week-list-row">
+                                <td>
+                                    @item.WeekStart.ToShortDateString()
+                                </td>
+                                <td>
+                                    @item.WeekEnd.ToShortDateString()
+                                </td>
+                                <td>
+                                    @item.TotalRegular.ToString("0.#")
+                                </td>
+                                <td>
+                                    @item.TotalOverTime.ToString("0.#")
+                                </td>
+                                <td>
+                                    @if (item.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Unkown)
+                                    {
+                                        <span class="label label-info">Not submitted</span>
+                                    }
+                                    else if (item.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Approved)
+                                    {
+                                        <span class="label label-success">
+                                            @item.ApprovalStatus
+                                        </span>
+                                    }
+                                    else if (item.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Rejected)
+                                    {
+                                        <span class="label label-danger">
+                                            @item.ApprovalStatus
+                                        </span>
+                                    }
+                                    else if (item.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Submitted)
+                                    {
+                                        <span class="label label-primary">
+                                            @item.ApprovalStatus
+                                        </span>
+                                    }
+                                </td>
+                                <td>
+                                    <div style="display:inline-block">
+                                        @if (item.IsCurrentWeek)
+                                        {
+                                            @Html.ActionLink("Details (Current Week)", "Edit", new { weekId = item.WeekId, employeeId = Model.EmployeeId })
+                                        }
+                                        else
+                                        {
+                                            @Html.ActionLink("Details", "Edit", new { weekId = item.WeekId, employeeId = Model.EmployeeId })
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
     </div>
 </div>
-
-
-
 
 @section scripts {
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
     @*<script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>*@
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment-with-locales.min.js"></script>
+    <!--<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment-with-locales.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/3.1.3/js/bootstrap-datetimepicker.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/3.1.3/css/bootstrap-datetimepicker.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/3.1.3/css/bootstrap-datetimepicker.min.css" />-->
     @*<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" />*@
-    <script type="text/javascript">
-        $(function () {
-            var bindDatePicker = function () {
+    <script type="text/javascript">$(function () {
+            @*var bindDatePicker = function () {
                 $(".date").datetimepicker({
                     format: 'MM/DD/YYYY',
                     icons: {
@@ -140,22 +155,24 @@
                     $(this).val(date);
                 });
 
-            }
-            $('.date').change(function () {
+            }*@
+    $('.start-week').change(function () {
+        console.log("start-week changed!");
                 reloadIfNewSettingsPresent();
-            });
-            $('#WeeksToShow').change(function () {
+    });
+
+    $('#weeks-to-show').change(function () {
+        console.log("week to show changed!");
                 reloadIfNewSettingsPresent();
-            });
+    });
+
             function reloadIfNewSettingsPresent() {
-                let date = $('#date-picker').val();
-                let weeksToShow = $('#WeeksToShow').val();
+                let date = $('.start-week').val();
+                let weeksToShow = $('#weeks-to-show').val();
                 let newSettings = window.location.pathname + "?" + $.param({ 'startWithDate': date, 'weeksToShow': weeksToShow });
                 if (newSettings != window.location.href) {
                     window.location.href = newSettings;
                 }
             };
-            bindDatePicker();
-        });
-    </script>
+        });</script>
 }

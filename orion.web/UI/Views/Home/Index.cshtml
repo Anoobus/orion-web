@@ -2,23 +2,27 @@
 
 @model string
 
-<div class="jumbotron">
-    @if(User?.Identity?.IsAuthenticated ?? false)
-    {
-        <h1>Welcome, @ViewData["first"]</h1>
+<div class="row">
+    <div class="s12">
+        <div class="container">
+            @if (User?.Identity?.IsAuthenticated ?? false)
+            {
+                <h1>Welcome, @ViewData["first"]</h1>
 
-        <a class="btn btn-lg btn-success" href="@Url.Action("Index","TimeEntry")">Enter Time</a>
-        <a class="btn btn-lg btn-success" href="@Url.Action("Index","Jobs")">My Jobs</a>
-        @if(User.IsInRole(UserRoleName.Admin))
-        {
-            <a class="btn btn-lg btn-success" href="@Url.Action("Index","Reports")">View Reports</a>
-        }
+                <a class="grey darken-2 btn text-white waves-effect waves-light" href="@Url.Action("Index","TimeEntry")">Enter Time</a>
+                <a class="grey darken-2 btn text-white waves-effect waves-light" href="@Url.Action("Index","Jobs")">My Jobs</a>
+                @if (User.IsInRole(UserRoleName.Admin))
+                {
+                    <a class="grey darken-2 btn text-white waves-effect waves-light" href="@Url.Action("Index","Reports")">View Reports</a>
+                }
 
-    }
+            }
 
-    else
-    {
-        <h1>Login to use the system</h1>
-        <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-lg btn-success">Login</a>
-    }
+            else
+            {
+                <h1>Login to use the system</h1>
+                <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-lg btn-success">Login</a>
+            }
+        </div>
+    </div>
 </div>

@@ -10,16 +10,36 @@
     <title>@ViewData["Title"] - orion.web</title>
     <!--Import Google Icon Font-->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-
-    
+    <!--
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" />
+        -->
+    <link rel="stylesheet" href="/css/material-compiled-sass/materialize.css" />
+    <link rel="stylesheet" href="/css/site-breadcrumb.css"/>
+    <!--
+    <link rel="stylesheet" href="/css/site-buttons.css" />
+    <link rel="stylesheet" href="/css/site-date-picker.css" />
+    -->
 </head>
 <body>
     <style>
+        body {
+            display: flex;
+            min-height: 100vh;
+            flex-direction: column;
+        }
+
+        main {
+            flex: 1 0 auto;
+        }
+
         #sys-mgmt-dropdown li a {
             color: #FFF;
             font-size: 15px;
+        }
+
+        footer {
+            height: 30px;
+            line-height: 30px;
         }
     </style>
     @if (User.Identity.IsAuthenticated)
@@ -53,89 +73,33 @@
     <partial name="_CookieConsentPartial" />
 
 
-    @RenderBody()
-
     @if (User.Identity.IsAuthenticated)
     {
-        <footer>
-            <p>
-                &copy; 2021 - Pragmatic Software Solutions LLC<br />
-                <span style="font-size:8px">@Startup.AppVersion.Value</span>
-            </p>
+        <main>
+            @RenderBody()
+        </main>
+        <footer class="red darken-4 white-text">
+            <div class="footer-copyright">
+                <div class="container">
+                    &copy; 2022 - Pragmatic Software Solutions LLC
+                    <div class="right">@Startup.AppVersion.Value</div>
+                </div>
+            </div>
         </footer>
+    }
+    else
+    {
+        <div>
+            @RenderBody()
+        </div>
+    }
 
-        }
 
-        @*<script type="text/javascript">
-                function toastSuccess(data) {
-                    $.notify({
-                        // options
-                        icon: 'glyphicon glyphicon-info-sign',
-                        message: data
-                    }, {
-                            // settings
-                            type: 'info',
-                            placement: {
-                                from: "bottom",
-                                align: "center"
-                            },
-                            offset: 20,
-                            spacing: 10,
-                            delay: 2000,
-                            timer: 700,
-                            animate: {
-                                enter: 'animated fadeInUp',
-                                exit: 'animated fadeOutDown'
-                            },
-                        });
-                }
-                function toastError(e) {
-                    $.notify({
-                        // options
-                        message: "couldn't get notifications: " + e.status
-                    }, {
-                            // settings
-                            type: 'error',
-                            placement: {
-                                from: "bottom",
-                                align: "center"
-                            },
-                            offset: 20,
-                            spacing: 10,
-                            delay: 2000,
-                            timer: 700,
-                            animate: {
-                                enter: 'animated fadeInUp',
-                                exit: 'animated fadeOutDown'
-                            },
-                        });
-                }
-                $(document).ready(function () {
-                    $.get("/api/Notifications")
-                        .done(function (data) {
-                            if (Object.keys(data).length !== 0) {
-                                toastSuccess(data);
-                            }
-                        })
-                        .fail(function (e) {
-                            @if(User.Identity.IsAuthenticated)
-                            {
-                            <Text>
-                            toastError(e);
-                            </Text>
-                            }
-                        });
-                });
-            </script>*@
-        @RenderSection("Scripts", required: false)
-        <!-- Compiled and minified JavaScript -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    @RenderSection("Scripts", required: false)
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
-        <script type="text/javascript">document.addEventListener('DOMContentLoaded', function () {
-                var elems = document.querySelectorAll('.dropdown-trigger');
-                var instances = M.Dropdown.init(elems, {
-
-                });
-            });</script>
-    </body>
+    <script src="/js/site.js" type="text/javascript"></script>
+</body>
 </html>

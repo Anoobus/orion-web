@@ -1,0 +1,15 @@
+﻿.datepicker-date-display {
+    background-color: #d32f2f;
+}
+
+.picker__weekday-display {
+    background-color: #d32f2f;
+}
+
+.picker__day--selected, .picker__day--selected:hover, .picker--focused .picker__day--selected {
+    background-color: #b71c1c;
+}
+
+td.is-selected button.datepicker-day-button {
+    background-color: #b71c1c;
+}
