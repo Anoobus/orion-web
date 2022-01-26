@@ -41,13 +41,17 @@
         background-color: green;
     }*/
     #time-entry th.job-task-description {
-        min-width:200px;
+        min-width:230px;
     }
     #time-entry td {
         line-height: 10px;
         font-size: 9px;
         padding-top: 0px;
         padding-bottom: 0px;
+
+    }
+    #time-entry td label {
+        color: #000000;
     }
     #time-entry tr td:last-of-type {
         font-size: inherit;
@@ -56,7 +60,7 @@
         font-size: 15px;
         font-weight: bold;
     }
-
+    /*
     #time-entry tr:nth-child(odd) {
         background: #fafafa;
         color: #000000;
@@ -65,18 +69,62 @@
         background: #eeeeee;
         color: #000000;
     }
-    #time-entry thead tr:first-child, #time-entry tbody tr td:last-of-type {
-        background: #61616161;
+        */
+    #time-entry thead tr:first-child, #time-entry tbody tr td:last-of-type, #time-entry tfoot tr {
+        background: #37474f;
         color: #FFF;
+    }
+    div.week-errors {
+        padding: 6px;
+        margin: 8px;
+        background-color: #c62828;
+        color: #FFF;
+        font-weight: bold;
+        padding-top: 2px;
+        padding-bottom: 2px;
+        font-size: .7rem;
+    }
+
+    td input[type='text'], tfoot tr th, thead tr th, tbody tr td:last-of-type {
+        text-align: center;
+    }
+
+    table tfoot tr th, table thead tr th {
+        padding-top: 5px;
+        padding-bottom: 5px;
     }
 </style>
 <form asp-action="Save" method="post">
 
+
+    <div class="row">
+        <style>
+            .validation-summary-valid {
+                display: none;
+                font-size: 1.5em;
+            }
+        </style>
+        <div asp-validation-summary="All" class="col s8 offset-s2 text-danger card-panel week-errors pulse rounded"></div>
+        <script type="text/javascript">document.addEventListener('DOMContentLoaded', function () {
+    let errors = document.querySelectorAll('div.week-errors ul li');
+    if (errors.length) {
+        errors[0].parentElement.appendChild('<li><i class="tiny material - icons">error_outline</i></li>')
+        errors.forEach(li => li.innerHTML = '&nbsp;&nbsp;' + li.innerHTML);
+
+    }
+                setTimeout(() => {
+                    console.log('remove pulse');
+                    document.getElementsByClassName("week-errors")[0].classList.remove('pulse');
+                    console.log('pulse removed');
+                }, 3500);
+            })</script>
+    </div>
     <div class="row">
         <div class="col s12">
-            <div asp-validation-summary="All" class="text-danger"></div>
+
+
             @if (Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Approved
-      || Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Submitted)
+     || Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Submitted)
             {
                 <div class="row">
                     <div class="col-md-12">
@@ -87,59 +135,56 @@
                 </div>
             }
 
-            <table class="highlite z-depth-4" id="time-entry">
+            <table class="highlite z-depth-4 striped hover" id="time-entry">
                 <thead>
-                    <tr class="">
+                    <tr class="z-depth-4">
                         <th class="job-task-description" colspan="2">Effort</th>
                         <th day="col-saturday">
                             Sat
-                            <a href="#" class="ot-button">
-
-
-
-                                <i class="material-icons">access_time</i>
+                            <a href="#" class="ot-button white-text">
+                                <i class="tiny material-icons">access_time</i>
                             </a>
                         </th>
                         <th style="display:none" day="ot-col-saturday">OT-Sat</th>
                         <th day="col-sunday">
                             Sun
-                            <a href="#" class="ot-button">
-                                <i class="material-icons">access_time</i>
+                            <a href="#" class="ot-button white-text">
+                                <i class="tiny material-icons">access_time</i>
                             </a>
                         </th>
                         <th style="display:none" day="ot-col-sunday">OT-Sun</th>
                         <th day="col-monday">
                             Mon
-                            <a href="#" class="ot-button">
-                                <i class="material-icons">access_time</i>
+                            <a href="#" class="ot-button white-text">
+                                <i class="tiny material-icons">access_time</i>
                             </a>
                         </th>
                         <th style="display:none" day="ot-col-monday">OT-Mon</th>
                         <th day="col-tuesday">
                             Tues
-                            <a href="#" class="ot-button">
-                                <i class="material-icons">access_time</i>
+                            <a href="#" class="ot-button white-text">
+                                <i class="tiny material-icons">access_time</i>
                             </a>
                         </th>
                         <th style="display:none" day="ot-col-tuesday">OT-Tue</th>
                         <th day="col-wednesday">
                             Wed
-                            <a href="#" class="ot-button">
-                                <i class="material-icons">access_time</i>
+                            <a href="#" class="ot-button white-text">
+                                <i class="tiny material-icons">access_time</i>
                             </a>
                         </th>
                         <th style="display:none" day="ot-col-wednesday">OT-Wed</th>
                         <th day="col-thursday">
                             Thur
-                            <a href="#" class="ot-button">
-                                <i class="material-icons">access_time</i>
+                            <a href="#" class="ot-button white-text">
+                                <i class="tiny material-icons">access_time</i>
                             </a>
                         </th>
                         <th style="display:none" day="ot-col-thursday">OT-Thur</th>
                         <th day="col-friday">
                             Fri
-                            <a href="#" class="ot-button">
-                                <i class="material-icons">access_time</i>
+                            <a href="#" class="ot-button white-text">
+                                <i class="tiny material-icons">access_time</i>
                             </a>
                         </th>
                         <th style="display:none" day="ot-col-friday">OT-Fri</th>
@@ -160,7 +205,9 @@
                     <tr>
                         <th colspan="2">
                             <button type="button"
-                                    id="AddJob" class="btn-flat">Add Job/Task</button>
+                                    id="AddJob" class="btn grey darken-2">
+                                Add Job/Task
+                            </button>
                         </th>
                         <th day="col-saturday"></th>
                         <th day="ot-col-saturday" style="display:none"></th>
@@ -238,77 +285,78 @@
     *@
     <style>
         .modal {
-           overflow:hidden;
-           min-height: 500px !important;
+            overflow: hidden;
+            min-height: 500px !important;
         }
+
         .modal-info-blurb {
-               height:100vh; 
+            height: 100vh;
         }
     </style>
-   
-            <div id="add-row-modal" class="modal">
-             
-                    <div class="row">
-                        <div class="col s3 red darken-3 white-text modal-info-blurb z-depth-4">
-                            <div class="container">
-                                <h5>Add Job To Time Sheet</h5>
-                                <h6>Don't see your job? Click below to manage your job list.</h6>
-                                <a class="btn grey darken-2" asp-controller="Jobs" asp-action="List" delay-for-save="yup" >Manage</a>
-                            </div>
-                        </div>
-                        <div class="col s9" style="height:100%; padding:30px">
-                            
-                                <div class="row">
-                                    @if (Model.NewEntry.AvailableJobs.Any())
-                                    {
-                                            <div class="row">
-                                                <div class="col s12">
-                                                    <label asp-for="NewEntry.SelectedJobId">Job To Add</label>
-                                                    <select asp-for="NewEntry.SelectedJobId"
-                                                            asp-items="@(new SelectList(Model.NewEntry.AvailableJobs, "JobId", "FullJobCodeWithName"))">
-                                                        <option value="preset">Select Job</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col s6">
-                                                    <label asp-for="NewEntry.SelectedTaskCategory">Task Category</label>
-                                                    <select asp-for="NewEntry.SelectedTaskCategory"
-                                                            disabled
-                                                            class="custom-drop-down category">
 
-                                                        @foreach (var cat in Model.NewEntry.AvailableCategories)
-                                                        {
-                                                            <option value="@cat.Name" internal-only="@cat.IsInternalCategory.ToString().ToLower()">@cat.Name</option>
-                                                        }
-                                                    </select>
-                                                </div>
-                                                <div class="col s6">
-                                                    <label asp-for="NewEntry.SelectedTaskId">Task</label>
-                                                    <select asp-for="NewEntry.SelectedTaskId" disabled class="custom-drop-down task">
+    <div id="add-row-modal" class="modal">
 
-                                                        @foreach (var task in Model.NewEntry.AvailableTasks)
-                                                        {
-                                                            <option value="@task.TaskId" class="@task.Category.Name">@task.LegacyCode - @task.Name</option>
-                                                        }
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            }
-                               
-                            </div>
-                            <div class="modal-footer" style="vertical-align:bottom">
-                                <button id="ModalSubmit" type="submit" name="postType" value="Add Task" class="waves-effect waves-white btn-flat" >Add Job-Task</button>
-                                <button type="button" class="modal-close waves-effect waves-white btn-flat" data-dismiss="modal">Cancel</button>
-
-                            </div>
-                        </div>
-                  
-                  
+        <div class="row">
+            <div class="col s3 red darken-3 white-text modal-info-blurb z-depth-4">
+                <div class="container">
+                    <h5>Add Job To Time Sheet</h5>
+                    <h6>Don't see your job? Click below to manage your job list.</h6>
+                    <a class="btn grey darken-2" asp-controller="Jobs" asp-action="List" delay-for-save="yup">Manage</a>
                 </div>
-              
             </div>
-       
+            <div class="col s9" style="height:100%; padding:30px">
+
+                <div class="row">
+                    @if (Model.NewEntry.AvailableJobs.Any())
+                    {
+                        <div class="row">
+                            <div class="col s12">
+                                <label asp-for="NewEntry.SelectedJobId">Job To Add</label>
+                                <select asp-for="NewEntry.SelectedJobId"
+                                        asp-items="@(new SelectList(Model.NewEntry.AvailableJobs, "JobId", "FullJobCodeWithName"))">
+                                    <option value="preset">Select Job</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col s6">
+                                <label asp-for="NewEntry.SelectedTaskCategory">Task Category</label>
+                                <select asp-for="NewEntry.SelectedTaskCategory"
+                                        disabled
+                                        class="custom-drop-down category">
+
+                                    @foreach (var cat in Model.NewEntry.AvailableCategories)
+                                    {
+                                        <option value="@cat.Name" internal-only="@cat.IsInternalCategory.ToString().ToLower()">@cat.Name</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col s6">
+                                <label asp-for="NewEntry.SelectedTaskId">Task</label>
+                                <select asp-for="NewEntry.SelectedTaskId" disabled class="custom-drop-down task">
+
+                                    @foreach (var task in Model.NewEntry.AvailableTasks)
+                                    {
+                                        <option value="@task.TaskId" class="@task.Category.Name">@task.LegacyCode - @task.Name</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    }
+
+                </div>
+                <div class="modal-footer" style="vertical-align:bottom">
+                    <button id="ModalSubmit" type="submit" name="postType" value="Add Task" class="waves-effect waves-white btn-flat">Add Job-Task</button>
+                    <button type="button" class="modal-close waves-effect waves-white btn-flat" data-dismiss="modal">Cancel</button>
+
+                </div>
+            </div>
+
+
+        </div>
+
+    </div>
+
 
 
     <input asp-for="ApprovalStatus" type="hidden" />

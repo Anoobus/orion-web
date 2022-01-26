@@ -1,28 +1,59 @@
 ﻿@using orion.web.Employees
 
 @model string
+<style>
+    #holder {
+        background-image: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.4) 65%, rgba(158,158,158,1) 100%), url("/images/worker-1.jpg");
+        background-size: cover;
+        background-repeat: no-repeat;
+        min-height: 80vh;
+        width: 100vw;
+        margin-bottom: 0px;
+    }
 
-<div class="row">
+    main {
+        display: flex;
+        flex: 1 0 auto;
+    }
+
+    div.card.splash {
+        margin: 8px;
+        margin-top: 30px;
+        padding: 8px;
+    }
+</style>
+
+<div id="holder" class="row">
     <div class="s12">
-        <div class="container">
-            @if (User?.Identity?.IsAuthenticated ?? false)
-            {
-                <h1>Welcome, @ViewData["first"]</h1>
+        <div class="row">
+            <div class="col s6 offset-s2">
 
-                <a class="grey darken-2 btn text-white waves-effect waves-light" href="@Url.Action("Index","TimeEntry")">Enter Time</a>
-                <a class="grey darken-2 btn text-white waves-effect waves-light" href="@Url.Action("Index","Jobs")">My Jobs</a>
-                @if (User.IsInRole(UserRoleName.Admin))
+                @if (User?.Identity?.IsAuthenticated ?? false)
                 {
-                    <a class="grey darken-2 btn text-white waves-effect waves-light" href="@Url.Action("Index","Reports")">View Reports</a>
+                    <div class="card z-depth-4 splash">
+
+                        <div class="valign-center">
+                            <h1>Welcome, @ViewData["first"]</h1>
+
+                            <a class=" btn text-white waves-effect waves-light" href="@Url.Action("Index","TimeEntry")">Enter Time</a>
+                            <a class=" btn text-white waves-effect waves-light" href="@Url.Action("Index","Jobs")">My Jobs</a>
+                            @if (User.IsInRole(UserRoleName.Admin))
+                            {
+                                <a class=" btn text-white waves-effect waves-light" href="@Url.Action("Index","Reports")">View Reports</a>
+                            }
+                        </div>
+                    </div>
+
+
                 }
 
-            }
-
-            else
-            {
-                <h1>Login to use the system</h1>
-                <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-lg btn-success">Login</a>
-            }
+                else
+                {
+                    <h1>Login to use the system</h1>
+                    <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-lg btn-success">Login</a>
+                }
+            </div>
         </div>
+
     </div>
 </div>

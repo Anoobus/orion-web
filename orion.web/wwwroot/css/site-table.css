@@ -1,0 +1,23 @@
+﻿
+
+
+
+table.table.striped thead tr:first-child, table tfoot tr {
+    background: #37474f;
+    color: #FFF;
+}
+
+
+td input[type='text'], tfoot tr th, thead tr th, tbody tr td:last-of-type {
+    text-align: center;
+}
+
+table tfoot tr th, table thead tr th, table tbody td {
+    padding-top: 7px;
+    padding-bottom: 7px;
+}
+
+table tbody td {
+    padding-top: 6px;
+    padding-bottom: 6px;
+}

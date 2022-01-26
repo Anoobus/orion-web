@@ -14,7 +14,13 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" />
         -->
     <link rel="stylesheet" href="/css/material-compiled-sass/materialize.css" />
-    <link rel="stylesheet" href="/css/site-breadcrumb.css"/>
+    <link rel="stylesheet" href="/css/site-breadcrumb.css" />
+    <link rel="stylesheet" href="/css/site-toast.css" />
+   
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
     <!--
     <link rel="stylesheet" href="/css/site-buttons.css" />
     <link rel="stylesheet" href="/css/site-date-picker.css" />
@@ -41,6 +47,10 @@
             height: 30px;
             line-height: 30px;
         }
+        nav ul a {
+            display: inline;
+            vertical-align: middle;
+        }
     </style>
     @if (User.Identity.IsAuthenticated)
     {
@@ -55,9 +65,9 @@
         <nav class="grey darken-3">
             <div class="nav-wrapper">
                 <ul id="nav-mobile" class="">
-                    <li class="valign-wrapper"><img src="/images/orion_logo_brand.png" style="height:32px;margin-top:16px"></li>
+                    <li class="valign-wrapper"><img src="/images/orion_logo_brand.png" style="height:28px;margin-top:12px"></li>
                     <li><a class="waves-effect waves-light" asp-controller="Home" asp-action="Index">Home</a></li>
-                    <li><a class="dropdown-trigger" href="#!" data-target="sys-mgmt-dropdown">System Management <i class="material-icons right">arrow_drop_down</i></a></li>
+                    <li><a class="dropdown-trigger custom-drop-down nav-dd" href="#!" data-target="sys-mgmt-dropdown">System Management <i class="material-icons right">arrow_drop_down</i></a></li>
                     <li><a class="waves-effect waves-light" asp-controller="TimeEntry" asp-action="Index">Time Entry</a></li>
                     <li><a class="waves-effect waves-light" asp-controller="TimeApproval" asp-action="Index">Time Approval</a></li>
                     <li><a class="waves-efect waves-light" asp-controller="Reports" asp-action="Index">View Reports</a></li>
@@ -101,5 +111,16 @@
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
     <script src="/js/site.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", function () {
+            var selects = document.querySelectorAll('select.custom-drop-down.nav-dd');
+            if (selects.length) {
+                //create nav drop down and ensure that a click makes it show below the element
+                var selectInstances = M.FormSelect.init(selects, { coverTrigger: false});
+           
+            }
+        });
+
+    </script>
 </body>
 </html>

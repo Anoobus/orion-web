@@ -57,10 +57,10 @@ $badge-height: 22px !default;
 // Shared styles
 $button-border: none !default;
 $button-background-focus: lighten($secondary-color, 4%) !default;
-$button-font-size: 14px !default;
+$button-font-size: 12px !default;
 $button-icon-font-size: 1.3rem !default;
-$button-height: 36px !default;
-$button-padding: 0 16px !default;
+$button-height: 28px !default;
+$button-padding: 0 14px !default;
 $button-radius: 2px !default;
 
 // Disabled styles
@@ -134,7 +134,7 @@ $chip-margin: 5px !default;
 // 8. Date + Time Picker
 // ==========================================================================
 
-$datepicker-display-font-size: 2.8rem;
+$datepicker-display-font-size: 2rem;
 $datepicker-calendar-header-color: #999;
 $datepicker-weekday-color: rgba(0, 0, 0, .87) !default;
 $datepicker-weekday-bg: darken($secondary-color, 7%) !default;
@@ -156,22 +156,22 @@ $timepicker-clock-plate-bg: #eee !default;
 $dropdown-bg-color: #fff !default;
 $dropdown-hover-bg-color: #eee !default;
 $dropdown-color: $secondary-color !default;
-$dropdown-item-height: 50px !default;
+$dropdown-item-height: 32px !default;
 
 
 // 10. Forms
 // ==========================================================================
 
 // Text Inputs + Textarea
-$input-height: 3rem !default;
+$input-height: 1.85rem !default;
 $input-border-color: color("grey", "base") !default;
 $input-border: 1px solid $input-border-color !default;
 $input-background: #fff !default;
 $input-error-color: $error-color !default;
 $input-success-color: $success-color !default;
 $input-focus-color: $secondary-color !default;
-$input-font-size: 16px !default;
-$input-margin-bottom: 8px;
+$input-font-size: 14px !default;
+$input-margin-bottom: 7px;
 $input-margin: 0 0 $input-margin-bottom 0 !default;
 $input-padding: 0 !default;
 $label-font-size: .8rem !default;
@@ -179,7 +179,7 @@ $input-disabled-color: rgba(0,0,0, .42) !default;
 $input-disabled-solid-color: #949494 !default;
 $input-disabled-border: 1px dotted $input-disabled-color !default;
 $input-invalid-border: 1px solid $input-error-color !default;
-$input-icon-size: 2rem;
+$input-icon-size: 1.75rem;
 $placeholder-text-color: lighten($input-border-color, 20%) !default;
 
 // Radio Buttons
@@ -188,8 +188,8 @@ $radio-empty-color: #5a5a5a !default;
 $radio-border: 2px solid $radio-fill-color !default;
 
 // Range
-$range-height: 14px !default;
-$range-width: 14px !default;
+$range-height: 12px !default;
+$range-width: 12px !default;
 $track-height: 3px !default;
 
 // Select
@@ -199,7 +199,7 @@ $select-focus: 1px solid lighten($secondary-color, 47%) !default;
 $select-option-hover: rgba(0,0,0,.08) !default;
 $select-option-focus: rgba(0,0,0,.08) !default;
 $select-option-selected: rgba(0,0,0,.03) !default;
-$select-padding: 5px !default;
+$select-padding: 4px !default;
 $select-radius: 2px !default;
 $select-disabled-color: rgba(0,0,0,.3) !default;
 
@@ -208,7 +208,7 @@ $switch-bg-color: $secondary-color !default;
 $switch-checked-lever-bg: desaturate(lighten($switch-bg-color, 25%), 25%) !default;
 $switch-unchecked-bg: #F1F1F1 !default;
 $switch-unchecked-lever-bg: rgba(0,0,0,.38) !default;
-$switch-radius: 15px !default;
+$switch-radius: 13px !default;
 
 
 // 11. Global
@@ -242,13 +242,13 @@ $element-bottom-margin: ($gutter-width*2)/3 !default;
 // 13. Navigation Bar
 // ==========================================================================
 
-$navbar-height: 64px !default;
+$navbar-height: 48px !default;
 $navbar-line-height: $navbar-height !default;
-$navbar-height-mobile: 56px !default;
+$navbar-height-mobile: 48px !default;
 $navbar-line-height-mobile: $navbar-height-mobile !default;
 $navbar-font-size: 1rem !default;
 $navbar-font-color: #fff !default;
-$navbar-brand-font-size: 2.1rem !default;
+$navbar-brand-font-size: 1rem !default;
 
 // 14. Side Navigation
 // ==========================================================================
@@ -288,13 +288,13 @@ $tabs-bg-color: #fff !default;
 // ==========================================================================
 
 $table-border-color: rgba(0,0,0,.12) !default;
-$table-striped-color: rgba(242, 242, 242, 0.5) !default;
+$table-striped-color: rgba(66, 145, 245, 0.2) !default;
 
 
 // 19. Toasts
 // ==========================================================================
 
-$toast-height: 48px !default;
+$toast-height: 32px !default;
 $toast-color: #323232 !default;
 $toast-text-color: #fff !default;
 $toast-action-color: #eeff41;
@@ -308,10 +308,10 @@ $off-black: rgba(0, 0, 0, 0.87) !default;
 // Header Styles
 $h1-fontsize: 4.2rem !default;
 $h2-fontsize: 3.56rem !default;
-$h3-fontsize: 2.92rem !default;
-$h4-fontsize: 2.28rem !default;
-$h5-fontsize: 1.64rem !default;
-$h6-fontsize: 1.15rem !default;
+$h3-fontsize: 2.82rem !default;
+$h4-fontsize: 2.1rem !default;
+$h5-fontsize: 1.45rem !default;
+$h6-fontsize: 1.05rem !default;
 
 
 // 21. Footer
@@ -340,7 +340,7 @@ $collection-active-bg-color: $secondary-color !default;
 $collection-active-color: lighten($secondary-color, 55%) !default;
 $collection-hover-bg-color: #ddd !default;
 $collection-link-color: $secondary-color !default;
-$collection-line-height: 1.5rem !default;
+$collection-line-height: 1.4rem !default;
 
 
 // 24. Progress Bar

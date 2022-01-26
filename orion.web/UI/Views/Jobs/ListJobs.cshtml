@@ -1,100 +1,111 @@
 ﻿@model orion.web.Jobs.JobListViewModel
 @using orion.web.Employees
-<ol class="breadcrumb">
-    <li class="breadcrumb-item active"> Job List</li>
-</ol>
-<div class="row">
+<nav id="bread-crumb-bar" class="red darken-3 z-depth-3">
+    <div class="nav-wrapper ">
+        <div class="col s12">
+            <a href="#!" class="breadcrumb">Home</a>
+            <a href="#!" class="breadcrumb"> Job List</a>
+        </div>
+    </div>
+</nav>
+<div class="">
 
+    <style>
+        td.action-link-cell {
+            min-width: 290px;
+        }
+    </style>
 
+    <div class="">
+        <div class="row">
+            <div class="col s3">
 
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <div class="form-group ">
-                @if(User.IsInRole(UserRoleName.Admin))
+                @if (User.IsInRole(UserRoleName.Admin))
                 {
                     <a class="btn  btn-default  btn-margin-right pull-right " asp-action="Create">Create New</a>
                 }
                 <a class="btn btn-default btn-margin-right pull-right " asp-action="Current" asp-controller="TimeEntry">Edit This Weeks Time</a>
-                <input id="quick-filter" type="text" placeholder="quick filter rows" class="input form-control" />
+               
+            </div>
+            <div class="col s9">
+                <label for="quick-filter">Quick Filter Rows</label>
+                <input id="quick-filter" type="text" class="input form-control" />
             </div>
         </div>
 
 
-        <div class="panel-body">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th class="job-code-link-cell">
-                            Job Code
-                        </th>
-                        <th>
-                            Name
-                        </th>
-                        <th>
-                            Client
-                        </th>
-                        <th>
-                            Site
-                        </th>
-                        <th>
-                            Status
-                        </th>
-                        <th class="action-links-cell"></th>
-                    </tr>
-
-                </thead>
-                <tbody id="table-data">
-                    @foreach(var item in Model.AllJobsWithAssociationStatus)
-                    {
-                        <tr>
-                            <td>
-                                @if(User.IsInRole(UserRoleName.Admin))
-                                {
-                                    @Html.ActionLink(item.Key.Item1.JobCode, "Edit", new { id = item.Key.Item1.JobId })
-                                }
-                                else
-                                {
-                                    @Html.DisplayFor(modelItem => item.Key.Item1.JobCode)
-                                }
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Key.Item1.JobName)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Key.Item2.Client.ClientName)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Key.Item2.Site.SiteName)
-                            </td>
-                            <td>
-                                @if(item.Key.Item1.JobStatusId == orion.web.Jobs.JobStatus.Enabled)
-                                {
-                                    <span>Active</span>
-                                }
-                                else
-                                {
-                                    <span>Closed</span>
-                                }
-                            </td>
-                            <td>
-                                @if(item.Key.Item1.JobStatusId == orion.web.Jobs.JobStatus.Enabled && User.IsInRole(UserRoleName.Admin))
-                                {
-                                    @Html.ActionLink("Close Job", "CloseJob", new { id = item.Key.Item1.JobId })<text> |</text>
-                                }
-                                @if(item.Value)
-                                {
-                                    @Html.ActionLink("Remove From My Jobs", "RemoveJobForCurrentUser", new { id = item.Key.Item1.JobId })
-
-                                }
-                                else
-                                {
-                                    @Html.ActionLink("Add To My Jobs", "AddJobForCurrentUser", new { id = item.Key.Item1.JobId })
-                                }
-                            </td>
+        <div class="row">
+            <div class="col s12">
+                <table class="table striped hover z-depth-2">
+                    <thead>
+                        <tr class="z-depth-2">
+                            <th class="job-code-link-cell">
+                                Job Code
+                            </th>
+                            <th>
+                                Name
+                            </th>
+                            <th>
+                                Client<br />Site
+                            </th>
+                            <th>
+                                Status
+                            </th>
+                            <th class="action-links-cell"></th>
                         </tr>
-                    }
-                </tbody>
-            </table>
+
+                    </thead>
+                    <tbody id="table-data">
+                        @foreach (var item in Model.AllJobsWithAssociationStatus)
+                        {
+                            <tr>
+                                <td>
+                                    @if (User.IsInRole(UserRoleName.Admin))
+                                    {
+                                        @Html.ActionLink(item.Key.Item1.JobCode, "Edit", new { id = item.Key.Item1.JobId })
+                                    }
+                                    else
+                                    {
+                                        @Html.DisplayFor(modelItem => item.Key.Item1.JobCode)
+                                    }
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Key.Item1.JobName)
+                                </td>
+                                <td>
+                                    Client: @Html.DisplayFor(modelItem => item.Key.Item2.Client.ClientName)
+                                    <br />Site: @Html.DisplayFor(modelItem => item.Key.Item2.Site.SiteName)
+                                </td>
+                                <td>
+                                    @if (item.Key.Item1.JobStatusId == orion.web.Jobs.JobStatus.Enabled)
+                                    {
+                                        <span>Active</span>
+                                    }
+                                    else
+                                    {
+                                        <span>Closed</span>
+                                    }
+                                </td>
+                                <td class="action-button-col">
+                                    @if (item.Key.Item1.JobStatusId == orion.web.Jobs.JobStatus.Enabled && User.IsInRole(UserRoleName.Admin))
+                                    {
+                                        @Html.ActionLink("Close Job", "CloseJob", new { id = item.Key.Item1.JobId })<text> |</text>
+                                    }
+                                    @if (item.Value)
+                                    {
+                                        @Html.ActionLink("Remove From My Jobs", "RemoveJobForCurrentUser", new { id = item.Key.Item1.JobId })
+
+                                    }
+                                    else
+                                    {
+                                        @Html.ActionLink("Add To My Jobs", "AddJobForCurrentUser", new { id = item.Key.Item1.JobId })
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -103,16 +114,18 @@
 
 </div>
 
+<link rel="stylesheet" href="/css/site-table.css" />
+
 @section Scripts {
-    <script type="text/javascript">
-        $(document).ready(function () {
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script type="text/javascript">$(document).ready(function () {
             $("#quick-filter").on("keyup", function () {
                 var value = $(this).val().toLowerCase();
                 $("#table-data tr").filter(function () {
                     $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
                 });
             });
-        });
-
-    </script>
+        });</script>
 }

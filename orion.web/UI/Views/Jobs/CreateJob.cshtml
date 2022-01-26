@@ -1,51 +1,22 @@
 ﻿@model orion.web.Jobs.CreateJobViewModel
 
-<nav id="bread-crumb-bar" class="red darken-3">
+<nav id="bread-crumb-bar" class="red darken-3 z-depth-3">
     <div class="nav-wrapper ">
         <div class="col s12">
             <a href="#!" class="breadcrumb">Home</a>
-            <a asp-action="List">Job List</a>
+            <a asp-action="List" class="breadcrumb">Job List</a>
             <a href="#!" class="breadcrumb"> Create New Job</a>
         </div>
     </div>
 </nav>
-<form asp-action="Create" method="post" class="orion-form">
-    <style>
-        div.col.s2.left-menu {
-            background: #616161;
-            padding-top: 64px;
-            @*height: 100vh;
-            position: relative;
-            top: -30px;
-            z-index: -1;*@
-        }
-       
-        div.row.flex {
-           
-            display: flex;
-            flex-wrap: wrap;
-            margin-top: -12px;
-            margin-bottom: 0px;
-        }
-        #main-panel {
-            padding-top: 15px;
-        }
-        div.main-form .row {
-            line-height: 1.5rem;
-        }
-        div.main-form .row.control-buttons {
-            line-height: unset;
-        }
-        #main-panel .row input{
-
-            height: 1rem
-        }
-    </style>
-    <div class="row flex">
-
-
-        <div class="col s2 left-menu">
-            <div class="container">
+<form asp-action="Create" method="post" class="orion-form container">
+    
+    <div class="row">
+        <div class="col s3 left-menu ">
+            <div class="card-panel grey lighten-3">
+                <div class="row">
+                    <h6>Additional Configuration</h6>
+                </div>
                 <div class="row">
                     <a class="btn btn-default" asp-action="Create" asp-controller="Site">Create Site</a>
                 </div>
@@ -55,7 +26,7 @@
             </div>
         </div>
 
-        <div id="main-panel" class="col s10 main-form">
+        <div id="main-panel" class="col s9 main-form">
             <div class="container">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <input type="hidden" asp-for="Job.JobId" class="form-control" />
@@ -112,9 +83,9 @@
 </form>
 
 @section scripts {
-    <script type="text/javascript">document.addEventListener('DOMContentLoaded', function () {
+    @*<script type="text/javascript">document.addEventListener('DOMContentLoaded', function () {
             let short = document.querySelectorAll('div.col.left-menu');
             let tall = document.querySelectorAll('div.col.s10');
             matchColHeight(short[0], tall[0]);
-        });</script>
+        });</script>*@
 }

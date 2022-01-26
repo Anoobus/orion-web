@@ -1,57 +1,80 @@
 ﻿@model orion.web.JobsTasks.TaskViewModel
 
-<ol class="breadcrumb">
-    <li class="breadcrumb-item"><a asp-action="List">Task List</a></li>
-    @if(Model.IsInCreateModel)
-    {
-        <li class="breadcrumb-item active"> Create New Task</li>
-    }
-    else
-    {
-        <li class="breadcrumb-item active"> Edit Task</li>
-    }
-</ol>
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Save">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input asp-for="Task.TaskId" type="hidden" />
-            <input asp-for="IsInCreateModel" type="hidden" />
-            <div class="form-group">
-                <label asp-for="Task.LegacyCode" class="control-label"></label>
-                <input asp-for="Task.LegacyCode" class="form-control" placeholder="XXXX" />
-                <span asp-validation-for="Task.LegacyCode" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Task.Name" class="control-label"></label>
-                <input asp-for="Task.Name" class="form-control" placeholder="Short Name" />
-                <span asp-validation-for="Task.Name" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Task.Description" class="control-label"></label>
-                <textarea asp-for="Task.Description" class="form-control" placeholder="Description"></textarea>
-                <span asp-validation-for="Task.Description" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Task.Category" class="control-label"></label>
-                <select asp-for="SelectedCategory" class="form-control"
-                        asp-items="@(new SelectList(Model.AllTaskCategories,"Id","Name"))"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="Task.UsageStatus" class="control-label"></label>
-                <select asp-for="SelectedUsageStatus" class="form-control"
-                        asp-items="@(new SelectList(Model.AllUsageStatusOptions,"Id","Name"))"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="Task.ReportingType" class="control-label"></label>
-                <select asp-for="SelectedTaskReportingType" class="form-control"
-                        asp-items="@(new SelectList(Model.AllTaskReportingTypes,"Id","Name"))"></select>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-default" />
-            </div>
-        </form>
+
+<nav id="bread-crumb-bar" class="red darken-3 z-depth-3">
+    <div class="nav-wrapper ">
+        <div class="col s12">
+            <a href="#!" class="breadcrumb">Home</a>
+            <a asp-action="List" class="breadcrumb">Task List</a>
+            <a href="#!" class="breadcrumb">
+                @if (Model.IsInCreateModel)
+                {
+                    <text> Create New Task</text>
+                }
+                else
+                {
+                    <text> Edit Task</text>
+                }
+            </a>
+        </div>
     </div>
-</div>
+</nav>
+<form asp-action="Save" method="post" class="orion-form container">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input asp-for="Task.TaskId" type="hidden" />
+    <input asp-for="IsInCreateModel" type="hidden" />
+    <div class="row">
+        
 
+        <div id="main-panel" class="col s12 main-form">
+            <div class="container">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                @*<input type="hidden" asp-for="Job.JobId" class="form-control" />*@
+                <div class="row">
+                    <label asp-for="Task.LegacyCode" class="control-label"></label>
+                    <input asp-for="Task.LegacyCode" class="form-control" placeholder="XXXX" />
+                    <span asp-validation-for="Task.LegacyCode" class="text-danger"></span>
+                </div>
 
+                <div class="row">
+                    <label asp-for="Task.Name" class="control-label"></label>
+                    <input asp-for="Task.Name" class="form-control" placeholder="Short Name" />
+                    <span asp-validation-for="Task.Name" class="text-danger"></span>
+                </div>
+
+                <div class="row">
+                    <label asp-for="Task.Description" class="control-label"></label>
+                    <textarea asp-for="Task.Description" class="form-control" placeholder="Description"></textarea>
+                    <span asp-validation-for="Task.Description" class="text-danger"></span>
+                </div>
+
+                <div class="row">
+                    <label asp-for="Task.Category" class="control-label"></label>
+                    <select asp-for="SelectedCategory" class="form-control"
+                            asp-items="@(new SelectList(Model.AllTaskCategories,"Id","Name"))"></select>
+                </div>
+
+                <div class="row">
+                    <label asp-for="Task.UsageStatus" class="control-label"></label>
+                    <select asp-for="SelectedUsageStatus" class="form-control"
+                            asp-items="@(new SelectList(Model.AllUsageStatusOptions,"Id","Name"))"></select>
+                </div>
+
+                <!-- here -->
+                <div class="row">
+                    <label asp-for="Task.ReportingType" class="control-label"></label>
+                    <select asp-for="SelectedTaskReportingType" class="form-control"
+                            asp-items="@(new SelectList(Model.AllTaskReportingTypes,"Id","Name"))"></select>
+                </div>
+               
+                <div class="row controll-buttons">
+                    <div class="col s12">
+                        <button type="submit" value="Save" class="btn" >Save</button>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</form>

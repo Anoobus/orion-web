@@ -2,25 +2,44 @@
 @using orion.web.Employees
 @using orion.web.UI.Controllers
 
-<ol class="breadcrumb">
-    <li class="breadcrumb-item active"> List Clients</li>
-</ol>
-
-<div class="row">
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <div class="form-group ">
-                @if(User.IsInRole(UserRoleName.Admin))
-                {
-                    <a class="btn  btn-default  btn-margin-right pull-right " asp-action="Create" asp-controller="Clients">Create Client</a>
-                }
-                <input id="quick-filter" type="text" placeholder="quick filter rows" class="input form-control" />
-            </div>
+<nav id="bread-crumb-bar" class="red darken-3 z-depth-3">
+    <div class="nav-wrapper ">
+        <div class="col s12">
+            <a href="#!" class="breadcrumb">Home</a>
+            <a href="#!" class="breadcrumb"> Client List</a>
         </div>
+    </div>
+</nav>
+
+<style>
+    td.action-link-cell {
+        min-width: 290px;
+    }
+</style>
+
+<div class="">
+    <div class="row">
+        <div class="col s3">
 
 
-        <div class="panel-body">
-            <table class="table">
+            @if (User.IsInRole(UserRoleName.Admin))
+            {
+                <a class="btn  btn-default  btn-margin-right pull-right " asp-action="Create" asp-controller="Clients">Create Client</a>
+            }
+
+        </div>
+        <div class="col s9">
+            <label for="quick-filter">Quick Filter Rows</label>
+            <input id="quick-filter" type="text" class="input form-control" />
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col s12">
+            <table class="table striped hover z-depth-2">
+                <thead>
+
                 <thead>
                     <tr>
                         <th>
@@ -33,11 +52,11 @@
 
                 </thead>
                 <tbody id="table-data">
-                    @foreach(var item in Model.Clients)
+                    @foreach (var item in Model.Clients)
                     {
                         <tr>
                             <td>
-                                @if(User.IsInRole(UserRoleName.Admin))
+                                @if (User.IsInRole(UserRoleName.Admin))
                                 {
                                     @Html.ActionLink(item.ClientName, nameof(ClientsController.EditClient), new { item.ClientId })
                                 }
@@ -56,18 +75,18 @@
 
 
 </div>
+<link rel="stylesheet" href="/css/site-table.css" />
 
 @section Scripts {
-    <script type="text/javascript">
-        $(document).ready(function () {
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+   
+    <script type="text/javascript">$(document).ready(function () {
             $("#quick-filter").on("keyup", function () {
                 var value = $(this).val().toLowerCase();
                 $("#table-data tr").filter(function () {
                     $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
                 });
             });
-        });
-
-    </script>
+        });</script>
 }
 

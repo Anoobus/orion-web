@@ -2,8 +2,9 @@
 // for details on configuring this project to bundle and minify static web assets.
 
 // Write your JavaScript code.
+
 function toastSuccess(data) {
-    M.toast({ html: data });
+    M.toast({ html: data , classes: "rounded app-toast", displayLength: 7000});
 }
 function toastError(e) {
     M.toast({ html: "couldn't get notifications: " + e.status });
@@ -28,7 +29,9 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(response => {
             console.log('got back notification call', response);
             if (Object.keys(response.data).length !== 0) {
-                response.data.forEach(x => toastSuccess(x));
+                
+                response.data.forEach(x => toastSuccess(`<ul><li>${x}</li></ul>`));
+               
             }
         });
 
