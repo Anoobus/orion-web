@@ -2,22 +2,30 @@
 
 <tr auto-sum-row @Html.Raw($"row-{Model.RowId}")>
     <td colspan="2" class="description-cell">
-        <div style="vertical-align:middle; display:inline-block">
-            <a class="row-action" href="#edit" row-id="@Model.RowId" data-toggle="modal" data-target="#exampleModal"><i class="tiny material-icons">create</i></a>
-            <a class="row-action" href="#remove" row-id="@Model.RowId"> <i class="tiny material-icons">delete</i></a>
-            @Html.HiddenFor(model => model.RowId)
+        <div class="row">
+            <div class="col s12 jobcode-name">
+                @Model.SelectedJobCode / @Model.SelectedEntryJobName
+             @Html.HiddenFor(model => model.RowId)
             @Html.HiddenFor(model => model.SelectedTaskId)
             @Html.HiddenFor(model => model.SelectedJobId)
+            </div>
+            
+            
+           
         </div>
-        <div class="text-white" style="vertical-align:middle; display:inline-block; text-align:left; font-size:14px">
-            <label for="row-@Model.RowId">
-                @Model.SelectedJobCode / <span class="text-muted">@Model.SelectedEntryJobName</span>
-            </label>
-            <br />
-            <label for="row-@Model.RowId">
-                @Model.SelectedEntryTaskName
-            </label>
-        </div>
+      <div class="row">
+          <div class="col s12 task-name">
+              @Model.SelectedEntryTaskName
+        
+              <ul id="job-task-ops-dropdown" class="dropdown-content " >
+                  <li><a id="@Html.Raw($"row-{Model.RowId}")" class="action-change-row waves-effect waves-light text-white" row="@Model.RowId" action="edit" href="#!">Change Job/Task<i class="tiny material-icons">create</i></a></li>
+                  <li><a class="action-remove-row waves-effect waves-light text-white" row="@Model.RowId" action="remove" href="#!">Delete Job/Task<i class="tiny material-icons">delete</i></a></li>
+              </ul>
+              <a href="#!"class="option-btn dropdown-trigger btn-floating btn-small waves-effect waves-light red " data-target="job-task-ops-dropdown">
+              <i class="material-icons">mode_edit</i></a>
+          </div>
+          
+      </div>
     </td>
     @Html.EditorFor(model => model.Saturday, "~/UI/Views/TimeEntry/TimeEntryCell.cshtml")
     @Html.EditorFor(model => model.Sunday, "~/UI/Views/TimeEntry/TimeEntryCell.cshtml")
@@ -26,8 +34,8 @@
     @Html.EditorFor(model => model.Wednesday, "~/UI/Views/TimeEntry/TimeEntryCell.cshtml")
     @Html.EditorFor(model => model.Thursday, "~/UI/Views/TimeEntry/TimeEntryCell.cshtml")
     @Html.EditorFor(model => model.Friday, "~/UI/Views/TimeEntry/TimeEntryCell.cshtml")
-    <td class="form-inline" style="display:none" day="ot-col-total"></td>
-    <td class="form-inline hide-on-small-only" day="col-total"></td>
+    <td class="form-inline readonly-header-cell hide-on-small-only" style="display:none" day="ot-col-total"></td>
+    <td class="form-inline readonly-header-cell hide-on-small-only" day="col-total"></td>
 </tr>
 
 

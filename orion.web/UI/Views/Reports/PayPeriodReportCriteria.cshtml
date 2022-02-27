@@ -2,35 +2,42 @@
 @model orion.web.Reports.PayPeriodReport.PayPeriodReportCriteria
 
 <form asp-action="PayPeriodReport">
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <div class="row">
-        <div class="col-md-6">
+        <div class="col s12">
+            <h4>Pay Period Report</h4>
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-            <div class="form-group">
-                <div class="input-group mb-3">
-                    <div class="input-group-prepend">
-                        <label class="input-group-text" for="select-thing">PayPeriod</label>
-                    </div>
-                    <select class="custom-select form-control" id="PayPeriodReportCriteria_Criteria_PayPeriodEnd"
-                            name="PayPeriodReportCriteria.Criteria.PayPeriodEnd">
-                        @foreach(var pp in Model.PayPeriodList.PayPeriodList)
-                        {
-                            @if(pp.StartWeekId == Model.PayPeriodList.SelectedPayPeriod.StartWeekId)
-                            {
-                                <option value="@pp.PayPeriodEnd" selected> @pp.PayPeriodStart.ToString("MM/dd/yy") - @pp.PayPeriodEnd.ToString("MM/dd/yy")</option>
-                            }
-                            else
-                            {
-                                <option value="@pp.PayPeriodEnd"> @pp.PayPeriodStart.ToString("MM/dd/yy") - @pp.PayPeriodEnd.ToString("MM/dd/yy")</option>
-                            }
-                        }
-                    </select>
-                </div>
+        </div>
+    </div><div class="row">
+        <div class="col s6">
 
 
-                
-            </div>
+            <label  for="PayPeriodReportCriteria_Criteria_PayPeriodEnd">PayPeriod</label>
+
+            <select class="custom-select form-control" id="PayPeriodReportCriteria_Criteria_PayPeriodEnd"
+                    name="PayPeriodReportCriteria.Criteria.PayPeriodEnd">
+                @foreach (var pp in Model.PayPeriodList.PayPeriodList)
+                {
+                    @if (pp.StartWeekId == Model.PayPeriodList.SelectedPayPeriod.StartWeekId)
+                    {
+                        <option value="@pp.PayPeriodEnd" selected> @pp.PayPeriodStart.ToString("MM/dd/yy") - @pp.PayPeriodEnd.ToString("MM/dd/yy")</option>
+                    }
+                    else
+                    {
+                        <option value="@pp.PayPeriodEnd"> @pp.PayPeriodStart.ToString("MM/dd/yy") - @pp.PayPeriodEnd.ToString("MM/dd/yy")</option>
+                    }
+                }
+            </select>
+        </div>
+        <div class="col s6">
+
+
         </div>
     </div>
-    <input type="submit" value="Download" class="btn btn-default" />
+    <div class="row">
+        <div class="col s12">
+            <input type="submit" value="Download" class="btn btn-default" />
+        </div>
+    </div>
+
 </form>

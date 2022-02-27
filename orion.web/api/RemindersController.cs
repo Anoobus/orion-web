@@ -13,7 +13,6 @@ using System.Threading.Tasks;
 namespace orion.web.api
 {
     [Authorize]
-    [Route("api/v1/reminder")]
     [ApiController]
     public class RemindersController : ControllerBase
     {

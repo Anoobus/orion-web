@@ -1,49 +1,58 @@
 ﻿@model orion.web.Reports.ReportSelectionViewModel
 
-<ol class="breadcrumb">
-    <li class="breadcrumb-item active"> Report Listing</li>
-</ol>
-<div class="row">
-    <div class="col-md-3">
-        <ul class="nav nav-stacked">
-
-            @foreach(var rpt in Model.AvailableReports())
-            {
-                <li>
-                    <a href="#" class="rpt-link btn btn-default" rpt-name="@rpt">   @rpt </a>
-                </li>
-            }
-        </ul>
-
+<nav id="bread-crumb-bar" class="red darken-3 z-depth-3">
+    <div class="nav-wrapper ">
+        <div class="col s12">
+            <a href="#!" class="breadcrumb">Home</a>
+            <a href="#!" class="breadcrumb"> Report Listing</a>
+        </div>
     </div>
-    <div class="col-md-9">
-        @if(Model.PayPeriodReportCriteria.CanView)
+</nav>
+<div class="row">
+    <div class="col s3 offset-s1">
+
+        <div class="card-panel  grey lighten-3">
+            <div class="row">
+
+                <h6>Select Report</h6>
+                 </div>
+            @foreach (var rpt in Model.AvailableReports())
+                {
+                    <div class="row">
+                        <a href="#!" class="btn rpt-link" rpt-name="@rpt">   @rpt </a>
+                    </div>
+                }
+           
+        </div>
+    </div>
+
+
+
+    <div class="col s8">
+        @if (Model.PayPeriodReportCriteria.CanView)
         {
-            <div class="panel panel-default report-panel" id="pay-period-report" rpt-section="@Model.PayPeriodReportCriteria.ReportName" style="display:none">
-                <div class="panel-heading">@Model.PayPeriodReportCriteria.ReportName </div>
-                <div class="panel-body">
+            <div id="pay-period-report" rpt-section="@Model.PayPeriodReportCriteria.ReportName" style="display:none">
+               
                     @Html.EditorFor(m => Model.PayPeriodReportCriteria.Criteria, "~/UI/Views/Reports/PayPeriodReportCriteria.cshtml")
-                </div>
+               
             </div>
         }
 
-        @if(Model.JobSummaryReportCriteria.CanView)
+        @if (Model.JobSummaryReportCriteria.CanView)
         {
-            <div class="panel panel-default report-panel" id="job-summary-report" rpt-section="@Model.JobSummaryReportCriteria.ReportName" style="display:none">
-                <div class="panel-heading">@Model.JobSummaryReportCriteria.ReportName </div>
-                <div class="panel-body">
+            <div id="job-summary-report" rpt-section="@Model.JobSummaryReportCriteria.ReportName" style="display:none">
+                
                     @Html.EditorFor(m => Model.JobSummaryReportCriteria.Criteria, "~/UI/Views/Reports/ProjectStatusReportCriteria.cshtml")
-                </div>
+               
             </div>
         }
 
-        @if(Model.QuickJobTimeReportCriteria.CanView)
+        @if (Model.QuickJobTimeReportCriteria.CanView)
         {
-            <div class="panel panel-default  report-panel" id="job-detail-report" rpt-section="@Model.QuickJobTimeReportCriteria.ReportName" style="display:none">
-                <div class="panel-heading">@Model.QuickJobTimeReportCriteria.ReportName </div>
-                <div class="panel-body">
+            <div  id="job-detail-report" rpt-section="@Model.QuickJobTimeReportCriteria.ReportName" style="display:none">
+               
                     @Html.EditorFor(m => Model.QuickJobTimeReportCriteria.Criteria, "~/UI/Views/Reports/QuickJobTimeReportCriteria.cshtml")
-                </div>
+               
             </div>
         }
     </div>
@@ -51,14 +60,18 @@
 
 
 @section scripts {
-    <script type="text/javascript">
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-        $(document).ready(function () {
+    <script type="text/javascript">$(document).ready(function () {
             $("a.rpt-link").click(function (e) {
                 e.preventDefault();
+
                 let selection = $(e.target).attr('rpt-name');
+                console.log(selection);
                 $('div[rpt-section]:not(div[rpt-section="' + selection + '"])').hide();
+
                 $('div[rpt-section="' + selection + '"]').show();
+       
             });
 
             $("div[rpt-section]:first").show();
@@ -68,9 +81,7 @@
                 let startInput = $('#QuickJobTimeReportCriteria_Criteria_PeriodSettings_Start')[0];
                 startInput.value = '2020-01-01';
             });
-        });
-
-    </script>
+        });</script>
 }
 
 

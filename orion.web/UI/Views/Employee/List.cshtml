@@ -1,38 +1,58 @@
 ﻿@model orion.web.Employees.EmployeeListViewModel
-<ol class="breadcrumb">
-    <li class="breadcrumb-item active">Employee List</li>
-</ol>
+<nav id="bread-crumb-bar" class="red darken-3">
+    <div class="nav-wrapper ">
+        <div class="col s12">
+            <a href="#!" class="breadcrumb">Home</a>
+            <a href="#!" class="breadcrumb">Employee List</a>
+
+        </div>
+    </div>
+</nav>
+<link rel="stylesheet" href="/css/site-table.css" />
+
 <div class="row">
-    <p>
-        <a class="btn btn-success" asp-action="NewEmployee">Add New Employee</a>
-    </p>
+    <div class="col s3">
+        <div class="card-panel grey lighten-2 z-depth-4" style="margin-top:0px">
+            <div class="row">
+                <h4> More Actions</h4>
+            </div>
+            <div class="row">
+                <a class="btn" asp-action="NewEmployee">Add New Employee</a>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.HeaderHelp.UserName)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.HeaderHelp.AssignJobs)
-                </th>               
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach(var item in Model.Employees)
-            {
-                <tr>
-                    <td>
-                     @Html.ActionLink( item.UserName, "Edit", new { employee = item.UserName })  
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.AssignJobs.Count)
-                    </td>                                                                   
-                  
+            </div>
+            
+        </div>
+       
+    </div>
+    <div class="col s9">
+
+
+        <table class="table striped hover z-depth-3">
+            <thead>
+                <tr class="z-depth-3">
+                    <th>
+                        @Html.DisplayNameFor(model => model.HeaderHelp.UserName)
+                    </th>
+                    <th>
+                       Assigned Job Count
+                    </th>
+                   
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Employees)
+                {
+                    <tr>
+                        <td>
+                            @Html.ActionLink(item.UserName, "Edit", new { employee = item.UserName })
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.AssignJobs.Count)
+                        </td>
 
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 </div>

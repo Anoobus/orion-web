@@ -1,22 +1,31 @@
 ﻿@model orion.web.Jobs.SiteDTO
 
-<ol class="breadcrumb">
-    <li class="breadcrumb-item active"> Create New Site</li>
-</ol>
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>          
-            <div class="form-group">
+
+<nav id="bread-crumb-bar" class="red darken-3 z-depth-3">
+    <div class="nav-wrapper ">
+        <div class="col s12">
+            <a href="#!" class="breadcrumb">Home</a>
+            <a href="#!" class="breadcrumb"> Job List</a>
+            <a href="#!" class="breadcrumb"> Create Site</a>
+        </div>
+    </div>
+</nav>
+
+<form asp-action="Create">
+    <div class="row">
+        <div class="container">
+            <div class="row">
+                <h4>Create New Site</h4>
+            </div>
+            <div class="row">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <label asp-for="SiteName" class="control-label"></label>
                 <input asp-for="SiteName" class="form-control" />
                 <span asp-validation-for="SiteName" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-default" />
+            <div class="row">
+                <input type="submit" value="Create" class="btn " />
             </div>
-        </form>
+        </div>
     </div>
-</div>
-
-
+</form>

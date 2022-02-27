@@ -1,21 +1,30 @@
 ﻿@model orion.web.UI.Models.ClientModel
 
-<ol class="breadcrumb">
-    <li class="breadcrumb-item active"> Create New Client</li>
-</ol>
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
+<nav id="bread-crumb-bar" class="red darken-3 z-depth-3">
+    <div class="nav-wrapper ">
+        <div class="col s12">
+            <a href="#!" class="breadcrumb">Home</a>
+            <a href="#!" class="breadcrumb"> Client List</a>
+            <a href="#!" class="breadcrumb"> Create Client</a>
+        </div>
+    </div>
+</nav>
+
+<form asp-action="Create">
+    <div class="row">
+        <div class="container">
+            <div class="row">
+                <h4>Create New Client</h4>
+            </div>
+            <div class="row">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <label asp-for="ClientName" class="control-label"></label>
                 <input asp-for="ClientName" class="form-control" />
                 <span asp-validation-for="ClientName" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-default" />
+            <div class="row">
+                <input type="submit" value="Create" class="btn " />
             </div>
-        </form>
+        </div>
     </div>
-</div>
-
+</form>

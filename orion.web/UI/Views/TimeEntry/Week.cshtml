@@ -35,45 +35,50 @@
         <a href="@Url.Action(nameof(TimeEntryController.Edit),"TimeEntry",new { employeeId = Model.EmployeeId, weekId = Model.Week.WeekId + 1 })" class="btn grey darken-2"> Next Week </a>
     </div>
 </div>
+
 <style>
-    /*
-    #time-entry th[day] {
-        background-color: green;
-    }*/
-    #time-entry th.job-task-description {
-        min-width:230px;
+
+    #time-entry td,
+    #time-entry td input[type='text'],
+    #time-entry th {
+        text-align: center;
     }
+    #time-entry th.job-task-description {
+        min-width: 260px;
+       
+    }
+    #time-entry td.description-cell {
+        text-align: left;
+    }
+
     #time-entry td {
         line-height: 10px;
         font-size: 9px;
         padding-top: 0px;
         padding-bottom: 0px;
+    }
 
-    }
-    #time-entry td label {
-        color: #000000;
-    }
-    #time-entry tr td:last-of-type {
-        font-size: inherit;
-    }
+        #time-entry td label {
+            color: #000000;
+        }
+
+    
+
     #time-entry tbody tr td.description-cell {
         font-size: 15px;
         font-weight: bold;
     }
-    /*
-    #time-entry tr:nth-child(odd) {
-        background: #fafafa;
-        color: #000000;
-    }
-    #time-entry tr:nth-child(even) {
-        background: #eeeeee;
-        color: #000000;
-    }
-        */
-    #time-entry thead tr:first-child, #time-entry tbody tr td:last-of-type, #time-entry tfoot tr {
+
+    #time-entry thead tr,
+    #time-entry tfoot tr,
+    #time-entry td.readonly-header-cell,
+    #time-entry th.readonly-header-cell {
         background: #37474f;
         color: #FFF;
+        font-size: inherit;
+        text-align: center;
     }
+
     div.week-errors {
         padding: 6px;
         margin: 8px;
@@ -85,33 +90,89 @@
         font-size: .7rem;
     }
 
-    td input[type='text'], tfoot tr th, thead tr th, tbody tr td:last-of-type {
-        text-align: center;
-    }
+   
 
     table tfoot tr th, table thead tr th {
         padding-top: 5px;
         padding-bottom: 5px;
+    }
+
+    td.description-cell div.row {
+        margin-top: 0px;
+        margin-bottom: 0px;
+        padding-top: 1px;
+        padding-bottom: 1px;
+    }
+
+    div.jobcode-name {
+        font-size: .75rem;
+        padding-left: 0px;
+        padding-right: 0px;
+        margin-left: 1px;
+        margin-right: 1px;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        max-width: 345px;
+    }
+
+    div.task-name {
+        font-size: .85rem;
+    }
+
+    #job-task-ops-dropdown, #job-task-ops-dropdown.drop-down-content {
+        width: 175px;
+        min-width: 175px;
+    }
+
+        #job-task-ops-dropdown.drop-down-content li a {
+            padding: 2px;
+            margin: 0px;
+        }
+
+        #job-task-ops-dropdown a {
+            font-size: .75rem;
+            padding: 5px;
+            margin: 0px;
+        }
+
+    a.option-btn.btn-floating.btn-small i {
+        margin: 0px;
+        font-size: 0.75rem;
+        line-height: 15px;
+    }
+
+    a.option-btn.btn-floating.btn-small {
+        float: right;
+        height: 15px;
+        width: 15px;
+        font-size: 8px;
+        margin-top: -7px;
+        line-height: 15px;
+        opacity: 60%;
+    }
+
+    .validation-summary-valid {
+        display: none;
+        font-size: 1.5em;
     }
 </style>
 <form asp-action="Save" method="post">
 
 
     <div class="row">
-        <style>
-            .validation-summary-valid {
-                display: none;
-                font-size: 1.5em;
-            }
-        </style>
+
         <div asp-validation-summary="All" class="col s8 offset-s2 text-danger card-panel week-errors pulse rounded"></div>
         <script type="text/javascript">document.addEventListener('DOMContentLoaded', function () {
-    let errors = document.querySelectorAll('div.week-errors ul li');
-    if (errors.length) {
-        errors[0].parentElement.appendChild('<li><i class="tiny material - icons">error_outline</i></li>')
-        errors.forEach(li => li.innerHTML = '&nbsp;&nbsp;' + li.innerHTML);
-
-    }
+                let errors = document.querySelectorAll('div.week-errors ul li');
+                if (errors.length) {
+                    console.log(errors[0].innerHTML);
+                    let iconRow = document.createElement("li");
+                    iconRow.innerHTML = '<i class="tiny material-icons">error_outline</i>';
+                    console.log("to add", iconRow);
+                    errors[0].parentElement.prepend(iconRow);
+                    errors.forEach(li => li.innerHTML = '&nbsp;&nbsp;' + li.innerHTML);
+                }
                 setTimeout(() => {
                     console.log('remove pulse');
                     document.getElementsByClassName("week-errors")[0].classList.remove('pulse');
@@ -124,7 +185,7 @@
 
 
             @if (Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Approved
-     || Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Submitted)
+   || Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Submitted)
             {
                 <div class="row">
                     <div class="col-md-12">
@@ -135,9 +196,9 @@
                 </div>
             }
 
-            <table class="highlite z-depth-4 striped hover" id="time-entry">
+            <table class="table highlite z-depth-4 striped hover" id="time-entry">
                 <thead>
-                    <tr class="z-depth-4">
+                    <tr class="z-depth-2">
                         <th class="job-task-description" colspan="2">Effort</th>
                         <th day="col-saturday">
                             Sat
@@ -230,8 +291,8 @@
                         <th day="col-friday"></th>
                         <th day="ot-col-friday" style="display:none"></th>
 
-                        <th day="ot-col-total" style="display:none"></th>
-                        <th day="col-total"></th>
+                        <th day="ot-col-total" class="readonly-header-cell hide-on-small-only" style="display:none"></th>
+                        <th day="col-total" class="readonly-header-cell hide-on-small-only"></th>
                     </tr>
                 </tfoot>
             </table>
@@ -312,7 +373,7 @@
                         <div class="row">
                             <div class="col s12">
                                 <label asp-for="NewEntry.SelectedJobId">Job To Add</label>
-                                <select asp-for="NewEntry.SelectedJobId"
+                                <select asp-for="NewEntry.SelectedJobId"  class="custom-drop-down job"
                                         asp-items="@(new SelectList(Model.NewEntry.AvailableJobs, "JobId", "FullJobCodeWithName"))">
                                     <option value="preset">Select Job</option>
                                 </select>
@@ -370,27 +431,27 @@
 @section scripts {
 
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script type="text/javascript" src="~/js/TimeEntry/weekTableSumDefinition.js"></script>
-    <script type="text/javascript" src="~/js/TimeEntry/weekTimeEntryTableSummation.js"></script>
-    <script type="text/javascript" src="~/js/TimeEntry/weekTimeEntryOvertimeToggle.js"></script>
-    <script type="text/javascript" src="/js/TimeEntry/addTimeEntryRow.js"></script>
+    <script type="text/javascript" src="/js/TimeEntry/weekTableSumDefinition.js"></script>
+    <script type="text/javascript" src="/js/TimeEntry/weekTimeEntryTableSummation.js"></script>
+    <script type="text/javascript" src="/js/TimeEntry/weekTimeEntryOvertimeToggle.js"></script>
+    <script type="text/javascript" src="/js/TimeEntry/add-job-task-modal.js"></script>
     <script type="text/javascript">
-
-      
+        AddClickTrigger(null, 'AddJob', 'add-row-modal', () => alert('hi from #AddJob'));
+        
         $(document).ready(function () {
 
+            $('.action-remove-row').click(x => {
+                x.preventDefault();
+                console.log('remove', x);
+                alert('remove fired on ' + x.target.attributes['row'].value);
 
+            });
+            
             const approvalStatus = $('#ApprovalStatus').val();
             const isAdmin = $('#IsAdmin').val() == "true";
-            $('#AddJob').click((el) => {
-                var modalFinds = document.getElementById('add-row-modal');
-                console.log(modalFinds);
-                var instances = M.Modal.init(modalFinds, {});
-                console.log(instances);
-                instances.open();
-                el.preventDefault();
-            });
-          
+
+         
+
             if ((approvalStatus == "Approved" || approvalStatus == "Submitted")) {
                 $("form :input").not('.navbar-btn').prop("disabled", true);
                 $('#AddJob').hide();
@@ -409,8 +470,16 @@
             });
 
             //edit row
+            document.querySelectorAll('a.action-change-row').forEach((link, index) => {
+                console.log('trying to setup another modal click for', link);
+                const rowId = link.attributes['id'].value;
+                AddClickTrigger(rowId, rowId, 'add-row-modal', () => alert('hi from ' + rowId));
+
+            });
+            /*
             $('a.row-action[href="#edit"]').click((el) => {
                 const rowId = $(el.currentTarget).attr('row-id');
+              
                 $('#SelectedRowId').val(rowId);
                 $('#ModalSubmit').val("Save New Combination");
                 $('.modal-body blockquote').hide();
@@ -423,7 +492,7 @@
                 }, 300)
             });
 
-          
+    */
 
             //enter key
             $('form').bind('keypress', function (e) {
@@ -433,17 +502,13 @@
                 }
             });
 
-           
 
 
 
 
-          
-        });
 
 
-
-    </script>
+        });</script>
 }
 
 

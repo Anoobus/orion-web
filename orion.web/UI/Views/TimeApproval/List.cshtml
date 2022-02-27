@@ -1,65 +1,137 @@
 ﻿@model orion.web.TimeApproval.TimeApprovalList
 @using orion.web.Employees
 
-<ol class="breadcrumb">
-    <li class="breadcrumb-item active"> Approval Listing</li>
-</ol>
-<div class="row">
-    <div class="col-md-3">
-        <div class="form-group">
-            <a class="btn btn-success" href="@Url.Action("Index", "Reports")">View Reports</a>
+<nav id="bread-crumb-bar" class="red darken-3 z-depth-3">
+    <div class="nav-wrapper ">
+        <div class="col s12">
+            <a href="#!" class="breadcrumb">Home</a>
+            <a href="#!" class="breadcrumb"> Approval Listing</a>
         </div>
-        <form asp-action="Index" method="post">
-            <div class="form-group panel panel-default">
-                <div class="panel-body">
-                    On or After:
-                    <input asp-for="PeriodStartData" type="date" class="form-control" />
-                    <span asp-validation-for="PeriodStartData" class="text-danger"></span>
-                    <br />
-                    On or Before:
-                    <input asp-for="PeriodEndDate" type="date" class="form-control" />
-                    <span asp-validation-for="PeriodEndDate" class="text-danger"></span>
-                    <br />
-                    <input type="submit" class="btn btn-default"  value="Apply"/>
+    </div>
+</nav>
+<form asp-action="Index" method="post">
+    <div class="row">
+        <div class="col s4">
+            <div class="card-panel grey lighten-2 z-depth-3">
+                <div class="row">
+                    <div class="col s12"></div>
+                    <h4>Show Weeks Within Window ...</h4>
+                </div>
+                <div class="row">
+                    <div class="col s6">
+                        <label asp-for="PeriodStartData" class="control-label">On or After</label>
+                        <input asp-for="PeriodStartData" type="text" class=" datepicker" value="@Model.PeriodStartData.ToString("MMM dd, yyyy")" />
+
+                        <span asp-validation-for="PeriodStartData" class="text-danger"></span>
+                    </div>
+                    <div class="col s6">
+                        <label asp-for="PeriodEndDate" class="control-label">On or Before</label>
+                        <input asp-for="PeriodEndDate" type="text" class=" datepicker" value="@Model.PeriodEndDate.ToString("MMM dd, yyyy")" />
+                        <span asp-validation-for="PeriodEndDate" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col s12">
+                        <input type="submit" class="btn btn-default" value="Apply" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col s12">
+                        <ul class="collection with-header week-type-selector z-depth-1">
+                            <li class="collection-header"><h4>Show Section</h4></li>
+                            <li week-type="missing" class="collection-item ">Missing</li>
+                            <li week-type="submitted" class="collection-item ">Submitted</li>
+                            <li week-type="rejected" class="collection-item ">Rejected</li>
+                            <li week-type="approved" class="collection-item ">Approved</li>
+                            <li week-type="hidden" class="collection-item ">Hidden</li>
+                        </ul>
+                    </div>
+
                 </div>
             </div>
-        </form>
+        </div>
+
+        <div class="col s8 week-types">
+            <div class="row" id="missing">
+                <div class="col s12">
+                    <h4>Missing Weeks (@(Model.MissingEntries?.Count() ?? 0))</h4>
+                </div>
+                <div class="col s12">
+                    @Html.EditorFor(model => model.MissingEntries, "~/UI/Views/TimeApproval/TimeApprovalSection.cshtml")
+
+                </div>
+            </div>
+
+            <div class="row" id="submitted">
+                <div class="col s12">
+
+                    <h4>Submitted Weeks (@(Model.SubmittedEntries?.Count() ?? 0))</h4>
+                </div>
+                <div class="col s12">
+                    @Html.EditorFor(model => model.SubmittedEntries, "~/UI/Views/TimeApproval/TimeApprovalSection.cshtml")
+
+                </div>
+            </div>
+
+            <div class="row" id="rejected">
+                <div class="col s12">
+                    <h4>Rejected Weeks (@(Model.RejectedEntries?.Count() ?? 0))</h4>
+                </div>
+                <div class="col s12">
+                    @Html.EditorFor(model => model.RejectedEntries, "~/UI/Views/TimeApproval/TimeApprovalSection.cshtml")
+
+                </div>
+            </div>
+
+            <div class="row" id="approved">
+                <div class="col s12">
+                    <h4>Approved Weeks (@(Model.RejectedEntries?.Count() ?? 0))</h4>
+                </div>
+                <div class="col s12">
+                    @Html.EditorFor(model => model.ApprovedEntries, "~/UI/Views/TimeApproval/TimeApprovalSection.cshtml")
+
+                </div>
+            </div>
+            <div class="row" id="hidden">
+                <div class="col s12">
+                    <h4>Hidden Weeks (@(Model.RejectedEntries?.Count() ?? 0))</h4>
+
+                </div>
+                <div class="col s12">
+                    @Html.EditorFor(model => model.HiddenEntries, "~/UI/Views/TimeApproval/TimeApprovalSection.cshtml")
+                </div>
+            </div>
+
+
+        </div>
     </div>
-    <div class="col-md-9">
-        <div class="panel panel-warning">
-            <div class="panel-heading" data-toggle="collapse" data-target="#missing">Missing <span class="glyphicon glyphicon-resize-vertical" style="float:right"></span></div>
-            <div class="panel-body collapse in" id="missing" aria-expanded="true">
-                @Html.EditorFor(model => model.MissingEntries, "~/UI/Views/TimeApproval/TimeApprovalSection.cshtml")
-            </div>
-        </div>
-
-        <div class="panel panel-default">
-            <div class="panel-heading" data-toggle="collapse" data-target="#submitted">Submitted <span class="glyphicon glyphicon-resize-vertical" style="float:right"></span></div>
-            <div class="panel-body collapse in" id="submitted" aria-expanded="true">
-                @Html.EditorFor(model => model.SubmittedEntries, "~/UI/Views/TimeApproval/TimeApprovalSection.cshtml")
-            </div>
-        </div>
+</form>
 
 
-        <div class="panel panel-danger">
-            <div class="panel-heading" data-toggle="collapse" data-target="#rejected">Rejected <span class="glyphicon glyphicon-resize-vertical" style="float:right"></span></div>
-            <div class="panel-body collapse in" id="rejected" aria-expanded="true">
-                @Html.EditorFor(model => model.RejectedEntries, "~/UI/Views/TimeApproval/TimeApprovalSection.cshtml")
-            </div>
-        </div>
+<link rel="stylesheet" href="/css/site-table.css" />
 
-        <div class="panel panel-success">
-            <div class="panel-heading" data-toggle="collapse" data-target="#approved">Approved <span class="glyphicon glyphicon-resize-vertical" style="float:right"></span></div>
-            <div class="panel-body collapse in" id="approved" aria-expanded="true">
-                @Html.EditorFor(model => model.ApprovedEntries, "~/UI/Views/TimeApproval/TimeApprovalSection.cshtml")
-            </div>
-        </div>
+@section scripts {
 
-        <div class="panel panel-default">
-            <div class="panel-heading" data-toggle="collapse" data-target="#hidden">Hidden <span class="glyphicon glyphicon-resize-vertical" style="float:right"></span></div>
-            <div class="panel-body collapse" id="hidden" aria-expanded="false">
-                @Html.EditorFor(model => model.HiddenEntries, "~/UI/Views/TimeApproval/TimeApprovalSection.cshtml")
-            </div>
-        </div>
-    </div>
-</div>
+<script type="text/javascript">
+
+    function setActiveOnCollectionItem(item) {
+        console.log('setting active on ', item);
+        document.querySelectorAll('ul.week-type-selector li.collection-item.active')
+            .forEach(l => l.classList.remove('active'));
+        item.classList.add('active');
+
+        document.querySelectorAll('div.week-types > div.row')
+            .forEach(s => s.style.display = "none");
+
+        document.getElementById(item.getAttribute('week-type')).style.display = "block";
+
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var reportSelections = document.querySelectorAll('ul.week-type-selector li.collection-item');
+        console.log('adding click event for ', reportSelections);
+        reportSelections.forEach(el => el.addEventListener('click', e => setActiveOnCollectionItem(e.target)));
+        setActiveOnCollectionItem(reportSelections[0]);
+    });
+</script>
+}

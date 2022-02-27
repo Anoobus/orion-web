@@ -22,8 +22,10 @@ document.addEventListener('DOMContentLoaded', function () {
     var selects = document.querySelectorAll('select:not(.custom-drop-down)');
     var selectInstances = M.FormSelect.init(selects, {});
     var datePicks = document.querySelectorAll('.datepicker');
-    var dpInstsances = M.Datepicker.init(datePicks, {});
+    var dpInstsances = M.Datepicker.init(datePicks, {  });
 
+    var menuBtns = document.querySelectorAll('.fixed-action-btn');
+    var menuBtnInstances = M.FloatingActionButton.init(menuBtns, {});
     axios
         .get('/api/Notifications')
         .then(response => {

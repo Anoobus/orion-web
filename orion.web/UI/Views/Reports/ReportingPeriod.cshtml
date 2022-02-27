@@ -1,24 +1,22 @@
 ﻿@using orion.web.Reports
 @model orion.web.Reports.Common.ReportingPeriod
 
-<div class="form-group">
-    <label asp-for="Start" class="control-label"></label>
-    <div class="form-row">
-        <div class="col">
-            <input asp-for="Start" type="date" class="form-control"/>
-        </div>
-        <div class="col">
-            <input type="button" id="jan-1-btn" value="Set Jan 1st 2020" class="btn btn-default" />
-        </div>
 
+<div class="row">
+    <div class="col s6">
+        <label asp-for="Start" class="control-label"></label>
+        <input  asp-for="Start" type="text" class=" datepicker" value="@Model.Start.ToString("MMM dd, yyyy")" />
+        
+
+        <input type="button" id="jan-1-btn" value="Set Jan 1st 2020" class="btn btn-default" />
+        <span asp-validation-for="Start" class="text-danger"></span>
     </div>
-
-    <span asp-validation-for="Start" class="text-danger"></span>
+    <div class="col s6">
+        <label asp-for="End" class="control-label"></label>
+        <input asp-for="End" type="text" class="datepicker" value="@Model.End.ToString("MMM dd, yyyy")">
+        <span asp-validation-for="End" class="text-danger"></span>
+    </div>
 </div>
 
-<div class="form-group">
-    <label asp-for="End" class="control-label"></label>
-    <input asp-for="End" type="date" class="form-control" />
-    <span asp-validation-for="End" class="text-danger"></span>
-</div>
+    
 
