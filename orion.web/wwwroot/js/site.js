@@ -6,9 +6,7 @@
 function toastSuccess(data) {
     M.toast({ html: data , classes: "rounded app-toast", displayLength: 7000});
 }
-function toastError(e) {
-    M.toast({ html: "couldn't get notifications: " + e.status });
-}
+
 
 function matchColHeight(shortEl, tallEl) {
     console.log(shortEl, tallEl);

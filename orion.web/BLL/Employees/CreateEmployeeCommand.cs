@@ -9,7 +9,7 @@ namespace orion.web.Employees
 {
     public interface ICreateEmployeeCommand
     {
-        Task<CommandResult> Create(CreateEmployeeViewModel employee);
+        Task<Result> Create(CreateEmployeeViewModel employee);
     }
     public class CreateEmployeeCommand : ICreateEmployeeCommand, IAutoRegisterAsTransient
     {
@@ -21,19 +21,19 @@ namespace orion.web.Employees
             this.userManager = userManager;
             this.employeeService = employeeService;
         }
-        public async Task<CommandResult> Create(CreateEmployeeViewModel employee)
+        public async Task<Result> Create(CreateEmployeeViewModel employee)
         {
             var userRole = employee.SelectedRole;
             var user = new IdentityUser { UserName = employee.Email, Email = employee.Email };
             var passwordsMatch = employee.Password.Equals(employee.PasswordConfirm);
             if (!passwordsMatch)
             {
-                return new CommandResult(false, "Passwords don't match");
+                return new Result(false, "Passwords don't match");
             }
             var isNewEmployee = (await userManager.FindByNameAsync(employee.Email)) == null;
             if (!passwordsMatch)
             {
-                return new CommandResult(false, $"{employee.Email} has already been created.");
+                return new Result(false, $"{employee.Email} has already been created.");
             }
 
             var result = await userManager.CreateAsync(user, employee.Password);
@@ -50,11 +50,11 @@ namespace orion.web.Employees
                     Last = employee.LastName,
                     IsExempt = employee.IsExempt,
                 });
-                return new CommandResult(true);
+                return new Result(true);
             }
             else
             {
-                return new CommandResult(false, result.Errors.Select(err => $"{ err.Code}-{err.Description}").ToArray());
+                return new Result(false, result.Errors.Select(err => $"{ err.Code}-{err.Description}").ToArray());
             }
 
         }

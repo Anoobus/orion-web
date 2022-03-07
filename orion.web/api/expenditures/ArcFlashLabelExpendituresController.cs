@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using orion.web.api.expenditures;
+using orion.web.BLL;
 using orion.web.Clients;
 using orion.web.Employees;
 using orion.web.Jobs;
@@ -31,7 +32,7 @@ namespace orion.web.api
         public decimal TotalPostageCost { get; set; }
     }
 
-    public class ArcFlashlabelExpenditure : ExpenditureOneTimeSet
+    public class ArcFlashlabelExpenditure : ExpenditureOneTimeSet, IResult
     {
 
     }
@@ -42,18 +43,18 @@ namespace orion.web.api
     public class ArcFlashLabelExpendituresController : ControllerBase
     {
         private readonly IMapper _mapper;
-        private readonly IInMemRepo<ArcFlashlabelExpenditure> _repo;
+        private readonly IInMemRepo<DataAccess.EF.ArcFlashlabelExpenditure> _repo;
         public ArcFlashLabelExpendituresController( IMapper mapper)
         {
             _mapper = mapper;
             _repo = new InMemRepo<ArcFlashlabelExpenditure>();
         }
 
-        [HttpGet("week/{week-id:int}/employee/{employee-id:Guid}")]
-        public async Task<ActionResult<Page<ArcFlashlabelExpenditure>>> GetPageOfExpenditures([FromQuery] int? limit,
+        [HttpGet("week/{week-id:int}/employee/{employee-id}")]
+        public async Task<ActionResult<Page<DataAccess.EF.ArcFlashlabelExpenditure>>> GetPageOfExpenditures([FromQuery] int? limit,
             [FromQuery] int? offset,
             [FromRoute(Name = "week-id")] int weekId,
-            [FromRoute(Name = "employee-id")] Guid employeeId)
+            [FromRoute(Name = "employee-id")] int employeeId)
         {
             var matches = _repo.Search(x => x.EmployeeId == employeeId && x.WeekId == weekId).ToArray();
             return Ok(new Page<ArcFlashlabelExpenditure>()
@@ -68,11 +69,11 @@ namespace orion.web.api
             });
         }
 
-        [HttpPost("week/{week-id:int}/employee/{employee-id:Guid}/job/{job-id:Guid}")]
+        [HttpPost("week/{week-id:int}/employee/{employee-id}/job/{job-id}")]
         public async Task<ActionResult<ArcFlashlabelExpenditure>> CreateExpenditure([FromBody] EditableArcFlashlabelExpenditure coolz,
            [FromRoute(Name = "week-id")] int weekId,
-           [FromRoute(Name = "employee-id")] Guid employeeId,
-           [FromRoute(Name = "job-id")] Guid jobId)
+           [FromRoute(Name = "employee-id")] int employeeId,
+           [FromRoute(Name = "job-id")] int jobId)
         {
             return Ok(_repo.AddOrUpdate(new ArcFlashlabelExpenditure() {
                 DateOfInvoice = coolz.DateOfInvoice,

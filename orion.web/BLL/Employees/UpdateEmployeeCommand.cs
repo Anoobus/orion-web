@@ -10,7 +10,7 @@ namespace orion.web.Employees
 {
     public interface IUpdateEmployeeCommand
     {
-        Task<CommandResult> UpdateAsync(EditEmployeeViewModel employee);
+        Task<Result> UpdateAsync(EditEmployeeViewModel employee);
     }
 
     public class UpdateEmployeeCommand : IUpdateEmployeeCommand, IAutoRegisterAsTransient
@@ -23,7 +23,7 @@ namespace orion.web.Employees
             this.employeeService = employeeService;
             this.userManager = userManager;
         }
-        public async Task<CommandResult> UpdateAsync(EditEmployeeViewModel employee)
+        public async Task<Result> UpdateAsync(EditEmployeeViewModel employee)
         {
             var allCommandErrors = new List<string>();
             var userRole = employee.SelectedRole;
@@ -86,7 +86,7 @@ namespace orion.web.Employees
                 }
             }
 
-            return new CommandResult(allCommandErrors.Any(), allCommandErrors.ToArray());
+            return new Result(allCommandErrors.Any(), allCommandErrors.ToArray());
         }
 
         private async Task SaveLocalEmployeeInfo(EditEmployeeViewModel employee, string updatedEmail)

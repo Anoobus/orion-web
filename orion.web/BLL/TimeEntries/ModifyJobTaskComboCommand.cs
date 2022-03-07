@@ -8,7 +8,7 @@ namespace orion.web.TimeEntries
 {
     public interface IModifyJobTaskComboCommand
     {
-        Task<CommandResult> ModifyJobTaskCombo(int employeeId,  int weekId, int newTaskId, int newJobId, int oldTaskId, int oldJobId);
+        Task<Result> ModifyJobTaskCombo(int employeeId,  int weekId, int newTaskId, int newJobId, int oldTaskId, int oldJobId);
     }
     public class ModifyJobTaskComboCommand : IModifyJobTaskComboCommand, IAutoRegisterAsSingleton
     {
@@ -27,7 +27,7 @@ namespace orion.web.TimeEntries
             this.timeService = timeService;
             this.timeSpentRepository = timeSpentRepository;
         }
-        public async Task<CommandResult> ModifyJobTaskCombo(int employeeId,  int weekId, int newTaskId, int newJobId, int oldTaskId, int oldJobId)
+        public async Task<Result> ModifyJobTaskCombo(int employeeId,  int weekId, int newTaskId, int newJobId, int oldTaskId, int oldJobId)
         {
 
             var timeEntries = await timeService.GetAsync( weekId, employeeId);
@@ -60,7 +60,7 @@ namespace orion.web.TimeEntries
 
             }
             await timeService.DeleteAllEntries( weekId, oldTaskId, oldJobId, employeeId);
-            return new CommandResult(true);
+            return new Result(true);
         }
     }
 

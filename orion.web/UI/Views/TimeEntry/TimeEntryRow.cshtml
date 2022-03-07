@@ -1,6 +1,6 @@
 ﻿@model orion.web.TimeEntries.TimeEntryViewModel
 
-<tr auto-sum-row @Html.Raw($"row-{Model.RowId}")>
+<tr auto-sum-row @Html.Raw($"row-{Model.RowId}")  effort-id="@Model.RowId">
     <td colspan="2" class="description-cell">
         <div class="row">
             <div class="col s12 jobcode-name">

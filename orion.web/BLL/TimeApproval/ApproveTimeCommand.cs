@@ -35,7 +35,7 @@ namespace orion.web.TimeApproval
     }
     public interface IApproveTimeCommand
     {
-        Task<CommandResult> ApplyApproval(TimeApprovalRequest request);
+        Task<Result> ApplyApproval(TimeApprovalRequest request);
     }
 
     public class ApproveTimeCommand : IApproveTimeCommand, IAutoRegisterAsSingleton
@@ -57,7 +57,7 @@ namespace orion.web.TimeApproval
             this.jobService = jobService;
         }
 
-        public async Task<CommandResult> ApplyApproval(TimeApprovalRequest request)
+        public async Task<Result> ApplyApproval(TimeApprovalRequest request)
         {
             var current = await timeApprovalService.GetAsync(request.WeekId, request.EmployeeId);
             var isValidSubmit = request.NewApprovalState == TimeEntries.TimeApprovalStatus.Submitted &&
@@ -145,7 +145,7 @@ namespace orion.web.TimeApproval
 
                 smtpProxy.SendMail(recipient, finalEmailText, $"Time {request.NewApprovalState} for week {week.WeekStart.ToShortDateString()}-{week.WeekEnd.ToShortDateString()}");
             }
-            return new CommandResult(true);
+            return new Result(true);
 
         }
 

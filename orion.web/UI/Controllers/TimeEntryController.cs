@@ -217,7 +217,7 @@ namespace orion.web.TimeEntries
             return RedirectToAction(nameof(Edit), new { weekId = weekId, employeeId = employeeId });
         }
 
-        private async Task<ActionResult> ReloadPageForErrorCorrection(int weekId, int employeeId, FullTimeEntryViewModel vm, CommandResult res)
+        private async Task<ActionResult> ReloadPageForErrorCorrection(int weekId, int employeeId, FullTimeEntryViewModel vm, Result res)
         {
             var req = new WeekOfTimeEntriesRequest()
             {

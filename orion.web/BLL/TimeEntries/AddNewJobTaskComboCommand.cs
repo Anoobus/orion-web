@@ -11,7 +11,7 @@ namespace orion.web.TimeEntries
 {
     public interface IAddNewJobTaskComboCommand
     {
-        Task<CommandResult> AddNewJobTaskCombo(int employeeId,  int weekId, int newTaskId, int newJobId);
+        Task<Result> AddNewJobTaskCombo(int employeeId,  int weekId, int newTaskId, int newJobId);
     }
     public class AddNewJobTaskComboCommand : IAddNewJobTaskComboCommand, IAutoRegisterAsSingleton
     {
@@ -31,19 +31,19 @@ namespace orion.web.TimeEntries
             _timeService = timeService;
             _timeSpentRepository = timeSpentRepository;
         }
-        public async Task<CommandResult> AddNewJobTaskCombo(int employeeId,  int weekId, int newTaskId, int newJobId)
+        public async Task<Result> AddNewJobTaskCombo(int employeeId,  int weekId, int newTaskId, int newJobId)
         {
             var j = await _jobsRepository.GetForJobId(newJobId);
             if(j.JobStatusId != JobStatus.Enabled)
             {
-                return new CommandResult(false, new[] { $"Job {j.FullJobCodeWithName} has been closed. In order to use it, an administrator must open it." });
+                return new Result(false, new[] { $"Job {j.FullJobCodeWithName} has been closed. In order to use it, an administrator must open it." });
             }
             var entryForEveryDayOfWeek = _timeSpentRepository.CreateEmptyWeekForCombo( weekId, newTaskId, newJobId, employeeId).ToList();
             foreach (var day in entryForEveryDayOfWeek)
             {
                 await _timeService.SaveAsync( weekId, employeeId, day);
             }
-            return new CommandResult(true);
+            return new Result(true);
 
         }
     }

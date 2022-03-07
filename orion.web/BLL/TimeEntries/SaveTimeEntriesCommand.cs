@@ -10,7 +10,7 @@ namespace orion.web.TimeEntries
 {
     public interface ISaveTimeEntriesCommand
     {
-        Task<CommandResult> SaveTimeEntriesAsync(int employeeId, int weekId, FullTimeEntryViewModel vm);
+        Task<Result> SaveTimeEntriesAsync(int employeeId, int weekId, FullTimeEntryViewModel vm);
     }
     public class SaveTimeEntriesCommand : ISaveTimeEntriesCommand, IAutoRegisterAsSingleton
     {
@@ -24,25 +24,25 @@ namespace orion.web.TimeEntries
             _timeService = timeService;
             _jobsRepository = jobsRepository;
         }
-        public async Task<CommandResult> SaveTimeEntriesAsync(int employeeId, int weekId, FullTimeEntryViewModel vm)
+        public async Task<Result> SaveTimeEntriesAsync(int employeeId, int weekId, FullTimeEntryViewModel vm)
         {
             var statusAllowsSave = await GetSaveStatus(employeeId, weekId);
             if(!statusAllowsSave)
             {
-                return new CommandResult(false, "Current status does not allow saving");
+                return new Result(false, "Current status does not allow saving");
             }
             var hoursIssues = (await VerifyHourEntries(vm)).ToList();
             if(hoursIssues.Any())
             {
                 hoursIssues.Add(" -- NO CHANGES WHERE SAVED -- ");
-                return new CommandResult(false, hoursIssues.ToArray());
+                return new Result(false, hoursIssues.ToArray());
             }
 
             if(vm.TimeEntryRow != null)
             {
                 await _timeService.SaveWeekAsync(employeeId, ToDTO(employeeId, weekId, vm));
             }
-            return new CommandResult(true);
+            return new Result(true);
         }
 
         private WeekOfTimeDTO ToDTO(int employeeId, int weekId, FullTimeEntryViewModel vm)

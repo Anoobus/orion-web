@@ -10,7 +10,7 @@ namespace orion.web.TimeEntries
 {
     public interface IRemoveRowCommand
     {
-        Task<CommandResult> RemoveRow(int employeeId, int weekId, int newTaskId, int newJobId);
+        Task<Result> RemoveRow(int employeeId, int weekId, int newTaskId, int newJobId);
     }
     public class RemoveRowCommand : IRemoveRowCommand, IAutoRegisterAsSingleton
     {
@@ -29,11 +29,11 @@ namespace orion.web.TimeEntries
             this.timeService = timeService;
             this.timeSpentRepository = timeSpentRepository;
         }
-        public async Task<CommandResult> RemoveRow(int employeeId, int weekId, int taskId, int jobId)
+        public async Task<Result> RemoveRow(int employeeId, int weekId, int taskId, int jobId)
         {
             await timeService.DeleteAllEntries( weekId, taskId, jobId, employeeId);
 
-            return new CommandResult(true);
+            return new Result(true);
 
         }
     }

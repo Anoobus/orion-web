@@ -9,6 +9,8 @@
             <a href="#!" class="breadcrumb">Home</a>
             <a href="@Url.Action("IndexForEmployee","TimeEntry",new { employeeId = Model.EmployeeId })" class="breadcrumb"> @Model.EmployeeDisplayName's Weekly Listing</a>
             <a href="#!" class="breadcrumb">Time Entry For Week Starting: @Model.Week.WeekStart.ToShortDateString()</a>
+            <input type="hidden" id="current-week-id" asp-for="Week.WeekId" />
+            <input type="hidden" id="current-employee-id" asp-for="EmployeeId" />
         </div>
     </div>
 </nav>
@@ -43,13 +45,14 @@
     #time-entry th {
         text-align: center;
     }
-    #time-entry th.job-task-description {
-        min-width: 260px;
-       
-    }
-    #time-entry td.description-cell {
-        text-align: left;
-    }
+
+        #time-entry th.job-task-description {
+            min-width: 260px;
+        }
+
+        #time-entry td.description-cell {
+            text-align: left;
+        }
 
     #time-entry td {
         line-height: 10px;
@@ -62,7 +65,7 @@
             color: #000000;
         }
 
-    
+
 
     #time-entry tbody tr td.description-cell {
         font-size: 15px;
@@ -90,7 +93,7 @@
         font-size: .7rem;
     }
 
-   
+
 
     table tfoot tr th, table thead tr th {
         padding-top: 5px;
@@ -162,7 +165,7 @@
 
     <div class="row">
 
-        <div asp-validation-summary="All" class="col s8 offset-s2 text-danger card-panel week-errors pulse rounded"></div>
+        <div asp-validation-summary="All" class="col s9 offset-s3 text-danger card-panel week-errors pulse rounded"></div>
         <script type="text/javascript">document.addEventListener('DOMContentLoaded', function () {
                 let errors = document.querySelectorAll('div.week-errors ul li');
                 if (errors.length) {
@@ -185,7 +188,7 @@
 
 
             @if (Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Approved
-   || Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Submitted)
+|| Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Submitted)
             {
                 <div class="row">
                     <div class="col-md-12">
@@ -370,12 +373,16 @@
                 <div class="row">
                     @if (Model.NewEntry.AvailableJobs.Any())
                     {
+                        <div class="row" style="display:none" id="notification-block">
+                            <div class="col s12">
+                                <div id="notification-block-content" class="text-danger card-panel week-errors pulse rounded"></div>
+                            </div>
+                        </div>
                         <div class="row">
                             <div class="col s12">
                                 <label asp-for="NewEntry.SelectedJobId">Job To Add</label>
-                                <select asp-for="NewEntry.SelectedJobId"  class="custom-drop-down job"
+                                <select asp-for="NewEntry.SelectedJobId" class="custom-drop-down job"
                                         asp-items="@(new SelectList(Model.NewEntry.AvailableJobs, "JobId", "FullJobCodeWithName"))">
-                                    <option value="preset">Select Job</option>
                                 </select>
                             </div>
                         </div>
@@ -406,8 +413,9 @@
                     }
 
                 </div>
+
                 <div class="modal-footer" style="vertical-align:bottom">
-                    <button id="ModalSubmit" type="submit" name="postType" value="Add Task" class="waves-effect waves-white btn-flat">Add Job-Task</button>
+                    <button id="ModalSubmit" type="button" class="waves-effect waves-white btn-flat">Add Job-Task</button>
                     <button type="button" class="modal-close waves-effect waves-white btn-flat" data-dismiss="modal">Cancel</button>
 
                 </div>
@@ -430,27 +438,25 @@
 
 @section scripts {
 
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"></script>
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script type="text/javascript" src="/js/TimeEntry/weekTableSumDefinition.js"></script>
     <script type="text/javascript" src="/js/TimeEntry/weekTimeEntryTableSummation.js"></script>
     <script type="text/javascript" src="/js/TimeEntry/weekTimeEntryOvertimeToggle.js"></script>
+    <script type="text/javascript" src="/js/TimeEntry/efforts/effort-repository.js"></script>
+    <script type="text/javascript" src="/js/TimeEntry/modal-drop-down.js"></script>
     <script type="text/javascript" src="/js/TimeEntry/add-job-task-modal.js"></script>
-    <script type="text/javascript">
-        AddClickTrigger(null, 'AddJob', 'add-row-modal', () => alert('hi from #AddJob'));
-        
-        $(document).ready(function () {
+    <script type="text/javascript" src="/js/TimeEntry/auto-cell-save.js"></script>
 
-            $('.action-remove-row').click(x => {
-                x.preventDefault();
-                console.log('remove', x);
-                alert('remove fired on ' + x.target.attributes['row'].value);
+    <script type="text/javascript" src="/js/TimeEntry/efforts/remove-effort-row.js"></script>
+    <script type="text/javascript" src="/js/TimeEntry/efforts/add-effort-row.js"></script>
+    <script type="text/javascript" src="/js/TimeEntry/efforts/change-effort-row.js"></script>
+    <script type="text/javascript">$(document).ready(function () {
 
-            });
-            
             const approvalStatus = $('#ApprovalStatus').val();
             const isAdmin = $('#IsAdmin').val() == "true";
 
-         
+
 
             if ((approvalStatus == "Approved" || approvalStatus == "Submitted")) {
                 $("form :input").not('.navbar-btn').prop("disabled", true);
@@ -462,37 +468,6 @@
                 }
             };
 
-            //remove row
-            $('a.row-action[href="#remove"]').click((el) => {
-                const rowId = $(el.currentTarget).attr('row-id');
-                $('#SelectedRowId').val(rowId);
-                $('input[type="submit"][value="RemoveRow"]').trigger('click');
-            });
-
-            //edit row
-            document.querySelectorAll('a.action-change-row').forEach((link, index) => {
-                console.log('trying to setup another modal click for', link);
-                const rowId = link.attributes['id'].value;
-                AddClickTrigger(rowId, rowId, 'add-row-modal', () => alert('hi from ' + rowId));
-
-            });
-            /*
-            $('a.row-action[href="#edit"]').click((el) => {
-                const rowId = $(el.currentTarget).attr('row-id');
-              
-                $('#SelectedRowId').val(rowId);
-                $('#ModalSubmit').val("Save New Combination");
-                $('.modal-body blockquote').hide();
-                $('.modal-header h4').text('Modify Job/Task Combination');
-                //the boostrap modal and this JS fight; i'm taking the lazy approach and waiting to set the button
-                setTimeout(() => {
-                    $('#ModalSubmit').val("Save New Combination");
-                    $('.modal-body blockquote').hide();
-                    $('.modal-header h4').text('Modify Job/Task Combination');
-                }, 300)
-            });
-
-    */
 
             //enter key
             $('form').bind('keypress', function (e) {

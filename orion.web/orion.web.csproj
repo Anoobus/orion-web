@@ -12,6 +12,12 @@
     <IdentityUIFrameworkVersion>Bootstrap4</IdentityUIFrameworkVersion>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <LangVersion>latestmajor</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <LangVersion>latestmajor</LangVersion>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Account\**" />
     <Compile Remove="Areas\Identity\Services\**" />
@@ -26,6 +32,8 @@
     <None Remove="Areas\Identity\Services\**" />
     <None Remove="Authorization\**" />
     <None Remove="AutoFixture" />
+    <Content Remove="wwwroot\js\TimeEntry\efforts\" />
+    <None Remove="BLL\ArcFlashExpenditureExpenses\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -164,4 +172,8 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\js\TimeEntry\efforts\" />
+    <Folder Include="BLL\ArcFlashExpenditureExpenses\" />
+  </ItemGroup>
 </Project>

@@ -1,201 +1,196 @@
-﻿
-  
-let modalData = {}
+﻿let modalData = {}
 
-let modalDefinition = {
-    okId = 'ModalSubmit'
-}
-
-
-function removeAllOptions(selectBox) {
-    while (selectBox.options.length > 0) {
-        selectBox.remove(0);
-    }
-}
-function setDisabled(selectBox) {
-    console.log('setDisabled on', selectBox);
-    //lock it all down
-    removeAllOptions(selectBox);
-    selectBox.setAttribute('disabled', '');
-
-    //turn off the submit button too;   
-    document.getElementById(modalDefinition.okId).style.display = "none";
-    return M.FormSelect.init(selectBox, {})[0];
-}
-
-function setEnabled(selectBox, options, presetName, selectedValue) {
-    console.log('setDisabled on', selectBox);
-
-    removeAllOptions(selectBox);
-    selectBox.add(new Option(presetName, "preset"));
-  
-    options.forEach((x, index) => {
-        selectBox.add(x);
-    });
-    
-    selectBox.removeAttribute('disabled');
-    selectBox.value = selectedValue ?? "preset";
-    return M.FormSelect.init(selectBox, {})[0];
-}
+ const AddClickTrigger = function (startingValue, triggerId, modalId, onPersistChanges, materialize) {
+     console.log("AddClickTrigger to " + modalId + " when " + triggerId + " is clicked.", materialize);
+        document.getElementById(triggerId).onclick = (e) => {
+            var modalFinds = document.getElementById(modalId);
+            e.preventDefault();
+            onShowModalClick(modalFinds, startingValue, onPersistChanges, materialize);            
+        };
+ };
 
 document.addEventListener('DOMContentLoaded', function () {
-  
-    console.log("storing original modal options");
-   
+    modalData = initializeFieldsOnDocLoad(M);   
+});
 
-    function initializeFieldsOnDocLoad(){ 
-        //store category options prior to clear
-        const internalOptions = document.querySelectorAll('select.custom-drop-down.category option[internal-only="true"]');
-        const otherOptions = document.querySelectorAll('select.custom-drop-down.category option[internal-only="false"]');
-    
-        //clear category
-        let categorySelect = document.querySelectorAll('select.custom-drop-down.category')[0];
-        removeAllOptions(categorySelect);
-    
-        //init materialize dd w/ no options
-        catInstance = M.FormSelect.init(categorySelect, {})[0];
-    
-    
-    
-       //store task options prior to clear
-        let taskOptions = document.querySelectorAll('select.custom-drop-down.task option');
-        let optionGroup = {};
-        taskOptions.forEach((x,index) => {
-            
-            let taskGroup = x.attributes['class'].value;
-            if (!optionGroup.hasOwnProperty(taskGroup)) {
-                optionGroup[taskGroup] = [];
-            }
-            optionGroup[taskGroup].push(x);
-        })
-        
-        //clear task options 
-        let taskSelect = document.querySelectorAll('select.custom-drop-down.task')[0];
-        removeAllOptions(taskSelect);
-        taskInstance = M.FormSelect.init(document.querySelectorAll('select.custom-drop-down.task'), {})[0];
-        
-        let submitBtn = document.getElementById('ModalSubmit');
-        submitBtn.style.display = "none";
+function initializeFieldsOnDocLoad(materialize) {
+    //category options
+    const internalOptions = document.querySelectorAll('select.custom-drop-down.category option[internal-only="true"]');
+    const otherOptions = document.querySelectorAll('select.custom-drop-down.category option[internal-only="false"]');
 
-       
-       
-        return {
-            internalCategoryOptions : internalOptions,
-            otherCategoryOptions : otherOptions,
-            groupedTaskOptoins : optionGroup,
-            categorySelect: document.getElementById("NewEntry_SelectedTaskCategory"),
-            taskSelect: document.getElementById("NewEntry_SelectedTaskId"),
-            jobSelect: document.getElementById('NewEntry_SelectedJobId')
-        };
-    };
-    modalData = initializeFieldsOnDocLoad();
+    //task options
+    let taskOptions = document.querySelectorAll('select.custom-drop-down.task option');
+    let optionGroup = {};
+    taskOptions.forEach((x, index) => {
 
-    modalData.jobSelect.addEventListener('change', (event) => {
+        let taskGroup = x.attributes['class'].value;
+        if (!optionGroup.hasOwnProperty(taskGroup)) {
+            optionGroup[taskGroup] = [];
+        }
+        optionGroup[taskGroup].push(x);
+    })
+
+    //job options
+    const jobOptions = document.querySelectorAll('select.custom-drop-down.job option');
+    const curWeekId = document.getElementById('current-week-id').value;
+    const curEmployeeId = document.getElementById('current-employee-id').value;
+    let jobDropDown = document.getElementById('NewEntry_SelectedJobId');
+    let taskDropDown = document.getElementById("NewEntry_SelectedTaskId");
+
+    const okBtnId = 'ModalSubmit';
+    let jobSelection = modalDropDown('NewEntry_SelectedJobId', materialize, okBtnId, (e) => onJobChange(e, internalOptions, otherOptions));
+    let categorySelection = modalDropDown('NewEntry_SelectedTaskCategory', materialize, okBtnId, (e) => onCategoryChange(e, optionGroup));
+    let taskSelection = modalDropDown('NewEntry_SelectedTaskId', materialize, okBtnId, (e) => onTaskChange(e));
+
+    categorySelection.setDisabled();
+    taskSelection.setDisabled();
+    jobSelection.setEnabled(jobOptions, "Select Job");
+
+    let submitBtn = document.getElementById(okBtnId);
+    submitBtn.style.display = "none";
+
+
+
+    let modalNotificationBlock = document.getElementById('notification-block');
+    let notificationContent = document.getElementById('notification-block-content');
+    function setNotificationBlockContent(content) {
+        notificationContent.innerHTML = content;
+        if (content == undefined || content == null || content == "") {
+            modalNotificationBlock.style.display = "none";
+        }
+        else {
+            modalNotificationBlock.style.display = "block";
+            setTimeout(() => {
+                console.log('remove pulse');
+                notificationContent.classList.remove('pulse');
+                console.log('pulse removed');
+            }, 2500);
+        }
+
+    }
+
+    function onJobChange(event, internalCategoryOptions, otherCategoryOptions) {
         const target = event.target;
         const selectedVal = target.value;
+        document.getElementById('ModalSubmit').style.display = "none";
         if (selectedVal == "preset") {
-            catInstance = setDisabled(modalData.categorySelect);
-            taskInstance = setDisabled(modalData.taskSelect);
+            modalData.categorySelect.setDisabled();
+            modalData.taskSelect.setDisabled();
         }
         else {
             let internalOnly = selectedVal == 1004;
-            let optionSet = internalOnly ? modalData.internalCategoryOptions : modalData.otherCategoryOptions;
-            catInstance = setEnabled(modalData.categorySelect, optionSet, "Select Category");
-            taskInstance = setDisabled(modalData.taskSelect);
-
+            let optionSet = internalOnly ? internalCategoryOptions : otherCategoryOptions;
+            modalData.categorySelect.setEnabled(optionSet, "Select Category", null);
+            modalData.taskSelect.setDisabled();
         }
-    });
+    };
+    function onCategoryChange(event, groupedTaskOptions) {
 
-   
-
-    modalData.categorySelect.addEventListener('change', (event) => {
         console.log('catagory change detected!', event);
         const selectedVal = event.target.value;
-     
+        document.getElementById('ModalSubmit').style.display = "none";
         if (selectedVal == "preset") {
-            taskInstance = setDisabled(modalData.taskSelect);
+            taskSelection.setDisabled();
         }
         else {
-            let thisCatsOptions = modalData.groupedTaskOptoins[selectedVal]
-            taskInstance = setEnabled(modalData.taskSelect, thisCatsOptions, "Select Task");
+            let thisCatsOptions = groupedTaskOptions[selectedVal]
+            taskSelection.setEnabled(thisCatsOptions, "Select Task", null);
         }
-    })
-       
-    modalData.taskSelect.addEventListener('change', (event) => {
+    }
+    function onTaskChange(event) {
         console.log('task change detected!', event);
         const selectedVal = event.target.value;
-     
+
         if (selectedVal == "preset") {
-           document.getElementById('ModalSubmit').style.display = "none";
+            document.getElementById('ModalSubmit').style.display = "none";
         }
         else {
             document.getElementById('ModalSubmit').style.display = "inline-block";
         }
-    })
-   
-});
+    }
 
-const AddClickTrigger = function (startingValue, triggerId, modalId, onPersistChanges)
-{
-    document.getElementById(triggerId).addEventListener("click", e => {
-       
-        var modalFinds = document.getElementById(modalId);
-        console.log(startingValue);
-        if(startingValue != undefined && startingValue != null){
-            let job = startingValue.substring(0,startingValue.indexOf('.'));
-            let task = startingValue.substring(job.length + 1);
-            console.log(job,task);
-            JobTaskModal(modalData, job,task, onPersistChanges)
-        }
-        else
-        {
-            JobTaskModal(modalData, null,null,onPersistChanges);
-        }
 
-        var instances = M.Modal.init(modalFinds, {});
-        instances.open();
-        e.preventDefault();
-    });
-   
-}
-const JobTaskModal = function(initialModalData, presetJobId, presetTaskId, onPersistChanges) {
+    function initializeModalForJobTaskCombo(jobId, taskId) {
+        jobSelection.setEnabled(jobOptions, "Select Job", jobId);
 
-   
-    let modalData = initialModalData;
-    let saveCallBack = onPersistChanges;
+        let internalOnly = jobId == 1004;
+        let optionSet = internalOnly ? internalOptions : otherOptions;
+        let correctCat = '';
 
-        function onOkClick( e){
-            console.log('click is going here yo');
-                e.preventDefault();
-                saveCallBack();
-            
-        }
-
-        if(presetJobId != null && presetTaskId != null)
-        {
-            console.log('selecting this job id')
-            modalData.jobSelect.value = presetJobId;
-            M.FormSelect.init(modalData.jobSelect, {})[0];
-    
-            let internalOnly = presetJobId == 1004;
-            let optionSet = internalOnly ? modalData.internalCategoryOptions : modalData.otherCategoryOptions;
-            let correctCat = '';
-            
-            Object.keys(modalData.groupedTaskOptoins).forEach((groupOpt, index) => {
-                modalData.groupedTaskOptoins[groupOpt].forEach( (taskOpt, optIndex) => {
-                    if(taskOpt.value == presetTaskId)
-                        correctCat = groupOpt;
-                });
+        Object.keys(optionGroup).forEach((groupOpt, index) => {
+            optionGroup[groupOpt].forEach((taskOpt, optIndex) => {
+                if (taskOpt.value == taskId)
+                    correctCat = groupOpt;
             });
-            modalData.categorySelect.value = correctCat;
-            catInstance = setEnabled(modalData.categorySelect, optionSet, "Select Category", correctCat);
-           
-            let thisCatsOptions = modalData.groupedTaskOptoins[correctCat];
-            setEnabled(modalData.taskSelect, thisCatsOptions, "Select Task", presetTaskId);
-            modalData.taskSelect.value = presetTaskId;
-          
-        }
+        });
+        categorySelection.setEnabled(optionSet, "Select Category", correctCat);
 
-        document.getElementById('ModalSubmit').removeEventListener('click', onOkClick);
-        document.getElementById('ModalSubmit').addEventListener('click', onOkClick);
+        let thisCatsOptions = optionGroup[correctCat];
+        taskSelection.setEnabled(thisCatsOptions, "Select Task", taskId);
+
+        document.getElementById('ModalSubmit').onclick =
+            () => effortRepository.changeEffort(curEmployeeId,
+                                                curWeekId,
+                                                jobId,
+                                                taskId,
+                                                jobSelection.value(),
+                                                taskSelection.value(),
+                                                () => window.location.reload(true),
+                                                toastSuccess);
+
+    }
+
+    function initializeModalForNewJobTaskCombo() {
+        jobSelection.setEnabled(jobOptions, "Select Job");
+        categorySelection.setDisabled();
+        taskSelection.setDisabled();
+
+        document.getElementById('ModalSubmit').onclick = () => effortRepository.saveNewEffortFor(curEmployeeId, curWeekId, jobSelection.value(), taskSelection.value(), toastSuccess);
+    }
+
+    const instance = {
+        categorySelect: categorySelection,
+        taskSelect: taskSelection,
+        jobSelect: jobSelection,
+
+        materialize: materialize,
+
+        currentWeekId: curWeekId,
+        currentEmployeeId: curEmployeeId,
+
+        saveNewEffortFromCurrentValues: () => effortRepository.saveNewEffortFor(currentEmployeeId, currentWeekId, jobSelection.value(), taskSelection.value(), toastSuccess),
+
+        setNotificationBlockContent: setNotificationBlockContent,
+        initializeModalForJobTaskCombo: initializeModalForJobTaskCombo,
+        initializeModalForNewJobTaskCombo: initializeModalForNewJobTaskCombo
+    };
+    return instance;
+
+};
+
+function onShowModalClick(modalToShow, startingValue, onPersistChanges, materialize) {
+    console.log(startingValue);
+    modalData.setNotificationBlockContent();
+    if (startingValue != undefined && startingValue != null) {
+        let job = startingValue.substring(0, startingValue.indexOf('.'));
+        let task = startingValue.substring(job.length + 1);
+        console.log("showing change-job modal for ....",job, task);
+        
+        modalData.initializeModalForJobTaskCombo(job, task);
+    }
+    else {
+        console.log("showing add new job modal");
+        modalData.initializeModalForNewJobTaskCombo();
+    }
+
+    let instance = materialize.Modal.init(modalToShow, {});
+    instance.open();    
 }
+
+
+
+
+
+
+
+
