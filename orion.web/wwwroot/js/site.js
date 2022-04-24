@@ -4,7 +4,7 @@
 // Write your JavaScript code.
 
 function toastSuccess(data) {
-    M.toast({ html: data , classes: "rounded app-toast", displayLength: 7000});
+    M.toast({ html: data , classes: "app-toast", displayLength: 7000});
 }
 
 

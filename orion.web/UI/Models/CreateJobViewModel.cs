@@ -6,7 +6,7 @@ namespace orion.web.Jobs
 {
     public class CreateJobViewModel
     {
-        public JobDTO Job { get; set; }
+        public CoreJobDto Job { get; set; }
         public int SelectedSiteId { get; set; }
         public int SelectedClientId { get; set; }
         public int SelectedJobStatusId { get; set; }
@@ -23,6 +23,6 @@ namespace orion.web.Jobs
 
     public class JobListViewModel
     {
-        public Dictionary<(JobDTO, JobModelDetail), bool> AllJobsWithAssociationStatus { get; set; }
+        public Dictionary<(CoreJobDto, JobModelDetail), bool> AllJobsWithAssociationStatus { get; set; }
     }
 }

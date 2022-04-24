@@ -22,7 +22,7 @@ namespace orion.web.DataAccess.EF.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("orion.web.DataAccess.EF.ArcFlashlabelExpenditure", b =>
+            modelBuilder.Entity("orion.web.DataAccess.EF.ArcFlashLabelExpenditure", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -522,6 +522,9 @@ namespace orion.web.DataAccess.EF.Migrations
                     b.Property<int>("EmployeeId")
                         .HasColumnType("int");
 
+                    b.Property<DateTimeOffset>("ExpenseOnDate")
+                        .HasColumnType("datetimeoffset");
+
                     b.Property<Guid>("ExternalId")
                         .HasColumnType("uniqueidentifier");
 
@@ -663,7 +666,7 @@ namespace orion.web.DataAccess.EF.Migrations
                     b.ToView("vEmployeeeWeeklySummary");
                 });
 
-            modelBuilder.Entity("orion.web.DataAccess.EF.ArcFlashlabelExpenditure", b =>
+            modelBuilder.Entity("orion.web.DataAccess.EF.ArcFlashLabelExpenditure", b =>
                 {
                     b.HasOne("orion.web.DataAccess.EF.Job", "Job")
                         .WithMany()

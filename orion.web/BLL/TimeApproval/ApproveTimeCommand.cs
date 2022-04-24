@@ -112,7 +112,7 @@ namespace orion.web.TimeApproval
             {
                 var time = await timeService.GetAsync(request.WeekId, request.EmployeeId);
                 var JobsThatCauseApprovalRequired = time.Where(x => x.OvertimeHours > 0).GroupBy(x => x.JobId);
-                var jobDetails = await Task.WhenAll(JobsThatCauseApprovalRequired.Select(async x => await jobService.GetForJobId(x.Key)));
+                var jobDetails = await Task.WhenAll(JobsThatCauseApprovalRequired.Select(async x => (await jobService.GetForJobId(x.Key)).CoreInfo));
                 int[] projectManagersToNotifiy = jobDetails.Select(x => x.ProjectManagerEmployeeId).ToArray();
                 var week = WeekDTO.CreateForWeekId(request.WeekId);
                 foreach(var pm in projectManagersToNotifiy)

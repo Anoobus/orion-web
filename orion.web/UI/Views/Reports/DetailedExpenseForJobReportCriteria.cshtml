@@ -1,0 +1,30 @@
+﻿@using orion.web.Reports
+@model orion.web.BLL.Reports.DetailedExpenseForJobReport.DetailedExpenseForJobReportCriteria
+
+<form asp-action="DetailedExpenseReport">
+    <div class="row">
+        <div class="col s12">
+            <h4>Detailed Expense Report</h4>
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        </div>
+    </div><div class="row">
+              <div class="col s6">
+
+                  <label asp-for="SelectedJobId">For Job(s)</label>
+                  <select asp-for="SelectedJobId"
+                          asp-items="@(new SelectList(Model.AvailableJobs, "JobId", "FullJobCodeWithName"))"></select>
+                  
+              </div>
+        <div class="col s6">
+
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="col s12">
+            <input type="submit" value="Download" class="btn btn-default" />
+        </div>
+    </div>
+
+</form>

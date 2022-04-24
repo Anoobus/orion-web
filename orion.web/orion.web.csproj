@@ -34,6 +34,10 @@
     <None Remove="AutoFixture" />
     <Content Remove="wwwroot\js\TimeEntry\efforts\" />
     <None Remove="BLL\ArcFlashExpenditureExpenses\" />
+    <None Remove="api\expenditures\Models\" />
+    <None Remove="BLL\Expenditures\" />
+    <None Remove="BLL\Reports\DetailedExpenseForJobReportCriteria\" />
+    <None Remove="BLL\Reports\AllOpenJobsSummaryReportCriteria\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -86,16 +90,10 @@
     <Content Update="UI\Views\Expense\Edit.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
-    <Content Update="UI\Views\Reports\PayPeriodReportCriteria.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
     <Content Update="UI\Views\Reports\ReportingPeriod.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
     <Content Update="UI\Views\Reports\ViewCompletedReport.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="UI\Views\Reports\ProjectStatusReportCriteria.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
     <Content Update="UI\Views\Shared\Error.cshtml">
@@ -175,5 +173,9 @@
   <ItemGroup>
     <Folder Include="wwwroot\js\TimeEntry\efforts\" />
     <Folder Include="BLL\ArcFlashExpenditureExpenses\" />
+    <Folder Include="api\expenditures\Models\" />
+    <Folder Include="BLL\Expenditures\" />
+    <Folder Include="BLL\Reports\DetailedExpenseForJobReport\" />
+    <Folder Include="BLL\Reports\AllOpenJobsSummaryReport\" />
   </ItemGroup>
 </Project>

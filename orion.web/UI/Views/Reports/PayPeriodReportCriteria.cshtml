@@ -8,31 +8,29 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
         </div>
-    </div><div class="row">
-        <div class="col s6">
+    </div>
+    <div class="row">
+              <div class="col s12">
 
+                 
 
-            <label  for="PayPeriodReportCriteria_Criteria_PayPeriodEnd">PayPeriod</label>
+                  <label for="pp_select">PayPeriod</label>
 
-            <select class="custom-select form-control" id="PayPeriodReportCriteria_Criteria_PayPeriodEnd"
-                    name="PayPeriodReportCriteria.Criteria.PayPeriodEnd">
-                @foreach (var pp in Model.PayPeriodList.PayPeriodList)
-                {
-                    @if (pp.StartWeekId == Model.PayPeriodList.SelectedPayPeriod.StartWeekId)
-                    {
-                        <option value="@pp.PayPeriodEnd" selected> @pp.PayPeriodStart.ToString("MM/dd/yy") - @pp.PayPeriodEnd.ToString("MM/dd/yy")</option>
-                    }
-                    else
-                    {
-                        <option value="@pp.PayPeriodEnd"> @pp.PayPeriodStart.ToString("MM/dd/yy") - @pp.PayPeriodEnd.ToString("MM/dd/yy")</option>
-                    }
-                }
-            </select>
-        </div>
-        <div class="col s6">
-
-
-        </div>
+                  <select asp-for="PayPeriodEnd">
+                      @foreach (var pp in Model.PayPeriodList.PayPeriodList)
+                      {
+                          @if (pp.StartWeekId == Model.PayPeriodList.SelectedPayPeriod.StartWeekId)
+                          {
+                              <option value="@pp.PayPeriodEnd" selected> @pp.PayPeriodStart.ToString("MM/dd/yy") - @pp.PayPeriodEnd.ToString("MM/dd/yy")</option>
+                          }
+                          else
+                          {
+                              <option value="@pp.PayPeriodEnd"> @pp.PayPeriodStart.ToString("MM/dd/yy") - @pp.PayPeriodEnd.ToString("MM/dd/yy")</option>
+                          }
+                      }
+                  </select>
+              </div>
+        
     </div>
     <div class="row">
         <div class="col s12">

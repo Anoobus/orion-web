@@ -34,14 +34,14 @@ namespace orion.web.TimeEntries
         public async Task<Result> AddNewJobTaskCombo(int employeeId,  int weekId, int newTaskId, int newJobId)
         {
             var j = await _jobsRepository.GetForJobId(newJobId);
-            if(j.JobStatusId != JobStatus.Enabled)
+            if(j.CoreInfo.JobStatusId != JobStatus.Enabled)
             {
-                return new Result(false, new[] { $"Job {j.FullJobCodeWithName} has been closed. In order to use it, an administrator must open it." });
+                return new Result(false, new[] { $"Job {j.CoreInfo.FullJobCodeWithName} has been closed. In order to use it, an administrator must open it." });
             }
             var entryForEveryDayOfWeek = _timeSpentRepository.CreateEmptyWeekForCombo( weekId, newTaskId, newJobId, employeeId).ToList();
             foreach (var day in entryForEveryDayOfWeek)
             {
-                await _timeService.SaveAsync( weekId, employeeId, day);
+                await _timeService.SaveAsync(  employeeId, day);
             }
             return new Result(true);
 

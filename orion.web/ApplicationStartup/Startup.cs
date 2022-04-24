@@ -126,8 +126,10 @@ namespace orion.web.ApplicationStartup
                     }
                     },
                     new string[] { }
-                }
+                    }
                 });
+                c.CustomOperationIds(e => $"{e.ActionDescriptor.RouteValues["controller"]}_{e.HttpMethod}");
+                   c.CustomSchemaIds(x => x.FullName);
             });
             LogEmailConfig();
             Serilog.Log.Information($"Services configuration complete");

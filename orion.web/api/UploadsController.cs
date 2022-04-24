@@ -18,9 +18,9 @@ namespace orion.web.api
     {
         public Dictionary<string, int> NewClients { get; set; }
         public Dictionary<string, int> NewSites { get; set; }
-        public IEnumerable<JobDTO> CreatedJobs { get; set; }
-        public IEnumerable<JobDTO> UpdatedJobs { get; set; }
-        public IEnumerable<JobDTO> SkippedEntriesBecuaseNoChange { get; set; }
+        public IEnumerable<CoreJobDto> CreatedJobs { get; set; }
+        public IEnumerable<CoreJobDto> UpdatedJobs { get; set; }
+        public IEnumerable<CoreJobDto> SkippedEntriesBecuaseNoChange { get; set; }
     }
     public class JobUploadModel
     {
@@ -50,7 +50,7 @@ namespace orion.web.api
         }
 
         [HttpPut("bulk-jobs")]
-        public async Task<ActionResult<IEnumerable<JobDTO>>> SaveBulkJobs([FromBody] IEnumerable<JobUploadModel> jobs)
+        public async Task<ActionResult<IEnumerable<CoreJobDto>>> SaveBulkJobs([FromBody] IEnumerable<JobUploadModel> jobs)
         {
             var res = new JobUploadResults()
             {
@@ -68,9 +68,9 @@ namespace orion.web.api
 
                 var allJobs = await _jobsRepository.GetAsync();
 
-                var newJobs = new List<JobDTO>();
-                var updatedJobs = new List<JobDTO>();
-                var skippedEntry = new List<JobDTO>();
+                var newJobs = new List<CoreJobDto>();
+                var updatedJobs = new List<CoreJobDto>();
+                var skippedEntry = new List<CoreJobDto>();
                 foreach(var rec in jobs)
                 {
                     var isBrandNewJob = false;

@@ -12,7 +12,7 @@ namespace orion.web.Expense
         public string AttatchmentName { get; set; }
         public string Classification { get; set; }
         public string AddtionalNotes { get; set; }
-        public Jobs.JobDTO RelatedJob { get; set; }
+        public Jobs.CoreJobDto RelatedJob { get; set; }
         public int EmployeeId { get; set; }
         public Guid? AttachmentId { get; set; }
         public int WeekId { get; set; }

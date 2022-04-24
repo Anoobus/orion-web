@@ -16,7 +16,7 @@ namespace orion.web.Expense
     public class AddExpenseViewModel
     {
         public ExpenseModel ExpenseToSave { get; set; }
-        public IEnumerable<Jobs.JobDTO> AvailableJobs { get; set; }
+        public IEnumerable<Jobs.CoreJobDto> AvailableJobs { get; set; }
         public WeekDTO Week { get; set; }
         public int SelectedJobId { get; set; }
         public string CancelUrl { get; set; }
@@ -31,6 +31,6 @@ namespace orion.web.Expense
         public string AttachmentName { get; set; }
         public string Classification { get; set; }
         public string AddtionalNotes { get; set; }
-        public Jobs.JobDTO RelatedJob { get; set; }
+        public Jobs.CoreJobDto RelatedJob { get; set; }
     }
 }

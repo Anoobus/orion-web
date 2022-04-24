@@ -8,6 +8,24 @@ using System.Threading.Tasks;
 
 namespace orion.web.TimeEntries
 {
+    public class EffortDto
+    {
+        public int JobId { get; set; }
+        public int TaskId { get; set; }
+    }
+    public class EffortTimeEntryDto : EffortDto
+    {
+        public Dictionary<DayOfWeek,DayTimeEntryDto> Entries { get; set; }
+    }
+
+    public class DayTimeEntryDto
+    {
+                  public DateTime Date { get; set; }
+         public decimal Hours { get; set; }
+        public decimal OvertimeHours { get; set; }
+    }
+   
+   
     public interface ISaveTimeEntriesCommand
     {
         Task<Result> SaveTimeEntriesAsync(int employeeId, int weekId, FullTimeEntryViewModel vm);
@@ -110,9 +128,9 @@ namespace orion.web.TimeEntries
                 foreach(var jobGroup in grouped)
                 {
                     var job = await _jobsRepository.GetForJobId(jobGroup.Key);
-                    if(job.JobStatusId != JobStatus.Enabled)
+                    if(job.CoreInfo.JobStatusId != JobStatus.Enabled)
                     {
-                        issues.Add($"Job {job.FullJobCodeWithName} has been closed, either remove this entry, or have an administrator re-open the job");
+                        issues.Add($"Job {job.CoreInfo.FullJobCodeWithName} has been closed, either remove this entry, or have an administrator re-open the job");
                     }
                 }
             }

@@ -34,7 +34,7 @@ namespace orion.web.TimeEntries
                 var entryForEveryDayOfWeek = _timeSpentRepository.CreateEmptyWeekForCombo( id, entry.Key.JobTaskId,entry.Key.JobId, employeeId); ;
                 foreach(var day in entryForEveryDayOfWeek)
                 {
-                    await _timeService.SaveAsync( id, employeeId, day);
+                    await _timeService.SaveAsync( employeeId, day);
                 }
             }
         }

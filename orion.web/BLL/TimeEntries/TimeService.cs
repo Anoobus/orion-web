@@ -15,7 +15,7 @@ namespace orion.web.TimeEntries
     public interface ITimeService
     {
         Task<IEnumerable<TimeEntryDTO>> GetAsync(int weekId, int employeeId);
-        Task SaveAsync(int weekId, int employeeId, TimeEntryDTO entry);
+        Task SaveAsync(int employeeId, TimeEntryDTO entry);
         Task SaveWeekAsync(int employeeId, WeekOfTimeDTO entry);
         Task<WeekOfTimeDTO> GetWeekAsync(int employeeId, int weekId);
         Task DeleteAllEntries(int weekId, int taskId, int JobId, int employeeId);
@@ -60,7 +60,7 @@ namespace orion.web.TimeEntries
             }
         }
 
-        public async Task SaveAsync(int weekId, int employeeId, TimeEntryDTO entry)
+        public async Task SaveAsync(int employeeId, TimeEntryDTO entry)
         {
             using(var db = _contextFactory.CreateDb())
             {

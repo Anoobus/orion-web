@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using orion.web.api.expenditures;
+using orion.web.api.expenditures.Models;
 using orion.web.Clients;
 using orion.web.Employees;
 using orion.web.Jobs;
@@ -12,27 +13,7 @@ using System.Threading.Tasks;
 
 namespace orion.web.api
 {
-    public class ContractorExpenditureOneTimeSet : EditableContractorExpenditure
-    {
-        public Guid Id { get; set; }
-        public DateTimeOffset LastModified { get; set; }
-        public Guid EmployeeId { get; set; }
-        public Guid JobId { get; set; }
-        public int WeekId { get; set; }
-    }
-
-
-    public class EditableContractorExpenditure
-    {
-        public string CompanyName { get; set; }
-        public string OrionPONumber { get; set; }
-        public decimal TotalPOContractAmount { get; set; }
-    }
-
-    public class ContractorExpenditure : ContractorExpenditureOneTimeSet
-    {
-
-    }
+  
 
     [Authorize]
     [Route("orion-api/v1/expenditures/contractors")]

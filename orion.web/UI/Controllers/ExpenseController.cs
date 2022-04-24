@@ -78,7 +78,7 @@ namespace orion.web.Expense
                 AttatchmentName = vm.UploadFile != null ? $"{vm.ExpenseToSave.AttachmentName}-{vm.UploadFile.FileName}" : vm.ExpenseToSave.AttachmentName,
                 Classification = vm.ExpenseToSave.Classification,
                 EmployeeId = await _sessionAdapter.EmployeeIdAsync(),
-                RelatedJob = jobDetails,
+                RelatedJob = jobDetails.CoreInfo,
                 SaveDate = DateTimeOffset.UtcNow,
                 WeekId = vm.WeekId
             });
@@ -134,7 +134,7 @@ namespace orion.web.Expense
                     AttatchmentName = vm.ExpenseToSave.AttachmentName,
                     Classification = vm.ExpenseToSave.Classification,
                     EmployeeId = await _sessionAdapter.EmployeeIdAsync(),
-                    RelatedJob = job,
+                    RelatedJob = job.CoreInfo,
                     SaveDate = DateTimeOffset.UtcNow,
                     WeekId = vm.WeekId,
                     ExpenseItemId = vm.ExpenseItemId

@@ -26,4 +26,10 @@
     <ProjectReference Include="..\orion.web\orion.web.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="BLL\AutoMapper\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="BLL\AutoMapper\" />
+  </ItemGroup>
 </Project>

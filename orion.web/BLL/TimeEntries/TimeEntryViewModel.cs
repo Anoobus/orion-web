@@ -30,7 +30,7 @@ namespace orion.web.TimeEntries
 
     public class NewJobTaskCombo
     {
-        public IEnumerable<JobDTO> AvailableJobs { get; set; }
+        public IEnumerable<CoreJobDto> AvailableJobs { get; set; }
         public IEnumerable<CategoryDTO> AvailableCategories
         {
             get

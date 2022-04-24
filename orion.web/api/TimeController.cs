@@ -78,7 +78,7 @@ namespace orion.web.api
 
             }
             
-            var addResult = await _saveTimeEntriesCommand.SaveTimeEntriesAsync(0,0,null);
+            var addResult = await _saveTimeEntriesCommand.SaveTimeEntriesAsync(employeeId,weekid,currentTime);
 
             if (addResult.Successful)
             {

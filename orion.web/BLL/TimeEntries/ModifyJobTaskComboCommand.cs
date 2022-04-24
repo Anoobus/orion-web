@@ -42,11 +42,11 @@ namespace orion.web.TimeEntries
                 {
                     match.Hours += item.entry.Hours;
                     match.OvertimeHours += item.entry.OvertimeHours;
-                    await timeService.SaveAsync( weekId, employeeId, match);
+                    await timeService.SaveAsync(  employeeId, match);
                 }
                 else
                 {
-                    await timeService.SaveAsync( weekId, employeeId, new TimeEntryDTO()
+                    await timeService.SaveAsync(  employeeId, new TimeEntryDTO()
                     {
                         Date = item.entry.Date,
                         EmployeeId = item.entry.EmployeeId,

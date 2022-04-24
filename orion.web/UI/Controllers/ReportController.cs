@@ -41,7 +41,19 @@ namespace orion.web.Reports
             return File(Steam, MimeType, Name);
         }
 
-
+        [HttpPost]
+        [Route("RunReport/" + ReportNames.DETAILED_EXPENSE_REPORT)]
+        public async Task<ActionResult> DetailedExpenseReport(ReportSelectionViewModel request)
+        {
+            var criteria = request.DetailedExpenseForJobReportCriteria.Criteria;
+            var rpt = await reportCreator.CreateDetailedExpenseReport(criteria);
+            var (Steam, MimeType, Name) = reportWriter.GetFinishedResult(criteria,  rpt);
+            return File(Steam, MimeType, Name);
+        }
+        /*
+         *
+         *
+        BELOW NO LONGER LIVE
         [HttpPost]
         [Route("RunReport/" + ReportNames.JOBS_SUMMARY_REPORT)]
         public async Task<ActionResult> JobSummaryReport(ReportSelectionViewModel request)
@@ -51,7 +63,7 @@ namespace orion.web.Reports
             var (Steam, MimeType, Name) = reportWriter.GetFinishedResult(criteria,  rpt);
             return File(Steam, MimeType, Name);
         }
-
+        */
         [HttpPost]
         [Route("RunReport/" + ReportNames.JOB_DETAIL_REPORT)]
         public async Task<ActionResult> JobDetailReport(ReportSelectionViewModel request)

@@ -32,27 +32,45 @@
         @if (Model.PayPeriodReportCriteria.CanView)
         {
             <div id="pay-period-report" rpt-section="@Model.PayPeriodReportCriteria.ReportName" style="display:none">
-               
-                    @Html.EditorFor(m => Model.PayPeriodReportCriteria.Criteria, "~/UI/Views/Reports/PayPeriodReportCriteria.cshtml")
-               
+
+                @Html.EditorFor(m => Model.PayPeriodReportCriteria.Criteria, "~/UI/Views/Reports/PayPeriodReportCriteria.cshtml")
+
             </div>
         }
 
+        @*
         @if (Model.JobSummaryReportCriteria.CanView)
         {
             <div id="job-summary-report" rpt-section="@Model.JobSummaryReportCriteria.ReportName" style="display:none">
-                
-                    @Html.EditorFor(m => Model.JobSummaryReportCriteria.Criteria, "~/UI/Views/Reports/ProjectStatusReportCriteria.cshtml")
-               
+
+                @Html.EditorFor(m => Model.JobSummaryReportCriteria.Criteria, "~/UI/Views/Reports/ProjectStatusReportCriteria.cshtml")
+
             </div>
         }
+        *@
 
         @if (Model.QuickJobTimeReportCriteria.CanView)
         {
-            <div  id="job-detail-report" rpt-section="@Model.QuickJobTimeReportCriteria.ReportName" style="display:none">
-               
-                    @Html.EditorFor(m => Model.QuickJobTimeReportCriteria.Criteria, "~/UI/Views/Reports/QuickJobTimeReportCriteria.cshtml")
-               
+            <div id="job-detail-report" rpt-section="@Model.QuickJobTimeReportCriteria.ReportName" style="display:none">
+
+                @Html.EditorFor(m => Model.QuickJobTimeReportCriteria.Criteria, "~/UI/Views/Reports/QuickJobTimeReportCriteria.cshtml")
+
+            </div>
+        }
+        @if (Model.DetailedExpenseForJobReportCriteria.CanView)
+        {
+            <div id="detail-expense-report" rpt-section="@Model.DetailedExpenseForJobReportCriteria.ReportName" style="display:none">
+
+                @Html.EditorFor(m => Model.DetailedExpenseForJobReportCriteria.Criteria, "~/UI/Views/Reports/DetailedExpenseForJobReportCriteria.cshtml")
+
+            </div>
+        }
+        @if (Model.AllOpenJobsSummaryReportCriteria.CanView)
+        {
+            <div id="all-open-jobs-summary-report" rpt-section="@Model.AllOpenJobsSummaryReportCriteria.ReportName" style="display:none">
+
+                @Html.EditorFor(m => Model.AllOpenJobsSummaryReportCriteria.Criteria, "~/UI/Views/Reports/AllOpenJobsSummaryReportCriteria.cshtml")
+
             </div>
         }
     </div>

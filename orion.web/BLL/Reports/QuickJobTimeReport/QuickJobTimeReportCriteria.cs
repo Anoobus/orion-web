@@ -13,7 +13,7 @@ namespace orion.web.Reports.QuickJobTimeReport
     {
         public const string QUICK_JOB_TIME_REPORT_NAME = "Quick Job Time Report";
         public ReportingPeriod PeriodSettings { get; set; }
-        public IEnumerable<JobDTO> AvailableJobs { get; set; }
+        public IEnumerable<CoreJobDto> AvailableJobs { get; set; }
         public string SelectedJobId { get; set; }
         [Display(Name = "Show All Employees Time For This Job (Not Just Your Time)")]
         public bool ShowAllEmployeesForJob { get; set; }

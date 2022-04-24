@@ -98,9 +98,9 @@ namespace orion.web.Jobs
         public async Task<ActionResult> CloseJob(int id)
         {
             var job = await _jobsRepository.GetForJobId(id);
-            job.JobStatusId = JobStatus.Archived;
-            await _jobsRepository.Update(job);
-            NotificationsController.AddNotification(User.Identity.Name, $"Job {job.FullJobCodeWithName} has been closed");
+            job.CoreInfo.JobStatusId = JobStatus.Archived;
+            await _jobsRepository.Update(job.CoreInfo);
+            NotificationsController.AddNotification(User.Identity.Name, $"Job {job.CoreInfo.FullJobCodeWithName} has been closed");
             return RedirectToAction(nameof(List));
         }
 
@@ -147,7 +147,7 @@ namespace orion.web.Jobs
         {
             var vm = new CreateJobViewModel()
             {
-                Job = new JobDTO(),
+                Job = new CoreJobDto(),
                 AvailableClients = await clientRepository.GetAllClients(),
                 AvailableSites = await siteRepository.GetAll(),
                 AvailableJobStatus = await _jobsRepository.GetUsageStatusAsync(),

@@ -20,7 +20,7 @@
                         console.log(error.response.status);
                         console.log(error.response.headers);
                         //toastSuccess(error.response.data.errors.title);
-                        onError(error.response.data.error.detail);
+                        onError(error.response.data.errors.detail);
 
                     } else if (error.request) {
                         // The request was made but no response was received
@@ -48,7 +48,7 @@
                         console.log(error.response.status);
                         console.log(error.response.headers);
 
-                        onError(error.response.data.error.detail);
+                        onError(error.response.data.errors.detail);
 
                     } else if (error.request) {
                         // The request was made but no response was received
@@ -82,7 +82,7 @@
                         console.log(error.response.status);
                         console.log(error.response.headers);
 
-                        onError(error.response.data.error.detail);
+                        onError(error.response.data.errors.detail);
 
                     } else if (error.request) {
                         // The request was made but no response was received

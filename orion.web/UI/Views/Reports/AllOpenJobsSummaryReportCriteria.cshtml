@@ -1,0 +1,22 @@
+﻿@using orion.web.Reports
+@using orion.web.Employees
+@model orion.web.BLL.Reports.AllOpenJobsSummaryreport.AllOpenJobsSummaryReportCriteria
+<form asp-action="JobDetailReport">
+
+    <div class="row">
+        <div class="col s12">
+            <h4>All Open Jobs Summary Report</h4>
+
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        </div>
+    </div>
+
+  
+    <div class="row">
+        <div class="col s12">
+            <input type="submit" value="Download" class="btn btn-default" />
+        </div>
+
+    </div>
+</form>
+

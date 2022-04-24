@@ -17,7 +17,7 @@ namespace orion.web.Reports.JobSummaryReport
         public bool ShowAllJobsRegardlessOfHoursBooked { get; set; }
 
         public ReportingPeriod PeriodSettings { get; set; }
-        public IEnumerable<JobDTO> AvailableJobs { get; set; }
+        public IEnumerable<CoreJobDto> AvailableJobs { get; set; }
         public string SelectedJobId { get; set; }
     }
 }

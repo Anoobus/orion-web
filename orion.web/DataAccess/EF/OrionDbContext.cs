@@ -51,7 +51,7 @@ namespace orion.web.DataAccess.EF
         public DbSet<ContractorExpenditure> ContractorExpenditures { get; set; }
         public DbSet<CompanyVehicle> CompanyVehicles { get; set; }
         public DbSet<CompanyVehicleExpenditure> CompanyVehicleExpenditures { get; set; }
-        public DbSet<ArcFlashlabelExpenditure> ArcFlashlabelExpenditures { get; set; }
+        public DbSet<ArcFlashLabelExpenditure> ArcFlashlabelExpenditures { get; set; }
         public DbSet<MiscExpenditure> MiscExpenditures { get; set; }
         public DbSet<TimeAndExpenceExpenditure> TimeAndExpenceExpenditures { get; set; }
 

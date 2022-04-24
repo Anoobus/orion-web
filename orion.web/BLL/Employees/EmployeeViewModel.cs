@@ -8,7 +8,7 @@ namespace orion.web.Employees
     public class CreateEmployeeViewModel
     {
         public IEnumerable<string> SelectedJobs { get; set; }
-        public IEnumerable<JobDTO> AvailableJobs { get; set; }
+        public IEnumerable<CoreJobDto> AvailableJobs { get; set; }
         [Required]
         public string SelectedRole { get; set; }
         public IEnumerable<string> AvailableRoles { get; set; }
