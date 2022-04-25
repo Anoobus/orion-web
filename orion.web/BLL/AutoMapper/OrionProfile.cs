@@ -7,6 +7,7 @@ using orion.web.BLL.Expenditures;
 using orion.web.BLL.Jobs;
 using orion.web.BLL.ScheduledTasks;
 using orion.web.Clients;
+using orion.web.Common;
 using orion.web.DataAccess.EF;
 using orion.web.Employees;
 using orion.web.Jobs;
@@ -83,16 +84,16 @@ namespace orion.web.BLL.AutoMapper
 
             CreateMap<UpdateMessage<UpdateArcFlashLabelExpenditureMessage, DataAccess.EF.ArcFlashLabelExpenditure>,DataAccess.EF.ArcFlashLabelExpenditure>()
                 .ForMember(x => x.DateOfInvoice, opt => opt.MapFrom(x => x.NewValue.model.DateOfInvoice))
-                .ForMember(x => x.EmployeeId, opt => opt.MapFrom(x => x.Existing.EmployeeId ))
+                .ForMember(x => x.EmployeeId, opt => opt.MapFrom(x => x.NewValue.model.EmployeeId ))
                 .ForMember(x => x.ExternalId, opt => opt.MapFrom(x => x.Existing.ExternalId))
                 .ForMember(x => x.Id, opt => opt.MapFrom(x => x.Existing.Id))
                 .ForMember(x => x.Job, opt => opt.Ignore())
-                .ForMember(x => x.JobId, opt => opt.MapFrom(x => x.Existing.JobId))
+                .ForMember(x => x.JobId, opt => opt.MapFrom(x => x.NewValue.model.JobId))
                 .ForMember(x => x.LastModified, opt => opt.MapFrom(x => DateTimeOffset.Now))
                 .ForMember(x => x.Quantity, opt => opt.MapFrom(x => x.NewValue.model.Quantity))
                 .ForMember(x => x.TotalLabelsCost, opt => opt.MapFrom(x => x.NewValue.model.TotalLabelsCost))
                 .ForMember(x => x.TotalPostageCost, opt => opt.MapFrom(x => x.NewValue.model.TotalPostageCost))
-                .ForMember(x => x.WeekId, opt => opt.MapFrom(x => x.Existing.WeekId));
+                .ForMember(x => x.WeekId, opt => opt.MapFrom(x => WeekDTO.CreateWithWeekContaining(x.NewValue.model.DateOfInvoice.DateTime).WeekId.Value));
 
              CreateMap<UpdateMessage<UpdateCompanyVehicleExpenditureMessage, DataAccess.EF.CompanyVehicleExpenditure>,DataAccess.EF.CompanyVehicleExpenditure>()
                 .ForMember(x => x.DateVehicleFirstUsed, opt => opt.MapFrom(x => x.NewValue.model.DateVehicleFirstUsed))
@@ -114,7 +115,7 @@ namespace orion.web.BLL.AutoMapper
                 .ForMember(x => x.EmployeeId, opt => opt.MapFrom(x => x.EmployeeId))
                 .ForMember(x => x.Id, opt => opt.MapFrom(x => x.ExternalId))
                 .ForMember(x => x.JobId, opt => opt.MapFrom(x => x.JobId))
-                .ForMember(x => x.LastModified, opt => opt.MapFrom(x => DateTimeOffset.Now))
+                .ForMember(x => x.LastModified, opt => opt.MapFrom(x => x.LastModified))
                 .ForMember(x => x.Quantity, opt => opt.MapFrom(x => x.Quantity))
                 .ForMember(x => x.TotalLabelsCost, opt => opt.MapFrom(x => x.TotalLabelsCost))
                 .ForMember(x => x.TotalPostageCost, opt => opt.MapFrom(x => x.TotalPostageCost))
@@ -125,10 +126,38 @@ namespace orion.web.BLL.AutoMapper
                .ForMember(x => x.EmployeeId, opt => opt.MapFrom(x => x.EmployeeId))
                .ForMember(x => x.ExternalId, opt => opt.MapFrom(x => x.ExternalId))
                .ForMember(x => x.JobId, opt => opt.MapFrom(x => x.JobId))
-               .ForMember(x => x.LastModified, opt => opt.MapFrom(x => DateTimeOffset.Now))
+               .ForMember(x => x.LastModified, opt => opt.MapFrom(x => x.LastModified))
                .ForMember(x => x.TotalMiles, opt => opt.MapFrom(x => x.TotalMiles))
                .ForMember(x => x.TotalNumberOfDaysUsed, opt => opt.MapFrom(x => x.TotalNumberOfDaysUsed))
                .ForMember(x => x.Vehicle, opt => opt.MapFrom(x => (CompanyVehicleDescriptor)x.CompanyVehicleId))
+               .ForMember(x => x.WeekId, opt => opt.MapFrom(x => x.WeekId));
+
+             CreateMap<DataAccess.EF.ContractorExpenditure, orion.web.api.expenditures.Models.ContractorExpenditure>()
+               .ForMember(x => x.CompanyName, opt => opt.MapFrom(x => x.CompanyName))
+               .ForMember(x => x.EmployeeId, opt => opt.MapFrom(x => x.EmployeeId))
+               .ForMember(x => x.ExternalId, opt => opt.MapFrom(x => x.ExternalId))
+               .ForMember(x => x.JobId, opt => opt.MapFrom(x => x.JobId))
+               .ForMember(x => x.LastModified, opt => opt.MapFrom(x => x.LastModified))
+               .ForMember(x => x.OrionPONumber, opt => opt.MapFrom(x => x.OrionPONumber))
+               .ForMember(x => x.TotalPOContractAmount, opt => opt.MapFrom(x => x.TotalPOContractAmount))
+               .ForMember(x => x.WeekId, opt => opt.MapFrom(x => x.WeekId));
+
+              CreateMap<DataAccess.EF.MiscExpenditure, orion.web.api.expenditures.Models.MiscExpenditure>()
+               .ForMember(x => x.Id, opt => opt.MapFrom(x => x.ExternalId))
+               .ForMember(x => x.EmployeeId, opt => opt.MapFrom(x => x.EmployeeId))
+               .ForMember(x => x.Amount, opt => opt.MapFrom(x => x.Amount))
+               .ForMember(x => x.JobId, opt => opt.MapFrom(x => x.JobId))
+               .ForMember(x => x.LastModified, opt => opt.MapFrom(x => x.LastModified))
+               .ForMember(x => x.Description, opt => opt.MapFrom(x => x.Description))
+               .ForMember(x => x.WeekId, opt => opt.MapFrom(x => x.WeekId));
+
+              CreateMap<DataAccess.EF.TimeAndExpenceExpenditure, orion.web.api.expenditures.Models.TimeAndExpenceExpenditure>()
+               .ForMember(x => x.Id, opt => opt.MapFrom(x => x.ExternalId))
+               .ForMember(x => x.EmployeeId, opt => opt.MapFrom(x => x.EmployeeId))
+               .ForMember(x => x.Amount, opt => opt.MapFrom(x => x.Amount))
+               .ForMember(x => x.JobId, opt => opt.MapFrom(x => x.JobId))
+               .ForMember(x => x.LastModified, opt => opt.MapFrom(x => x.LastModified))
+               .ForMember(x => x.ExpenseOnDate, opt => opt.MapFrom(x => x.ExpenseOnDate))
                .ForMember(x => x.WeekId, opt => opt.MapFrom(x => x.WeekId));
 
         }

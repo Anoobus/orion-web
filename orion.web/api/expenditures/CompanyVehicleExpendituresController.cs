@@ -16,9 +16,9 @@ namespace orion.web.api
     public class CompanyVehicleExpendituresController : ControllerBase
     {
         private readonly IMapper _mapper;
-        private readonly IMessageHandler<CreateCompanyVehicleExpenditureMessage> _createVehicleExpenseHandler;
+        private readonly ICreateCompanyVehicleExpenditure _createVehicleExpenseHandler;
         private readonly IInMemRepo<CompanyVehicleExpenditure> _repo;
-        public CompanyVehicleExpendituresController(IMapper mapper, IMessageHandler<CreateCompanyVehicleExpenditureMessage> createVehicleExpenseHandler)
+        public CompanyVehicleExpendituresController(IMapper mapper, ICreateCompanyVehicleExpenditure createVehicleExpenseHandler)
         {
             _mapper = mapper;
             _createVehicleExpenseHandler = createVehicleExpenseHandler;
@@ -31,7 +31,8 @@ namespace orion.web.api
            [FromRoute(Name = "employee-id")] int employeeId,
            [FromRoute(Name = "job-id")] int jobId)
         {
-            return await _createVehicleExpenseHandler.Process(new CreateCompanyVehicleExpenditureMessage(coolz, weekId, employeeId, jobId));
+            var rez = await _createVehicleExpenseHandler.Process(new CreateCompanyVehicleExpenditureMessage(coolz, weekId, employeeId, jobId));
+            return rez.AsApiResult();
         }
 
 

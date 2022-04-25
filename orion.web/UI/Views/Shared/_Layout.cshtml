@@ -67,9 +67,13 @@
                 <ul id="nav-mobile" class="">
                     <li class="valign-wrapper"><img src="/images/orion_logo_brand.png" style="height:28px;margin-top:12px"></li>
                     <li><a class="waves-effect waves-light" asp-controller="Home" asp-action="Index">Home</a></li>
-                    <li><a class="dropdown-trigger custom-drop-down nav-dd" href="#!" data-target="sys-mgmt-dropdown">System Management <i class="material-icons right">arrow_drop_down</i></a></li>
+                    @if (User.IsInRole(UserRoleName.Admin))
+                    {
+                        <li><a class="dropdown-trigger custom-drop-down nav-dd" href="#!" data-target="sys-mgmt-dropdown">System Management <i class="material-icons right">arrow_drop_down</i></a></li>
+                        <li><a class="waves-effect waves-light" asp-controller="ExpenseManagement" asp-action="Index">Expense Management</a></li>
+                        <li><a class="waves-effect waves-light" asp-controller="TimeApproval" asp-action="Index">Time Approval</a></li>
+                    }
                     <li><a class="waves-effect waves-light" asp-controller="TimeEntry" asp-action="Index">Time Entry</a></li>
-                    <li><a class="waves-effect waves-light" asp-controller="TimeApproval" asp-action="Index">Time Approval</a></li>
                     <li><a class="waves-efect waves-light" asp-controller="Reports" asp-action="Index">View Reports</a></li>
                     @await Html.PartialAsync("_LoginPartial")
                 </ul>

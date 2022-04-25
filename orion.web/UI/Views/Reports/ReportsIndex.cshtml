@@ -38,17 +38,6 @@
             </div>
         }
 
-        @*
-        @if (Model.JobSummaryReportCriteria.CanView)
-        {
-            <div id="job-summary-report" rpt-section="@Model.JobSummaryReportCriteria.ReportName" style="display:none">
-
-                @Html.EditorFor(m => Model.JobSummaryReportCriteria.Criteria, "~/UI/Views/Reports/ProjectStatusReportCriteria.cshtml")
-
-            </div>
-        }
-        *@
-
         @if (Model.QuickJobTimeReportCriteria.CanView)
         {
             <div id="job-detail-report" rpt-section="@Model.QuickJobTimeReportCriteria.ReportName" style="display:none">

@@ -3,10 +3,10 @@ namespace orion.web.api.expenditures.Models
 {
      public class ContractorExpenditureOneTimeSet : EditableContractorExpenditure
     {
-        public Guid Id { get; set; }
+        public Guid ExternalId { get; set; }
         public DateTimeOffset LastModified { get; set; }
-        public Guid EmployeeId { get; set; }
-        public Guid JobId { get; set; }
+        public int EmployeeId { get; set; }
+        public int JobId { get; set; }
         public int WeekId { get; set; }
     }
 

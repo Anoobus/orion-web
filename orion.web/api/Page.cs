@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace orion.web.api
 {
-    public class Page<T> : IResult
+    public class Page<T> 
     {
 
         public T[] Data { get; set; }

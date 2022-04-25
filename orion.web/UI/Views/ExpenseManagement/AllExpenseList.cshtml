@@ -1,0 +1,144 @@
+﻿@using orion.web.UI.Models
+
+@model orion.web.UI.Models.AllExpendituresModel
+
+@using orion.web.Employees
+<nav id="bread-crumb-bar" class="red darken-3 z-depth-3">
+    <div class="nav-wrapper ">
+        <div class="col s12">
+            <a href="#!" class="breadcrumb">Home</a>
+            <a href="#!" class="breadcrumb"> Expense Management</a>
+            <a href="#!" class="breadcrumb"> Full Listing</a>
+        </div>
+    </div>
+</nav>
+<div class="">
+
+    <style>
+        td.action-link-cell {
+            min-width: 290px;
+        }
+    </style>
+
+    <div class="">
+        <div class="row">
+            <div class="col s3">
+                <a class="btn  btn-default  btn-margin-right pull-right " asp-action="Create">Create New</a>
+            </div>
+            <div class="col s9">
+                <label for="quick-filter">Quick Filter Rows</label>
+                <input id="quick-filter" type="text" class="input form-control" />
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="col s12">
+                <table class="table striped hover z-depth-2">
+                    <thead>
+                        <tr class="z-depth-2">
+                            <th class="job-code-link-cell">
+                                Job
+                            </th>
+                            <th>
+                                Employee
+                            </th>
+                            <th>
+                                Short Name
+                            </th>
+                            <th>
+                                Amount
+                            </th>
+                            <th class="action-links-cell"></th>
+                        </tr>
+
+                    </thead>
+                    <tbody id="table-data">
+                        @foreach (var item in Model.AsFullList())
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(x => item.FullJobNameWithCode)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(x => item.EmployeeName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(x => item.ShortExpenseName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(x => item.Amount)
+                                </td>
+                                <td class="action-button-col">
+                                    <a href="#" onclick="editExpense('@item.Id');return false;">Edit</a> |
+                                    <a href="#" onclick="deleteExpense('@item.Id');return false;">Edit</a>                                    
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="modal-holder" class="modal working-panel">
+    <div id="modal-content">
+
+    </div>
+</div>
+
+<link rel="stylesheet" href="/css/site-table.css" />
+
+@section Scripts {
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script type="text/javascript">
+
+        const jobDataBlob = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.AvailableJobs.ToDictionary(x => x.FullJobCodeWithName, x => x.JobId))) ;
+
+        $(document).ready(function () {
+            $("#quick-filter").on("keyup", function () {
+                var value = $(this).val().toLowerCase();
+                $("#table-data tr").filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+
+
+        });
+        function submitExpenseChanges(formName) {
+            document.forms[formName].submit();
+        }
+        function deleteExpense(expId) {
+            axios.delete('/expenses/' + expId)
+                .then(response => {
+                    window.location.reload(true)
+                })
+        }
+        function editExpense(expId) {
+
+            axios
+                .get('/expenses/' + expId + '/edit-modal')
+                .then(response => {
+                    console.log('get call complete!');
+                    console.log(response);
+                    document.getElementById('modal-content').innerHTML = response.data;
+                    var modalDiv = document.getElementById('modal-holder');
+                    console.log(modalDiv);
+                    var rez = M.Modal.init(modalDiv, {});
+                    console.log(rez);
+                    var instance = M.Modal.getInstance(modalDiv);
+                    instance.open();
+                    initEditExpenseComponents();
+                    InitMaterializeComponents();
+                });
+
+        }
+    </script>
+
+
+    <script src="/js/ExpenseManagement/edit-expense-modal.js" type="text/javascript"></script>
+
+}

@@ -42,11 +42,11 @@ namespace orion.web.Reports
             int jobId = int.Parse(criteria.SelectedJobId);
 
             int? limitToEmployeeId = await _sessionAdapter.EmployeeIdAsync();
-            if(criteria.ShowAllEmployeesForJob)
+            if (criteria.ShowAllEmployeesForJob)
                 limitToEmployeeId = null;
 
-            using(var conn = new SqlConnection(configuration.GetConnectionString("SiteConnection")))
-            using(var cmd = conn.CreateCommand())
+            using (var conn = new SqlConnection(configuration.GetConnectionString("SiteConnection")))
+            using (var cmd = conn.CreateCommand())
             {
                 conn.Open();
 
@@ -95,11 +95,88 @@ COALESCE(e.Last,'') + ', ' + COALESCE(e.First,'') ,
 j.JobName, c.ClientName , 
 jt.LegacyCode + ' - ' + jt.[Name], 
 j.JobId
-	";
+
+
+
+
+Select 
+    'Time And Expense Expenditures' as [name]
+    ,SUM(ISNULL(e.Amount,0)) as amount
+    from dbo.Jobs j
+inner join dbo.TimeAndExpenceExpenditures e
+on e.JobId = j.JobId
+where WeekId BETWEEN @WeekIdStartInclusive AND @WeekIdEndInclusive
+AND (@LimitToEmployeeId is null OR @LimitToEmployeeId = e.EmployeeId)
+AND (@JobId is null Or j.JobId = @JobId)    
+HAVING SUM(ISNULL(e.Amount,0)) > 0
+
+UNION ALL
+
+select 
+    'Company Vehicle Expense' as [name]
+    ,SUM(ISNULL((ve.TotalNumberOfDaysUsed * 125)
+        + CASE WHEN ve.TotalMiles > 250 
+            THEN (ve.TotalMiles * .50) - (250 * .50)
+            ELSE 0
+            END,0)) as amount
+from dbo.Jobs j       
+inner join dbo.CompanyVehicleExpenditures ve
+on ve.JobId = j.JobId
+where WeekId BETWEEN @WeekIdStartInclusive AND @WeekIdEndInclusive
+AND (@LimitToEmployeeId is null OR @LimitToEmployeeId = ve.EmployeeId)
+AND (@JobId is null Or j.JobId = @JobId)    
+HAVING SUM(ISNULL((ve.TotalNumberOfDaysUsed * 125)
+        + CASE WHEN ve.TotalMiles > 250 
+            THEN (ve.TotalMiles * .50) - (250 * .50)
+            ELSE 0
+            END,0)) > 0
+
+UNION ALL 
+
+select 
+    'Contractor/PO Expense' as [name]
+    ,SUM(ISNULL(ce.TotalPOContractAmount,0)) as amount
+from dbo.Jobs j       
+inner join dbo.ContractorExpenditures ce
+on j.JobId = ce.JobId
+where WeekId BETWEEN @WeekIdStartInclusive AND @WeekIdEndInclusive
+AND (@LimitToEmployeeId is null OR @LimitToEmployeeId = ce.EmployeeId)
+AND (@JobId is null Or j.JobId = @JobId)   
+HAVING SUM(ISNULL(ce.TotalPOContractAmount,0)) > 0
+
+UNION ALL    
+
+select 
+    'Arc Flash Labels Expense' as [name]
+    ,SUM(ISNULL(e.TotalLabelsCost,0) + ISNULL(e.TotalPostageCost,0)) as amount
+FROM dbo.Jobs j
+inner join  dbo.ArcFlashlabelExpenditures e
+on j.jobId = e.jobId
+where WeekId BETWEEN @WeekIdStartInclusive AND @WeekIdEndInclusive
+AND (@LimitToEmployeeId is null OR @LimitToEmployeeId = e.EmployeeId)
+AND (@JobId is null Or j.JobId = @JobId)   
+HAVING SUM(ISNULL(e.TotalLabelsCost,0) + ISNULL(e.TotalPostageCost,0)) > 0
+
+UNION ALL
+
+select 
+    'Miscellaneous Expense' as [name]
+    ,SUM(ISNULL(e.Amount,0)) as amount
+from dbo.Jobs j
+inner join dbo.MiscExpenditures e
+on j.JobId = e.JobId
+where WeekId BETWEEN @WeekIdStartInclusive AND @WeekIdEndInclusive
+AND (@LimitToEmployeeId is null OR @LimitToEmployeeId = e.EmployeeId)
+AND (@JobId is null Or j.JobId = @JobId)   
+HAVING SUM(ISNULL(e.Amount,0)) > 0 ";
+
+
 
 
                 cmd.Parameters.Add(new SqlParameter("JobId", jobId));
-
+                cmd.Parameters.Add(new SqlParameter("LimitToEmployeeId", limitToEmployeeId.HasValue ? limitToEmployeeId : DBNull.Value));
+                cmd.Parameters.Add(new SqlParameter("WeekIdStartInclusive", WeekDTO.CreateWithWeekContaining(start).WeekId.Value));
+                cmd.Parameters.Add(new SqlParameter("WeekIdEndInclusive", WeekDTO.CreateWithWeekContaining(end).WeekId.Value));
                 cmd.Parameters.Add(new SqlParameter("WeekStart", start));
                 cmd.Parameters.Add(new SqlParameter("WeekEnd", end));
 
@@ -109,8 +186,8 @@ j.JobId
                 var rpt = new QuickJobTimeReportDTO()
                 {
                     PeriodEnd = end,
-                    PeriodStart = start
-
+                    PeriodStart = start,
+                    Expenses = new Dictionary<string, decimal>()
                 };
 
                 var employeeRows = new List<QuickJobEmployees>();
@@ -123,7 +200,7 @@ j.JobId
 
                 while (await rdr.ReadAsync())
                 {
-                    if(rdr.HasRows)
+                    if (rdr.HasRows)
                     {
                         employeeRows.Add(new QuickJobEmployees()
                         {
@@ -135,8 +212,15 @@ j.JobId
                             TaskName = rdr.GetSqlString(map[nameof(QuickJobEmployees.TaskName)]).Value,
                         });
                     }
-                    }
-                    rpt.Employees = employeeRows;
+                }
+                rpt.Employees = employeeRows;
+                
+                await rdr.NextResultAsync();
+                while(await rdr.ReadAsync())
+                {
+                    rpt.Expenses.Add(rdr.GetString(0), rdr.GetDecimal(1));
+                }
+                    
                 return new ReportDTO<QuickJobTimeReportDTO>()
                 {
                     Data = rpt,
@@ -165,7 +249,7 @@ j.JobId
                     foreach (var prop in rptPropNames)
                     {
                         var match = cols.SingleOrDefault(x => x.ColumnName == prop.Name);
-                        if(match != null)
+                        if (match != null)
                         {
                             ColumnMap.Add(prop.Name, match.ColumnOrdinal.Value);
                         }

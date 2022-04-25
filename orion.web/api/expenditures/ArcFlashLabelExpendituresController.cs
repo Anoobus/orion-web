@@ -1,12 +1,10 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using orion.web.api.expenditures.Models;
-using orion.web.BLL;
 using orion.web.BLL.ArcFlashExpenditureExpenses;
 using orion.web.BLL.Expenditures;
-using System;
-using System.Threading.Tasks;
 
 namespace orion.web.api
 {
@@ -15,12 +13,12 @@ namespace orion.web.api
     [ApiController]
     public class ArcFlashLabelExpendituresController : ControllerBase
     {
-        private readonly IMapper _mapper;
-        private readonly IMessageHandler<CreateArcFlashLabelExpenditureMessage> _createArcFlashExpenditure;
-        private readonly IMessageHandler<UpdateArcFlashLabelExpenditureMessage> _updateArcFlashLabelExpenditure;
+        
+        private readonly ICreateArcFlashLabelExpenditure _createArcFlashExpenditure;
+        private readonly IUpdateArcFlashLabelExpenditure _updateArcFlashLabelExpenditure;
 
-        public ArcFlashLabelExpendituresController(IMessageHandler<CreateArcFlashLabelExpenditureMessage> createArcFlashExpenditure,
-            IMessageHandler<UpdateArcFlashLabelExpenditureMessage> updateArcFlashLabelExpenditure)
+        public ArcFlashLabelExpendituresController(ICreateArcFlashLabelExpenditure createArcFlashExpenditure,
+            IUpdateArcFlashLabelExpenditure updateArcFlashLabelExpenditure)
         {
             _createArcFlashExpenditure = createArcFlashExpenditure;
             _updateArcFlashLabelExpenditure = updateArcFlashLabelExpenditure;
@@ -33,7 +31,8 @@ namespace orion.web.api
         [FromRoute(Name = "employee-id")] int employeeId,
         [FromRoute(Name = "job-id")] int jobId)
         {            
-            return await _createArcFlashExpenditure.Process(new CreateArcFlashLabelExpenditureMessage(toCreate,weekId,employeeId,jobId));
+            var rez = await _createArcFlashExpenditure.Process(new CreateArcFlashLabelExpenditureMessage(toCreate,weekId,employeeId,jobId));
+            return rez.AsApiResult();
         }
 
 
@@ -41,7 +40,8 @@ namespace orion.web.api
         public async Task<IActionResult> UpdateExpenditure([FromBody] EditableArcFlashLabelExpenditure model,
            [FromRoute(Name = "arc-flash-label-expenditure-id")] Guid expId)
         {
-            return await _updateArcFlashLabelExpenditure.Process(new UpdateArcFlashLabelExpenditureMessage(model, expId));
+            var rez = await _updateArcFlashLabelExpenditure.Process(new UpdateArcFlashLabelExpenditureMessage(model, expId));
+            return rez.AsApiResult();
         }
     }
 }

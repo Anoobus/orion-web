@@ -3,11 +3,13 @@ using System.Threading.Tasks;
 using AutoMapper;
 using orion.web.api;
 using orion.web.api.expenditures.Models;
+using orion.web.BLL.Core;
 using orion.web.DataAccess;
+using orion.web.Util.IoC;
 
 namespace orion.web.BLL.Expenditures
 {
-    public class UpdateArcFlashLabelExpenditureMessage : IMessage<ArcFlashLabelExpenditure>
+    public class UpdateArcFlashLabelExpenditureMessage : IProduces<ArcFlashLabelExpenditure>
     {
         public Guid arcFlashLabelExpenditureId { get; }
         public ArcFlashLabelExpenditureOneTimeSet existingValues {get; set;}
@@ -24,10 +26,15 @@ namespace orion.web.BLL.Expenditures
         
     }
 
-   
+     public interface IUpdateArcFlashLabelExpenditure
+    {
+          public Task<IProcessResult<ArcFlashLabelExpenditure>> Process(UpdateArcFlashLabelExpenditureMessage msg);
+
+    }
 
     public class UpdateArcFlashLabelExpenditure
-        : HandleBase<UpdateArcFlashLabelExpenditureMessage, ArcFlashLabelExpenditure>   
+        : Orchastrator<UpdateArcFlashLabelExpenditureMessage, ArcFlashLabelExpenditure>,
+        IUpdateArcFlashLabelExpenditure, IAutoRegisterAsSingleton
     {
         private readonly IArcFlashLabelExpenditureRepo _repo;
         private readonly IMapper _mapper;
@@ -38,14 +45,14 @@ namespace orion.web.BLL.Expenditures
             _mapper = mapper;
         }
 
-        protected override async Task<IResult> Handle(UpdateArcFlashLabelExpenditureMessage msg)
+        protected override async Task<IProcessResult<ArcFlashLabelExpenditure>>  Handle(UpdateArcFlashLabelExpenditureMessage msg)
         {
             var existing = await _repo.FindByExternalId(msg.arcFlashLabelExpenditureId);
             var updateMsg = UpdateMessage.CreateFrom(msg, existing);
             var mapped = _mapper.Map<DataAccess.EF.ArcFlashLabelExpenditure>(updateMsg);
             
             var saved = await _repo.SaveEntity(mapped);
-            return _mapper.Map<ArcFlashLabelExpenditure>(saved);
+            return Success(_mapper.Map<ArcFlashLabelExpenditure>(saved));
         }
     }
 }

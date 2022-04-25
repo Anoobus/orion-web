@@ -1,25 +1,20 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using AutoFixture;
-using AutoMapper;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using orion.web.BLL;
-using orion.web.BLL.ArcFlashExpenditureExpenses;
-using orion.web.BLL.AutoMapper;
 using orion.web.BLL.Expenditures;
 using orion.web.DataAccess;
 
 namespace orion.web.test.BLL
 {
-    
+
 
 
     [TestClass]
     public class CreateCompanyVehicleExpenditureShould
     {
-        private class TestContext : MessageHandlerTestcontext<CreateCompanyVehicleExpenditure>
+        private class TestContext : BaseTestcontext
         {
             private Mock<ICompanyVehicleExpenditureRepo> _repo = new Mock<ICompanyVehicleExpenditureRepo>();
             public bool WasSaveCalled { get; private set; }
@@ -35,7 +30,7 @@ namespace orion.web.test.BLL
                          return mdl;
                      });
             }
-            protected override CreateCompanyVehicleExpenditure CreateItemUnderTest()
+            public CreateCompanyVehicleExpenditure GetItemUnderTest()
             {
                 return new CreateCompanyVehicleExpenditure(_repo.Object, _mapper);
             }
@@ -50,7 +45,7 @@ namespace orion.web.test.BLL
                      
             var actionReslut = await underTest.Process(ctx.TestMessage);
 
-            var actual = ctx.Actual as orion.web.api.expenditures.Models.CompanyVehicleExpenditure;
+            var actual = actionReslut.Success;
 
             actual.JobId.Should().Be(ctx.TestMessage.jobId);
             actual.DateVehicleFirstUsed.Should().Be(ctx.TestMessage.model.DateVehicleFirstUsed);

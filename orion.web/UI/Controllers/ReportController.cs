@@ -50,20 +50,16 @@ namespace orion.web.Reports
             var (Steam, MimeType, Name) = reportWriter.GetFinishedResult(criteria,  rpt);
             return File(Steam, MimeType, Name);
         }
-        /*
-         *
-         *
-        BELOW NO LONGER LIVE
+
         [HttpPost]
-        [Route("RunReport/" + ReportNames.JOBS_SUMMARY_REPORT)]
-        public async Task<ActionResult> JobSummaryReport(ReportSelectionViewModel request)
-        {
-            var criteria = request.JobSummaryReportCriteria.Criteria;
-            var rpt = await reportCreator.CreateJobSummaryReportAsync(criteria);
-            var (Steam, MimeType, Name) = reportWriter.GetFinishedResult(criteria,  rpt);
+        [Route("RunReport/" + ReportNames.ALL_OPEN_JOBS_SUMMARY_REPORT)]
+        public async Task<ActionResult> AllOpenJobSummaryReport(ReportSelectionViewModel request)
+        {            
+            var rpt = await reportCreator.CreateAllOpenJobSummaryReportAsync();
+            var (Steam, MimeType, Name) = reportWriter.GetFinishedResult(rpt);
             return File(Steam, MimeType, Name);
         }
-        */
+      
         [HttpPost]
         [Route("RunReport/" + ReportNames.JOB_DETAIL_REPORT)]
         public async Task<ActionResult> JobDetailReport(ReportSelectionViewModel request)

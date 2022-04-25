@@ -1,7 +1,5 @@
 ﻿using orion.web.BLL.Reports.DetailedExpenseForJobReport;
-using orion.web.Common;
 using orion.web.Jobs;
-using orion.web.Reports.JobSummaryReport;
 using orion.web.Reports.PayPeriodReport;
 using orion.web.Reports.QuickJobTimeReport;
 using orion.web.Util.IoC;
@@ -12,7 +10,7 @@ namespace orion.web.Reports
     public interface IReportCreator
     {
         Task<ReportDTO<PayPeriodReportDTO>> CreatePayPeriodReportAsync(PayPeriodReportCriteria settings);
-        Task<ReportDTO<JobSummaryReportDTO>> CreateJobSummaryReportAsync(JobSummaryReportCriteria settings);
+        Task<ReportDTO<AllOpenJobSummaryReportDTO>> CreateAllOpenJobSummaryReportAsync();
         Task<ReportDTO<QuickJobTimeReportDTO>> CreateQuickJobTimeReportAsync(QuickJobTimeReportCriteria settings);
         Task<ReportDTO<DetailedExpenseForJobReportDTO>> CreateDetailedExpenseReport(DetailedExpenseForJobReportCriteria criteria);
     }
@@ -20,13 +18,13 @@ namespace orion.web.Reports
     public class ReportCreator : IReportCreator, IAutoRegisterAsSingleton
     {
         private readonly IJobsRepository jobService;
-        private readonly IJobSummaryReportQuery jobSummaryQuery;
+        private readonly IAllOpenJobSummaryReportQuery jobSummaryQuery;
         private readonly IQuickJobTimeReportQuery quickJobTimeReportQuery;
         private readonly IPayPeriodReportQuery payPeriodReportQuery;
         private readonly IDetailedExpenseForJobReportQuery detailedExpenseForJobReportQuery;
 
         public ReportCreator(IJobsRepository jobService,
-            IJobSummaryReportQuery jobSummaryQuery,
+            IAllOpenJobSummaryReportQuery jobSummaryQuery,
             IQuickJobTimeReportQuery quickJobTimeReportQuery,
             IPayPeriodReportQuery payPeriodReportQuery,
             IDetailedExpenseForJobReportQuery detailedExpenseForJobReportQuery
@@ -44,13 +42,9 @@ namespace orion.web.Reports
             return await payPeriodReportQuery.RunAsync(settings.PayPeriodEnd);
         }
 
-        public async Task<ReportDTO<JobSummaryReportDTO>> CreateJobSummaryReportAsync(JobSummaryReportCriteria settings)
+        public async Task<ReportDTO<AllOpenJobSummaryReportDTO>> CreateAllOpenJobSummaryReportAsync()
         {
-            return await jobSummaryQuery.RunAsync(settings.PeriodSettings.Start,
-                settings.PeriodSettings.End,
-                settings.ShowAllJobsRegardlessOfHoursBooked,
-                "Job Summary Report",
-                int.Parse(settings.SelectedJobId));
+            return await jobSummaryQuery.RunAsync(true, "All Open Job Summary Report");
         }
 
         public async Task<ReportDTO<QuickJobTimeReportDTO>> CreateQuickJobTimeReportAsync(QuickJobTimeReportCriteria settings)

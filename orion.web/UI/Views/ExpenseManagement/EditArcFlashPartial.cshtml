@@ -1,0 +1,90 @@
+﻿@using orion.web.Employees
+@using orion.web.TimeEntries
+@using orion.web.api.expenditures.Models
+@using orion.web.UI.Models
+
+@model EditExpenseModel
+<style>
+    .modal {
+        width: 80vw;
+    }
+</style>
+<div class="row" style="display:none">
+    <div class="col s12">
+        @Html.HiddenFor(x => x.ArcFlashLabelExpenditure.Detail.EmployeeId);
+        @Html.HiddenFor(x => x.ArcFlashLabelExpenditure.Detail.JobId);
+        @Html.HiddenFor(x => x.ArcFlashLabelExpenditure.Detail.WeekId);
+        @Html.HiddenFor(x => x.ArcFlashLabelExpenditure.Detail.Id);
+
+    </div>
+</div>
+<div class="row">
+    <div class="input-field col s10">
+        @Html.HiddenFor(x => x.ArcFlashLabelExpenditure.Detail.JobId)
+        <input type="hidden" id="original-job-text"
+               value="@Model.AvailableJobs.FirstOrDefault(x => x.JobId == Model.ArcFlashLabelExpenditure.JobId).FullJobCodeWithName"
+               job-id="@Model.ArcFlashLabelExpenditure.JobId" />
+
+        <i class="material-icons prefix">search</i>
+        <input type="text" id="NewlySelectedJob-Name"
+               class="autocomplete validate"
+               value="@Model.AvailableJobs.FirstOrDefault(x => x.JobId == Model.ArcFlashLabelExpenditure.JobId).FullJobCodeWithName"
+               onfocus="oneTimeClear(this)"
+               onchange="updateJobSelection(this,'ArcFlashLabelExpenditure_Detail_JobId')"
+               placeholder="Type Job Code..." />
+        <label for="NewlySelectedJob-Name">Expense For Job</label>
+    </div>
+    <div class="col s2">
+        <button id="cancel-job-change" type="button" class="waves-effect waves-white btn-flat" onclick="undoJobChange(this)">Undo Job Change</button>
+    </div>
+</div>
+<div class="row">
+    <div class="input-field col s6">
+        <i class="material-icons prefix">person</i>
+        <select id="AvailableEmployees" class="validate"
+                onchange="updateTargetEmployee(this, 'ArcFlashLabelExpenditure_Detail_EmployeeId')">
+            @foreach (var emp in Model.AvailableEmployees)
+            {
+                if (emp.EmployeeId == Model.ArcFlashLabelExpenditure.Detail.EmployeeId)
+                {
+                    <option value="@emp.EmployeeId" selected="selected">@emp.First, @emp.Last</option>
+                }
+                else
+                {
+                    <option value="@emp.EmployeeId">@emp.First, @emp.Last</option>
+                }
+            }
+        </select>
+        <label asp-for="ArcFlashLabelExpenditure.EmployeeName">For Employee</label>
+    </div>
+    <div class="input-field col s6">
+        <input asp-for="ArcFlashLabelExpenditure.Detail.DateOfInvoice" type="text" class="datepicker"
+               value="@Model.ArcFlashLabelExpenditure.Detail.DateOfInvoice.ToString("MMM dd, yyyy")">
+        <label asp-for="ArcFlashLabelExpenditure.Detail.DateOfInvoice" class="control-label">Date of Invoice</label>
+    </div>
+    </div>
+<div class="row">
+    <div class="input-field col s4">        
+        @Html.EditorFor(x => x.ArcFlashLabelExpenditure.Detail.Quantity)
+        <label asp-for="ArcFlashLabelExpenditure.Detail.Quantity">Quantity</label>
+    </div>
+    <div class="input-field col s4">
+        <i class="material-icons prefix">attach_money</i>
+        @Html.EditorFor(x => x.ArcFlashLabelExpenditure.Detail.TotalLabelsCost)
+        <label asp-for="ArcFlashLabelExpenditure.Detail.TotalLabelsCost">Total Labels Cost</label>
+    </div>
+    <div class="input-field col s4">
+        <i class="material-icons prefix">attach_money</i>
+        @Html.EditorFor(x => x.ArcFlashLabelExpenditure.Detail.TotalPostageCost)
+        <label asp-for="ArcFlashLabelExpenditure.Detail.TotalPostageCost">Total Postage Cost</label>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+
+  
+
+   
+</script>
+

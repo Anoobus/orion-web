@@ -1,7 +1,7 @@
 ﻿using orion.web.BLL.Reports.AllOpenJobsSummaryreport;
 using orion.web.BLL.Reports.DetailedExpenseForJobReport;
 using orion.web.Reports.Common;
-using orion.web.Reports.JobSummaryReport;
+
 using orion.web.Reports.PayPeriodReport;
 using orion.web.Reports.QuickJobTimeReport;
 using System.Collections.Generic;
@@ -23,15 +23,7 @@ namespace orion.web.Reports
             {
                 yield return QuickJobTimeReportCriteria.ReportName;
             }
-
-            /*
-
-            BELOW NO LONGER IN USE
-            if(JobSummaryReportCriteria.CanView)
-            {
-                yield return JobSummaryReportCriteria.ReportName;
-            }
-            */
+           
             if(DetailedExpenseForJobReportCriteria.CanView)
             {
                 yield return DetailedExpenseForJobReportCriteria.ReportName;
@@ -44,7 +36,7 @@ namespace orion.web.Reports
 
         public ExcelReport<PayPeriodReportCriteria> PayPeriodReportCriteria { get; set; }
         public ExcelReport<QuickJobTimeReportCriteria> QuickJobTimeReportCriteria { get; set; }
-        //public ExcelReport<JobSummaryReportCriteria> JobSummaryReportCriteria { get; set; }
+        
         public ExcelReport<DetailedExpenseForJobReportCriteria> DetailedExpenseForJobReportCriteria { get; set; }
         public ExcelReport<AllOpenJobsSummaryReportCriteria> AllOpenJobsSummaryReportCriteria { get; set; }
     }

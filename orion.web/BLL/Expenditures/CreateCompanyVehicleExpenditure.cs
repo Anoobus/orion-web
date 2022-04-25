@@ -2,11 +2,13 @@
 using System.Threading.Tasks;
 using AutoMapper;
 using orion.web.api.expenditures.Models;
+using orion.web.BLL.Core;
 using orion.web.DataAccess;
+using orion.web.Util.IoC;
 
 namespace orion.web.BLL.Expenditures
 {
-      public class CreateCompanyVehicleExpenditureMessage : IMessage<CompanyVehicleExpenditure>
+      public class CreateCompanyVehicleExpenditureMessage : IProduces<CompanyVehicleExpenditure>
     {
         public CreateCompanyVehicleExpenditureMessage(EditableCompanyVehicleExpenditure model, int weekId, int employeeId, int jobId)
         {
@@ -22,7 +24,15 @@ namespace orion.web.BLL.Expenditures
         public int jobId { get; }
     }
 
-    public class CreateCompanyVehicleExpenditure : HandleBase<CreateCompanyVehicleExpenditureMessage, CompanyVehicleExpenditure>  
+    public interface ICreateCompanyVehicleExpenditure
+    {
+          public Task<IProcessResult<CompanyVehicleExpenditure>> Process(CreateCompanyVehicleExpenditureMessage msg);
+
+    }
+
+    public class CreateCompanyVehicleExpenditure
+        : Orchastrator<CreateCompanyVehicleExpenditureMessage, CompanyVehicleExpenditure>  ,
+        ICreateCompanyVehicleExpenditure, IAutoRegisterAsSingleton
     {
         private readonly ICompanyVehicleExpenditureRepo _companyVehicleExpenditureRepo;
         private readonly IMapper _mapper;
@@ -33,11 +43,11 @@ namespace orion.web.BLL.Expenditures
             _mapper = mapper;
         }
 
-        protected override async Task<IResult> Handle(CreateCompanyVehicleExpenditureMessage msg)
+        protected override async Task<IProcessResult<CompanyVehicleExpenditure>> Handle(CreateCompanyVehicleExpenditureMessage msg)
         {
              var mapped = _mapper.Map<DataAccess.EF.CompanyVehicleExpenditure>(msg);
             var saved = await _companyVehicleExpenditureRepo.SaveEntity(mapped);
-            return _mapper.Map<CompanyVehicleExpenditure>(saved);
+            return Success( _mapper.Map<CompanyVehicleExpenditure>(saved));
         }
     }
 }

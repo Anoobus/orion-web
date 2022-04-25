@@ -25,7 +25,7 @@ namespace orion.web.api.expenditures.Models
         public int TotalMiles { get; set; }
     }
 
-    public class CompanyVehicleExpenditure : CompanyVehicleExpenditureOneTimeSet, IResult
+    public class CompanyVehicleExpenditure : CompanyVehicleExpenditureOneTimeSet
     {
         public ActionResult AsActionResult()
         {
@@ -41,5 +41,25 @@ namespace orion.web.api.expenditures.Models
         Enclave,
         Truck,
     }
+
+    public static class CompanyVehicleExtensions
+    {
+        public static decimal GetTotalCost(this CompanyVehicleExpenditure vehicle)
+        {
+            if (vehicle == null)
+                return 0;
+
+            /*
+             * CompanyVehicleExpenditure            
+             * To calculate cost for the company vehicle, 
+             * use $125 per day and add $.50 per mile for each mile over 250 per day.
+             */
+
+            var perDay = vehicle.TotalNumberOfDaysUsed * 125;
+            var perMile = (Math.Max(vehicle.TotalMiles - 250,0)) * 0.50m;
+            return (decimal)perDay + perMile;
+        }
+    }
+
 }
 

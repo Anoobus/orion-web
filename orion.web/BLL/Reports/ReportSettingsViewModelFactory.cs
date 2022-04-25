@@ -4,7 +4,7 @@ using orion.web.Common;
 using orion.web.Jobs;
 using orion.web.PayPeriod;
 using orion.web.Reports.Common;
-using orion.web.Reports.JobSummaryReport;
+
 using orion.web.Reports.PayPeriodReport;
 using orion.web.Reports.QuickJobTimeReport;
 using orion.web.Util.IoC;

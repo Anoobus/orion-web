@@ -1,33 +1,14 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
-using orion.web.api;
 using orion.web.api.expenditures.Models;
+using orion.web.BLL.Core;
 using orion.web.DataAccess;
+using orion.web.Util.IoC;
 
 namespace orion.web.BLL.ArcFlashExpenditureExpenses
 {
-    public interface IMessageProcessor
-    {
-        Task<IActionResult> Process<T>(T msg);
-    }
-    public class MessageProcessor
-    {
-        private readonly IServiceProvider _sp;
-
-        public MessageProcessor(IServiceProvider sp)
-        {
-            _sp = sp;
-        }
-        public Task<IActionResult> Process<T>(T msg)
-        {
-            return _sp.GetRequiredService<IMessageHandler<T>>().Process(msg);
-        }
-    }
-
-    public class CreateArcFlashLabelExpenditureMessage : IMessage<ArcFlashLabelExpenditure>
+   
+    public class CreateArcFlashLabelExpenditureMessage : IProduces<ArcFlashLabelExpenditure>
     {
         public CreateArcFlashLabelExpenditureMessage(EditableArcFlashLabelExpenditure model, int weekId, int employeeId, int jobId)
         {
@@ -44,9 +25,13 @@ namespace orion.web.BLL.ArcFlashExpenditureExpenses
     }
 
    
-
+    public interface ICreateArcFlashLabelExpenditure
+    {
+          public Task<IProcessResult<ArcFlashLabelExpenditure>> Process(CreateArcFlashLabelExpenditureMessage msg);
+    }
     public class CreateArcFlashLabelExpenditure
-        : HandleBase<CreateArcFlashLabelExpenditureMessage, ArcFlashLabelExpenditure>   
+        : Orchastrator<CreateArcFlashLabelExpenditureMessage, ArcFlashLabelExpenditure>,
+        ICreateArcFlashLabelExpenditure, IAutoRegisterAsSingleton
     {
         private readonly IArcFlashLabelExpenditureRepo _repo;
         private readonly IMapper _mapper;
@@ -57,11 +42,11 @@ namespace orion.web.BLL.ArcFlashExpenditureExpenses
             _mapper = mapper;
         }
 
-        protected override async Task<IResult> Handle(CreateArcFlashLabelExpenditureMessage msg)
+        protected override async Task<IProcessResult<ArcFlashLabelExpenditure>> Handle(CreateArcFlashLabelExpenditureMessage msg)
         {
             var mapped = _mapper.Map<DataAccess.EF.ArcFlashLabelExpenditure>(msg);
             var saved = await _repo.SaveEntity(mapped);
-            return _mapper.Map<ArcFlashLabelExpenditure>(saved);
+            return Success(_mapper.Map<ArcFlashLabelExpenditure>(saved));
         }
     }
 }

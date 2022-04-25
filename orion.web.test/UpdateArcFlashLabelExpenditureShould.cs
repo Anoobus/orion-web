@@ -13,7 +13,7 @@ namespace orion.web.test.BLL
     [TestClass]
     public class UpdateArcFlashLabelExpenditureShould
     {
-        private class TestContext : MessageHandlerTestcontext<UpdateArcFlashLabelExpenditure>
+        private class TestContext : BaseTestcontext
         {
             private Mock<IArcFlashLabelExpenditureRepo> _repo = new Mock<IArcFlashLabelExpenditureRepo>();
             public bool WasSaveCalled { get; private set; }
@@ -39,7 +39,7 @@ namespace orion.web.test.BLL
                          return mdl;
                      });
             }
-            protected override UpdateArcFlashLabelExpenditure CreateItemUnderTest()
+            public UpdateArcFlashLabelExpenditure GetItemUnderTest()
             {
                 return new UpdateArcFlashLabelExpenditure(_repo.Object, _mapper);
             }
@@ -54,7 +54,7 @@ namespace orion.web.test.BLL
                      
             var actionReslut = await underTest.Process(ctx.TestMessage);
 
-            var actual = ctx.Actual as orion.web.api.expenditures.Models.ArcFlashLabelExpenditure;
+            var actual = actionReslut.Success;
 
             actual.Should().NotBeNull();
             ctx.WasSaveCalled.Should().BeTrue();

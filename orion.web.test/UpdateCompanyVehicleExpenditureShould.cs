@@ -19,7 +19,7 @@ namespace orion.web.test.BLL
     [TestClass]
     public class UpdateCompanyVehicleExpenditureShould
     {
-        private class TestContext : MessageHandlerTestcontext<UpdateCompanyVehicleExpenditure>
+        private class TestContext : BaseTestcontext
         {
             private Mock<ICompanyVehicleExpenditureRepo> _repo = new Mock<ICompanyVehicleExpenditureRepo>();
             public bool WasSaveCalled { get; private set; }
@@ -45,7 +45,7 @@ namespace orion.web.test.BLL
                          return mdl;
                      });
             }
-            protected override UpdateCompanyVehicleExpenditure CreateItemUnderTest()
+            public UpdateCompanyVehicleExpenditure GetItemUnderTest()
             {
                 return new UpdateCompanyVehicleExpenditure(_repo.Object, _mapper);
             }
@@ -60,7 +60,7 @@ namespace orion.web.test.BLL
                      
             var actionReslut = await underTest.Process(ctx.TestMessage);
 
-            var actual = ctx.Actual as orion.web.api.expenditures.Models.CompanyVehicleExpenditure;
+            var actual = actionReslut.Success;
 
            
             actual.Should().NotBeNull();

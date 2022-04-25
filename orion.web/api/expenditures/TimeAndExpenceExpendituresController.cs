@@ -11,28 +11,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using orion.web.api.expenditures;
+using orion.web.api.expenditures.Models;
 
 namespace orion.web.api
 {
-    public class TimeAndExpenceExpenditureOneTimeSet : EditableTimeAndExpenceExpenditure
-    {
-        public Guid Id { get; set; }
-        public DateTimeOffset LastModified { get; set; }
-        public Guid EmployeeId { get; set; }
-        public Guid JobId { get; set; }
-        public int WeekId { get; set; }
-    }
-
-
-    public class EditableTimeAndExpenceExpenditure
-    {
-        public decimal Amount { get; set; }
-    }
-
-    public class TimeAndExpenceExpenditure : TimeAndExpenceExpenditureOneTimeSet
-    {
-
-    }
+   
 
     [Authorize]
     [Route("orion-api/v1/expenditures/time-and-expence")]
@@ -53,7 +36,7 @@ namespace orion.web.api
         public async Task<ActionResult<Page<TimeAndExpenceExpenditure>>> Get([FromQuery] int? limit,
             [FromQuery] int? offset,
             [FromRoute(Name ="week-id")] int weekId,
-            [FromRoute(Name = "employee-id")] Guid employeeId)
+            [FromRoute(Name = "employee-id")] int employeeId)
         {
             var matches = _repo.Search(x => x.EmployeeId == employeeId && x.WeekId == weekId).ToArray();
             return Ok(new Page<TimeAndExpenceExpenditure>()
@@ -72,8 +55,8 @@ namespace orion.web.api
         [HttpPost("week/{week-id:int}/employee/{employee-id:Guid}/job/{job-id:Guid}")]
         public async Task<ActionResult<TimeAndExpenceExpenditure>> CreateExpenditure([FromBody] EditableTimeAndExpenceExpenditure coolz,
            [FromRoute(Name = "week-id")] int weekId,
-           [FromRoute(Name = "employee-id")] Guid employeeId,
-           [FromRoute(Name = "job-id")] Guid jobId)
+           [FromRoute(Name = "employee-id")] int employeeId,
+           [FromRoute(Name = "job-id")] int jobId)
         {
             return Ok(_repo.AddOrUpdate(new TimeAndExpenceExpenditure()
             {
@@ -89,15 +72,15 @@ namespace orion.web.api
 
         [HttpPut("{time-and-expence-expenditure-id:Guid}")]
         public async Task<StatusCodeResult> UpdateExpenditure([FromBody] EditableTimeAndExpenceExpenditure coolz,
-           [FromRoute(Name = "time-and-expence-expenditure-id")] Guid jobId)
+           [FromRoute(Name = "time-and-expence-expenditure-id")] Guid expId)
         {
-            var match = _repo.FindById(jobId);
+            var match = _repo.FindById(expId);
             _repo.AddOrUpdate(new TimeAndExpenceExpenditure()
             {
-                Id = match.JobId,
+                Id = expId,
                 WeekId = match.WeekId,
                 EmployeeId = match.EmployeeId,
-                JobId = jobId,
+                JobId = match.JobId,
                 LastModified = DateTimeOffset.Now,
                 Amount = coolz.Amount,
             }, x => x.Id);

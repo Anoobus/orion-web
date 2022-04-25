@@ -12,7 +12,7 @@ namespace orion.web.Reports
     public interface IReportWriter
     {
         (MemoryStream Steam, string MimeType, string Name) GetFinishedResult<T>(T reportSettings, ReportDTO<PayPeriodReportDTO> rpt) where T : new();
-        (MemoryStream Steam, string MimeType, string Name) GetFinishedResult<T>(T reportSettings, ReportDTO<JobSummaryReportDTO> rpt) where T : new();
+        (MemoryStream Steam, string MimeType, string Name) GetFinishedResult(ReportDTO<AllOpenJobSummaryReportDTO> rpt);
         (MemoryStream Steam, string MimeType, string Name) GetFinishedResult<T>(T reportSettings, ReportDTO<QuickJobTimeReportDTO> rpt) where T : new();
         (MemoryStream Steam, string MimeType, string Name) GetFinishedResult<T>(T reportSettings, ReportDTO<DetailedExpenseForJobReportDTO> rpt) where T : new();        
     }
@@ -32,9 +32,9 @@ namespace orion.web.Reports
             return (memoryStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"{rpt.ReportName}.xlsx");
         }
 
-        public (MemoryStream Steam, string MimeType, string Name) GetFinishedResult<T>(T reportSettings,  ReportDTO<JobSummaryReportDTO> rpt) where T : new()
+        public (MemoryStream Steam, string MimeType, string Name) GetFinishedResult( ReportDTO<AllOpenJobSummaryReportDTO> rpt)
         {
-            var export = new JobSummaryReportExcelExport();
+            var export = new AllOpenJobSummaryReportExcelExport();
             var memoryStream = export.AsXls(rpt);
             return (memoryStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"{rpt.ReportName}.xlsx");
 

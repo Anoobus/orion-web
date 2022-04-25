@@ -38,38 +38,39 @@
     <None Remove="BLL\Expenditures\" />
     <None Remove="BLL\Reports\DetailedExpenseForJobReportCriteria\" />
     <None Remove="BLL\Reports\AllOpenJobsSummaryReportCriteria\" />
+    <None Remove="MozJpegSharp.GdiPlus" />
+    <None Remove="BLL\Core\" />
+    <Content Remove="wwwroot\js\ExpenseManagement\" />
   </ItemGroup>
 
   <ItemGroup>
     <None Remove="docs\JobReport.xlsx" />
     <None Remove="docs\PayPeriodReport.xlsx" />
     <None Remove="docs\ProjectStatusReport.xlsx" />
-    <None Remove="docs\QuickJobTimeReport.xlsx" />
     <None Remove="docs\QuickJobTimeReportNew.xlsx" />
     <None Remove="orion.app.logs" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AutoMapper" Version="11.0.0" />
+    <PackageReference Include="AutoMapper" Version="11.0.1" />
     <PackageReference Include="ClosedXML" Version="0.95.4" />
-    <PackageReference Include="DotNetCore.NPOI" Version="1.2.3" />
     <PackageReference Include="DotNetZip" Version="1.16.0" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="6.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="6.0.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.1">
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.4">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.1" PrivateAssets="All" />
-    <PackageReference Include="Serilog.AspNetCore" Version="4.1.0" />
+    <PackageReference Include="Serilog.AspNetCore" Version="5.0.0" />
     <PackageReference Include="Serilog.Extensions.Logging" Version="3.1.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
-    <PackageReference Include="Serilog.Sinks.MSSqlServer" Version="5.6.1" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+    <PackageReference Include="Serilog.Sinks.MSSqlServer" Version="5.7.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.1" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.3" />
     <PackageReference Include="AutoFixture" Version="4.17.0" />
   </ItemGroup>
@@ -82,12 +83,6 @@
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
     <Content Update="UI\Views\Employee\List.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="UI\Views\Expenditures\ArcFlashLabelDetail.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="UI\Views\Expense\Edit.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
     <Content Update="UI\Views\Reports\ReportingPeriod.cshtml">
@@ -124,9 +119,6 @@
     <Content Update="UI\Views\TimeApproval\TimeApprovalSection.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
-    <Content Update="UI\Views\Vue\App.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
     <Content Update="wwwroot\email-submit-time-reminder.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -148,9 +140,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="docs\ProjectStatusReport.xlsx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="docs\QuickJobTimeReport.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="docs\QuickJobTimeReportNew.xlsx">
@@ -176,6 +165,7 @@
     <Folder Include="api\expenditures\Models\" />
     <Folder Include="BLL\Expenditures\" />
     <Folder Include="BLL\Reports\DetailedExpenseForJobReport\" />
-    <Folder Include="BLL\Reports\AllOpenJobsSummaryReport\" />
+    <Folder Include="BLL\Core\" />
+    <Folder Include="wwwroot\js\ExpenseManagement\" />
   </ItemGroup>
 </Project>

@@ -1,4 +1,5 @@
 ﻿using ClosedXML.Excel;
+using orion.web.BLL.Reports;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,11 +17,71 @@ namespace orion.web.Reports
             var excelSheet = workbook.Worksheet(1);
             SetHeaderValues(rpt, excelSheet);
             WriteEmployeeRows(rpt, excelSheet);
+            WriteExpenseRows(rpt, excelSheet);
             WriteReportMetadata(rpt, excelSheet);
             var ms2 = new MemoryStream();
             workbook.SaveAs(ms2);
             ms2.Position = 0;
             return ms2;
+        }
+
+        private void WriteExpenseRows(ReportDTO<QuickJobTimeReportDTO> report, IXLWorksheet excelSheet)
+        {
+             var rowStart = 8 + report.Data.Employees.Count();
+            var originalRowStart = rowStart;
+            
+            if(report.Data.Expenses.Any())            
+                excelSheet.Row(rowStart).InsertRowsBelow(report.Data.Expenses.Count);
+
+            foreach (var exp in report.Data.Expenses)
+            {
+                excelSheet.Range(rowStart, 1, rowStart, 3).Merge()
+                   .AssignValue(exp.Key)
+                   .SetAlignHorizontal(XLAlignmentHorizontalValues.Left)
+                   .AddLeftBorder(XLBorderStyleValues.Thin)
+                   .AddRightBorder(XLBorderStyleValues.Thin)
+                   .SetFontStyle(f => f.Bold = false)
+                   .AddTopBorder(rowStart == originalRowStart ? XLBorderStyleValues.Medium : XLBorderStyleValues.Thin)
+                   .AddBottomBorder(XLBorderStyleValues.Thin);
+
+                excelSheet.Range(rowStart, 4,rowStart, 5).Merge()
+                    .AssignValue(exp.Value, dataFormatOverride: (XLDataType.Number, "$#,###,##0.00"))
+                    .SetAlignHorizontal(XLAlignmentHorizontalValues.Center)
+                    .AddLeftBorder(XLBorderStyleValues.Thin)
+                    .AddRightBorder(XLBorderStyleValues.Thin)
+                    .SetFontStyle(f => f.Bold = false)
+                    .AddTopBorder(rowStart == originalRowStart ? XLBorderStyleValues.Medium : XLBorderStyleValues.Thin)
+                    .AddBottomBorder(XLBorderStyleValues.Thin);
+
+                rowStart++;
+            }
+
+              
+
+            if(report.Data.Expenses.Any())
+            {
+                  string[] columns = new string[] { "turningArrayInto1Based", "A", "B", "C", "D", "E", "F", "G", "H", "I" };
+      
+                  excelSheet.Range(rowStart, 1, rowStart, 3).Merge()
+                      .AddTopBorder(XLBorderStyleValues.Thin)
+                      .AddLeftBorder(XLBorderStyleValues.Thin, XLColor.Gray)
+                      .AddRightBorder(XLBorderStyleValues.Thin)
+                      .AddBottomBorder(XLBorderStyleValues.Thin, XLColor.Gray)
+                      .AssignValue("TOTAL")
+                      .SetAlignHorizontal(XLAlignmentHorizontalValues.Right)
+                      .SetFontStyle(x => x.Bold = true);
+
+                    var labelTotal = excelSheet.Range(rowStart, 4,rowStart, 5).Merge()
+                        .AddRightBorder(XLBorderStyleValues.Thin)
+                        .SetAlignHorizontal(XLAlignmentHorizontalValues.Center)
+                        .AddBottomBorder(XLBorderStyleValues.Thin)
+                        .AddLeftBorder(XLBorderStyleValues.Thin)
+                        .AddTopBorder(XLBorderStyleValues.Thin)
+                        .AddRightBorder(XLBorderStyleValues.Thin);
+                    labelTotal.SetFontStyle(x => x.Bold = true);
+                    labelTotal.FormulaA1 = $"SUM({columns[4]}{originalRowStart}:{columns[4]}{rowStart - 1})";
+                    labelTotal.LastCell().CellRight().AddLeftBorder(XLBorderStyleValues.Thin);
+            }
         }
 
         private static void SetHeaderValues(ReportDTO<QuickJobTimeReportDTO> rpt, IXLWorksheet excelSheet)
@@ -37,11 +98,14 @@ namespace orion.web.Reports
 
         private static void WriteReportMetadata(ReportDTO<QuickJobTimeReportDTO> report, IXLWorksheet excelSheet)
         {
-            var row = EMPLOYEE_ROW_START +  2 + report.Data.Employees.Count();
+            var row = 10 + report.Data.Employees.Count() + report.Data.Expenses.Count();
             var settingIndex = 0;
             foreach(var item in report.RunSettings)
             {
-                excelSheet.Cell(row + settingIndex++, 1).Value = $"{item.Key}: {item.Value}";
+                excelSheet.Range(row, 1, row, 3).Merge()
+                    .AssignValue($"{item.Key}: {item.Value}")
+                    .SetAlignHorizontal(XLAlignmentHorizontalValues.Left);
+                row++;
             }
         }
 
@@ -49,6 +113,10 @@ namespace orion.web.Reports
         {
             var columns = new string[] { "A", "B", "C", "D", "E", "F", "G", "H", "I" };
             var row = EMPLOYEE_ROW_START;
+            if(report.Data.Employees.Any())
+            {
+                excelSheet.Row(7).InsertRowsAbove(report.Data.Employees.Count());
+            }
             foreach(var employeeRow in report.Data.Employees.OrderBy(x => x.TaskCategory).ThenBy(x => x.TaskName).ThenBy(x => x.EmployeeName))
             {
                 SetCellContentWithBorder(excelSheet, row, 1, employeeRow.EmployeeName, alignLeft: true, addLeftBorder: true);

@@ -29,11 +29,11 @@ namespace orion.web.api
             _mapper = mapper;
         }
 
-        [HttpGet("week/{week-id:int}/employee/{employee-id:Guid}")]
+        [HttpGet("week/{week-id:int}/employee/{employee-id:int}")]
         public async Task<ActionResult<Page<ContractorExpenditure>>> Get([FromQuery] int? limit,
             [FromQuery] int? offset,
             [FromRoute(Name = "week-id")] int weekId,
-            [FromRoute(Name = "employee-id")] Guid employeeId)
+            [FromRoute(Name = "employee-id")] int employeeId)
         {
             var matches = _repo.Search(x => x.EmployeeId == employeeId && x.WeekId == weekId).ToArray();
             return Ok(new Page<ContractorExpenditure>()
@@ -49,15 +49,15 @@ namespace orion.web.api
         }
 
 
-        [HttpPost("week/{week-id:int}/employee/{employee-id:Guid}/job/{job-id:Guid}")]
+        [HttpPost("week/{week-id:int}/employee/{employee-id:int}/job/{job-id:int}")]
         public async Task<ActionResult<ContractorExpenditure>> CreateExpenditure([FromBody] EditableContractorExpenditure coolz,
            [FromRoute(Name = "week-id")] int weekId,
-           [FromRoute(Name = "employee-id")] Guid employeeId,
-           [FromRoute(Name = "job-id")] Guid jobId)
+           [FromRoute(Name = "employee-id")] int employeeId,
+           [FromRoute(Name = "job-id")] int jobId)
         {
             return Ok(_repo.AddOrUpdate(new ContractorExpenditure()
             {
-                Id = Guid.NewGuid(),
+                ExternalId = Guid.NewGuid(),
                 WeekId = weekId,
                 EmployeeId = employeeId,
                 JobId = jobId,
@@ -65,27 +65,27 @@ namespace orion.web.api
                 CompanyName = coolz.CompanyName,
                 OrionPONumber = coolz.OrionPONumber,
                 TotalPOContractAmount = coolz.TotalPOContractAmount
-            }, x => x.Id));
+            }, x => x.ExternalId));
 
         }
 
 
         [HttpPut("{contractor-expenditure-id:Guid}")]
         public async Task<StatusCodeResult> UpdateExpenditure([FromBody] EditableContractorExpenditure coolz,
-           [FromRoute(Name = "contractor-expenditure-id")] Guid jobId)
+           [FromRoute(Name = "contractor-expenditure-id")] Guid expId)
         {
-            var match = _repo.FindById(jobId);
+            var match = _repo.FindById(expId);
             _repo.AddOrUpdate(new ContractorExpenditure()
             {
-                Id = Guid.NewGuid(),
+                ExternalId = match.ExternalId,
                 WeekId = match.WeekId,
                 EmployeeId = match.EmployeeId,
-                JobId = jobId,
+                JobId = match.JobId,
                 LastModified = DateTimeOffset.Now,
                 CompanyName = coolz.CompanyName,
                 OrionPONumber = coolz.OrionPONumber,
                 TotalPOContractAmount = coolz.TotalPOContractAmount
-            }, x => x.Id);
+            }, x => x.ExternalId);
             return Ok();
         }
     }

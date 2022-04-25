@@ -1,0 +1,77 @@
+﻿@using orion.web.Employees
+@using orion.web.TimeEntries
+@using orion.web.api.expenditures.Models
+@using orion.web.UI.Models
+@using orion.web.BLL.Expenditures
+
+@model orion.web.UI.Models.EditExpenseModel
+<style>
+    .modal.working-panel {
+        overflow: hidden;
+        min-height: 500px !important;
+    }
+
+    .modal-info-blurb {
+        height: 100vh;
+    }
+</style>
+
+<div id="thingy" class="not-yet-a-modal">
+    <form name="save-updated-expense-form" asp-controller="ExpenseManagement" asp-action="UpdateExpense">
+
+
+
+        <div class="row">
+            <div class="col s3 red darken-3 white-text modal-info-blurb z-depth-4">
+                <div class="container">
+                    <h5>Edit Expenditure<br /></h5>
+                    @{
+                        //storing this to prevent multiple switch calls
+                        var basicInfo = Model.BasicInfo;
+                    }
+                    <h6>
+                        @basicInfo.ShortExpenseName
+                    </h6>
+                    <h6>
+                        Original Job:<br />
+                        @basicInfo.FullJobNameWithCode
+                    </h6>
+                    <h6>
+                        Original Employee:<br />
+                        @basicInfo.EmployeeName
+                    </h6>
+                </div>
+            </div>
+            <div class="col s9" style="height:100%; padding:30px">
+
+                @switch (Model.ExpenseType)
+                {
+                    case ExpenditureTypeEnum.ArcFlashLabelExpenditure:                       
+                        @await Html.PartialAsync("EditArcFlashPartial", Model)
+                        break;
+                    case ExpenditureTypeEnum.CompanyVehicleExpenditure:
+                        <text>!!!Company Vehicle</text>
+                        break;
+                    case ExpenditureTypeEnum.ContractorExpenditure:
+                        <text>!!!Contractor</text>
+                        break;
+                    case ExpenditureTypeEnum.TimeAndExpenceExpenditure:
+                        <text>!!!Time and Expense</text>
+                        break;
+                    case ExpenditureTypeEnum.MiscExpenditure:
+                        <text>!!!Miscellaneous</text>
+                        break;
+                    default:
+                        break;
+                }
+                <div class="modal-footer" style="vertical-align:bottom">
+                    <button type="button" class="waves-effect waves-white btn-flat" onclick="submitExpenseChanges('save-updated-expense-form')">Save Changes</button>
+                    <button type="button" class="waves-effect waves-white btn-flat" onclick="deleteExpense('@basicInfo.Id');return false;">Delete Expense</button>
+                    <button type="button" class="modal-close waves-effect waves-white btn-flat" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+
+
+        </div>
+    </form>
+</div>

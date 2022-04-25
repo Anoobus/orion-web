@@ -5,20 +5,15 @@ using AutoMapper;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using orion.web.BLL;
 using orion.web.BLL.ArcFlashExpenditureExpenses;
-using orion.web.BLL.AutoMapper;
 using orion.web.DataAccess;
 
 namespace orion.web.test.BLL
-{
-    
-
-
+{   
     [TestClass]
     public class CreateArcFlashLabelExpenditureShould
     {
-        private class TestContext : MessageHandlerTestcontext<CreateArcFlashLabelExpenditure>
+        private class TestContext : BaseTestcontext//: MessageHandlerTestcontext<CreateArcFlashLabelExpenditure>
         {
             private Mock<IArcFlashLabelExpenditureRepo> _repo = new Mock<IArcFlashLabelExpenditureRepo>();
             public bool WasSaveCalled { get; private set; }
@@ -34,7 +29,7 @@ namespace orion.web.test.BLL
                          return mdl;
                      });
             }
-            protected override CreateArcFlashLabelExpenditure CreateItemUnderTest()
+            public CreateArcFlashLabelExpenditure GetItemUnderTest()
             {
                 return new CreateArcFlashLabelExpenditure(_repo.Object, _mapper);
             }
@@ -49,7 +44,7 @@ namespace orion.web.test.BLL
                      
             var actionReslut = await underTest.Process(ctx.TestMessage);
 
-            var actual = ctx.Actual as orion.web.api.expenditures.Models.ArcFlashLabelExpenditure;
+            var actual = actionReslut.Success;
 
             actual.JobId.Should().Be(ctx.TestMessage.jobId);
             actual.DateOfInvoice.Should().Be(ctx.TestMessage.model.DateOfInvoice);

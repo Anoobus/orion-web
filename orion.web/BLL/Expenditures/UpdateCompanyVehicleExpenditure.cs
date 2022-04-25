@@ -3,11 +3,13 @@ using System.Threading.Tasks;
 using AutoMapper;
 using orion.web.api;
 using orion.web.api.expenditures.Models;
+using orion.web.BLL.Core;
 using orion.web.DataAccess;
+using orion.web.Util.IoC;
 
 namespace orion.web.BLL.Expenditures
 {
-      public class UpdateCompanyVehicleExpenditureMessage : IMessage<CompanyVehicleExpenditure>
+      public class UpdateCompanyVehicleExpenditureMessage : IProduces<CompanyVehicleExpenditure>
     {
         public UpdateCompanyVehicleExpenditureMessage(EditableCompanyVehicleExpenditure model, Guid companyVehicleExpenditureId)
         {
@@ -19,7 +21,15 @@ namespace orion.web.BLL.Expenditures
         public Guid CompanyVehicleExpenditureId { get; }
     }
 
-    public class UpdateCompanyVehicleExpenditure : HandleBase<UpdateCompanyVehicleExpenditureMessage, CompanyVehicleExpenditure>  
+    public interface IUpdateCompanyVehicleExpenditure
+    {
+          public Task<IProcessResult<CompanyVehicleExpenditure>> Process(UpdateCompanyVehicleExpenditureMessage msg);
+
+    }
+
+    public class UpdateCompanyVehicleExpenditure
+        : Orchastrator<UpdateCompanyVehicleExpenditureMessage, CompanyVehicleExpenditure>,
+        IUpdateCompanyVehicleExpenditure, IAutoRegisterAsSingleton
     {
         private readonly ICompanyVehicleExpenditureRepo _companyVehicleExpenditureRepo;
         private readonly IMapper _mapper;
@@ -30,7 +40,7 @@ namespace orion.web.BLL.Expenditures
             _mapper = mapper;
         }
 
-        protected override async Task<IResult> Handle(UpdateCompanyVehicleExpenditureMessage msg)
+        protected override async Task<IProcessResult<CompanyVehicleExpenditure>> Handle(UpdateCompanyVehicleExpenditureMessage msg)
         {
              var existing = await _companyVehicleExpenditureRepo.FindByExternalId(msg.CompanyVehicleExpenditureId);
             var updateMsg = UpdateMessage.CreateFrom(msg, existing);
@@ -38,7 +48,7 @@ namespace orion.web.BLL.Expenditures
 
 
             var saved = await _companyVehicleExpenditureRepo.SaveEntity(mapped);
-            return _mapper.Map<CompanyVehicleExpenditure>(saved);
+            return Success(_mapper.Map<CompanyVehicleExpenditure>(saved));
         }
     }
 }

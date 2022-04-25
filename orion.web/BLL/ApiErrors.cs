@@ -9,7 +9,7 @@ namespace orion.web.BLL
         NotFound,
         BadRequest
     }
-    internal class PresetError : IResult
+    public class PresetError
     {
         private readonly ErrorClassification classification;
         private readonly string title;
@@ -32,8 +32,9 @@ namespace orion.web.BLL
         }
     }
 
-    internal class ApiErrors
+    public class ApiErrors
     {
-        internal static IResult UnHandledException(string message, Exception ex) => new PresetError(ErrorClassification.Unhandled, "General Error", message, null, ex);          
+        internal static PresetError UnHandledException(string message, Exception ex) => new PresetError(ErrorClassification.Unhandled, "General Error", message, null, ex);
+        internal static PresetError NotFoundException(string message) => new PresetError(ErrorClassification.NotFound, "Supplied resource could not be found", message, null,null);          
     }
 }

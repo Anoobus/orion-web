@@ -13,6 +13,7 @@ namespace orion.web.Reports
         public IEnumerable<QuickJobEmployees> Employees { get; set; }
         public DateTime PeriodStart { get; set; }
         public DateTime PeriodEnd { get; set; }
+        public Dictionary<string,decimal> Expenses { get; set; }
     }
 
     public class QuickJobEmployees

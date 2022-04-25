@@ -14,16 +14,20 @@ function matchColHeight(shortEl, tallEl) {
     console.log(shortEl, tallEl);
 }
 
-document.addEventListener('DOMContentLoaded', function () {
+function InitMaterializeComponents() {
     var dropdown = document.querySelectorAll('.dropdown-trigger');
     var ddInstances = M.Dropdown.init(dropdown, {});
     var selects = document.querySelectorAll('select:not(.custom-drop-down)');
     var selectInstances = M.FormSelect.init(selects, {});
     var datePicks = document.querySelectorAll('.datepicker');
-    var dpInstsances = M.Datepicker.init(datePicks, {  });
+    var dpInstsances = M.Datepicker.init(datePicks, {});
 
     var menuBtns = document.querySelectorAll('.fixed-action-btn');
     var menuBtnInstances = M.FloatingActionButton.init(menuBtns, {});
+    M.updateTextFields();
+}
+document.addEventListener('DOMContentLoaded', function () {
+    InitMaterializeComponents();
     axios
         .get('/api/Notifications')
         .then(response => {
