@@ -1,19 +1,21 @@
 ﻿
-const AsMap = obj => {
+const AsMap = (idFilter, obj) => {
     const keys = Object.keys(obj);
     const map = new Map();
     for (let i = 0; i < keys.length; i++) {
         //inserting new key value pair inside map
-        map.set(keys[i], obj[keys[i]]);
+        
+        map.set(idFilter(keys[i]), obj[keys[i]]);
     };
     return map;
 };
 
 
-const jobMap = AsMap(jobDataBlob);
+const nameToIdMap = AsMap((x) => x, jobDataBlob);
+const codeToIdMap = AsMap((x) => x.substring(0, 9), jobDataBlob);
 
 let autoCompleteObj = {};
-const jobMapIter = jobMap.entries();
+const jobMapIter = nameToIdMap.entries();
 let didAdd = false;
 do {
     let maybeValue = jobMapIter.next().value;
@@ -58,17 +60,33 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function updateJobSelection(input, targetId) {
-    console.log('updateJobSelection', input)
-    if (jobMap.has(input.value)) {
-        let newJobName = input.value;
-        let newJobId = jobMap.get(newJobName);
-        console.log('setting updated value', newJobName, newJobId);
+    console.log('try updateJobSelection')
+   
+    if (nameToIdMap.has(input.value)){        
+        let newJobId = nameToIdMap.get(input.value);
+        console.log('setting updated value', newJobId);
         document.getElementById(targetId).value = newJobId;
         console.log('after update', document.getElementById(targetId));
     }
-
+    else {
+        let codeOnly = input.value.substring(0, 9);
+        if (codeToIdMap.has(codeOnly)) {
+            let newJobId = codeToIdMap.get(codeOnly);
+            console.log('setting updated value', newJobId);
+            document.getElementById(targetId).value = newJobId;
+            console.log('after update', document.getElementById(targetId));
+        }
+        else {
+            console.log("skip set, can't find " + input.value + ' inside of our maps', nameToIdMap, codeToIdMap);
+        }
+    }
 }
+
 function updateTargetEmployee(selectInput, targetId) {
+    let newId = selectInput.value;
+    document.getElementById(targetId).value = newId;
+}
+function updateTargetVehicle(selectInput, targetId) {
     let newId = selectInput.value;
     document.getElementById(targetId).value = newId;
 }

@@ -61,6 +61,7 @@ namespace orion.web.DataAccess
                 else
                 {
                     db.ArcFlashlabelExpenditures.Add(update);
+                    exp = update;
                 }
                 await db.SaveChangesAsync();
                 return exp;

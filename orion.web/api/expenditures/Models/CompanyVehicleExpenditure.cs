@@ -10,8 +10,7 @@ namespace orion.web.api.expenditures.Models
     {
         public Guid ExternalId { get; set; }
         public DateTimeOffset LastModified { get; set; }
-        public int EmployeeId { get; set; }
-        public int JobId { get; set; }
+        
         public int WeekId { get; set; }
     }
 
@@ -23,6 +22,8 @@ namespace orion.web.api.expenditures.Models
         public CompanyVehicleDescriptor Vehicle { get; set; }
         public int TotalNumberOfDaysUsed { get; set; }
         public int TotalMiles { get; set; }
+        public int EmployeeId { get; set; }
+        public int JobId { get; set; }
     }
 
     public class CompanyVehicleExpenditure : CompanyVehicleExpenditureOneTimeSet

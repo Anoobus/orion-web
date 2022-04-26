@@ -3,7 +3,7 @@
 @using orion.web.api.expenditures.Models
 @using orion.web.UI.Models
 
-@model EditExpenseModel
+@model ExpenseViewModel
 <style>
     .modal {
         width: 80vw;
@@ -21,21 +21,30 @@
 <div class="row">
     <div class="input-field col s10">
         @Html.HiddenFor(x => x.ArcFlashLabelExpenditure.Detail.JobId)
-        <input type="hidden" id="original-job-text"
-               value="@Model.AvailableJobs.FirstOrDefault(x => x.JobId == Model.ArcFlashLabelExpenditure.JobId).FullJobCodeWithName"
-               job-id="@Model.ArcFlashLabelExpenditure.JobId" />
-
-        <i class="material-icons prefix">search</i>
-        <input type="text" id="NewlySelectedJob-Name"
-               class="autocomplete validate"
-               value="@Model.AvailableJobs.FirstOrDefault(x => x.JobId == Model.ArcFlashLabelExpenditure.JobId).FullJobCodeWithName"
-               onfocus="oneTimeClear(this)"
-               onchange="updateJobSelection(this,'ArcFlashLabelExpenditure_Detail_JobId')"
-               placeholder="Type Job Code..." />
-        <label for="NewlySelectedJob-Name">Expense For Job</label>
-    </div>
+        @{
+            var selectedJob = Model.IsBrandNewExpenditureCreation ? string.Empty
+                                                    : Model.AvailableJobs.FirstOrDefault(x => x.JobId == Model.ArcFlashLabelExpenditure.JobId).FullJobCodeWithName;
+        }
+        @if (!Model.IsBrandNewExpenditureCreation)
+        {
+            <input type="hidden" id="original-job-text"
+                value="@selectedJob"
+                job-id="@Model.ArcFlashLabelExpenditure.JobId" />
+        }
+            <i class="material-icons prefix">search</i>
+            <input type="text" id="NewlySelectedJob-Name"
+                   class="autocomplete validate"
+                   value="@selectedJob"
+                   onfocus="oneTimeClear(this)"
+                   onchange="updateJobSelection(this,'ArcFlashLabelExpenditure_Detail_JobId')"
+                   placeholder="Type Job Code..." />
+            <label for="NewlySelectedJob-Name">Expense For Job</label>
+        </div>
     <div class="col s2">
-        <button id="cancel-job-change" type="button" class="waves-effect waves-white btn-flat" onclick="undoJobChange(this)">Undo Job Change</button>
+        @if (!Model.IsBrandNewExpenditureCreation)
+        {
+            <button id="cancel-job-change" type="button" class="waves-effect waves-white btn-flat" onclick="undoJobChange(this)">Undo Job Change</button>
+        }
     </div>
 </div>
 <div class="row">
@@ -45,7 +54,7 @@
                 onchange="updateTargetEmployee(this, 'ArcFlashLabelExpenditure_Detail_EmployeeId')">
             @foreach (var emp in Model.AvailableEmployees)
             {
-                if (emp.EmployeeId == Model.ArcFlashLabelExpenditure.Detail.EmployeeId)
+                if (!Model.IsBrandNewExpenditureCreation && emp.EmployeeId == Model.ArcFlashLabelExpenditure.Detail.EmployeeId)
                 {
                     <option value="@emp.EmployeeId" selected="selected">@emp.First, @emp.Last</option>
                 }

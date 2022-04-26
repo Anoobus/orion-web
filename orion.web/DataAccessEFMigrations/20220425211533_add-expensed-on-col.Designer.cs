@@ -3,17 +3,19 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using orion.web.DataAccess.EF;
 
 #nullable disable
 
-namespace orion.web.DataAccess.EF.Migrations
+namespace orion.web.DataAccessEFMigrations
 {
     [DbContext(typeof(OrionDbContext))]
-    partial class OrionDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220425211533_add-expensed-on-col")]
+    partial class addexpensedoncol
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -153,9 +155,6 @@ namespace orion.web.DataAccess.EF.Migrations
 
                     b.Property<int>("EmployeeId")
                         .HasColumnType("int");
-
-                    b.Property<DateTimeOffset>("ExpensedOn")
-                        .HasColumnType("datetimeoffset");
 
                     b.Property<Guid>("ExternalId")
                         .HasColumnType("uniqueidentifier");

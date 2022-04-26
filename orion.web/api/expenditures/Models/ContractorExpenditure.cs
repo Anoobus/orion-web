@@ -5,8 +5,6 @@ namespace orion.web.api.expenditures.Models
     {
         public Guid ExternalId { get; set; }
         public DateTimeOffset LastModified { get; set; }
-        public int EmployeeId { get; set; }
-        public int JobId { get; set; }
         public int WeekId { get; set; }
     }
 
@@ -16,6 +14,9 @@ namespace orion.web.api.expenditures.Models
         public string CompanyName { get; set; }
         public string OrionPONumber { get; set; }
         public decimal TotalPOContractAmount { get; set; }
+        public DateTimeOffset ExpensedOn { get; set; }
+        public int EmployeeId { get; set; }
+        public int JobId { get; set; }
     }
 
     public class ContractorExpenditure : ContractorExpenditureOneTimeSet

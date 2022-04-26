@@ -5,8 +5,7 @@ namespace orion.web.api.expenditures.Models
     {
         public Guid Id { get; set; }
         public DateTimeOffset LastModified { get; set; }
-        public int EmployeeId { get; set; }
-        public int JobId { get; set; }
+        
         public int WeekId { get; set; }
     }
 
@@ -15,6 +14,9 @@ namespace orion.web.api.expenditures.Models
     {
         public string Description { get; set; }
         public decimal Amount { get; set; }
+        public int EmployeeId { get; set; }
+        public int JobId { get; set; }
+        public DateTimeOffset ExpensedOn { get; set; }
     }
 
     public class MiscExpenditure : MiscExpenditureOneTimeSet

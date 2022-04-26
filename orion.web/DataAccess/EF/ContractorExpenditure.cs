@@ -11,6 +11,7 @@ namespace orion.web.DataAccess.EF
         public int Id { get; set; }
         public Guid ExternalId { get; set; }
         public DateTimeOffset LastModified { get; set; }
+        public DateTimeOffset ExpensedOn { get; set; }
         public int EmployeeId { get; set; }
         public int JobId { get; set; }
         public virtual Job Job { get; set; }

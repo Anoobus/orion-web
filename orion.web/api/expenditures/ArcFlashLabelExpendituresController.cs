@@ -12,15 +12,11 @@ namespace orion.web.api
     [Route("orion-api/v1/expenditures/arc-flash-labels")]
     [ApiController]
     public class ArcFlashLabelExpendituresController : ControllerBase
-    {
-        
-        private readonly ICreateArcFlashLabelExpenditure _createArcFlashExpenditure;
+    {   
         private readonly IUpdateArcFlashLabelExpenditure _updateArcFlashLabelExpenditure;
 
-        public ArcFlashLabelExpendituresController(ICreateArcFlashLabelExpenditure createArcFlashExpenditure,
-            IUpdateArcFlashLabelExpenditure updateArcFlashLabelExpenditure)
-        {
-            _createArcFlashExpenditure = createArcFlashExpenditure;
+        public ArcFlashLabelExpendituresController(IUpdateArcFlashLabelExpenditure updateArcFlashLabelExpenditure)
+        {            
             _updateArcFlashLabelExpenditure = updateArcFlashLabelExpenditure;
         }
 
@@ -31,7 +27,7 @@ namespace orion.web.api
         [FromRoute(Name = "employee-id")] int employeeId,
         [FromRoute(Name = "job-id")] int jobId)
         {            
-            var rez = await _createArcFlashExpenditure.Process(new CreateArcFlashLabelExpenditureMessage(toCreate,weekId,employeeId,jobId));
+            var rez = await _updateArcFlashLabelExpenditure.Process(new UpdateArcFlashLabelExpenditureMessage(toCreate, Guid.Empty));
             return rez.AsApiResult();
         }
 

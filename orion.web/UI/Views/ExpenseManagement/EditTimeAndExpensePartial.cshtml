@@ -1,19 +1,83 @@
 ﻿@using orion.web.Employees
 @using orion.web.TimeEntries
+@using orion.web.api.expenditures.Models
+@using orion.web.UI.Models
 
+@model ExpenseViewModel
+<style>
+    .modal {
+        width: 80vw;
+    }
+</style>
+<div class="row" style="display:none">
+    <div class="col s12">
+        @Html.HiddenFor(x => x.TimeAndExpenceExpenditure.Detail.EmployeeId);
+        @Html.HiddenFor(x => x.TimeAndExpenceExpenditure.Detail.JobId);
+        @Html.HiddenFor(x => x.TimeAndExpenceExpenditure.Detail.WeekId);
+        @Html.HiddenFor(x => x.TimeAndExpenceExpenditure.Detail.Id);
 
-@model orion.web.api.expenditures.Models.TimeAndExpenceExpenditure
-
-    <div class="row">
-        <div class="col s12">
-
-        </div>
     </div>
-    <div class="row">
-        <div class="col s6">
-
-        </div>
-        <div class="col s6">
-
-        </div>
+</div>
+<div class="row">
+    <div class="input-field col s10">
+        @{
+            var selectedJob = Model.IsBrandNewExpenditureCreation ? string.Empty
+                                                    : Model.AvailableJobs.FirstOrDefault(x => x.JobId == Model.TimeAndExpenceExpenditure.JobId).FullJobCodeWithName;
+        }
+        @if (!Model.IsBrandNewExpenditureCreation)
+        {
+            <input type="hidden" id="original-job-text"
+                   value="@selectedJob"
+                   job-id="@Model.TimeAndExpenceExpenditure.JobId" />
+        }
+        <i class="material-icons prefix">search</i>
+        <input type="text" id="NewlySelectedJob-Name"
+               class="autocomplete validate"
+               value="@selectedJob"
+               onfocus="oneTimeClear(this)"
+               onchange="updateJobSelection(this,'TimeAndExpenceExpenditure_Detail_JobId')"
+               placeholder="Type Job Code..." />
+        <label for="NewlySelectedJob-Name">Expense For Job</label>
     </div>
+    <div class="col s2">
+        @if (!Model.IsBrandNewExpenditureCreation)
+        {
+            <button id="cancel-job-change" type="button" class="waves-effect waves-white btn-flat" onclick="undoJobChange(this)">Undo Job Change</button>
+        }
+    </div>
+</div>
+<div class="row">
+    <div class="input-field col s6">
+        <i class="material-icons prefix">person</i>
+        <select id="AvailableEmployees" class="validate"
+                onchange="updateTargetEmployee(this, 'TimeAndExpenceExpenditure_Detail_EmployeeId')">
+            @foreach (var emp in Model.AvailableEmployees)
+            {
+                if (!Model.IsBrandNewExpenditureCreation && emp.EmployeeId == Model.TimeAndExpenceExpenditure.Detail.EmployeeId)
+                {
+                    <option value="@emp.EmployeeId" selected="selected">@emp.First, @emp.Last</option>
+                }
+                else
+                {
+                    <option value="@emp.EmployeeId">@emp.First, @emp.Last</option>
+                }
+            }
+        </select>
+        <label asp-for="TimeAndExpenceExpenditure.EmployeeName">For Employee</label>
+    </div>
+    <div class="input-field col s6">
+        <input asp-for="TimeAndExpenceExpenditure.Detail.ExpenseOnDate" type="text" class="datepicker"
+               value="@Model.TimeAndExpenceExpenditure.Detail.ExpenseOnDate.ToString("MMM dd, yyyy")" />
+        <label asp-for="TimeAndExpenceExpenditure.Detail.ExpenseOnDate" class="control-label">Expense On Date</label>
+    </div>
+</div>
+<div class="row">
+    <div class="input-field col s4">
+        <i class="material-icons prefix">attach_money</i>
+        @Html.EditorFor(x => x.TimeAndExpenceExpenditure.Detail.Amount)
+        <label asp-for="TimeAndExpenceExpenditure.Detail.Amount">Amount</label>
+    </div>
+    <div class="input-field col s8">
+      
+    </div>
+</div>

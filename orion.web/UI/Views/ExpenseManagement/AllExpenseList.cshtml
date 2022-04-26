@@ -1,4 +1,5 @@
 ﻿@using orion.web.UI.Models
+@using orion.web.BLL.Expenditures
 
 @model orion.web.UI.Models.AllExpendituresModel
 
@@ -15,15 +16,20 @@
 <div class="">
 
     <style>
-        td.action-link-cell {
-            min-width: 290px;
+        .modal.working-panel {
+            overflow: hidden;
+            min-height: 500px !important;
+        }
+
+        .modal-info-blurb {
+            height: 100vh;
         }
     </style>
 
     <div class="">
         <div class="row">
             <div class="col s3">
-                <a class="btn  btn-default  btn-margin-right pull-right " asp-action="Create">Create New</a>
+                <button class="btn  btn-default  btn-margin-right pull-right modal-trigger" data-target="add-new-modal">Create New</button>
             </div>
             <div class="col s9">
                 <label for="quick-filter">Quick Filter Rows</label>
@@ -49,6 +55,9 @@
                             <th>
                                 Amount
                             </th>
+                            <th>
+                                Last Modified
+                            </th>
                             <th class="action-links-cell"></th>
                         </tr>
 
@@ -69,9 +78,12 @@
                                 <td>
                                     @Html.DisplayFor(x => item.Amount)
                                 </td>
+                                <td>
+                                    @item.LastModifiedDateEst.ToShortDateString()
+                                </td>
                                 <td class="action-button-col">
                                     <a href="#" onclick="editExpense('@item.Id');return false;">Edit</a> |
-                                    <a href="#" onclick="deleteExpense('@item.Id');return false;">Edit</a>                                    
+                                    <a href="#" onclick="deleteExpense('@item.Id');return false;">Delete</a>
                                 </td>
                             </tr>
                         }
@@ -81,7 +93,34 @@
         </div>
     </div>
 </div>
+<div id="add-new-modal" class="modal working-panel">
+    <div class="row">
+        <div class="col s3 red darken-3 white-text modal-info-blurb z-depth-4">
+            <div class="container">
+                <h5>Add New Expenditure</h5>
+            </div>
+        </div>
+    
+        <div class="col s9">
+            <div class="input-field col s12">
+                <h6>Select the type of expenditure to create...</h6>
+                <select id="selected-exp-type">
+                    <option value="" disabled selected>Choose your option</option>
+                    <option value="@ExpenditureTypeEnum.ArcFlashLabelExpenditure.ToString()">Arc Flash Label Expenditure</option>
+                    <option value="@ExpenditureTypeEnum.MiscExpenditure.ToString()">Miscellaneous Expenditure</option>
+                    <option value="@ExpenditureTypeEnum.TimeAndExpenceExpenditure.ToString()">Time and Expense Expenditure</option>
+                    <option value="@ExpenditureTypeEnum.ContractorExpenditure.ToString()">Contractor Expenditure</option>
+                    <option value="@ExpenditureTypeEnum.CompanyVehicleExpenditure.ToString()">Company Vehicle Expenditure</option>
+                </select>               
+            </div>
+            <div class="modal-footer" style="vertical-align:bottom">
+                <button type="button" class="waves-effect waves-white btn-flat" onclick="addNewExpense(document.getElementById('selected-exp-type').value)">Add Details</button>
+                <button type="button" class="modal-close waves-effect waves-white btn-flat" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
 
+</div>
 <div id="modal-holder" class="modal working-panel">
     <div id="modal-content">
 
@@ -98,7 +137,9 @@
 
         const jobDataBlob = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.AvailableJobs.ToDictionary(x => x.FullJobCodeWithName, x => x.JobId))) ;
 
-        $(document).ready(function () {
+            $(document).ready(function () {
+            //wire up quick filter
+
             $("#quick-filter").on("keyup", function () {
                 var value = $(this).val().toLowerCase();
                 $("#table-data tr").filter(function () {
@@ -106,6 +147,9 @@
                 });
             });
 
+            //wire up add expense modal, so data-target will work on btn
+            var elems = document.getElementById('add-new-modal');
+            M.Modal.init(elems, {});
 
         });
         function submitExpenseChanges(formName) {
@@ -117,18 +161,27 @@
                     window.location.reload(true)
                 })
         }
+        function addNewExpense(expenseName) {
+            axios
+                .get('/expenses/' + expenseName)
+                .then(response => {                    
+                    document.getElementById('modal-content').innerHTML = response.data;
+                    var modalDiv = document.getElementById('modal-holder');                    
+                    var rez = M.Modal.init(modalDiv, {});                    
+                    var instance = M.Modal.getInstance(modalDiv);
+                    instance.open();
+                    initEditExpenseComponents();
+                    InitMaterializeComponents();
+                });
+        }
         function editExpense(expId) {
 
             axios
                 .get('/expenses/' + expId + '/edit-modal')
-                .then(response => {
-                    console.log('get call complete!');
-                    console.log(response);
+                .then(response => {                  
                     document.getElementById('modal-content').innerHTML = response.data;
-                    var modalDiv = document.getElementById('modal-holder');
-                    console.log(modalDiv);
-                    var rez = M.Modal.init(modalDiv, {});
-                    console.log(rez);
+                    var modalDiv = document.getElementById('modal-holder');                    
+                    var rez = M.Modal.init(modalDiv, {});                    
                     var instance = M.Modal.getInstance(modalDiv);
                     instance.open();
                     initEditExpenseComponents();

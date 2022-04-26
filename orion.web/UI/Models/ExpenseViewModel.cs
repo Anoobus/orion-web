@@ -8,9 +8,10 @@ using orion.web.UI.Models;
 namespace orion.web.UI.Models
 {
 
-    public class EditExpenseModel
+    public class ExpenseViewModel
     {
         public ExpenditureTypeEnum ExpenseType { get; set; }
+        public bool IsBrandNewExpenditureCreation { get; set; }
         public Expense<ArcFlashLabelExpenditure> ArcFlashLabelExpenditure { get; set; }
         public Expense<MiscExpenditure> MiscExpenditure { get; set; }
         public Expense<ContractorExpenditure> ContractorExpenditure { get; set; }
@@ -25,7 +26,18 @@ namespace orion.web.UI.Models
             ExpenditureTypeEnum.CompanyVehicleExpenditure => this.CompanyVehicleExpenditure,
             ExpenditureTypeEnum.ContractorExpenditure => this.ContractorExpenditure,
             ExpenditureTypeEnum.MiscExpenditure => this.MiscExpenditure,
+            ExpenditureTypeEnum.TimeAndExpenceExpenditure => this.TimeAndExpenceExpenditure,
             _ => throw new NotImplementedException()
         };
-  }
+
+        public string ExpenseTypeDisplayname => this.ExpenseType switch
+        {
+            ExpenditureTypeEnum.ArcFlashLabelExpenditure => "Arc Flash Label Expenditure",
+            ExpenditureTypeEnum.CompanyVehicleExpenditure => "Company Vehicle Expenditure",
+            ExpenditureTypeEnum.ContractorExpenditure => "Contractor Expenditure",
+            ExpenditureTypeEnum.MiscExpenditure => "Misc. Expenditure",
+            ExpenditureTypeEnum.TimeAndExpenceExpenditure => "Time and Expense Ependiture",
+            _ => throw new NotImplementedException()
+        };
+    }
 }

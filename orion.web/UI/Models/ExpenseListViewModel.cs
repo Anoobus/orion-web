@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using orion.web.api.expenditures.Models;
 using orion.web.BLL;
@@ -16,6 +17,7 @@ namespace orion.web.UI.Models
         public decimal Amount { get; set; }
         public int JobId { get; set; }
         public Guid Id { get; set; }
+        public DateTime LastModifiedDateEst {get; set;}
 
     }
     public class Expense<TDetail> : SharedExpenseModel
@@ -39,31 +41,12 @@ namespace orion.web.UI.Models
 
         public IEnumerable<SharedExpenseModel> AsFullList()
         {
-            foreach (var item in ArcFlashLabelExpenditures)
-            {
-                yield return item;
-            }
-            foreach (var item in CompanyVehicleExpenditures)
-            {
-                yield return item;
-            }
-            foreach (var item in ContractorExpenditures)
-            {
-                yield return item;
-            }
-            foreach (var item in MiscExpenditures)
-            {
-                yield return item;
-            }
-            foreach (var item in TimeAndExpenceExpenditures)
-            {
-                yield return item;
-            }
-        }
-
-        public AllExpendituresModel GetResult()
-        {
-            return this;
+            return ArcFlashLabelExpenditures.OfType<SharedExpenseModel>()
+               .Concat(CompanyVehicleExpenditures.OfType<SharedExpenseModel>())
+               .Concat(ContractorExpenditures.OfType<SharedExpenseModel>())
+               .Concat(MiscExpenditures.OfType<SharedExpenseModel>())
+               .Concat(TimeAndExpenceExpenditures.OfType<SharedExpenseModel>())
+               .OrderByDescending(x => x.LastModifiedDateEst);           
         }
     }
     
