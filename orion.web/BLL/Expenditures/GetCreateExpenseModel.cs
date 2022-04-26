@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using orion.web.BLL.Core;
 using orion.web.Employees;
@@ -37,7 +38,7 @@ namespace orion.web.BLL.Expenditures
 
         protected override async Task<IProcessResult<ExpenseViewModel>> Handle(GetCreateExpenseModelMessage msg)
         {
-            var emps = await empRepo.GetAllEmployees();
+            var emps = (await empRepo.GetAllEmployees()).Where(x => x.EmployeeId != 1).ToList();
             var jobs = await jobsRepository.GetAsync();
 
             var mdl = msg.TargetExpenseType switch

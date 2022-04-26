@@ -9,7 +9,7 @@ namespace orion.web.Common
     {
         public static DateTime UniversalTime => DateTime.UtcNow; 
 
-        public static TimeZoneInfo TimeZone => TimeZoneInfo.GetSystemTimeZones().Single(x =>  x.Id == "America/Detroit");
+        public static TimeZoneInfo TimeZone => TimeZoneInfo.GetSystemTimeZones().First(x =>  x.Id == "America/Detroit" || x.StandardName == "Eastern Standard Time");
 
         public static DateTime EasternStandardTime
         {
