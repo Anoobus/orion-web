@@ -87,11 +87,7 @@ namespace orion.web.Common
         }
         public static WeekDTO CreateWithWeekContaining(DateTimeOffset date)
         {
-            while (date.DayOfWeek != WEEK_START)
-            {
-                date = date.AddDays(-1);
-            }
-            return new WeekDTO(DateTimeWithZone.ConvertToEST(date.UtcDateTime));
+            return CreateWithWeekContaining(DateTimeWithZone.ConvertToEST(date.UtcDateTime));
         }
         public static WeekDTO CreateForWeekId(int weekId)
         {
