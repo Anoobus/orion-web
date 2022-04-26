@@ -263,8 +263,8 @@ __pycache__/
 /sql-mount-001
 /.env
 /orion.web/appsettings.Compose.json
-*orion.web/appsettings.Development.json
-*orion.web/appsettings.Production.json
+**/*/appsettings.Development.json
+**/*/orion.web/appsettings.Production.json
 /sql-mount-001.bu
 orion.app.logs
 /sql-data
