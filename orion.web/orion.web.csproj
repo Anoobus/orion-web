@@ -41,6 +41,7 @@
     <None Remove="MozJpegSharp.GdiPlus" />
     <None Remove="BLL\Core\" />
     <Content Remove="wwwroot\js\ExpenseManagement\" />
+    <None Remove="Newtonsoft.Json" />
   </ItemGroup>
 
   <ItemGroup>
@@ -73,6 +74,7 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.1" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.3" />
     <PackageReference Include="AutoFixture" Version="4.17.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 
   <ItemGroup>
