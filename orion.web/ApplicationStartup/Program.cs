@@ -21,10 +21,10 @@ namespace orion.web.ApplicationStartup
         //public static ILogger Log;
         public static void Main(string[] args)
         {
-            var connstring = "Server=(localdb)\\mssqllocaldb;Integrated Security=true;Database=orion.web;";
-#if DEBUG
-            connstring = "Server=localhost\\sql2017;Integrated Security=true;Database=orion.web;";
-#endif
+            var connstring = "Server=localhost\\sql2017;Integrated Security=true;Database=orion.web;";
+
+            
+
 
             Log.Logger = new LoggerConfiguration().MinimumLevel.Debug()
                                                  .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
@@ -48,6 +48,7 @@ namespace orion.web.ApplicationStartup
             Log.Information("Starting web site");
 
             var host = CreateWebHostBuilder(Log.Logger).Build();
+            Log.Information("Web Host Builder Created, start DB Migration");
 
             try
             {
@@ -88,7 +89,7 @@ namespace orion.web.ApplicationStartup
                 throw;
             }
 
-
+            Log.Information("DB Migration, begin app Run..");
             host.Run();
         }
 
