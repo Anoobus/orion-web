@@ -26,11 +26,22 @@ namespace orion.web.Reports
 
 
             SetHeaderValues(rpt, excelSheet);
-            WriteTimeAndExpensesSection(rpt, excelSheet);
-            WriteCompanyVehicleSection(rpt, excelSheet);
-            WriteSubContractorSection(rpt, excelSheet);
-            WriteArcFlashLabelSection(rpt, excelSheet);
-            WriteMiscSection(rpt, excelSheet);
+
+            if(rpt.Data.TimeAndExpense.Any())
+                WriteTimeAndExpensesSection(rpt, excelSheet);
+
+            if(rpt.Data.CompanyVehicle.Any())
+                WriteCompanyVehicleSection(rpt, excelSheet);
+
+            if(rpt.Data.SubContractor.Any())
+                WriteSubContractorSection(rpt, excelSheet);
+
+            if(rpt.Data.ArcFlashLabel.Any())
+                WriteArcFlashLabelSection(rpt, excelSheet);
+
+            if(rpt.Data.Misc.Any())
+                WriteMiscSection(rpt, excelSheet);
+
             WriteReportMetadata(rpt, excelSheet);
             var ms2 = new MemoryStream();
             workbook.SaveAs(ms2);
@@ -326,11 +337,10 @@ namespace orion.web.Reports
 
         private static void WriteTimeAndExpensesSection(ReportDTO<DetailedExpenseForJobReportDTO> report, IXLWorksheet excelSheet)
         {
-
-
-
             var rowStart = 7;
             var originalRowStart = rowStart;
+
+          
             excelSheet.Row(rowStart).InsertRowsBelow(report.Data.TimeAndExpense.Count());
 
             excelSheet.Range($"{columns[1]}{rowStart - 1}:{columns[2]}{rowStart - 1}")
