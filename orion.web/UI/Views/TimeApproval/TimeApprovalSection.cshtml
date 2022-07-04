@@ -26,20 +26,20 @@
                     <th></th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="weekly-rows">
                 @foreach(var item in Model)
                 {
-                <tr>
+                <tr id="r-@item.EmployeeId-@item.WeekId">
                     <td>
                         @item.WeekStartDate.ToShortDateString()
                     </td>
-                    <td>
+                    <td class="submitted-date">
                         @item.SubmittedDate?.ToShortDateString()
                     </td>
                     <td>
                         @item.EmployeeName
                     </td>
-                    <td>
+                    <td class="approval-state">
                         @item.TimeApprovalStatus
                     </td>
                     <td>
@@ -50,7 +50,13 @@
                     </td>
                     <td>
                         @Html.ActionLink("Details", nameof(TimeEntryController.Edit), "TimeEntry", new { WeekId = item.WeekId, employeeId = item.EmployeeId })
-                        @if(!item.IsHidden)
+                        @if (!item.ApprovalDate.HasValue)
+                        {
+                                <span class="approve-link">|  <a href="#approve" class="approve-week" emp="@item.EmployeeId" week="@item.WeekId" onclick="return tryApprove(this)">Approve</a></span>                            
+                        }
+
+
+                        @if (!item.IsHidden)
                         {
                             <TEXT>| </TEXT> @Html.ActionLink("Hide", nameof(TimeApprovalController.HideEntry), "TimeApproval", new { weekId = item.WeekId, employeeId = item.EmployeeId })
                         }

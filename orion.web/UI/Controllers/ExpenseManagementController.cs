@@ -45,9 +45,17 @@ namespace orion.web.UI.Controllers
             this.updateTimeAndExpenseExpenditure = updateTimeAndExpenseExpenditure;
             this.updateCompanyVehicleExpenditure = updateCompanyVehicleExpenditure;
         }
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var mdl = (await listExpendituresHandler.Process(new GetAllExpendituresRequest(includeArcFlashlabels: false, includeCompanyVehicles: false, includeMiscExpenditure: false, includeContractorExpenditures: false, includeTimeAndExpenseExpenditures: false))).Success;
+
+
+            var vm = new ExpenseLandingPageModel()
+            {
+                AvailableEmployees = mdl.AvailableEmployees,
+                AvailableJobs = mdl.AvailableJobs
+            };
+            return View(vm);
         }
 
         public async Task<IActionResult> ExpenseList()

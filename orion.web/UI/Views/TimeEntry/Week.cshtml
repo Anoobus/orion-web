@@ -138,7 +138,7 @@
             padding: 5px;
             margin: 0px;
         }
-       
+
 
     a.option-btn.btn-floating.btn-small i {
         margin: 0px;
@@ -161,28 +161,29 @@
         font-size: 1.5em;
     }
 </style>
-<form asp-action="Save" method="post">
+<form asp-action="Save" method="post" id="main-time-entry-form">
 
 
     <div class="row">
-
-        <div asp-validation-summary="All" class="col s9 offset-s3 text-danger card-panel week-errors pulse rounded"></div>
-        <script type="text/javascript">document.addEventListener('DOMContentLoaded', function () {
-                let errors = document.querySelectorAll('div.week-errors ul li');
-                if (errors.length) {
-                    console.log(errors[0].innerHTML);
-                    let iconRow = document.createElement("li");
-                    iconRow.innerHTML = '<i class="tiny material-icons">error_outline</i>';
-                    console.log("to add", iconRow);
-                    errors[0].parentElement.prepend(iconRow);
-                    errors.forEach(li => li.innerHTML = '&nbsp;&nbsp;' + li.innerHTML);
-                }
-                setTimeout(() => {
-                    console.log('remove pulse');
-                    document.getElementsByClassName("week-errors")[0].classList.remove('pulse');
-                    console.log('pulse removed');
-                }, 3500);
-            })</script>
+        <div class="col s12">
+            <div asp-validation-summary="All" class="col s10 offset-s1 text-danger card-panel week-errors pulse rounded"></div><div class="col s1"></div>
+            <script type="text/javascript">document.addEventListener('DOMContentLoaded', function () {
+                    let errors = document.querySelectorAll('div.week-errors ul li');
+                    if (errors.length) {
+                        console.log(errors[0].innerHTML);
+                        let iconRow = document.createElement("li");
+                        iconRow.innerHTML = '<i class="tiny material-icons">error_outline</i>';
+                        console.log("to add", iconRow);
+                        errors[0].parentElement.prepend(iconRow);
+                        errors.forEach(li => li.innerHTML = '&nbsp;&nbsp;' + li.innerHTML);
+                    }
+                    setTimeout(() => {
+                        console.log('remove pulse');
+                        document.getElementsByClassName("week-errors")[0].classList.remove('pulse');
+                        console.log('pulse removed');
+                    }, 3500);
+                })</script>
+        </div>
     </div>
     <div class="row">
         <div class="col s12">
@@ -192,10 +193,10 @@
 || Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Submitted)
             {
                 <div class="row">
-                    <div class="col-md-12">
-                        <div class="alert alert-dismissible alert-success">
+                    <div class="col s8 offset-s2">
+                        <h5 >
                             <strong>Please Note:</strong> No more changes are allowed for timesheet becuase it is already @Model.ApprovalStatus.
-                        </div>
+                        </h5>
                     </div>
                 </div>
             }
@@ -311,7 +312,8 @@
             {
                 <input type="submit" name="postType" value="Copy Job/Tasks From Previous Week" class="btn grey darken-2 white-text" />
                 <input id="save-btn" type="submit" name="postType" value="Save" class="btn grey darken-2" />
-                <a href="#Submit" data-toggle="modal" id="SubmitData" class="btn" data-target="#submitModal"> Submit</a>
+                <button type="button" class="waves-effect waves-white btn" id="submit-modal-trigger">Submit</button>
+
             }
 
             @if (User.IsInRole(UserRoleName.Admin))
@@ -330,32 +332,50 @@
 
         </div>
     </div>
-    @*
-        <div class="modal fade" id="submitModal" tabindex="-1" role="dialog" aria-labelledby="submitModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h4 class="modal-title" id="submitModalLabel">Submit Time</h4>
-                    </div>
-                    <div class="modal-body">
-                        Are you sure you want to submit your time?
-                    </div>
-                    <div class="modal-footer">
-                        <input type="submit" name="postType" value="Submit" class="btn btn-success" />
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    </div>
+
+    <div class="modal modal-small" id="submitModal">
+        <div class="row">
+            <div class="col s3 red darken-3 white-text modal-info-blurb z-depth-4">
+                <div class="container">
+                    
+                </div>
+            </div>
+            <div class="col s9">
+                <div class="row" style="padding:20px">
+                   
+                            <h4>
+                                Are you sure you want to submit your time?
+                            </h4>
+                      
+                </div>
+                
+                <div class="modal-footer" style="vertical-align:bottom;margin-top:30px">
+                    <button type="submit" name="postType" value="Submit" class="waves-effect waves-white btn-flat" >Submit Time</button>
+                    <button type="button" class="modal-close waves-effect waves-white btn-flat" data-dismiss="modal">Cancel</button>
                 </div>
             </div>
         </div>
-    *@
+    </div>
+
     <style>
         .modal {
             overflow: hidden;
             min-height: 500px !important;
         }
 
+        .modal-small {
+            overflow: hidden;
+            max-height: 50%;
+            width: 40%;
+            min-height: 200px !important;
+        }
+
         .modal-info-blurb {
             height: 100vh;
+        }
+
+        .ot-cell-gradient {
+            background: linear-gradient(90deg, rgba(255,255,255,0) 73%, rgba(55,71,79,0.55) 100%);
         }
     </style>
 
@@ -416,9 +436,8 @@
                 </div>
 
                 <div class="modal-footer" style="vertical-align:bottom">
-                    <button id="ModalSubmit" type="button" class="waves-effect waves-white btn-flat">Add Job-Task</button>
+                    <button id="ModalSubmit" type="button" class="waves-effect waves-white btn-flat" name="submit-button-thingy">Add Job-Task</button>
                     <button type="button" class="modal-close waves-effect waves-white btn-flat" data-dismiss="modal">Cancel</button>
-
                 </div>
             </div>
 
@@ -440,7 +459,8 @@
 @section scripts {
 
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"></script>
-    <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
     <script type="text/javascript" src="/js/TimeEntry/weekTableSumDefinition.js"></script>
     <script type="text/javascript" src="/js/TimeEntry/weekTimeEntryTableSummation.js"></script>
     <script type="text/javascript" src="/js/TimeEntry/weekTimeEntryOvertimeToggle.js"></script>
@@ -452,7 +472,14 @@
     <script type="text/javascript" src="/js/TimeEntry/efforts/remove-effort-row.js"></script>
     <script type="text/javascript" src="/js/TimeEntry/efforts/add-effort-row.js"></script>
     <script type="text/javascript" src="/js/TimeEntry/efforts/change-effort-row.js"></script>
-    <script type="text/javascript">$(document).ready(function () {
+    <script type="text/javascript" >
+        function showSubmitModal(targetId) {
+            let modalToShow = document.getElementById(targetId);
+            let instance = M.Modal.init(modalToShow, {});
+            instance.open();
+        }
+
+        $(document).ready(function () {
 
             const approvalStatus = $('#ApprovalStatus').val();
             const isAdmin = $('#IsAdmin').val() == "true";
@@ -463,6 +490,7 @@
                 $("form :input").not('.navbar-btn').prop("disabled", true);
                 $('#AddJob').hide();
                 $('a.row-action').hide();
+                $('.hide-if-submitted').hide();
                 if (isAdmin) {
                     $("form :input[type='submit']").prop("disabled", false);
                     $("form :input[name='__RequestVerificationToken']").prop("disabled", false);
@@ -478,11 +506,29 @@
                 }
             });
 
+            $('#save-btn').click(e => {
+                let form = $("#main-time-entry-form");
+                let validator = form.validate();
+                if (!form.valid()) {
+                    $('div.week-errors').removeClass('validation-summary-valid');
+                    $('div.week-errors').addClass('validation-summary-errors');
+                    e.preventDefault();
+                }
+            });
 
-
-
-
-
+            $('#submit-modal-trigger').click(e => {
+                let form = $("#main-time-entry-form");
+                let validator = form.validate();
+                if (form.valid()) {
+                    $('div.week-errors').removeClass('validation-summary-errors');
+                    $('div.week-errors').addClass('validation-summary-valid');
+                    showSubmitModal('submitModal');
+                }
+                else {
+                    $('div.week-errors').removeClass('validation-summary-valid');
+                    $('div.week-errors').addClass('validation-summary-errors');
+                }                
+            });
 
         });</script>
 }

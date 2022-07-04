@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using orion.web.BLL.TimeApproval;
 using orion.web.Common;
 using orion.web.Employees;
 using orion.web.Jobs;
@@ -46,8 +47,15 @@ namespace orion.web.TimeApproval
         private readonly ISmtpProxy smtpProxy;
         private readonly IConfiguration configuration;
         private readonly IJobsRepository jobService;
+        private readonly IEmailExclusionFilter emailExclusionFilter;
 
-        public ApproveTimeCommand(ITimeApprovalService timeApprovalService, ITimeService timeService, IEmployeeRepository employeeService, ISmtpProxy smtpProxy, IConfiguration configuration, IJobsRepository jobService)
+        public ApproveTimeCommand(ITimeApprovalService timeApprovalService,
+            ITimeService timeService,
+            IEmployeeRepository employeeService,
+            ISmtpProxy smtpProxy,
+            IConfiguration configuration,
+            IJobsRepository jobService,
+            IEmailExclusionFilter emailExclusionFilter)
         {
             this.timeApprovalService = timeApprovalService;
             this.timeService = timeService;
@@ -55,8 +63,17 @@ namespace orion.web.TimeApproval
             this.smtpProxy = smtpProxy;
             this.configuration = configuration;
             this.jobService = jobService;
+            this.emailExclusionFilter = emailExclusionFilter;
         }
 
+        private async Task UpdateCurrentStateForSubmit(TimeApprovalRequest request, TimeApprovalDTO current)
+        {
+             var time = await timeService.GetAsync(request.WeekId, request.EmployeeId);
+                var totalOt = time.Sum(x => x.OvertimeHours);
+                var totalReg = time.Sum(x => x.Hours);
+                current.TotalOverTimeHours = totalOt;
+                current.TotalRegularHours = totalReg;
+        }
         public async Task<Result> ApplyApproval(TimeApprovalRequest request)
         {
             var current = await timeApprovalService.GetAsync(request.WeekId, request.EmployeeId);
@@ -70,13 +87,8 @@ namespace orion.web.TimeApproval
 
             if(isValidSubmit)
             {
-                var time = await timeService.GetAsync(request.WeekId, request.EmployeeId);
-                var totalOt = time.Sum(x => x.OvertimeHours);
-                var totalReg = time.Sum(x => x.Hours);
-                current.TotalOverTimeHours = totalOt;
-                current.TotalRegularHours = totalReg;
-
-                if(totalOt > 0 || totalReg > 40)
+                await UpdateCurrentStateForSubmit(request, current);
+                if(current.TotalOverTimeHours > 0 || current.TotalRegularHours > 40)
                 {
                     current.TimeApprovalStatus = TimeApprovalStatus.Submitted;
                 }
@@ -88,9 +100,15 @@ namespace orion.web.TimeApproval
             if(isValidReject || isValidApprove)
             {
                 current.TimeApprovalStatus = request.NewApprovalState;
+               
             }
             if(isValidApprove)
             {
+                if (!current.SubmittedDate.HasValue)
+                {
+                    await UpdateCurrentStateForSubmit(request, current);
+                    current.SubmittedDate = DateTime.Now;
+                }
                 var approvedBy = request.ApprovingUserId == request.EmployeeId ? "[AUTO APPROVED BY SYSTEM]" : "approved by manager";
                 var approver = await employeeService.GetSingleEmployeeAsync(request.ApprovingUserId);
                 current.ApproverName = approver.UserName;
@@ -118,15 +136,18 @@ namespace orion.web.TimeApproval
                 foreach(var pm in projectManagersToNotifiy)
                 {
                     var emp = await employeeService.GetSingleEmployeeAsync(request.EmployeeId);
-                    var approver = await employeeService.GetSingleEmployeeAsync(pm);
-                    var recipient = approver.UserName;
+                    if(!await emailExclusionFilter.ShouldRecieveProjectManagerTimeSubmittedEmail(emp.EmployeeId))
+                    {                        
+                        var approver = await employeeService.GetSingleEmployeeAsync(pm);
+                        var recipient = approver.UserName;
 
-                    string finalEmailText = await CreateEmailBody( week, emp,
-                        greetingName: approver.First,
-                        action: $"submitted for approval (for the week {week.WeekStart.ToShortDateString()}-{week.WeekEnd.ToShortDateString()})",
-                        actionBy: $"{emp.First} {emp.Last}", followup: $"You will need to review the timesheet as you are marked as a project manager a job in this week.");
+                        string finalEmailText = await CreateEmailBody( week, emp,
+                            greetingName: approver.First,
+                            action: $"submitted for approval (for the week {week.WeekStart.ToShortDateString()}-{week.WeekEnd.ToShortDateString()})",
+                            actionBy: $"{emp.First} {emp.Last}", followup: $"You will need to review the timesheet as you are marked as a project manager a job in this week.");
 
-                    smtpProxy.SendMail(recipient, finalEmailText, $"Time submitted for week {week.WeekStart.ToShortDateString()}-{week.WeekEnd.ToShortDateString()}");
+                        smtpProxy.SendMail(recipient, finalEmailText, $"Time submitted for week {week.WeekStart.ToShortDateString()}-{week.WeekEnd.ToShortDateString()}");
+                    }                    
                 }
             }
 
@@ -152,7 +173,7 @@ namespace orion.web.TimeApproval
         private async Task<string> CreateEmailBody(WeekDTO week, EmployeeDTO emp, string greetingName, string action, string actionBy, string followup)
         {
             var baseUrl = configuration.GetValue<string>("BaseHostAddress");
-            var template = await File.ReadAllTextAsync(@"wwwroot\email-template.html");
+            var template = await File.ReadAllTextAsync(Path.Combine("wwwroot","email-template.html"));
             var finalEmailText = Regex.Replace(template, "(\\{\\{name}})",greetingName);
             finalEmailText = Regex.Replace(finalEmailText, "(\\{\\{action}})", action);
             finalEmailText = Regex.Replace(finalEmailText, "(\\{\\{action-by}})", actionBy);

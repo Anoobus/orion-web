@@ -1,13 +1,13 @@
 ﻿@model orion.web.TimeEntries.TimeSpentViewModel
 <td class="form-inline time-cell" day="col-@Model.DayOfWeek.ToString().ToLower()" autosum>
     <div class="form-group skinny">
-        <input asp-for="Hours" class="form-control" value="@(Model.Hours == 0 ? "" : Model.Hours.ToString(".#"))"/>
+        <input asp-for="Hours" class="form-control"  />
     </div>
 </td>
 
 <td class="form-inline warning time-cell" day="ot-col-@Model.DayOfWeek.ToString().ToLower()" autosum style="display:none">
-    <div class="form-group skinny ">
-        <input asp-for="OvertimeHours" class="form-control" value="@(Model.OvertimeHours == 0 ? "" : Model.OvertimeHours.ToString(".#"))" />
+    <div class="form-group skinny ot-cell-gradient">
+        <input asp-for="OvertimeHours" class="form-control"  />
     </div>
 </td>
 

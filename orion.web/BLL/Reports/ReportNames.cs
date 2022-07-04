@@ -11,5 +11,6 @@ namespace orion.web.Reports
         public const string PAY_PERIOD_REPORT = "PAY_PERIOD_REPORT";
         public const string ALL_OPEN_JOBS_SUMMARY_REPORT = "ALL_OPEN_JOBS_SUMMARY_REPORT";
         public const string DETAILED_EXPENSE_REPORT = "DETAILED_EXPENSE_REPORT";
+        public const string EMPLOYEE_TIME_REPORT = "EMPLOYEE_TIME_REPORT";
     }
 }

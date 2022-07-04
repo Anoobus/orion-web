@@ -31,13 +31,13 @@
             el.preventDefault();
             var day = $(el.target).closest('th').attr(weekTableSumDefinition.dayIdentifier);
             var matchExpr = '[' + weekTableSumDefinition.dayIdentifier + '="ot-' + day + '"]';
-            console.log("trying to toggle " + matchExpr + " becuase it was matched the dayIdentifier of the closest th of the target", el.target);
+            
 
             let otColShow = $('th' + matchExpr)[0].style.display == "none";
             $('td' + matchExpr).toggle();
             $('th' + matchExpr).toggle();
 
-            console.log("checking if any ot cols are up, if so we'll show the total col");
+            
 
             let visibleOtCells = $('td[' + weekTableSumDefinition.dayIdentifier + ']')
                 .filter((index, cell) => cell.attributes['day'].value.startsWith('ot-')
@@ -48,13 +48,13 @@
 
             if (otColShow || visibleOtCells > 0) {
                 var totalExpr = '[' + weekTableSumDefinition.dayIdentifier + '="ot-' + weekTableSumDefinition.columnTotoalIdentifier + '"]';
-                console.log('trying to show td/th with expr ' + totalExpr);
+            
                 $('td' + totalExpr).show();
                 $('th' + totalExpr).show();
             }
             else {
                 var totalExpr = '[' + weekTableSumDefinition.dayIdentifier + '="ot-' + weekTableSumDefinition.columnTotoalIdentifier + '"]';
-                console.log('trying to close td/th with expr ' + totalExpr);
+            
                 $('td' + totalExpr).hide();
                 $('th' + totalExpr).hide();
             }

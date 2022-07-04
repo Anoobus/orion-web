@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using orion.web.BLL.TimeApproval;
 using orion.web.Common;
 using orion.web.DataAccess.EF;
 using orion.web.Employees;
@@ -24,14 +25,21 @@ namespace orion.web.api
         private readonly IEmployeeRepository _employeeRepository;
         private readonly IScheduledTaskRepo _scheduleTaskRepo;
         private readonly ILogger _logger = Log.ForContext< RemindersController>();
+        private readonly IEmailExclusionFilter _emailExclusionFilter;
 
-        public RemindersController(ITimeApprovalService timeApprovalService, ISmtpProxy smtpProxy, IEmployeeRepository employeeRepository, IScheduledTaskRepo scheduleTaskRepo, ILogger logger)
+        public RemindersController(ITimeApprovalService timeApprovalService,
+            ISmtpProxy smtpProxy,
+            IEmployeeRepository employeeRepository,
+            IScheduledTaskRepo scheduleTaskRepo,
+            ILogger logger,
+            IEmailExclusionFilter emailExclusionFilter)
         {
             _timeApprovalService = timeApprovalService;
             _smtpProxy = smtpProxy;
             _employeeRepository = employeeRepository;
             _scheduleTaskRepo = scheduleTaskRepo;
             _logger = logger;
+            _emailExclusionFilter = emailExclusionFilter;
         }
 
         [HttpPost("on-ppe-missing-time-email")]
@@ -83,8 +91,10 @@ namespace orion.web.api
                     {
                         var emp = await _employeeRepository.GetSingleEmployeeAsync(entry.Key);
                         _logger.Information($"sending reminder to {emp.First} {emp.Last} [{emp.UserName}]");
-
-                        _smtpProxy.SendMail(emp.UserName, template, $"Reminder to submit time for {beginDate.ToShortDateString()}-{endDate.ToShortDateString()}");
+                        if(! await _emailExclusionFilter.ShouldRecieveSubmittTimeReminder(emp.EmployeeId))
+                        {
+                            _smtpProxy.SendMail(emp.UserName, template, $"Reminder to submit time for {beginDate.ToShortDateString()}-{endDate.ToShortDateString()}");
+                        }                        
                     }
                     catch(Exception  e)
                     {

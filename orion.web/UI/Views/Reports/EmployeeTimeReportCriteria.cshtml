@@ -1,0 +1,43 @@
+﻿@using orion.web.Reports
+@using orion.web.Employees
+@model orion.web.Reports.EmployeeTimeReport.EmployeeTimeReportCriteria
+
+<form asp-action="EmployeeTimeReport">
+
+    <div class="row">
+        <div class="col s12">
+            <h4>Employee Time Report</h4>
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col s6">
+            <label asp-for="PeriodSettings.Start" class="control-label"></label>
+            <input asp-for="PeriodSettings.Start" type="text" class=" datepicker" value="@Model.PeriodSettings.Start.ToString("MMM dd, yyyy")" />
+
+            <span asp-validation-for="PeriodSettings.Start" class="text-danger"></span>
+        </div>
+        <div class="col s6">
+            <label asp-for="PeriodSettings.End" class="control-label"></label>
+            <input asp-for="PeriodSettings.End" type="text" class="datepicker" value="@Model.PeriodSettings.End.ToString("MMM dd, yyyy")">
+            <span asp-validation-for="PeriodSettings.End" class="text-danger"></span>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col s12">
+            <label asp-for="SelectedEmployeeId">For Employee</label>
+            <select asp-for="SelectedEmployeeId"
+                    asp-items="@(new SelectList(Model.AvailableEmployees, "EmployeeId", "FullName"))"></select>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col s12">
+            <input type="submit" value="Download" class="btn btn-default" />
+        </div>
+
+    </div>
+</form>
+

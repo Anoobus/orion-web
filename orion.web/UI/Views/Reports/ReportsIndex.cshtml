@@ -62,13 +62,18 @@
 
             </div>
         }
+        @if (Model.EmployeeTimeReportCriteria.CanView)
+        {
+            <div id="employee-time-report" rpt-section="@Model.EmployeeTimeReportCriteria.ReportName" style="display:none">
+                @Html.EditorFor(m => Model.EmployeeTimeReportCriteria.Criteria, "~/UI/Views/Reports/EmployeeTimeReportCriteria.cshtml")
+            </div>
+        }
     </div>
 </div>
 
 
 @section scripts {
-    <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
+  
     <script type="text/javascript">$(document).ready(function () {
             $("a.rpt-link").click(function (e) {
                 e.preventDefault();

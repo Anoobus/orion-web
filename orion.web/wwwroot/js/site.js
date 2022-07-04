@@ -9,9 +9,7 @@ function toastSuccess(data) {
 
 
 function matchColHeight(shortEl, tallEl) {
-    console.log(shortEl, tallEl);
     shortEl.style.height = tallEl.style.height;
-    console.log(shortEl, tallEl);
 }
 
 function InitMaterializeComponents() {
@@ -31,7 +29,6 @@ document.addEventListener('DOMContentLoaded', function () {
     axios
         .get('/api/Notifications')
         .then(response => {
-            console.log('got back notification call', response);
             if (Object.keys(response.data).length !== 0) {
                 
                 response.data.forEach(x => toastSuccess(`<ul><li>${x}</li></ul>`));

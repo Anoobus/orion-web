@@ -87,7 +87,7 @@
                 <div class="col s12">
                     <h4>Approved Weeks (@(Model.RejectedEntries?.Count() ?? 0))</h4>
                 </div>
-                <div class="col s12">
+                <div class="col s12 approved-pool">
                     @Html.EditorFor(model => model.ApprovedEntries, "~/UI/Views/TimeApproval/TimeApprovalSection.cshtml")
 
                 </div>
@@ -132,6 +132,56 @@
         console.log('adding click event for ', reportSelections);
         reportSelections.forEach(el => el.addEventListener('click', e => setActiveOnCollectionItem(e.target)));
         setActiveOnCollectionItem(reportSelections[0]);
+
+       
+
+
     });
+    function tryApprove(hrefSource) {
+        console.log(hrefSource);
+        let employeeId = hrefSource.getAttribute('emp');
+        let weekId = hrefSource.getAttribute('week');
+        let rowId = 'r-' + employeeId + '-' + weekId;
+        let tableRow = document.getElementById(rowId);
+        let table = {};
+        document.querySelectorAll('tbody.weekly-rows').forEach(tbl => {
+            let row = tbl.querySelector('#' + rowId);
+            if (row) {
+                table = tbl;
+            }
+        });
+
+        console.log(table);
+
+
+        axios
+            .put('/orion-api/v1/time-approval/employees/' + employeeId + '/week/' + weekId, { newApprovalState: 'Approved' })
+            .then(response => {                
+                if (response.status == 200) {
+                    axios
+                        .get('/api/Notifications')
+                        .then(response => {
+                            if (Object.keys(response.data).length !== 0) {
+
+                                response.data.forEach(x => toastSuccess(`<ul><li>${x}</li></ul>`));
+
+                            }
+                        });
+
+                    table.removeChild(tableRow);
+                    let approvalBtn = tableRow.querySelector('span.approve-link');
+                    let actionTds = approvalBtn.parentElement;
+                    actionTds.removeChild(approvalBtn);
+                    tableRow.querySelector('td.approval-state').innerHTML = response.data.timeApprovalStatus;
+                    tableRow.querySelector('td.submitted-date').innerHTML = response.data.submittedDate;
+                    
+                    document.querySelector('div.approved-pool table tbody').appendChild(tableRow);
+                }
+                else {
+                    toastSuccess(response.data);
+                }
+            });
+        return false; //return false to prevent bubling event up and trying to update #section
+    }
 </script>
 }

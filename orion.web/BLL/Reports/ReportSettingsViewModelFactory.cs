@@ -1,10 +1,11 @@
 ﻿using orion.web.BLL.Reports.AllOpenJobsSummaryreport;
 using orion.web.BLL.Reports.DetailedExpenseForJobReport;
 using orion.web.Common;
+using orion.web.Employees;
 using orion.web.Jobs;
 using orion.web.PayPeriod;
 using orion.web.Reports.Common;
-
+using orion.web.Reports.EmployeeTimeReport;
 using orion.web.Reports.PayPeriodReport;
 using orion.web.Reports.QuickJobTimeReport;
 using orion.web.Util.IoC;
@@ -24,10 +25,12 @@ namespace orion.web.Reports
     public class ReportSettingsViewModelFactory : IReportSettingsViewModelFactory, IAutoRegisterAsSingleton
     {
         private readonly IJobsRepository jobService;
+        private readonly IEmployeeRepository employeeRepository;
 
-        public ReportSettingsViewModelFactory(IJobsRepository jobService)
+        public ReportSettingsViewModelFactory(IJobsRepository jobService, IEmployeeRepository employeeRepository)
         {
             this.jobService = jobService;
+            this.employeeRepository = employeeRepository;
         }
 
         private ExcelReport<PayPeriodReportCriteria> GetPayPeriodReportViewModel(bool isCurrentUserAdmin)
@@ -38,18 +41,7 @@ namespace orion.web.Reports
             var rpt = new ExcelReport<PayPeriodReportCriteria>(PayPeriodReportCriteria.PAY_PERIOD_REPORT_NAME, vm2, isCurrentUserAdmin);
             return rpt;
         }
-
-        /*
-         below to BE removed!
-        private async Task<ExcelReport<JobSummaryReportCriteria>> GetJobSummaryReportCriteria(bool isCurrentUserAdmin)
-        {
-            var vm = new JobSummaryReportCriteria();
-            vm.PeriodSettings = GetDefaultPeriodSettings();
-            vm.AvailableJobs = (await jobService.GetAsync()).OrderBy(x => x.FullJobCodeWithName).ToList();
-            var rpt = new ExcelReport<JobSummaryReportCriteria>(JobSummaryReportCriteria.PROJECT_STATUS_REPORT_NAME, vm, isCurrentUserAdmin);
-            return rpt;
-        }
-        */
+       
         private async Task<ExcelReport<QuickJobTimeReportCriteria>> GetJobDetailreportAsync()
         {
             var vm = new QuickJobTimeReportCriteria();
@@ -58,6 +50,7 @@ namespace orion.web.Reports
             var rpt = new ExcelReport<QuickJobTimeReportCriteria>(QuickJobTimeReportCriteria.QUICK_JOB_TIME_REPORT_NAME, vm, true);
             return rpt;
         }
+
         public async Task<ReportSelectionViewModel> GetReportSelectionViewModelAsync(bool isCurrentUserAdmin)
         {
 
@@ -66,10 +59,27 @@ namespace orion.web.Reports
                 PayPeriodReportCriteria = GetPayPeriodReportViewModel(isCurrentUserAdmin),
                 QuickJobTimeReportCriteria = await GetJobDetailreportAsync(),
                 DetailedExpenseForJobReportCriteria = await GetExpenseBreakDownReportCriteria(isCurrentUserAdmin),
-                AllOpenJobsSummaryReportCriteria = GetAllOpenJobsReportCriteria(isCurrentUserAdmin)
-               // JobSummaryReportCriteria = await GetJobSummaryReportCriteria(false)
+                AllOpenJobsSummaryReportCriteria = GetAllOpenJobsReportCriteria(isCurrentUserAdmin),
+                EmployeeTimeReportCriteria = await GetEmployeeTimeReportCriteria(isCurrentUserAdmin)
+               
             };
             return vm;
+        }
+
+        private async Task<ExcelReport<EmployeeTimeReportCriteria>> GetEmployeeTimeReportCriteria(bool isCurrentUserAdmin)
+        {
+           var vm = new EmployeeTimeReportCriteria();
+            vm.PeriodSettings = GetDefaultPeriodSettings();
+            var emps = (await employeeRepository.GetAllEmployees()).Where(x => x.EmployeeId != 1).ToList();
+            vm.AvailableEmployees = emps.Select(x => new CoreEmployeeDto()
+            {
+                EmployeeId = x.EmployeeId,
+                First = x.First,
+                Last = x.Last
+            });
+            
+            var rpt = new ExcelReport<EmployeeTimeReportCriteria>(EmployeeTimeReportCriteria.EMPLOYEE_TIME_REPORT_NAME, vm, isCurrentUserAdmin);
+            return rpt;
         }
 
         private ExcelReport<AllOpenJobsSummaryReportCriteria> GetAllOpenJobsReportCriteria(bool isCurrentUserAdmin)

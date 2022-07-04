@@ -81,8 +81,7 @@ namespace orion.web.api
             var addResult = await _saveTimeEntriesCommand.SaveTimeEntriesAsync(employeeId,weekid,currentTime);
 
             if (addResult.Successful)
-            {
-                NotificationsController.AddNotification(User.SafeUserName(), "Time saved");
+            {               
                 return new StatusCodeResult(StatusCodes.Status200OK);
             }
             else
@@ -99,7 +98,7 @@ namespace orion.web.api
                 {
                     Detail = msg,
                     Status = StatusCodes.Status400BadRequest,
-                    Title = "Couldn't add new Effort",
+                    Title = "Errors Prevented Saving This Row",
 
                 }
             })

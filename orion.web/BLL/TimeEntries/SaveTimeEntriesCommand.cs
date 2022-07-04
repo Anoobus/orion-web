@@ -84,8 +84,8 @@ namespace orion.web.TimeEntries
             var dayEntriesGroupByJobWithTask = allData.GroupBy(x => new JobWithTaskDTO() { JobId = x.SelectedJobId.Value, TaskId = x.SelectedTaskId.Value, }, x => new TimeEntryBaseDTO()
             {
                 Date = date,
-                Hours = DaySelector(x).Hours,
-                OvertimeHours = DaySelector(x).OvertimeHours,
+                Hours = DaySelector(x).Hours ?? 0,
+                OvertimeHours = DaySelector(x).OvertimeHours ?? 0,
                 EmployeeId = employeeId,
                 JobId = x.SelectedJobId.Value,
                 JobTaskId = x.SelectedTaskId.Value,

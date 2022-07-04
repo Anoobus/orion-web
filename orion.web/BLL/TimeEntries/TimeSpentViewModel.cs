@@ -10,11 +10,15 @@ namespace orion.web.TimeEntries
     {
         public DayOfWeek DayOfWeek { get; set; }
         public DateTime Date { get; set; }
-        [Range(0, double.MaxValue)]
-        [RegularExpression(@"([0-9]*\.[0-9])|(([0-9])\.?)")]
-        public decimal Hours { get; set; }
-        [Range(0, double.MaxValue)]
-        [RegularExpression(@"([0-9]*\.[0-9])|(([0-9])\.?)")]
-        public decimal OvertimeHours { get; set; }
+
+        [Required(AllowEmptyStrings = true)]       
+        [RegularExpression(@"([0-9]*\.[0-9])|(([0-9])\.?)", ErrorMessage = "Hours must be a value with up to one decimal point precission")]
+        [DisplayFormat(DataFormatString = "{0:N1}", ApplyFormatInEditMode = true)]
+        public decimal? Hours { get; set; }
+
+        [Required(AllowEmptyStrings = true)]
+        [RegularExpression(@"([0-9]*\.[0-9])|(([0-9])\.?)", ErrorMessage = "Overtime Hours must be a value with up to one decimal point precission")]
+        [DisplayFormat(DataFormatString = "{0:N1}", ApplyFormatInEditMode = true)]
+        public decimal? OvertimeHours { get; set; }
     }
 }

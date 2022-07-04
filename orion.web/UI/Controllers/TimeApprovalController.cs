@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using orion.web.Common;
 using orion.web.Employees;
 using orion.web.Notifications;
@@ -37,7 +39,7 @@ namespace orion.web.TimeEntries
         public class TimeApprovalModel
         {
             public int WeekId { get; set; }
-            public int EmployeeId { get; set; }
+            public int EmployeeId { get; set; }         
             public TimeApprovalStatus NewApprovalState { get; set; }
         }
 

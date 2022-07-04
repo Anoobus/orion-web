@@ -111,20 +111,52 @@
     }
 
 
-    @RenderSection("Scripts", required: false)
+
     <!-- Compiled and minified JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.js"></script>
+
 
     <script src="/js/site.js" type="text/javascript"></script>
-    <script type="text/javascript">document.addEventListener("DOMContentLoaded", function () {
+    <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", function () {
             var selects = document.querySelectorAll('select.custom-drop-down.nav-dd');
             if (selects.length) {
                 //create nav drop down and ensure that a click makes it show below the element
                 var selectInstances = M.FormSelect.init(selects, { coverTrigger: false });
 
             }
-        });</script>
+        });
+
+        //clear validation on reset button clicked
+        (function ($) {
+            //re-set all client validation given a jQuery selected form or child
+            $.fn.resetValidation = function () {
+                var $form = this.closest('form');
+
+                //reset jQuery Validate's internals
+                $form.validate().resetForm();
+
+                //reset unobtrusive validation summary, if it exists
+                $form.find("[data-valmsg-summary=true]")
+                    .removeClass("validation-summary-errors")
+                    .addClass("validation-summary-valid")
+                    .find("ul").empty();
+
+                //reset unobtrusive field level, if it exists
+                $form.find("[data-valmsg-replace]")
+                    .removeClass("field-validation-error")
+                    .addClass("field-validation-valid")
+                    .empty();
+
+                return $form;
+            };
+        })(jQuery);
+    </script>
+    @RenderSection("Scripts", required: false)
 </body>
 </html>

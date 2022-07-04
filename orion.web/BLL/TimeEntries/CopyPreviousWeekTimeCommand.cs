@@ -25,16 +25,28 @@ namespace orion.web.TimeEntries
             _employeeRepository = employeeRepository;
             _timeSpentRepository = timeSpentRepository;
         }
-        public async Task CopyPreviousWeekTime(int employeeId,  int id)
+        public async Task CopyPreviousWeekTime(int employeeId, int id)
         {
             var prev = WeekDTO.CreateForWeekId(id).Previous();
-            var timeEntries = await _timeService.GetAsync( prev.WeekId.Value, employeeId);
-            foreach(var entry in timeEntries.GroupBy(x => new { x.JobId, x.JobTaskId }))
+            var timeEntries = await _timeService.GetAsync(prev.WeekId.Value, employeeId);
+            var currentWeek = await _timeService.GetWeekAsync(employeeId, id);
+            
+            foreach (var entry in timeEntries.GroupBy(x => new { x.JobId, x.JobTaskId }))
             {
-                var entryForEveryDayOfWeek = _timeSpentRepository.CreateEmptyWeekForCombo( id, entry.Key.JobTaskId,entry.Key.JobId, employeeId); ;
-                foreach(var day in entryForEveryDayOfWeek)
+                if (entry.Any(x => x.Hours > 0 || x.OvertimeHours > 0))
                 {
-                    await _timeService.SaveAsync( employeeId, day);
+                    var entryForEveryDayOfWeek = _timeSpentRepository.CreateEmptyWeekForCombo(id, entry.Key.JobTaskId, entry.Key.JobId, employeeId); ;
+                    foreach (var day in entryForEveryDayOfWeek)
+                    {
+                        var existing = currentWeek.AsEnumerable().FirstOrDefault(x => x.Date.Day == day.Date.Day
+                                                                                        && x.JobId == day.JobId
+                                                                                        && x.JobTaskId == day.JobTaskId);
+
+                        if(existing == null)
+                        {
+                            await _timeService.SaveAsync(employeeId, day);
+                        }                            
+                    }
                 }
             }
         }

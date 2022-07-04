@@ -17,11 +17,11 @@
           <div class="col s12 task-name">
               @Model.SelectedEntryTaskName
         
-              <ul id="@Html.Raw($"job-task-ops-dropdown-{Model.RowId}")" class="dropdown-content job-task-ops-dropdown" >
+              <ul id="@Html.Raw($"job-task-ops-dropdown-{Model.RowId}")" class="dropdown-content job-task-ops-dropdown hide-if-submitted" >
                   <li><a id="@Html.Raw($"row-{Model.RowId}")" class="action-change-row waves-effect waves-light text-white" row="@Model.RowId" action="edit" href="#!">Change Job/Task<i class="tiny material-icons">create</i></a></li>
                   <li><a class="action-remove-row waves-effect waves-light text-white" row="@Model.RowId" action="remove" href="#!">Delete Job/Task<i class="tiny material-icons">delete</i></a></li>
               </ul>
-              <a href="#!"class="option-btn dropdown-trigger btn-floating btn-small waves-effect waves-light red " data-target="@Html.Raw($"job-task-ops-dropdown-{Model.RowId}")">
+              <a href="#!"class="option-btn dropdown-trigger btn-floating btn-small waves-effect waves-light red hide-if-submitted" data-target="@Html.Raw($"job-task-ops-dropdown-{Model.RowId}")">
               <i class="material-icons">mode_edit</i></a>
           </div>
           

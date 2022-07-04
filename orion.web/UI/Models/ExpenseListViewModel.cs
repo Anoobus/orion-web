@@ -26,11 +26,11 @@ namespace orion.web.UI.Models
     }
     public class AllExpendituresModel 
     {
-        public IEnumerable<Expense<ArcFlashLabelExpenditure>> ArcFlashLabelExpenditures { get; set; }
-        public IEnumerable<Expense<CompanyVehicleExpenditure>> CompanyVehicleExpenditures { get; set; }
-        public IEnumerable<Expense<ContractorExpenditure>> ContractorExpenditures { get; set; }
-        public IEnumerable<Expense<MiscExpenditure>> MiscExpenditures { get; set; }
-        public IEnumerable<Expense<TimeAndExpenceExpenditure>> TimeAndExpenceExpenditures { get; set; }
+        public IEnumerable<Expense<ArcFlashLabelExpenditure>> ArcFlashLabelExpenditures { get; set; } = Enumerable.Empty<Expense<ArcFlashLabelExpenditure>>();
+        public IEnumerable<Expense<CompanyVehicleExpenditure>> CompanyVehicleExpenditures { get; set; } = Enumerable.Empty<Expense<CompanyVehicleExpenditure>>();
+        public IEnumerable<Expense<ContractorExpenditure>> ContractorExpenditures { get; set; } = Enumerable.Empty<Expense<ContractorExpenditure>>();
+        public IEnumerable<Expense<MiscExpenditure>> MiscExpenditures { get; set; } = Enumerable.Empty<Expense<MiscExpenditure>>();
+        public IEnumerable<Expense<TimeAndExpenceExpenditure>> TimeAndExpenceExpenditures { get; set; } = Enumerable.Empty<Expense<TimeAndExpenceExpenditure>>();
         public IEnumerable<CoreJobDto> AvailableJobs { get; set; }
         public IEnumerable<CoreEmployeeDto> AvailableEmployees { get; set; }
 

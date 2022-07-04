@@ -22,6 +22,8 @@ using Serilog;
 using Newtonsoft.Json.Serialization;
 using Microsoft.OpenApi.Models;
 using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Http.Features;
+using System.Text.Json.Serialization;
 
 namespace orion.web.ApplicationStartup
 {
@@ -90,6 +92,21 @@ namespace orion.web.ApplicationStartup
             services.AutoRegisterForMarker<IAutoRegisterAsTransient>(typeof(Startup).Assembly, ServiceLifetime.Transient);
 
             services.Configure<RazorViewEngineOptions>(config => config.ViewLocationExpanders.Add(new ViewLocationExpander()));
+            services.Configure<FormOptions>(config =>
+            {
+                config.ValueLengthLimit = config.ValueLengthLimit * 4; //approx 12mb
+                config.ValueCountLimit = config.ValueCountLimit * 10; //approx 10k entries                
+            });
+            services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(opt =>
+            {
+                opt.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            });
+            services.Configure<Microsoft.AspNetCore.Mvc.JsonOptions>(o =>
+            {
+                o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            });
+
+
             services.AddHttpContextAccessor();
             services.AddCustomAutoMapper();
 

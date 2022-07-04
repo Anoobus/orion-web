@@ -60,21 +60,16 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function updateJobSelection(input, targetId) {
-    console.log('try updateJobSelection')
    
     if (nameToIdMap.has(input.value)){        
         let newJobId = nameToIdMap.get(input.value);
-        console.log('setting updated value', newJobId);
         document.getElementById(targetId).value = newJobId;
-        console.log('after update', document.getElementById(targetId));
     }
     else {
         let codeOnly = input.value.substring(0, 9);
         if (codeToIdMap.has(codeOnly)) {
             let newJobId = codeToIdMap.get(codeOnly);
-            console.log('setting updated value', newJobId);
             document.getElementById(targetId).value = newJobId;
-            console.log('after update', document.getElementById(targetId));
         }
         else {
             console.log("skip set, can't find " + input.value + ' inside of our maps', nameToIdMap, codeToIdMap);

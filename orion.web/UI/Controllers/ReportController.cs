@@ -59,7 +59,17 @@ namespace orion.web.Reports
             var (Steam, MimeType, Name) = reportWriter.GetFinishedResult(rpt);
             return File(Steam, MimeType, Name);
         }
-      
+
+        [HttpPost]
+        [Route("RunReport/" + ReportNames.EMPLOYEE_TIME_REPORT)]
+        public async Task<ActionResult> EmployeeTimeReport(ReportSelectionViewModel request)
+        {
+            var criteria = request.EmployeeTimeReportCriteria.Criteria;
+            var rpt = await reportCreator.CreateEmployeeTimeReportAsync(criteria);
+            var (Steam, MimeType, Name) = reportWriter.GetFinishedResult(criteria, rpt);
+            return File(Steam, MimeType, Name);
+        }
+
         [HttpPost]
         [Route("RunReport/" + ReportNames.JOB_DETAIL_REPORT)]
         public async Task<ActionResult> JobDetailReport(ReportSelectionViewModel request)
