@@ -271,3 +271,5 @@ orion.app.logs
 /orion.web/sql-data
 /orion.web/manual.logs
 /orion.web/serilog-logs/
+
+!/orion.web/docs/*.xlsx
