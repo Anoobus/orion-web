@@ -44,6 +44,7 @@
     <None Remove="Newtonsoft.Json" />
     <None Remove="docs\AllOpenJobsSummaryReportTemplate.xlsx" />
     <None Remove="docs\DetailedExpenseReportTemplate.xlsx" />
+    <None Remove="docs\EmployeeTimeReport.xlsx" />
   </ItemGroup>
 
   <ItemGroup>
@@ -153,6 +154,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="docs\DetailedExpenseReportTemplate.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="docs\EmployeeTimeReport.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
