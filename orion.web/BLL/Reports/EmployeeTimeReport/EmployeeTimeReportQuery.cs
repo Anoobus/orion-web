@@ -59,7 +59,7 @@ SELECT
       
 FROM [orion.web].[dbo].[TimeEntries] te
 inner join [orion.web].[dbo].[Jobs] j
-  on te.JobId = te.JobId
+  on te.JobId = j.JobId
 inner join [orion.web].[dbo].[JobTasks] jt
   on jt.JobTaskId = te.TaskId
 where te.EmployeeId = @employeeId
