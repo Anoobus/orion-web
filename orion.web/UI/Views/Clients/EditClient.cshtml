@@ -16,12 +16,11 @@
                 <h4>Edit Client</h4>
             </div>
             <div class="row">
-
+                <input type="hidden" asp-for="ClientId" />
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <label asp-for="ClientName" class="control-label"></label>
                 <input asp-for="ClientName" class="form-control" />
                 <span asp-validation-for="ClientName" class="text-danger"></span>
-
             </div>
             <div class="row">
 

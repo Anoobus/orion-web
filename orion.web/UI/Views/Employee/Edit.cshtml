@@ -15,7 +15,7 @@
 </nav>
 
 <div class="container">
-    <form asp-action="NewEmployee">
+    <form asp-action="EditEmployee" autocomplete="off">
         <div class="row">
             <div class="col s12">
                 <h4>Edit @Model.Email</h4>
@@ -27,7 +27,7 @@
             <div class="col s12">
 
                 <label asp-for="NewEmail" class="control-label"></label>
-                <input asp-for="NewEmail" class="form-control" />
+                <input asp-for="NewEmail" class="form-control" autocomplete="false"/>
                 <span asp-validation-for="NewEmail" class="text-danger"></span>
                 <input asp-for="Email" type="hidden" />
             </div>
@@ -48,12 +48,12 @@
         <div class="row">
             <div class="col s6">
                 <label asp-for="Password" class="control-label"></label>
-                <input asp-for="Password" class="form-control" />
+                <input asp-for="Password" class="form-control" autocomplete="new-password"/>
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
             <div class="col s6">
                 <label asp-for="PasswordConfirm" class="control-label"></label>
-                <input asp-for="PasswordConfirm" class="form-control" />
+                <input asp-for="PasswordConfirm" class="form-control" autocomplete="new-password"/>
                 <span asp-validation-for="PasswordConfirm" class="text-danger"></span>
             </div>
         </div>

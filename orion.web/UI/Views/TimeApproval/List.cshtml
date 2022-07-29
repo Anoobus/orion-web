@@ -39,12 +39,13 @@
                     <div class="col s12">
                         <ul class="collection with-header week-type-selector z-depth-1">
                             <li class="collection-header"><h4>Show Section</h4></li>
-                            <li week-type="missing" class="collection-item ">Missing</li>
-                            <li week-type="submitted" class="collection-item ">Submitted</li>
-                            <li week-type="rejected" class="collection-item ">Rejected</li>
-                            <li week-type="approved" class="collection-item ">Approved</li>
-                            <li week-type="hidden" class="collection-item ">Hidden</li>
+                            <li week-type="missing" sec-type="@orion.web.TimeApproval.ActiveSection.Missing" class="collection-item @if (Model.ActiveSection == orion.web.TimeApproval.ActiveSection.Missing){<text>active</text>}">Missing</li>
+                            <li week-type="submitted" sec-type="@orion.web.TimeApproval.ActiveSection.Submitted" class="collection-item @if (Model.ActiveSection == orion.web.TimeApproval.ActiveSection.Submitted){<text>active</text>}">Submitted</li>
+                            <li week-type="rejected" sec-type="@orion.web.TimeApproval.ActiveSection.Rejected" class="collection-item @if (Model.ActiveSection == orion.web.TimeApproval.ActiveSection.Rejected){<text>active</text>}">Rejected</li>
+                            <li week-type="approved" sec-type="@orion.web.TimeApproval.ActiveSection.Approved" class="collection-item @if (Model.ActiveSection == orion.web.TimeApproval.ActiveSection.Approved){<text>active</text>}">Approved</li>
+                            <li week-type="hidden" sec-type="@orion.web.TimeApproval.ActiveSection.Hidden" class="collection-item @if (Model.ActiveSection == orion.web.TimeApproval.ActiveSection.Hidden){<text>active</text>}">Hidden</li>
                         </ul>
+                        <input type="hidden" asp-for="ActiveSection" />
                     </div>
 
                 </div>
@@ -125,13 +126,22 @@
 
         document.getElementById(item.getAttribute('week-type')).style.display = "block";
 
+        let activeType = item.getAttribute('sec-type');
+        document.getElementById('ActiveSection').value = activeType;
     }
 
     document.addEventListener('DOMContentLoaded', function () {
         var reportSelections = document.querySelectorAll('ul.week-type-selector li.collection-item');
         console.log('adding click event for ', reportSelections);
         reportSelections.forEach(el => el.addEventListener('click', e => setActiveOnCollectionItem(e.target)));
-        setActiveOnCollectionItem(reportSelections[0]);
+        let activeSection = document.querySelectorAll('ul.week-type-selector li.collection-item.active');
+        if (activeSection) {
+            setActiveOnCollectionItem(activeSection[0]);
+        }
+        else {
+            setActiveOnCollectionItem(reportSelections[0]);
+        }
+        
 
        
 

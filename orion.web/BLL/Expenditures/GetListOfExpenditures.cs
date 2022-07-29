@@ -90,20 +90,26 @@ namespace orion.web.BLL.ArcFlashExpenditureExpenses
 
 
             if (msg.IncludeArcFlashlabels)
-            {                
-                await LoadSection(await arcFlashLabelsRepo.SearchForEntity(x => msg.LimitToSingleExpense.HasValue ?
+            {
+
+                var temp = await arcFlashLabelsRepo.SearchForEntity(x => msg.LimitToSingleExpense.HasValue ?
                                                                                 x.ExternalId == msg.LimitToSingleExpense.Value :
-                                                                                true),
-                    (ArcFlashLabelExpenditure x) => new Expense<ArcFlashLabelExpenditure>()
+                                                                                true);
+                await LoadSection(temp,
+                    (ArcFlashLabelExpenditure x) =>
                     {
-                        Detail = x,
-                        Amount = x.TotalLabelsCost,
-                        EmployeeName = $"{employeeDetails[x.EmployeeId].Last}, {employeeDetails[x.EmployeeId].First}",
-                        FullJobNameWithCode = jobs[x.JobId].FullJobCodeWithName,
-                        Id = x.Id,
-                        ShortExpenseName = $"Arc Flash Label Expense ({DateTimeWithZone.ConvertToEST(x.DateOfInvoice.UtcDateTime).ToShortDateString()})",
-                        JobId = x.JobId,
-                        LastModifiedDateEst = DateTimeWithZone.ConvertToEST(x.LastModified.UtcDateTime)
+                        var hmm = new Expense<ArcFlashLabelExpenditure>()
+                        {
+                            Detail = x,
+                            Amount = x.TotalLabelsCost,
+                            EmployeeName = $"{employeeDetails[x.EmployeeId].Last}, {employeeDetails[x.EmployeeId].First}",
+                            FullJobNameWithCode = jobs[x.JobId].FullJobCodeWithName,
+                            Id = x.Id,
+                            ShortExpenseName = $"Arc Flash Label Expense ({DateTimeWithZone.ConvertToEST(x.DateOfInvoice.UtcDateTime).ToShortDateString()})",
+                            JobId = x.JobId,
+                            LastModifiedDateEst = DateTimeWithZone.ConvertToEST(x.LastModified.UtcDateTime)
+                        };
+                        return hmm;
                     },
                     mapped => result.ArcFlashLabelExpenditures = mapped);
             }

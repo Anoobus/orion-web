@@ -11,7 +11,7 @@ namespace orion.web.Common
 {
     public interface ITimeApprovalListQuery
     {
-        Task<TimeApprovalList> GetApprovalListAsync(DateTime? beginDate = null, DateTime? endDate = null);
+        Task<TimeApprovalList> GetApprovalListAsync(DateTime? beginDate = null, DateTime? endDate = null, ActiveSection? activeSection = null);
     }
     public class TimeApprovalListQuery : ITimeApprovalListQuery, IAutoRegisterAsSingleton
     {
@@ -27,7 +27,7 @@ namespace orion.web.Common
             this.timeApprovalService = timeApprovalService;
             this.employeeService = employeeService;
         }
-        public async Task<TimeApprovalList> GetApprovalListAsync(DateTime? beginDate = null, DateTime? endDate = null)
+        public async Task<TimeApprovalList> GetApprovalListAsync(DateTime? beginDate = null, DateTime? endDate = null, ActiveSection? activeSection = null)
         {
             var thisWeek = WeekDTO.CreateWithWeekContaining(endDate ?? DateTime.Now);
             beginDate = beginDate ?? thisWeek.Previous().Previous().WeekStart;
@@ -85,7 +85,8 @@ namespace orion.web.Common
                 RejectedEntries = entries.Where(x => x.TimeApprovalStatus == TimeApprovalStatus.Rejected && !x.IsHidden),
                 SubmittedEntries = entries.Where(x => x.TimeApprovalStatus == TimeApprovalStatus.Submitted && !x.IsHidden),
                 MissingEntries = allMissing.Where(x => !x.IsHidden).OrderBy(x => x.WeekId).ToList(),
-                HiddenEntries = entries.Where(x => x.IsHidden).ToList()
+                HiddenEntries = entries.Where(x => x.IsHidden).ToList(),
+                ActiveSection = activeSection ?? ActiveSection.Submitted
             };
 
         }

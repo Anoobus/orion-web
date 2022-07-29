@@ -34,7 +34,7 @@ namespace orion.web.ApplicationStartup
                                                                rollingInterval: RollingInterval.Day,
                                                                restrictedToMinimumLevel: LogEventLevel.Information)
                                                   .WriteTo.MSSqlServer(connstring,
-                                                               restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information,
+                                                               restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Error,
                                                                sinkOptions: new Serilog.Sinks.MSSqlServer.MSSqlServerSinkOptions()
                                                                {
                                                                    AutoCreateSqlTable = true,

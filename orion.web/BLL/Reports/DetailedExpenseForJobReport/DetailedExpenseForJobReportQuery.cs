@@ -89,8 +89,11 @@ namespace orion.web.Reports
                                 afl.Quantity,
                                 afl.TotalLabelsCost,
                                 afl.TotalPostageCost,
-                                afl.TotalLabelsCost + afl.TotalPostageCost as TotalCost
+                                afl.TotalLabelsCost + afl.TotalPostageCost as TotalCost,
+                                e.First + ', ' + e.Last  as Employee
                                 from dbo.ArcFlashlabelExpenditures afl
+                                left outer join dbo.Employees e
+                                 on afl.EmployeeId = e.EmployeeId
                                 where afl.JobId = @" + jobParam;
         private static ArcFlashLabeSectionRow MapToArcFlashlabelSection(SqlDataReader rdr)
         {
@@ -100,13 +103,15 @@ namespace orion.web.Reports
                 LabelCost = rdr.GetDecimal(2),
                 PostageCost = rdr.GetDecimal(3),
                 Quantity = rdr.GetInt32(1),
-                TotalCost = rdr.GetDecimal(4)
+                TotalCost = rdr.GetDecimal(4),
+                EmployeeName = rdr.GetString(5)
             };
         }
 
          private static readonly string GetMiscExpenseQuery = @"select 
                                 e.[Description],
-                                e.Amount
+                                e.Amount,
+                                e.[ExpensedOn]
                                 from dbo.MiscExpenditures e
                                 where e.JobId = @" + jobParam;
         private static MiscSectionRow MapToMiscSectionRow(SqlDataReader rdr)
@@ -114,7 +119,8 @@ namespace orion.web.Reports
             return new MiscSectionRow()
             {
                 Cost = rdr.GetDecimal(1),
-                Description = rdr.GetString(0)                
+                Description = rdr.GetString(0),
+                ExpensedOn = rdr.GetDateTimeOffset(2)
             };
         }
 

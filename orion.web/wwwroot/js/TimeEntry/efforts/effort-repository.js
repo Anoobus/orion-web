@@ -4,7 +4,7 @@
 
         function saveNewEffortFor(curEmployeeId, curWeekId, jobId, taskId, onError) {
             axios
-                .post('https://localhost:5001/orion-api/v1/employees/' + curEmployeeId + '/time-entry/week/' + curWeekId + '/efforts',
+                .post('/orion-api/v1/employees/' + curEmployeeId + '/time-entry/week/' + curWeekId + '/efforts',
                     {
                         selectedTaskId: taskId,
                         selectedJobId: jobId,
@@ -36,7 +36,7 @@
                 });
         }
         function removeEffortFor(curEmployeeId, curWeekId, jobId, taskId,  onError) {
-            axios.delete('https://localhost:5001/orion-api/v1/employees/' + curEmployeeId + '/time-entry/week/' + curWeekId + '/efforts/' +  jobId  + '.' +  taskId )
+            axios.delete('/orion-api/v1/employees/' + curEmployeeId + '/time-entry/week/' + curWeekId + '/efforts/' +  jobId  + '.' +  taskId )
                 .then(response => {
                     showToast("Effort removed");                    
                     window.location.reload(true)
@@ -64,7 +64,7 @@
                 });
         }
         function changeEffort(curEmployeeId, curWeekId, oldJobId, oldTaskId, newJobId, newTaskId, onError) {
-            axios.post('https://localhost:5001/orion-api/v1/employees/' + curEmployeeId + '/time-entry/week/' + curWeekId + '/efforts/switch',
+            axios.post('/orion-api/v1/employees/' + curEmployeeId + '/time-entry/week/' + curWeekId + '/efforts/switch',
                 {
                     newTaskId,
                     oldTaskId,

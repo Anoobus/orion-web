@@ -6,8 +6,8 @@
     <DockerTargetOS>Linux</DockerTargetOS>
     <StartupObject></StartupObject>
     <LangVersion>7.1</LangVersion>
-    <AssemblyVersion>1.0.5.1</AssemblyVersion>
-    <FileVersion>1.0.5.1</FileVersion>
+    <AssemblyVersion>1.0.5.2</AssemblyVersion>
+    <FileVersion>1.0.5.2</FileVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <IdentityUIFrameworkVersion>Bootstrap4</IdentityUIFrameworkVersion>
   </PropertyGroup>
@@ -45,6 +45,7 @@
     <None Remove="docs\AllOpenJobsSummaryReportTemplate.xlsx" />
     <None Remove="docs\DetailedExpenseReportTemplate.xlsx" />
     <None Remove="docs\EmployeeTimeReport.xlsx" />
+    <None Remove="LigerShark.WebOptimizer.Core" />
   </ItemGroup>
 
   <ItemGroup>
@@ -78,6 +79,7 @@
     <PackageReference Include="System.Data.SqlClient" Version="4.8.3" />
     <PackageReference Include="AutoFixture" Version="4.17.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="LigerShark.WebOptimizer.Core" Version="3.0.365" />
   </ItemGroup>
 
   <ItemGroup>

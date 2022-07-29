@@ -58,9 +58,9 @@ namespace orion.web.TimeEntries
         }
 
         [HttpPost]
-        public async Task<ActionResult> Index(DateTime PeriodStartData, DateTime PeriodEndDate)
+        public async Task<ActionResult> Index(DateTime PeriodStartData, DateTime PeriodEndDate, ActiveSection activeSection)
         {
-            var vm = await timeApprovalListQuery.GetApprovalListAsync(beginDate: PeriodStartData, endDate: PeriodEndDate);
+            var vm = await timeApprovalListQuery.GetApprovalListAsync(beginDate: PeriodStartData, endDate: PeriodEndDate, activeSection: activeSection);
             return View("List", vm);
         }
 

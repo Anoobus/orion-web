@@ -11,6 +11,10 @@
 </style>
 <div class="row" style="display:none">
     <div class="col s12">
+        @if (Model.IsBrandNewExpenditureCreation)
+            //default to first employee in case user doesn't change emp selection
+            Model.CompanyVehicleExpenditure.Detail.EmployeeId = Model.AvailableEmployees.First().EmployeeId;
+        }
         @Html.HiddenFor(x => x.CompanyVehicleExpenditure.Detail.EmployeeId);
         @Html.HiddenFor(x => x.CompanyVehicleExpenditure.Detail.JobId);
         @Html.HiddenFor(x => x.CompanyVehicleExpenditure.Detail.WeekId);

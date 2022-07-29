@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using ClosedXML.Excel;
 using orion.web.BLL.Reports;
@@ -27,20 +28,22 @@ namespace orion.web.Reports
 
             SetHeaderValues(rpt, excelSheet);
 
-            if(rpt.Data.TimeAndExpense.Any())
+            if (rpt.Data.TimeAndExpense.Any())
                 WriteTimeAndExpensesSection(rpt, excelSheet);
 
-            if(rpt.Data.CompanyVehicle.Any())
+            if (rpt.Data.CompanyVehicle.Any())
                 WriteCompanyVehicleSection(rpt, excelSheet);
 
-            if(rpt.Data.SubContractor.Any())
+            if (rpt.Data.SubContractor.Any())
                 WriteSubContractorSection(rpt, excelSheet);
 
-            if(rpt.Data.ArcFlashLabel.Any())
+            if (rpt.Data.ArcFlashLabel.Any())
                 WriteArcFlashLabelSection(rpt, excelSheet);
 
-            if(rpt.Data.Misc.Any())
+            if (rpt.Data.Misc.Any())
                 WriteMiscSection(rpt, excelSheet);
+
+            WriteGrantTotalSection(rpt, excelSheet);
 
             WriteReportMetadata(rpt, excelSheet);
             var ms2 = new MemoryStream();
@@ -52,6 +55,27 @@ namespace orion.web.Reports
 
         }
 
+        private void WriteGrantTotalSection(ReportDTO<DetailedExpenseForJobReportDTO> report, IXLWorksheet excelSheet)
+        {
+            var rowStart = 25 + report.Data.TimeAndExpense.Count() + report.Data.CompanyVehicle.Count() + report.Data.SubContractor.Count() + report.Data.ArcFlashLabel.Count() + report.Data.Misc.Count();
+            excelSheet.Row(rowStart).InsertRowsBelow(1);
+
+            var grandTotal = report.Data.ArcFlashLabel.Sum(x => x.TotalCost)
+                + report.Data.CompanyVehicle.Sum(x => x.Cost)
+                + report.Data.Misc.Sum(x => x.Cost)
+                + report.Data.SubContractor.Sum(x => x.ContractAmount)
+                + report.Data.TimeAndExpense.Sum(x => x.Cost);
+
+            var row = rowStart + 1;
+            excelSheet.Range(row, 1, row, 3).Merge()
+               .SetAlignHorizontal(XLAlignmentHorizontalValues.Center)
+               .AssignValue(grandTotal, dataFormatOverride: (XLDataType.Number, "$#,###,##0.00"))
+               .AddLeftBorder(XLBorderStyleValues.Thin, XLColor.Gray)
+               .AddRightBorder(XLBorderStyleValues.Thin, XLColor.Gray)
+               .AddTopBorder(XLBorderStyleValues.Medium, XLColor.Black)
+               .AddBottomBorder(XLBorderStyleValues.Thin, XLColor.Gray);
+        }
+
         private void WriteMiscSection(ReportDTO<DetailedExpenseForJobReportDTO> report, IXLWorksheet excelSheet)
         {
             var rowStart = 23 + report.Data.TimeAndExpense.Count() + report.Data.CompanyVehicle.Count() + report.Data.SubContractor.Count() + report.Data.ArcFlashLabel.Count();
@@ -61,10 +85,19 @@ namespace orion.web.Reports
             foreach (var sectionRow in report.Data.Misc)
             {
 
-                excelSheet.Range(rowStart, 1, rowStart, 4).Merge()
+                excelSheet.Range(rowStart, 1, rowStart, 2).Merge()
                     .SetAlignHorizontal(XLAlignmentHorizontalValues.Center)
-                    .AssignValue(sectionRow.Description)
+                    .SetDataType(XLDataType.DateTime)
+                    .AssignValue(DateTimeWithZone.ConvertToEST(sectionRow.ExpensedOn.UtcDateTime))
                     .AddLeftBorder(XLBorderStyleValues.Thin)
+                    .AddRightBorder(XLBorderStyleValues.Dotted)
+                    .AddTopBorder(rowStart == originalRowStart ? XLBorderStyleValues.Medium : XLBorderStyleValues.Thin)
+                    .AddBottomBorder(XLBorderStyleValues.Thin);
+
+                excelSheet.Range(rowStart, 3, rowStart, 4).Merge()
+                    .SetAlignHorizontal(XLAlignmentHorizontalValues.Left)
+                    .AssignValue(sectionRow.Description)
+                    .AddLeftBorder(XLBorderStyleValues.Dotted)
                     .AddRightBorder(XLBorderStyleValues.Dotted)
                     .AddTopBorder(rowStart == originalRowStart ? XLBorderStyleValues.Medium : XLBorderStyleValues.Thin)
                     .AddBottomBorder(XLBorderStyleValues.Thin);
@@ -124,8 +157,16 @@ namespace orion.web.Reports
                     .AddTopBorder(rowStart == originalRowStart ? XLBorderStyleValues.Medium : XLBorderStyleValues.Thin)
                     .AddBottomBorder(XLBorderStyleValues.Thin);
 
-
                 excelSheet.Cell(rowStart, 3)
+                   .AssignValue(sectionRow.EmployeeName)
+                   .SetAlignHorizontal(XLAlignmentHorizontalValues.Left)
+                   .AddLeftBorder(XLBorderStyleValues.Dotted)
+                   .SetFontStyle(f => f.Bold = false)
+                   .AddRightBorder(XLBorderStyleValues.Dotted)
+                   .AddTopBorder(rowStart == originalRowStart ? XLBorderStyleValues.Medium : XLBorderStyleValues.Thin)
+                   .AddBottomBorder(XLBorderStyleValues.Thin);
+
+                excelSheet.Cell(rowStart, 4)
                     .AssignValue(sectionRow.Quantity)
                     .SetAlignHorizontal(XLAlignmentHorizontalValues.Center)
                     .AddLeftBorder(XLBorderStyleValues.Dotted)
@@ -135,7 +176,7 @@ namespace orion.web.Reports
                     .AddBottomBorder(XLBorderStyleValues.Thin);
 
 
-                excelSheet.Cell(rowStart, 4)
+                excelSheet.Cell(rowStart, 5)
                     .AssignValue(sectionRow.LabelCost, dataFormatOverride: (XLDataType.Number, "$#,###,##0.00"))
                     .SetAlignHorizontal(XLAlignmentHorizontalValues.Center)
                     .AddLeftBorder(XLBorderStyleValues.Dotted)
@@ -144,7 +185,7 @@ namespace orion.web.Reports
                     .AddTopBorder(rowStart == originalRowStart ? XLBorderStyleValues.Medium : XLBorderStyleValues.Thin)
                     .AddBottomBorder(XLBorderStyleValues.Thin);
 
-                excelSheet.Cell(rowStart, 5)
+                excelSheet.Cell(rowStart, 6)
                     .AssignValue(sectionRow.PostageCost, dataFormatOverride: (XLDataType.Number, "$#,###,##0.00"))
                     .SetAlignHorizontal(XLAlignmentHorizontalValues.Center)
                     .AddLeftBorder(XLBorderStyleValues.Dotted)
@@ -153,7 +194,7 @@ namespace orion.web.Reports
                     .AddTopBorder(rowStart == originalRowStart ? XLBorderStyleValues.Medium : XLBorderStyleValues.Thin)
                     .AddBottomBorder(XLBorderStyleValues.Thin);
 
-                excelSheet.Cell(rowStart, 6)
+                excelSheet.Cell(rowStart, 7)
                     .AssignValue(sectionRow.TotalCost, dataFormatOverride: (XLDataType.Number, "$#,###,##0.00"))
                     .SetAlignHorizontal(XLAlignmentHorizontalValues.Center)
                     .AddLeftBorder(XLBorderStyleValues.Dotted)
@@ -162,7 +203,7 @@ namespace orion.web.Reports
                     .AddTopBorder(rowStart == originalRowStart ? XLBorderStyleValues.Medium : XLBorderStyleValues.Thin)
                     .AddBottomBorder(XLBorderStyleValues.Thin);
 
-                excelSheet.Cell(rowStart, 7).Style.Border.LeftBorder = XLBorderStyleValues.Thin;
+                excelSheet.Cell(rowStart, 8).Style.Border.LeftBorder = XLBorderStyleValues.Thin;
                 rowStart++;
             }
 
@@ -179,7 +220,7 @@ namespace orion.web.Reports
                .AddLeftBorder(XLBorderStyleValues.Thin, XLColor.Gray)
                .AddBottomBorder(XLBorderStyleValues.Thin, XLColor.Gray);
 
-            excelSheet.Cell(rowStart, 3).AssignValue("TOTAL")
+            excelSheet.Cell(rowStart, 4).AssignValue("TOTAL")
                 .SetAlignHorizontal(XLAlignmentHorizontalValues.Right)
                 .AddRightBorder(XLBorderStyleValues.Thin)
                 .AddTopBorder(XLBorderStyleValues.Thin)
@@ -187,7 +228,7 @@ namespace orion.web.Reports
                 .AddLeftBorder(XLBorderStyleValues.Thin, XLColor.Gray)
                 .SetFontStyle(x => x.Bold = true);
 
-            var labelTotal = excelSheet.Cell(rowStart, 4)
+            var labelTotal = excelSheet.Cell(rowStart, 5)
                 .AddRightBorder(XLBorderStyleValues.Thin)
                 .SetAlignHorizontal(XLAlignmentHorizontalValues.Center)
                 .AddBottomBorder(XLBorderStyleValues.Thin)
@@ -195,10 +236,10 @@ namespace orion.web.Reports
                 .AddTopBorder(XLBorderStyleValues.Thin)
                 .AddRightBorder(XLBorderStyleValues.Thin);
             labelTotal.SetFontStyle(x => x.Bold = true);
-            labelTotal.FormulaA1 = $"SUM({columns[4]}{originalRowStart}:{columns[4]}{rowStart - 1})";
+            labelTotal.FormulaA1 = $"SUM({columns[5]}{originalRowStart}:{columns[5]}{rowStart - 1})";
             labelTotal.CellRight().AddLeftBorder(XLBorderStyleValues.Thin);
 
-            var postageTotal = excelSheet.Cell(rowStart, 5)
+            var postageTotal = excelSheet.Cell(rowStart, 6)
                 .AddRightBorder(XLBorderStyleValues.Thin)
                 .SetAlignHorizontal(XLAlignmentHorizontalValues.Center)
                 .AddBottomBorder(XLBorderStyleValues.Thin)
@@ -206,10 +247,10 @@ namespace orion.web.Reports
                 .AddTopBorder(XLBorderStyleValues.Thin)
                 .AddRightBorder(XLBorderStyleValues.Thin);
             postageTotal.SetFontStyle(x => x.Bold = true);
-            postageTotal.FormulaA1 = $"SUM({columns[5]}{originalRowStart}:{columns[5]}{rowStart - 1})";
+            postageTotal.FormulaA1 = $"SUM({columns[6]}{originalRowStart}:{columns[6]}{rowStart - 1})";
             postageTotal.CellRight().AddLeftBorder(XLBorderStyleValues.Thin);
 
-            var totalCell = excelSheet.Cell(rowStart, 6)
+            var totalCell = excelSheet.Cell(rowStart, 7)
                 .AddRightBorder(XLBorderStyleValues.Thin)
                 .SetAlignHorizontal(XLAlignmentHorizontalValues.Center)
                 .AddBottomBorder(XLBorderStyleValues.Thin)
@@ -217,8 +258,9 @@ namespace orion.web.Reports
                 .AddTopBorder(XLBorderStyleValues.Thin)
                 .AddRightBorder(XLBorderStyleValues.Thin);
             totalCell.SetFontStyle(x => x.Bold = true);
-            totalCell.FormulaA1 = $"SUM({columns[6]}{originalRowStart}:{columns[6]}{rowStart - 1})";
+            totalCell.FormulaA1 = $"SUM({columns[7]}{originalRowStart}:{columns[7]}{rowStart - 1})";
             totalCell.CellRight().AddLeftBorder(XLBorderStyleValues.Thin);
+
         }
 
         private void WriteSubContractorSection(ReportDTO<DetailedExpenseForJobReportDTO> report, IXLWorksheet excelSheet)
@@ -315,7 +357,7 @@ namespace orion.web.Reports
 
         private static void WriteReportMetadata(ReportDTO<DetailedExpenseForJobReportDTO> report, IXLWorksheet excelSheet)
         {
-            var rowStart = 25 + report.Data.TimeAndExpense.Count() + report.Data.CompanyVehicle.Count() + report.Data.SubContractor.Count() + report.Data.ArcFlashLabel.Count() + report.Data.Misc.Count();
+            var rowStart = 28 + report.Data.TimeAndExpense.Count() + report.Data.CompanyVehicle.Count() + report.Data.SubContractor.Count() + report.Data.ArcFlashLabel.Count() + report.Data.Misc.Count();
 
 
             var row = rowStart;
@@ -340,7 +382,7 @@ namespace orion.web.Reports
             var rowStart = 7;
             var originalRowStart = rowStart;
 
-          
+
             excelSheet.Row(rowStart).InsertRowsBelow(report.Data.TimeAndExpense.Count());
 
             excelSheet.Range($"{columns[1]}{rowStart - 1}:{columns[2]}{rowStart - 1}")

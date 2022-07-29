@@ -7,7 +7,7 @@ namespace orion.web.JobsTasks
     public class TaskDTO
     {
         public int TaskId { get; set; }
-        [RegularExpression(@"^[0-9]{4}$", ErrorMessage = "Code must be a 4 digit number")]
+        [RegularExpression(@"^[0-9]{2}.*$", ErrorMessage = "Code must be at least 2 digits with optional suffix")]
         [Display(Name = "Task Number")]
         public string LegacyCode { get; set; }
         public string Name { get; set; }

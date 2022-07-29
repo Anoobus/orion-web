@@ -57,7 +57,10 @@ namespace orion.web.Employees
                 Email = emp.UserName,
                 FirstName = emp.First,
                 LastName = emp.Last,
-                IsExempt = emp.IsExempt
+                IsExempt = emp.IsExempt,
+                NewEmail = string.Empty,
+                Password = string.Empty,
+                PasswordConfirm = string.Empty,
             };
 
 

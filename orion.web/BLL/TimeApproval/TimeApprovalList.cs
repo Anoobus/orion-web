@@ -6,6 +6,14 @@ using System.Threading.Tasks;
 
 namespace orion.web.TimeApproval
 {
+    public enum ActiveSection
+    {
+        Submitted = 0, //default to submitted section
+        Approved,
+        Hidden,
+        Rejected,
+        Missing
+    }
     public class TimeApprovalList
     {
         public DateTime PeriodStartData { get; set; }
@@ -15,5 +23,6 @@ namespace orion.web.TimeApproval
         public IEnumerable<TimeApprovalDTO> MissingEntries { get; set; }
         public IEnumerable<TimeApprovalDTO> RejectedEntries { get; set; }
         public IEnumerable<TimeApprovalDTO> HiddenEntries { get; set; }
+        public ActiveSection ActiveSection { get; set; }
     }
 }

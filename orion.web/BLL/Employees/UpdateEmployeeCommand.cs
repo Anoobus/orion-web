@@ -30,7 +30,7 @@ namespace orion.web.Employees
 
             var userToUpdate = await userManager.FindByNameAsync(employee.Email);
             var passwordChange = !string.IsNullOrWhiteSpace(employee.Password) &&
-            employee.Password.Equals(employee.PasswordConfirm);
+                                            employee.Password.Equals(employee.PasswordConfirm);
             if(passwordChange)
             {
                 userToUpdate.PasswordHash = userManager.PasswordHasher.HashPassword(userToUpdate, employee.Password);
@@ -86,7 +86,7 @@ namespace orion.web.Employees
                 }
             }
 
-            return new Result(allCommandErrors.Any(), allCommandErrors.ToArray());
+            return new Result(!allCommandErrors.Any(), allCommandErrors.ToArray());
         }
 
         private async Task SaveLocalEmployeeInfo(EditEmployeeViewModel employee, string updatedEmail)

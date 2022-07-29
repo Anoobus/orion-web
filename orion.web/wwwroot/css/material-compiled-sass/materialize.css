@@ -2987,7 +2987,9 @@ table.highlight > tbody > tr {
 }
 
 table.highlight > tbody > tr:hover {
-  background-color: rgba(66, 145, 245, 0.2);
+    background-color: rgba(55, 71, 79, 0.15);
+    border-top: rgba(55, 71, 79,0.5) inset 1px;
+    border-bottom: rgba(55, 71, 79,0.5) inset 1px;
 }
 
 table.centered thead tr th, table.centered tbody tr td {

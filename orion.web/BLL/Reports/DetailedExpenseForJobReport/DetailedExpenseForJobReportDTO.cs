@@ -52,11 +52,13 @@ namespace orion.web.Reports
         public decimal LabelCost { get; set; }
         public decimal PostageCost { get; set; }
         public decimal TotalCost { get; set; }
+        public string EmployeeName { get; set; }
     }
 
     public class MiscSectionRow
     {
         public string Description { get; set; }
+        public DateTimeOffset ExpensedOn { get; set; }
         public decimal Cost { get; set; }
     }
 }
