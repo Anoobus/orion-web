@@ -151,7 +151,7 @@ namespace orion.web.Reports
                     .MergeWith(FluentCellStyle.CellToThe.right)
                     .SetAlignHorizontal(XLAlignmentHorizontalValues.Center)
                     .SetDataType(XLDataType.DateTime)
-                    .AssignValue(DateTimeWithZone.ConvertToEST(sectionRow.DateOfInvoice.UtcDateTime))
+                    .AssignValue(DateTimeWithZone.ConvertToEST(sectionRow.DateOfInvoice))
                     .AddLeftBorder(XLBorderStyleValues.Thin)
                     .AddRightBorder(XLBorderStyleValues.Dotted)
                     .AddTopBorder(rowStart == originalRowStart ? XLBorderStyleValues.Medium : XLBorderStyleValues.Thin)

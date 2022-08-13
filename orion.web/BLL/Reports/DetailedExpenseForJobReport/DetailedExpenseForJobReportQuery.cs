@@ -36,6 +36,7 @@ namespace orion.web.Reports
                 Cost = rdr.GetDecimal(2)
             };
         }
+        //$.50 x (600 - (2 x 250))
 
         private static readonly string GetCompanyVehicleExpenseQuery = @"select 
                                 ve.DateVehicleFirstUsed,
@@ -43,11 +44,9 @@ namespace orion.web.Reports
                                 e.First + ', ' + e.Last  as Employee,
                                 ve.TotalNumberOfDaysUsed,
                                 ve.TotalMiles,
-                                (ve.TotalNumberOfDaysUsed * 125)
-                                + CASE WHEN ve.TotalMiles > 250 
-                                    THEN (ve.TotalMiles * .50) - (250 * .50)
-                                     ELSE 0
-                                END as Cost
+                                (0.5 * (SELECT Max(v)
+                                        FROM (VALUES (0), (ve.TotalMiles - (ve.TotalNumberOfDaysUsed * 250))) AS value(v)))
+                                + (125 * ve.TotalNumberOfDaysUsed) as Cost
                                 from dbo.CompanyVehicleExpenditures ve
                                 inner join dbo.CompanyVehicles v
                                 on ve.CompanyVehicleId = v.Id
@@ -78,9 +77,9 @@ namespace orion.web.Reports
         {
             return new SubContractorSectionRow()
             {
-                Company = rdr.GetString(0),
-                PONumber = rdr.GetString(1),
-                ContractAmount = rdr.GetDecimal(2)
+                Company = rdr.IsDBNull(0) ? string.Empty : rdr.GetString(0),
+                PONumber = rdr.IsDBNull(1) ? string.Empty : rdr.GetString(1),
+                ContractAmount = rdr.IsDBNull(2) ? 0m : rdr.GetDecimal(2)
             };
         }
 

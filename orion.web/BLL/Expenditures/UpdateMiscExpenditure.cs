@@ -56,7 +56,7 @@ namespace orion.web.BLL.Expenditures
                 existing = new DataAccess.EF.MiscExpenditure();
                 existing.ExternalId = Guid.NewGuid();
                 existing.Id = 0;
-                existing.LastModified = DateTimeOffset.Now;
+                existing.LastModified = DateTimeWithZone.EasternStandardTimeOffset;
                 existing.WeekId = WeekDTO.CreateWithWeekContaining(msg.Model.ExpensedOn).WeekId.Value;
             }
             var updateMsg = UpdateMessage.CreateFrom(msg, existing);

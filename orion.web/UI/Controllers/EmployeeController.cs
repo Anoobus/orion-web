@@ -118,7 +118,7 @@ namespace orion.web.Employees
 
                 if (res.Successful)
                 {
-                    NotificationsController.AddNotification(this.User.SafeUserName(), $"{employee.Email} has been updated.");
+                    NotificationsController.AddNotification(this.User.SafeUserName(), $"{employee.Email} has been updated.");                    
                     return RedirectToAction(nameof(Edit), new { employee = employee.Email });
                 }
                 else

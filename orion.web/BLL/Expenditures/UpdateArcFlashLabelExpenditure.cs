@@ -55,7 +55,7 @@ namespace orion.web.BLL.Expenditures
                 existing = new DataAccess.EF.ArcFlashLabelExpenditure();
                 existing.ExternalId = Guid.NewGuid();
                 existing.Id = 0;
-                existing.LastModified = DateTimeOffset.Now;
+                existing.LastModified = DateTimeWithZone.EasternStandardTimeOffset;
                 existing.WeekId = WeekDTO.CreateWithWeekContaining(msg.model.DateOfInvoice.DateTime).WeekId.Value;
                 var tester = WeekDTO.CreateWithWeekContaining(msg.model.DateOfInvoice).WeekId.Value;
             }

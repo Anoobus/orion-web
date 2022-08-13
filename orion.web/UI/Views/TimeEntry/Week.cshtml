@@ -15,7 +15,7 @@
     </div>
 </nav>
 
-<div class="row">
+<div class="row tighter">
     <div class="col s3">
         <a href="@Url.Action(nameof(TimeEntryController.Edit),"TimeEntry",new { employeeId = Model.EmployeeId, weekId = Model.Week.WeekId - 1 })" class="btn grey darken-2">
             Previous Week
@@ -47,7 +47,7 @@
     }
 
         #time-entry th.job-task-description {
-            min-width: 260px;
+            min-width: 315px;
         }
 
         #time-entry td.description-cell {
@@ -118,10 +118,24 @@
         overflow: hidden;
         max-width: 345px;
     }
-
+        div.jobcode-name.jobname {
+            font-size: .65rem;
+            overflow-wrap: break-word;
+            -webkit-hyphens: auto;
+            -ms-hyphens: auto;
+            hyphens: auto;
+        }
+        div.jobcode-name.jobcode {
+            padding-top: 3px;
+            padding-bottom: 3px;
+        }
     div.task-name {
         font-size: .85rem;
     }
+        div.task-name a {
+            line-height: 11px;
+            
+        }
 
     .job-task-ops-dropdown, .job-task-ops-dropdown.drop-down-content {
         width: 175px;
@@ -143,22 +157,27 @@
     a.option-btn.btn-floating.btn-small i {
         margin: 0px;
         font-size: 0.75rem;
-        line-height: 15px;
+        line-height: 13px;
     }
 
     a.option-btn.btn-floating.btn-small {
-        float: right;
-        height: 15px;
-        width: 15px;
+        float: left;
+        height: 13px;
+        width: 13px;
         font-size: 8px;
-        margin-top: -7px;
-        line-height: 15px;
+        margin-top: -2px;
+        line-height: 11px;
         opacity: 60%;
+        margin-right: 3px;
     }
 
     .validation-summary-valid {
         display: none;
         font-size: 1.5em;
+    }
+    .tighter {
+        padding-left: 3%;
+        padding-right: 3%;
     }
 </style>
 <form asp-action="Save" method="post" id="main-time-entry-form">
@@ -185,7 +204,7 @@
                 })</script>
         </div>
     </div>
-    <div class="row">
+    <div class="row tighter">
         <div class="col s12">
 
 
@@ -304,7 +323,7 @@
         </div>
     </div>
 
-    <div class="row">
+    <div class="row tighter">
         <div class="col s12">
 
             @if (Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Unkown

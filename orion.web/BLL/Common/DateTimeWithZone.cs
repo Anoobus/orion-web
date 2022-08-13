@@ -9,19 +9,49 @@ namespace orion.web.Common
     {
         public static DateTime UniversalTime => DateTime.UtcNow; 
 
-        public static TimeZoneInfo TimeZone => TimeZoneInfo.GetSystemTimeZones().First(x =>  x.Id == "America/Detroit" || x.StandardName == "Eastern Standard Time");
+        public static TimeZoneInfo IANA => TimeZoneInfo.GetSystemTimeZones().FirstOrDefault(x =>  x.Id == "America/Detroit");
+        public static TimeZoneInfo EST => TimeZoneInfo.GetSystemTimeZones().FirstOrDefault(x => x.StandardName == "Eastern Standard Time");
+        public static TimeZoneInfo EDT => TimeZoneInfo.GetSystemTimeZones().FirstOrDefault(x => x.StandardName == "Eastern Daylight Time");
+        public static TimeZoneInfo TimeZone => ComputeTZ();
+
+        private static TimeZoneInfo ComputeTZ()
+        {
+            if (IANA != null)
+                return IANA;
+
+            if(TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, EST).IsDaylightSavingTime() || TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, EDT).IsDaylightSavingTime())
+            {
+                return EDT;
+            }
+
+            return EST;
+
+         }
 
         public static DateTime EasternStandardTime
         {
             get
             {
+                
                 return TimeZoneInfo.ConvertTime(DateTime.UtcNow, TimeZone);
+            }
+        }
+
+        public static DateTimeOffset EasternStandardTimeOffset
+        {
+            get
+            {
+                return TimeZoneInfo.ConvertTime(DateTimeOffset.UtcNow, TimeZone);
             }
         }
 
         public static DateTime ConvertToEST(DateTime utc)
         {
             return TimeZoneInfo.ConvertTime(utc, TimeZone);
+        }
+        public static DateTime ConvertToEST(DateTimeOffset date)
+        {
+            return TimeZoneInfo.ConvertTime(date, TimeZone).LocalDateTime;
         }
     }
 }

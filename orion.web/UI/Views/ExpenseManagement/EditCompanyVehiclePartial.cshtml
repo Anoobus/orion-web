@@ -13,7 +13,7 @@
     <div class="col s12">
         @if (Model.IsBrandNewExpenditureCreation)
             //default to first employee in case user doesn't change emp selection
-            Model.CompanyVehicleExpenditure.Detail.EmployeeId = Model.AvailableEmployees.First().EmployeeId;
+            Model.CompanyVehicleExpenditure.Detail.EmployeeId = Model.AvailableEmployees.First().EmployeeId;            
         }
         @Html.HiddenFor(x => x.CompanyVehicleExpenditure.Detail.EmployeeId);
         @Html.HiddenFor(x => x.CompanyVehicleExpenditure.Detail.JobId);

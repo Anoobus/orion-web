@@ -112,7 +112,8 @@ namespace orion.web.BLL.Expenditures
                     {
                         Detail = new api.expenditures.Models.CompanyVehicleExpenditure()
                         {
-                            DateVehicleFirstUsed = DateTimeOffset.Now
+                            DateVehicleFirstUsed = DateTimeOffset.Now,
+                            Vehicle = api.expenditures.Models.CompanyVehicleDescriptor.Enclave
                         }
                     }
                 },

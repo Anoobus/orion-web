@@ -6,8 +6,8 @@
     <DockerTargetOS>Linux</DockerTargetOS>
     <StartupObject></StartupObject>
     <LangVersion>7.1</LangVersion>
-    <AssemblyVersion>1.0.5.2</AssemblyVersion>
-    <FileVersion>1.0.5.2</FileVersion>
+    <AssemblyVersion>1.0.5.3</AssemblyVersion>
+    <FileVersion>1.0.5.3</FileVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <IdentityUIFrameworkVersion>Bootstrap4</IdentityUIFrameworkVersion>
   </PropertyGroup>
@@ -15,9 +15,11 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <LangVersion>latestmajor</LangVersion>
   </PropertyGroup>
+
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <LangVersion>latestmajor</LangVersion>
   </PropertyGroup>
+
   <ItemGroup>
     <Compile Remove="Account\**" />
     <Compile Remove="Areas\Identity\Services\**" />

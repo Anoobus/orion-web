@@ -50,6 +50,7 @@ namespace orion.web.Employees
                     userToUpdate.Email = employee.NewEmail;
                     userToUpdate.UserName = employee.NewEmail;
                     await userManager.UpdateAsync(userToUpdate);
+                   
                 }
 
                 if(hasDifferentRolesThenDesired)
@@ -97,6 +98,8 @@ namespace orion.web.Employees
             existingEmp.Last = employee.LastName;
             existingEmp.IsExempt = employee.IsExempt;
             employeeService.Save(existingEmp, updatedEmail);
+            //from this point out make sure email has been updated!
+            employee.Email = updatedEmail ?? employee.Email;
         }
     }
 }
