@@ -51,6 +51,7 @@ namespace orion.web.BLL.Expenditures
                 existing.Id = 0;
                 existing.LastModified = DateTimeWithZone.EasternStandardTimeOffset;
                 existing.WeekId = WeekDTO.CreateWithWeekContaining(msg.Model.DateVehicleFirstUsed).WeekId.Value;
+                existing.DateVehicleFirstUsed = msg.Model.DateVehicleFirstUsed;
             }
             var updateMsg = UpdateMessage.CreateFrom(msg, existing);
             var mapped = _mapper.Map<DataAccess.EF.CompanyVehicleExpenditure>(updateMsg);

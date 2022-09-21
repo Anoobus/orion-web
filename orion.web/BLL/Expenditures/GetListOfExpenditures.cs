@@ -107,7 +107,8 @@ namespace orion.web.BLL.ArcFlashExpenditureExpenses
                             Id = x.Id,
                             ShortExpenseName = $"Arc Flash Label Expense ({DateTimeWithZone.ConvertToEST(x.DateOfInvoice.UtcDateTime).ToShortDateString()})",
                             JobId = x.JobId,
-                            LastModifiedDateEst = DateTimeWithZone.ConvertToEST(x.LastModified.UtcDateTime)
+                            LastModifiedDateEst = DateTimeWithZone.ConvertToEST(x.LastModified.UtcDateTime),
+                            ExpensedOnDateEst = DateTimeWithZone.ConvertToEST(x.DateOfInvoice.UtcDateTime)
                         };
                         return hmm;
                     },
@@ -127,7 +128,8 @@ namespace orion.web.BLL.ArcFlashExpenditureExpenses
                         Id = x.ExternalId,
                         ShortExpenseName = $"Company Vehicle: {x.Vehicle} ({x.TotalMiles:N} miles)",
                         JobId = x.JobId,
-                        LastModifiedDateEst = DateTimeWithZone.ConvertToEST(x.LastModified.UtcDateTime)
+                        LastModifiedDateEst = DateTimeWithZone.ConvertToEST(x.LastModified.UtcDateTime),
+                        ExpensedOnDateEst = DateTimeWithZone.ConvertToEST(x.DateVehicleFirstUsed.UtcDateTime)
                     },
                     mapped => result.CompanyVehicleExpenditures = mapped);
             }
@@ -146,7 +148,8 @@ namespace orion.web.BLL.ArcFlashExpenditureExpenses
                         Id = x.ExternalId,
                         ShortExpenseName = $"Contrator Expense (PO: {x.OrionPONumber})",
                         JobId = x.JobId,
-                        LastModifiedDateEst = DateTimeWithZone.ConvertToEST(x.LastModified.UtcDateTime)
+                        LastModifiedDateEst = DateTimeWithZone.ConvertToEST(x.LastModified.UtcDateTime),
+                        ExpensedOnDateEst = DateTimeWithZone.ConvertToEST(x.ExpensedOn.UtcDateTime)
                     },
                     mapped => result.ContractorExpenditures = mapped);
             }
@@ -164,7 +167,8 @@ namespace orion.web.BLL.ArcFlashExpenditureExpenses
                         Id = x.Id,
                         ShortExpenseName = $"Misc - {x.Description}",
                         JobId = x.JobId,
-                        LastModifiedDateEst = DateTimeWithZone.ConvertToEST(x.LastModified.UtcDateTime)
+                        LastModifiedDateEst = DateTimeWithZone.ConvertToEST(x.LastModified.UtcDateTime),
+                        ExpensedOnDateEst = DateTimeWithZone.ConvertToEST(x.ExpensedOn.UtcDateTime)
                     },
                     mapped => result.MiscExpenditures = mapped);
             }
@@ -184,7 +188,8 @@ namespace orion.web.BLL.ArcFlashExpenditureExpenses
                         Id = x.Id,
                         ShortExpenseName = $"T&E - ({DateTimeWithZone.ConvertToEST(x.ExpenseOnDate.UtcDateTime).ToShortDateString()})",
                         JobId = x.JobId,
-                        LastModifiedDateEst = DateTimeWithZone.ConvertToEST(x.LastModified.UtcDateTime)
+                        LastModifiedDateEst = DateTimeWithZone.ConvertToEST(x.LastModified.UtcDateTime),
+                        ExpensedOnDateEst = DateTimeWithZone.ConvertToEST(x.ExpenseOnDate.UtcDateTime)
                     },
                     mapped => result.TimeAndExpenceExpenditures = mapped);
             }

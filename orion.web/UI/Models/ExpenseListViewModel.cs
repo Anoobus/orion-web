@@ -18,6 +18,7 @@ namespace orion.web.UI.Models
         public int JobId { get; set; }
         public Guid Id { get; set; }
         public DateTime LastModifiedDateEst {get; set;}
+        public DateTime ExpensedOnDateEst {get; set;}
 
     }
     public class Expense<TDetail> : SharedExpenseModel
@@ -46,7 +47,7 @@ namespace orion.web.UI.Models
                .Concat(ContractorExpenditures.OfType<SharedExpenseModel>())
                .Concat(MiscExpenditures.OfType<SharedExpenseModel>())
                .Concat(TimeAndExpenceExpenditures.OfType<SharedExpenseModel>())
-               .OrderByDescending(x => x.LastModifiedDateEst);           
+               .OrderByDescending(x => x.ExpensedOnDateEst);           
         }
     }
     
