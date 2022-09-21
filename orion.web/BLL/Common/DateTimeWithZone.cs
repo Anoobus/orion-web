@@ -10,8 +10,8 @@ namespace orion.web.Common
         public static DateTime UniversalTime => DateTime.UtcNow; 
 
         public static TimeZoneInfo IANA => TimeZoneInfo.GetSystemTimeZones().FirstOrDefault(x =>  x.Id == "America/Detroit");
-        public static TimeZoneInfo EST => TimeZoneInfo.GetSystemTimeZones().FirstOrDefault(x => x.StandardName == "Eastern Standard Time");
-        public static TimeZoneInfo EDT => TimeZoneInfo.GetSystemTimeZones().FirstOrDefault(x => x.StandardName == "Eastern Daylight Time");
+        public static TimeZoneInfo EST => TimeZoneInfo.GetSystemTimeZones().FirstOrDefault(x => x.Id == "Eastern Standard Time");
+        public static TimeZoneInfo EDT => TimeZoneInfo.GetSystemTimeZones().FirstOrDefault(x => x.Id == "Eastern Daylight Time");
         public static TimeZoneInfo TimeZone => ComputeTZ();
 
         private static TimeZoneInfo ComputeTZ()
@@ -19,7 +19,8 @@ namespace orion.web.Common
             if (IANA != null)
                 return IANA;
 
-            if(TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, EST).IsDaylightSavingTime() || TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, EDT).IsDaylightSavingTime())
+            if(TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, EST).IsDaylightSavingTime()
+                || TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, EDT).IsDaylightSavingTime())
             {
                 return EDT;
             }

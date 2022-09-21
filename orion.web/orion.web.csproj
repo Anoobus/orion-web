@@ -6,8 +6,8 @@
     <DockerTargetOS>Linux</DockerTargetOS>
     <StartupObject></StartupObject>
     <LangVersion>7.1</LangVersion>
-    <AssemblyVersion>1.0.5.3</AssemblyVersion>
-    <FileVersion>1.0.5.3</FileVersion>
+    <AssemblyVersion>1.0.5.4</AssemblyVersion>
+    <FileVersion>1.0.5.4</FileVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <IdentityUIFrameworkVersion>Bootstrap4</IdentityUIFrameworkVersion>
   </PropertyGroup>
@@ -47,7 +47,7 @@
     <None Remove="docs\AllOpenJobsSummaryReportTemplate.xlsx" />
     <None Remove="docs\DetailedExpenseReportTemplate.xlsx" />
     <None Remove="docs\EmployeeTimeReport.xlsx" />
-    <None Remove="LigerShark.WebOptimizer.Core" />
+    <None Remove="LigerShark.WebOptimizer.Core" />    
   </ItemGroup>
 
   <ItemGroup>
