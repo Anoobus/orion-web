@@ -53,7 +53,7 @@ namespace orion.web.BLL.Expenditures
                     {
                         Detail = new api.expenditures.Models.ArcFlashLabelExpenditure()
                         {
-                            DateOfInvoice = DateTimeOffset.Now,
+                            DateOfInvoice = DateTimeOffset.UtcNow,
                         }
 
                     }
@@ -68,7 +68,7 @@ namespace orion.web.BLL.Expenditures
                     {
                         Detail = new api.expenditures.Models.MiscExpenditure()
                         {
-                            ExpensedOn = DateTimeOffset.Now,
+                            ExpensedOn = DateTimeOffset.UtcNow,
 
                         }
 
@@ -84,7 +84,7 @@ namespace orion.web.BLL.Expenditures
                     {
                         Detail = new api.expenditures.Models.ContractorExpenditure()
                         {
-                            ExpensedOn = DateTimeOffset.Now
+                            ExpensedOn = DateTimeOffset.UtcNow
                         }
                     }
                 },
@@ -98,7 +98,7 @@ namespace orion.web.BLL.Expenditures
                     {
                         Detail = new api.expenditures.Models.TimeAndExpenceExpenditure()
                         {
-                            ExpenseOnDate = DateTimeOffset.Now
+                            ExpenseOnDate = DateTimeOffset.UtcNow
                         }
                     }
                 },
@@ -112,7 +112,7 @@ namespace orion.web.BLL.Expenditures
                     {
                         Detail = new api.expenditures.Models.CompanyVehicleExpenditure()
                         {
-                            DateVehicleFirstUsed = DateTimeOffset.Now,
+                            DateVehicleFirstUsed = DateTimeOffset.UtcNow,
                             LastModified = DateTimeOffset.UtcNow,
                             Vehicle = api.expenditures.Models.CompanyVehicleDescriptor.Enclave
                         }

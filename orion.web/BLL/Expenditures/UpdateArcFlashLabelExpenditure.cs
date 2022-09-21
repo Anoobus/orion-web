@@ -58,6 +58,12 @@ namespace orion.web.BLL.Expenditures
                 existing.LastModified = DateTimeWithZone.EasternStandardTimeOffset;
                 existing.WeekId = WeekDTO.CreateWithWeekContaining(msg.model.DateOfInvoice.DateTime).WeekId.Value;
                 var tester = WeekDTO.CreateWithWeekContaining(msg.model.DateOfInvoice).WeekId.Value;
+                //NOTE DateVehicleFirstUsed has a valid Month day year, but the time part is very very wrong
+                //we'll adjust here so we don't drift a day when doing TimeZone Conversion                           
+                existing.DateOfInvoice = new DateTimeOffset(msg.model.DateOfInvoice.Year,
+                                                                   msg.model.DateOfInvoice.Month,
+                                                                   msg.model.DateOfInvoice.Day,
+                                                                   0, 0, 0, new TimeSpan());      
             }
             var updateMsg = UpdateMessage.CreateFrom(msg, existing);
             var mapped = _mapper.Map<DataAccess.EF.ArcFlashLabelExpenditure>(updateMsg);

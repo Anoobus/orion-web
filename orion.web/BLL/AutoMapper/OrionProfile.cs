@@ -55,7 +55,7 @@ namespace orion.web.BLL.AutoMapper
 
             //api model <=> ef model           
             CreateMap<UpdateMessage<UpdateArcFlashLabelExpenditureMessage, DataAccess.EF.ArcFlashLabelExpenditure>,DataAccess.EF.ArcFlashLabelExpenditure>()
-                .ForMember(x => x.DateOfInvoice, opt => opt.MapFrom(x => DateTimeWithZone.ConvertToEST( x.NewValue.model.DateOfInvoice)))
+                .ForMember(x => x.DateOfInvoice, opt => opt.MapFrom(x => DateTimeWithZone.ConvertToEST(x.NewValue.model.DateOfInvoice.Year,x.NewValue.model.DateOfInvoice.Month,x.NewValue.model.DateOfInvoice.Day)))
                 .ForMember(x => x.EmployeeId, opt => opt.MapFrom(x => x.NewValue.model.EmployeeId ))
                 .ForMember(x => x.ExternalId, opt => opt.MapFrom(x => x.Existing.ExternalId))
                 .ForMember(x => x.Id, opt => opt.MapFrom(x => x.Existing.Id))
@@ -68,7 +68,7 @@ namespace orion.web.BLL.AutoMapper
                 .ForMember(x => x.WeekId, opt => opt.MapFrom(x => WeekDTO.CreateWithWeekContaining(x.NewValue.model.DateOfInvoice).WeekId.Value));
 
             CreateMap<UpdateMessage<UpdateMiscExpenditureMessage, DataAccess.EF.MiscExpenditure>,DataAccess.EF.MiscExpenditure>()
-                .ForMember(x => x.ExpensedOn, opt => opt.MapFrom(x => DateTimeWithZone.ConvertToEST( x.NewValue.Model.ExpensedOn)))
+                .ForMember(x => x.ExpensedOn, opt => opt.MapFrom(x => DateTimeWithZone.ConvertToEST( x.NewValue.Model.ExpensedOn.Year,x.NewValue.Model.ExpensedOn.Month,x.NewValue.Model.ExpensedOn.Day)))
                 .ForMember(x => x.EmployeeId, opt => opt.MapFrom(x => x.NewValue.Model.EmployeeId ))
                 .ForMember(x => x.ExternalId, opt => opt.MapFrom(x => x.Existing.ExternalId))
                 .ForMember(x => x.Id, opt => opt.MapFrom(x => x.Existing.Id))
@@ -80,7 +80,7 @@ namespace orion.web.BLL.AutoMapper
                 .ForMember(x => x.WeekId, opt => opt.MapFrom(x => WeekDTO.CreateWithWeekContaining(x.NewValue.Model.ExpensedOn).WeekId.Value));
 
             CreateMap<UpdateMessage<UpdateContractorMessage, DataAccess.EF.ContractorExpenditure>,DataAccess.EF.ContractorExpenditure>()
-                .ForMember(x => x.ExpensedOn, opt => opt.MapFrom(x => DateTimeWithZone.ConvertToEST( x.NewValue.Model.ExpensedOn)))
+                .ForMember(x => x.ExpensedOn, opt => opt.MapFrom(x => DateTimeWithZone.ConvertToEST( x.NewValue.Model.ExpensedOn.Year,x.NewValue.Model.ExpensedOn.Month,x.NewValue.Model.ExpensedOn.Day)))
                 .ForMember(x => x.EmployeeId, opt => opt.MapFrom(x => x.NewValue.Model.EmployeeId ))
                 .ForMember(x => x.ExternalId, opt => opt.MapFrom(x => x.Existing.ExternalId))
                 .ForMember(x => x.Id, opt => opt.MapFrom(x => x.Existing.Id))
@@ -92,7 +92,7 @@ namespace orion.web.BLL.AutoMapper
                 .ForMember(x => x.WeekId, opt => opt.MapFrom(x => WeekDTO.CreateWithWeekContaining(x.NewValue.Model.ExpensedOn).WeekId.Value));
 
             CreateMap<UpdateMessage<UpdateTimeAndExpenseExpenditureMessage, DataAccess.EF.TimeAndExpenceExpenditure>,DataAccess.EF.TimeAndExpenceExpenditure>()
-                .ForMember(x => x.ExpenseOnDate, opt => opt.MapFrom(x => DateTimeWithZone.ConvertToEST( x.NewValue.Model.ExpenseOnDate)))
+                .ForMember(x => x.ExpenseOnDate, opt => opt.MapFrom(x => DateTimeWithZone.ConvertToEST( x.NewValue.Model.ExpenseOnDate.Year,x.NewValue.Model.ExpenseOnDate.Month,x.NewValue.Model.ExpenseOnDate.Day)))
                 .ForMember(x => x.EmployeeId, opt => opt.MapFrom(x => x.NewValue.Model.EmployeeId ))
                 .ForMember(x => x.ExternalId, opt => opt.MapFrom(x => x.Existing.ExternalId))
                 .ForMember(x => x.Id, opt => opt.MapFrom(x => x.Existing.Id))
@@ -103,7 +103,7 @@ namespace orion.web.BLL.AutoMapper
                 .ForMember(x => x.WeekId, opt => opt.MapFrom(x => WeekDTO.CreateWithWeekContaining(x.NewValue.Model.ExpenseOnDate).WeekId.Value));
 
              CreateMap<UpdateMessage<UpdateCompanyVehicleExpenditureMessage, DataAccess.EF.CompanyVehicleExpenditure>,DataAccess.EF.CompanyVehicleExpenditure>()
-                .ForMember(x => x.DateVehicleFirstUsed, opt => opt.MapFrom(x => DateTimeWithZone.ConvertToEST( x.NewValue.Model.DateVehicleFirstUsed)))
+                .ForMember(x => x.DateVehicleFirstUsed, opt => opt.MapFrom(x => DateTimeWithZone.ConvertToEST( x.NewValue.Model.DateVehicleFirstUsed.Year, x.NewValue.Model.DateVehicleFirstUsed.Month, x.NewValue.Model.DateVehicleFirstUsed.Day)))
                 .ForMember(x => x.EmployeeId, opt => opt.MapFrom(x => x.NewValue.Model.EmployeeId ))
                 .ForMember(x => x.ExternalId, opt => opt.MapFrom(x => x.Existing.ExternalId))
                 .ForMember(x => x.Id, opt => opt.MapFrom(x => x.Existing.Id))

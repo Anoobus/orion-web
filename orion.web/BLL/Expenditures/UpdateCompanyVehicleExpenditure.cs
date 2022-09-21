@@ -51,7 +51,12 @@ namespace orion.web.BLL.Expenditures
                 existing.Id = 0;
                 existing.LastModified = DateTimeWithZone.EasternStandardTimeOffset;
                 existing.WeekId = WeekDTO.CreateWithWeekContaining(msg.Model.DateVehicleFirstUsed).WeekId.Value;
-                existing.DateVehicleFirstUsed = msg.Model.DateVehicleFirstUsed;
+                //NOTE DateVehicleFirstUsed has a valid Month day year, but the time part is very very wrong
+                //we'll adjust here so we don't drift a day when doing TimeZone Conversion
+                existing.DateVehicleFirstUsed = new DateTimeOffset(msg.Model.DateVehicleFirstUsed.Year,
+                                                                   msg.Model.DateVehicleFirstUsed.Month,
+                                                                   msg.Model.DateVehicleFirstUsed.Day,
+                                                                   0, 0, 0, new TimeSpan());                    
             }
             var updateMsg = UpdateMessage.CreateFrom(msg, existing);
             var mapped = _mapper.Map<DataAccess.EF.CompanyVehicleExpenditure>(updateMsg);

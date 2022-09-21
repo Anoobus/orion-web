@@ -51,5 +51,11 @@ namespace orion.web.Common
         {
             return TimeZoneInfo.ConvertTime(date, TimeZone).LocalDateTime;
         }
+
+        public static DateTime ConvertToEST(int year, int month, int day)
+        {
+            var safeOffset = new DateTimeOffset(year, month, day,11,50,50,new TimeSpan());
+            return TimeZoneInfo.ConvertTime(safeOffset, TimeZone).LocalDateTime;
+        }
     }
 }
