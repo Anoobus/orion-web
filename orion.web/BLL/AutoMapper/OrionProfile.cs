@@ -89,6 +89,7 @@ namespace orion.web.BLL.AutoMapper
                 .ForMember(x => x.LastModified, opt => opt.MapFrom(x => DateTimeWithZone.EasternStandardTimeOffset))
                 .ForMember(x => x.TotalPOContractAmount, opt => opt.MapFrom(x => x.NewValue.Model.TotalPOContractAmount))
                 .ForMember(x => x.OrionPONumber, opt => opt.MapFrom(x => x.NewValue.Model.OrionPONumber))
+                .ForMember(x => x.CompanyName, opt => opt.MapFrom(x => x.NewValue.Model.CompanyName))
                 .ForMember(x => x.WeekId, opt => opt.MapFrom(x => WeekDTO.CreateWithWeekContaining(x.NewValue.Model.ExpensedOn).WeekId.Value));
 
             CreateMap<UpdateMessage<UpdateTimeAndExpenseExpenditureMessage, DataAccess.EF.TimeAndExpenceExpenditure>,DataAccess.EF.TimeAndExpenceExpenditure>()
