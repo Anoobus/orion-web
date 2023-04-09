@@ -142,7 +142,7 @@ namespace orion.web.DataAccess
                     db.CompanyVehicleExpenditures.Add(toSave);
                 }
                 await db.SaveChangesAsync();
-                return exp;
+                return exp ?? toSave;
             }
         }
 
@@ -218,7 +218,7 @@ namespace orion.web.DataAccess
                     db.MiscExpenditures.Add(toSave);
                 }
                 await db.SaveChangesAsync();
-                return exp;
+                return exp ?? toSave;
             }
         }
 
@@ -294,7 +294,7 @@ namespace orion.web.DataAccess
                     db.ContractorExpenditures.Add(toSave);
                 }
                 await db.SaveChangesAsync();
-                return exp;
+                return exp ?? toSave;
             }
         }
 
@@ -368,7 +368,7 @@ namespace orion.web.DataAccess
                     db.TimeAndExpenceExpenditures.Add(toSave);
                 }
                 await db.SaveChangesAsync();
-                return exp;
+                return exp ?? toSave;
             }
         }
 
