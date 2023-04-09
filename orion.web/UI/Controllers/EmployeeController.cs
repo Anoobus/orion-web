@@ -37,6 +37,7 @@ namespace orion.web.Employees
         public async Task<ActionResult> List()
         {
             var employees = await employeeService.GetAllEmployees();
+            employees = employees.Where(x => x.UserName != "admin@company.com").ToList();
             var vm = new EmployeeListViewModel()
             {
                 Employees = employees.ToList()
