@@ -4,7 +4,7 @@
     <td colspan="2" class="description-cell">
         <div class="row">
             <div class="col s12 jobcode-name jobcode">
-                @Model.SelectedJobCode
+                @Model.SelectedJobCode @Model.SelectedEntryTaskName
                 @Html.HiddenFor(model => model.RowId)
                 @Html.HiddenFor(model => model.SelectedTaskId)
                 @Html.HiddenFor(model => model.SelectedJobId)
@@ -25,14 +25,7 @@
                  @Model.SelectedEntryJobName
              </div>
              </div>
-      <div class="row">
-          <div class="col s12 task-name">
-              @Model.SelectedEntryTaskName
-        
-            
-          </div>
-          
-      </div>
+      
     </td>
     @Html.EditorFor(model => model.Saturday, "~/UI/Views/TimeEntry/TimeEntryCell.cshtml")
     @Html.EditorFor(model => model.Sunday, "~/UI/Views/TimeEntry/TimeEntryCell.cshtml")

@@ -47,7 +47,7 @@
     }
 
         #time-entry th.job-task-description {
-            min-width: 315px;
+            min-width: 345px;
         }
 
         #time-entry td.description-cell {
@@ -108,7 +108,7 @@
     }
 
     div.jobcode-name {
-        font-size: .75rem;
+        /*font-size: .75rem;*/
         padding-left: 0px;
         padding-right: 0px;
         margin-left: 1px;
@@ -118,23 +118,27 @@
         overflow: hidden;
         max-width: 345px;
     }
+
         div.jobcode-name.jobname {
-            font-size: .65rem;
+            font-size: .85rem;
             overflow-wrap: break-word;
             -webkit-hyphens: auto;
             -ms-hyphens: auto;
             hyphens: auto;
         }
+
         div.jobcode-name.jobcode {
             padding-top: 3px;
             padding-bottom: 3px;
+            font-size: .95rem;
         }
+
     div.task-name {
         font-size: .85rem;
     }
+
         div.task-name a {
             line-height: 11px;
-            
         }
 
     .job-task-ops-dropdown, .job-task-ops-dropdown.drop-down-content {
@@ -175,9 +179,14 @@
         display: none;
         font-size: 1.5em;
     }
+
     .tighter {
         padding-left: 3%;
         padding-right: 3%;
+    }
+
+    .hide-the-text {
+        color: rgba(0,0,0,0);
     }
 </style>
 <form asp-action="Save" method="post" id="main-time-entry-form">
@@ -213,7 +222,7 @@
             {
                 <div class="row">
                     <div class="col s8 offset-s2">
-                        <h5 >
+                        <h5>
                             <strong>Please Note:</strong> No more changes are allowed for timesheet becuase it is already @Model.ApprovalStatus.
                         </h5>
                     </div>
@@ -356,20 +365,20 @@
         <div class="row">
             <div class="col s3 red darken-3 white-text modal-info-blurb z-depth-4">
                 <div class="container">
-                    
+
                 </div>
             </div>
             <div class="col s9">
                 <div class="row" style="padding:20px">
-                   
-                            <h4>
-                                Are you sure you want to submit your time?
-                            </h4>
-                      
+
+                    <h4>
+                        Are you sure you want to submit your time?
+                    </h4>
+
                 </div>
-                
+
                 <div class="modal-footer" style="vertical-align:bottom;margin-top:30px">
-                    <button type="submit" name="postType" value="Submit" class="waves-effect waves-white btn-flat" >Submit Time</button>
+                    <button type="submit" name="postType" value="Submit" class="waves-effect waves-white btn-flat">Submit Time</button>
                     <button type="button" class="modal-close waves-effect waves-white btn-flat" data-dismiss="modal">Cancel</button>
                 </div>
             </div>
@@ -491,13 +500,21 @@
     <script type="text/javascript" src="/js/TimeEntry/efforts/remove-effort-row.js"></script>
     <script type="text/javascript" src="/js/TimeEntry/efforts/add-effort-row.js"></script>
     <script type="text/javascript" src="/js/TimeEntry/efforts/change-effort-row.js"></script>
-    <script type="text/javascript" >
-        function showSubmitModal(targetId) {
+    <script type="text/javascript">function showSubmitModal(targetId) {
             let modalToShow = document.getElementById(targetId);
             let instance = M.Modal.init(modalToShow, {});
             instance.open();
         }
 
+        function onCellFocus(cellTextInput) {
+            cellTextInput.classList.remove("hide-the-text");
+            cellTextInput.select();
+        }
+        function onCellUnFocus(cellTextInput) {
+            if (cellTextInput.value == "0.0") {
+                cellTextInput.classList.add("hide-the-text");
+            }            
+        }
         $(document).ready(function () {
 
             const approvalStatus = $('#ApprovalStatus').val();
@@ -546,7 +563,7 @@
                 else {
                     $('div.week-errors').removeClass('validation-summary-valid');
                     $('div.week-errors').addClass('validation-summary-errors');
-                }                
+                }
             });
 
         });</script>

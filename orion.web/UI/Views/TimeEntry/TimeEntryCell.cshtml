@@ -1,13 +1,27 @@
 ﻿@model orion.web.TimeEntries.TimeSpentViewModel
 <td class="form-inline time-cell" day="col-@Model.DayOfWeek.ToString().ToLower()" autosum>
     <div class="form-group skinny">
-        <input asp-for="Hours" class="form-control"  />
+        @if (Model.Hours.HasValue && Model.Hours.Value > 0)
+        {
+            <input asp-for="Hours" class="form-control" onfocus="onCellFocus(this)" onblur="onCellUnFocus(this)"  onmouseup="return false;" />
+        }
+        else
+        {
+            <input asp-for="Hours" class="form-control hide-the-text" onfocus="onCellFocus(this)" onblur="onCellUnFocus(this)" onmouseup="return false;"/>
+        }
     </div>
 </td>
 
 <td class="form-inline warning time-cell ot-cell-gradient" day="ot-col-@Model.DayOfWeek.ToString().ToLower()" autosum style="display:none">
     <div class="form-group skinny ">
-        <input asp-for="OvertimeHours" class="form-control"  />
+        @if (Model.OvertimeHours.HasValue && Model.OvertimeHours.Value > 0)
+        {
+            <input asp-for="OvertimeHours" class="form-control" onfocus="onCellFocus(this)" onblur="onCellUnFocus(this)" onmouseup="return false;"/>
+        }
+        else
+        {
+            <input asp-for="OvertimeHours" class="form-control hide-the-text" onfocus="onCellFocus(this)" onblur="onCellUnFocus(this)" onmouseup="return false;"/>
+        }
     </div>
 </td>
 
