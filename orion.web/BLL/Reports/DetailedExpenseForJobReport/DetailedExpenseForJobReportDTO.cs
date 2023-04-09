@@ -43,6 +43,7 @@ namespace orion.web.Reports
         public string Company { get; set; }
         public string PONumber { get; set; }        
         public decimal ContractAmount { get; set; }
+        public DateTimeOffset ExpensedOn { get; set; }
     }
 
     public class ArcFlashLabeSectionRow

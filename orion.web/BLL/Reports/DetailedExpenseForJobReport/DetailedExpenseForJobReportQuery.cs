@@ -70,7 +70,8 @@ namespace orion.web.Reports
         private static readonly string GetContractorExpenseQuery = @"select 
                                 ce.CompanyName,
                                 ce.OrionPONumber,
-                                ce.TotalPOContractAmount
+                                ce.TotalPOContractAmount,
+                                ce.ExpensedOn
                                 from dbo.ContractorExpenditures ce
                                 where ce.JobId = @" + jobParam;
         private static SubContractorSectionRow MapToSubContractorSectionRow(SqlDataReader rdr)
@@ -79,7 +80,8 @@ namespace orion.web.Reports
             {
                 Company = rdr.IsDBNull(0) ? string.Empty : rdr.GetString(0),
                 PONumber = rdr.IsDBNull(1) ? string.Empty : rdr.GetString(1),
-                ContractAmount = rdr.IsDBNull(2) ? 0m : rdr.GetDecimal(2)
+                ContractAmount = rdr.IsDBNull(2) ? 0m : rdr.GetDecimal(2),
+                ExpensedOn = rdr.GetDateTimeOffset(3),
             };
         }
 
