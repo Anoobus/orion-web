@@ -186,6 +186,15 @@ namespace orion.web.DataAccessEFMigrations
                 name: "IX_TimeAndExpenceExpenditures_JobId",
                 table: "TimeAndExpenceExpenditures",
                 column: "JobId");
+
+            migrationBuilder.Sql(
+                @"IF NOT EXISTS( SELECT TOP 1 1 FROM [dbo].[CompanyVehicles])
+                BEGIN
+                  INSERT INTO [dbo].[CompanyVehicles]
+                  VALUES ('Encore'),
+                        ('Enclave'),
+                        ('Truck')
+                END");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
