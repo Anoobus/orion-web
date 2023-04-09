@@ -57,7 +57,9 @@ namespace orion.web.api.expenditures.Models
              */
 
             var perDay = vehicle.TotalNumberOfDaysUsed * 125;
-            var perMile = (Math.Max(vehicle.TotalMiles - 250,0)) * 0.50m;
+
+            var mileAllotmentPerDay = vehicle.TotalNumberOfDaysUsed * 250;
+            var perMile = (Math.Max(vehicle.TotalMiles - mileAllotmentPerDay,0)) * 0.50m;
             return (decimal)perDay + perMile;
         }
     }
