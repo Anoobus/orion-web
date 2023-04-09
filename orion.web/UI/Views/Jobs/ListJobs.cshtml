@@ -56,7 +56,7 @@
 
                     </thead>
                     <tbody id="table-data">
-                        @foreach (var item in Model.AllJobsWithAssociationStatus)
+                        @foreach (var item in Model.AllJobsWithAssociationStatus.OrderBy(x => x.Key.Item1.JobStatusId).ThenBy(x => x.Key.Item1.FullJobCodeWithName))
                         {
                             <tr>
                                 <td>
