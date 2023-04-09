@@ -46,7 +46,7 @@ namespace orion.web.BLL.Expenditures
                 ExpenditureTypeEnum.ArcFlashLabelExpenditure => new ExpenseViewModel()
                 {
                     AvailableEmployees = emps,
-                    AvailableJobs = jobs,
+                    AvailableJobs = jobs.Where(x => x.JobStatusId == JobStatus.Enabled).ToArray(),
                     ExpenseType = msg.TargetExpenseType,
                     IsBrandNewExpenditureCreation = true,
                     ArcFlashLabelExpenditure = new Expense<api.expenditures.Models.ArcFlashLabelExpenditure>()
@@ -61,7 +61,7 @@ namespace orion.web.BLL.Expenditures
                 ExpenditureTypeEnum.MiscExpenditure => new ExpenseViewModel()
                 {
                     AvailableEmployees = emps,
-                    AvailableJobs = jobs,
+                    AvailableJobs =  jobs.Where(x => x.JobStatusId == JobStatus.Enabled).ToArray(),
                     ExpenseType = msg.TargetExpenseType,
                     IsBrandNewExpenditureCreation = true,
                     MiscExpenditure = new Expense<api.expenditures.Models.MiscExpenditure>()
@@ -77,7 +77,7 @@ namespace orion.web.BLL.Expenditures
                 ExpenditureTypeEnum.ContractorExpenditure => new ExpenseViewModel()
                 {
                     AvailableEmployees = emps,
-                    AvailableJobs = jobs,
+                    AvailableJobs =  jobs.Where(x => x.JobStatusId == JobStatus.Enabled).ToArray(),
                     ExpenseType = msg.TargetExpenseType,
                     IsBrandNewExpenditureCreation = true,
                     ContractorExpenditure = new Expense<api.expenditures.Models.ContractorExpenditure>()
@@ -91,7 +91,7 @@ namespace orion.web.BLL.Expenditures
                 ExpenditureTypeEnum.TimeAndExpenceExpenditure => new ExpenseViewModel()
                 {
                     AvailableEmployees = emps,
-                    AvailableJobs = jobs,
+                    AvailableJobs =  jobs.Where(x => x.JobStatusId == JobStatus.Enabled).ToArray(),
                     ExpenseType = msg.TargetExpenseType,
                     IsBrandNewExpenditureCreation = true,
                     TimeAndExpenceExpenditure = new Expense<api.expenditures.Models.TimeAndExpenceExpenditure>()
@@ -105,7 +105,7 @@ namespace orion.web.BLL.Expenditures
                 ExpenditureTypeEnum.CompanyVehicleExpenditure => new ExpenseViewModel()
                 {
                     AvailableEmployees = emps,
-                    AvailableJobs = jobs,
+                    AvailableJobs =  jobs.Where(x => x.JobStatusId == JobStatus.Enabled).ToArray(),
                     ExpenseType = msg.TargetExpenseType,
                     IsBrandNewExpenditureCreation = true,
                     CompanyVehicleExpenditure = new Expense<api.expenditures.Models.CompanyVehicleExpenditure>()

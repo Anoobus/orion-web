@@ -11,9 +11,9 @@
 </style>
 <div class="row" style="display:none">
     <div class="col s12">
-        @if (Model.IsBrandNewExpenditureCreation)
-            //default to first employee in case user doesn't change emp selection
-            Model.TimeAndExpenceExpenditure.Detail.EmployeeId = Model.AvailableEmployees.First().EmployeeId;
+        @if (Model.IsBrandNewExpenditureCreation && !Model.IsOnSaveFix)
+                //default to first employee in case user doesn't change emp selection
+                Model.TimeAndExpenceExpenditure.Detail.EmployeeId = Model.AvailableEmployees.First().EmployeeId;
         }
         @Html.HiddenFor(x => x.TimeAndExpenceExpenditure.Detail.EmployeeId);
         @Html.HiddenFor(x => x.TimeAndExpenceExpenditure.Detail.JobId);
@@ -25,10 +25,11 @@
 <div class="row">
     <div class="input-field col s10">
         @{
-            var selectedJob = Model.IsBrandNewExpenditureCreation ? string.Empty
-                                                    : Model.AvailableJobs.FirstOrDefault(x => x.JobId == Model.TimeAndExpenceExpenditure.JobId).FullJobCodeWithName;
+            var selectedJob = string.Empty;
+            if (Model.IsOnSaveFix || !Model.IsBrandNewExpenditureCreation)
+                selectedJob = Model.AvailableJobs.FirstOrDefault(x => x.JobId == Model.TimeAndExpenceExpenditure.JobId)?.FullJobCodeWithName ?? string.Empty;
         }
-        @if (!Model.IsBrandNewExpenditureCreation)
+        @if (!Model.IsBrandNewExpenditureCreation || Model.IsOnSaveFix)
         {
             <input type="hidden" id="original-job-text"
                    value="@selectedJob"
@@ -57,7 +58,7 @@
                 onchange="updateTargetEmployee(this, 'TimeAndExpenceExpenditure_Detail_EmployeeId')">
             @foreach (var emp in Model.AvailableEmployees)
             {
-                if (!Model.IsBrandNewExpenditureCreation && emp.EmployeeId == Model.TimeAndExpenceExpenditure.Detail.EmployeeId)
+                if ((!Model.IsBrandNewExpenditureCreation || Model.IsOnSaveFix) && emp.EmployeeId == Model.TimeAndExpenceExpenditure.Detail.EmployeeId)
                 {
                     <option value="@emp.EmployeeId" selected="selected">@emp.First, @emp.Last</option>
                 }

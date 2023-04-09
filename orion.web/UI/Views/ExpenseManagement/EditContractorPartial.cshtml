@@ -11,9 +11,9 @@
 </style>
 <div class="row" style="display:none">
     <div class="col s12">
-        @if (Model.IsBrandNewExpenditureCreation)
-            //default to first employee in case user doesn't change emp selection
-            Model.ContractorExpenditure.Detail.EmployeeId = Model.AvailableEmployees.First().EmployeeId;
+        @if (Model.IsBrandNewExpenditureCreation && !Model.IsOnSaveFix)
+                //default to first employee in case user doesn't change emp selection
+                Model.ContractorExpenditure.Detail.EmployeeId = Model.AvailableEmployees.First().EmployeeId;
         }
         @Html.HiddenFor(x => x.ContractorExpenditure.Detail.EmployeeId);
         @Html.HiddenFor(x => x.ContractorExpenditure.Detail.JobId);
@@ -25,11 +25,12 @@
 <div class="row">
     <div class="input-field col s10">
         @{
-            var selectedJob = Model.IsBrandNewExpenditureCreation ? string.Empty
-                                                    : Model.AvailableJobs.FirstOrDefault(x => x.JobId == Model.ContractorExpenditure.JobId).FullJobCodeWithName;
+            var selectedJob = string.Empty;
+            if (Model.IsOnSaveFix || !Model.IsBrandNewExpenditureCreation)
+                selectedJob = Model.AvailableJobs.FirstOrDefault(x => x.JobId == Model.ContractorExpenditure.JobId)?.FullJobCodeWithName ?? string.Empty;
         }
-        @if (!Model.IsBrandNewExpenditureCreation)
-        {
+        @if (!Model.IsBrandNewExpenditureCreation || Model.IsOnSaveFix)
+            {
             <input type="hidden" id="original-job-text"
                    value="@selectedJob"
                    job-id="@Model.ContractorExpenditure.JobId" />
@@ -56,15 +57,15 @@
         <select id="AvailableEmployees" class="validate"
                 onchange="updateTargetEmployee(this, 'ContractorExpenditure_Detail_EmployeeId')">
             @foreach (var emp in Model.AvailableEmployees)
-            {
-                if (!Model.IsBrandNewExpenditureCreation && emp.EmployeeId == Model.ContractorExpenditure.Detail.EmployeeId)
                 {
-                    <option value="@emp.EmployeeId" selected="selected">@emp.First, @emp.Last</option>
-                }
-                else
-                {
-                    <option value="@emp.EmployeeId">@emp.First, @emp.Last</option>
-                }
+                    if ((!Model.IsBrandNewExpenditureCreation || Model.IsOnSaveFix) && emp.EmployeeId == Model.ContractorExpenditure.Detail.EmployeeId)
+                    {
+                        <option value="@emp.EmployeeId" selected="selected">@emp.First, @emp.Last</option>
+                    }
+                    else
+                    {
+                        <option value="@emp.EmployeeId">@emp.First, @emp.Last</option>
+                    }
             }
         </select>
         <label asp-for="ContractorExpenditure.EmployeeName">For Employee</label>
@@ -73,6 +74,12 @@
         <input asp-for="ContractorExpenditure.Detail.ExpensedOn" type="text" class="datepicker"
                value="@Model.ContractorExpenditure.Detail.ExpensedOn.ToString("MMM dd, yyyy")" />
         <label asp-for="ContractorExpenditure.Detail.ExpensedOn" class="control-label">Expense On</label>
+    </div>
+</div>
+<div class="row">
+    <div class="input-field col s10">
+        <input asp-for="ContractorExpenditure.Detail.CompanyName" placeholder="Company Name" />
+        <label asp-for="ContractorExpenditure.Detail.CompanyName">Company Name</label>
     </div>
 </div>
 <div class="row">

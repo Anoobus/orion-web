@@ -11,7 +11,7 @@
 </style>
 <div class="row" style="display:none">
     <div class="col s12">
-        @if (Model.IsBrandNewExpenditureCreation)
+        @if (Model.IsBrandNewExpenditureCreation && !Model.IsOnSaveFix)
             //default to first employee in case user doesn't change emp selection
             Model.MiscExpenditure.Detail.EmployeeId = Model.AvailableEmployees.First().EmployeeId;
         }
@@ -25,10 +25,11 @@
 <div class="row">
     <div class="input-field col s10">        
         @{
-            var selectedJob = Model.IsBrandNewExpenditureCreation ? string.Empty
-                                                    : Model.AvailableJobs.FirstOrDefault(x => x.JobId == Model.MiscExpenditure.JobId).FullJobCodeWithName;
+            var selectedJob = string.Empty;
+            if (Model.IsOnSaveFix || !Model.IsBrandNewExpenditureCreation)
+                selectedJob = Model.AvailableJobs.FirstOrDefault(x => x.JobId == Model.MiscExpenditure.JobId)?.FullJobCodeWithName ?? string.Empty;
         }
-        @if (!Model.IsBrandNewExpenditureCreation)
+        @if (!Model.IsBrandNewExpenditureCreation || Model.IsOnSaveFix)
         {
             <input type="hidden" id="original-job-text"
                    value="@selectedJob"
@@ -57,7 +58,7 @@
                 onchange="updateTargetEmployee(this, 'MiscExpenditure_Detail_EmployeeId')">
             @foreach (var emp in Model.AvailableEmployees)
             {
-                if (!Model.IsBrandNewExpenditureCreation && emp.EmployeeId == Model.MiscExpenditure.Detail.EmployeeId)
+                if ((!Model.IsBrandNewExpenditureCreation || Model.IsOnSaveFix) && emp.EmployeeId == Model.MiscExpenditure.Detail.EmployeeId)
                 {
                     <option value="@emp.EmployeeId" selected="selected">@emp.First, @emp.Last</option>
                 }

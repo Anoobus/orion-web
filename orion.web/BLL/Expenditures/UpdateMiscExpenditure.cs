@@ -6,6 +6,7 @@ using orion.web.api.expenditures.Models;
 using orion.web.BLL.Core;
 using orion.web.Common;
 using orion.web.DataAccess;
+using orion.web.Jobs;
 using orion.web.Util.IoC;
 
 namespace orion.web.BLL.Expenditures
@@ -40,15 +41,24 @@ namespace orion.web.BLL.Expenditures
     {
         private readonly IMiscExpenditureRepo _repo;
         private readonly IMapper _mapper;
+        private readonly IJobsRepository _jobsRepository;
 
-        public UpdateMiscExpenditure(IMiscExpenditureRepo repo, IMapper mapper)
+        public UpdateMiscExpenditure(IMiscExpenditureRepo repo, IMapper mapper, IJobsRepository jobsRepository)
         {
             _repo = repo;
             _mapper = mapper;
+            this._jobsRepository = jobsRepository;
         }
 
         protected override async Task<IProcessResult<MiscExpenditure>>  Handle(UpdateMiscExpenditureMessage msg)
         {
+            var job = await _jobsRepository.GetForJobId(msg.Model.JobId);
+            if (job == null)
+                return Failure(ApiErrors.JobDoesNotExistException(msg.Model.JobId == 0 ? "[Not Supplied]" : $"[databaseId:{msg.Model.JobId }]", "A valid open job must be supplied in order to add an expense to it."));
+
+            if(job.CoreInfo.JobStatusId != JobStatus.Enabled)
+                return Failure(ApiErrors.JobMustBeOpen(job.CoreInfo.FullJobCodeWithName, "It must first be enabled/opened in order to add an expense to it. If you do not have access to open the job contact your administrator."));
+
             var existing = await _repo.FindByExternalId(msg.ExternalExpenditureId);
             if(existing == null
                 || msg.ExternalExpenditureId == default(Guid))

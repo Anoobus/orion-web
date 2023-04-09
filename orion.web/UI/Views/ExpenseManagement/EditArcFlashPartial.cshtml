@@ -11,9 +11,9 @@
 </style>
 <div class="row" style="display:none">
     <div class="col s12">
-        @if (Model.IsBrandNewExpenditureCreation)
-            //default to first employee in case user doesn't change emp selection
-            Model.ArcFlashLabelExpenditure.Detail.EmployeeId = Model.AvailableEmployees.First().EmployeeId;
+        @if (Model.IsBrandNewExpenditureCreation && !Model.IsOnSaveFix)
+                //default to first employee in case user doesn't change emp selection
+                Model.ArcFlashLabelExpenditure.Detail.EmployeeId = Model.AvailableEmployees.First().EmployeeId;
         }
         @Html.HiddenFor(x => x.ArcFlashLabelExpenditure.Detail.EmployeeId);
         @Html.HiddenFor(x => x.ArcFlashLabelExpenditure.Detail.JobId);
@@ -26,11 +26,12 @@
     <div class="input-field col s10">
         @Html.HiddenFor(x => x.ArcFlashLabelExpenditure.Detail.JobId)
         @{
-            var selectedJob = Model.IsBrandNewExpenditureCreation ? string.Empty
-                                                    : Model.AvailableJobs.FirstOrDefault(x => x.JobId == Model.ArcFlashLabelExpenditure.JobId).FullJobCodeWithName;
+            var selectedJob = string.Empty;
+            if (Model.IsOnSaveFix || !Model.IsBrandNewExpenditureCreation)
+                selectedJob = Model.AvailableJobs.FirstOrDefault(x => x.JobId == Model.ArcFlashLabelExpenditure.JobId)?.FullJobCodeWithName ?? string.Empty;
         }
-        @if (!Model.IsBrandNewExpenditureCreation)
-        {
+        @if (!Model.IsBrandNewExpenditureCreation || Model.IsOnSaveFix)
+            {
             <input type="hidden" id="original-job-text"
                 value="@selectedJob"
                 job-id="@Model.ArcFlashLabelExpenditure.JobId" />
@@ -58,7 +59,7 @@
                 onchange="updateTargetEmployee(this, 'ArcFlashLabelExpenditure_Detail_EmployeeId')">
             @foreach (var emp in Model.AvailableEmployees)
             {
-                if (!Model.IsBrandNewExpenditureCreation && emp.EmployeeId == Model.ArcFlashLabelExpenditure.Detail.EmployeeId)
+                if ((!Model.IsBrandNewExpenditureCreation || Model.IsOnSaveFix) && emp.EmployeeId == Model.ArcFlashLabelExpenditure.Detail.EmployeeId)
                 {
                     <option value="@emp.EmployeeId" selected="selected">@emp.First, @emp.Last</option>
                 }

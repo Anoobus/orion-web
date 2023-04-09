@@ -6,6 +6,7 @@ using orion.web.api.expenditures.Models;
 using orion.web.BLL.Core;
 using orion.web.Common;
 using orion.web.DataAccess;
+using orion.web.Jobs;
 using orion.web.Util.IoC;
 
 namespace orion.web.BLL.Expenditures
@@ -39,15 +40,25 @@ namespace orion.web.BLL.Expenditures
     {
         private readonly IArcFlashLabelExpenditureRepo _repo;
         private readonly IMapper _mapper;
+        private readonly IJobsRepository _jobsRepository;
 
-        public UpdateArcFlashLabelExpenditure(IArcFlashLabelExpenditureRepo repo, IMapper mapper)
+        public UpdateArcFlashLabelExpenditure(IArcFlashLabelExpenditureRepo repo, IMapper mapper, IJobsRepository jobsRepository)
         {
             _repo = repo;
             _mapper = mapper;
+            _jobsRepository = jobsRepository;
         }
 
         protected override async Task<IProcessResult<ArcFlashLabelExpenditure>>  Handle(UpdateArcFlashLabelExpenditureMessage msg)
         {
+            var job = await _jobsRepository.GetForJobId(msg.model.JobId);
+            if (job == null)
+                return Failure(ApiErrors.JobDoesNotExistException(msg.model.JobId == 0 ? "[Not Supplied]" : $"[databaseId:{msg.model.JobId }]", "A valid open job must be supplied in order to add an expense to it."));
+
+            if(job.CoreInfo.JobStatusId != JobStatus.Enabled)
+                return Failure(ApiErrors.JobMustBeOpen(job.CoreInfo.FullJobCodeWithName, "It must first be enabled/opened in order to add an expense to it. If you do not have access to open the job contact your administrator."));
+
+
             var existing = await _repo.FindByExternalId(msg.arcFlashLabelExpenditureId);
             if(existing == null
                 || msg.arcFlashLabelExpenditureId == default(Guid))
