@@ -31,7 +31,7 @@
             <thead>
                 <tr class="z-depth-3">
                     <th>
-                        @Html.DisplayNameFor(model => model.HeaderHelp.UserName)
+                        User
                     </th>
                     <th>
                        Assigned Job Count
@@ -40,11 +40,11 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var item in Model.Employees)
+                @foreach (var item in Model.Employees.OrderBy(x => x.Last).ThenBy(x => x.First))
                 {
                     <tr>
                         <td>
-                            @Html.ActionLink(item.UserName, "Edit", new { employee = item.UserName })
+                            @Html.ActionLink($"{item.Last}, {item.First} - {item.UserName}", "Edit", new { employee = item.UserName })
                         </td>
                         <td>
                             @Html.DisplayFor(modelItem => item.AssignJobs.Count)
