@@ -12,6 +12,7 @@ namespace orion.web.UI.Models
     {
         public ExpenditureTypeEnum ExpenseType { get; set; }
         public bool IsBrandNewExpenditureCreation { get; set; }
+        public bool IsOnSaveFix { get; set; }
         public Expense<ArcFlashLabelExpenditure> ArcFlashLabelExpenditure { get; set; }
         public Expense<MiscExpenditure> MiscExpenditure { get; set; }
         public Expense<ContractorExpenditure> ContractorExpenditure { get; set; }

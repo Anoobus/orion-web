@@ -1,0 +1,237 @@
+﻿@using orion.web.Employees
+@using orion.web.BLL.Expenditures
+
+@model orion.web.UI.Models.ExpenseViewModel
+
+<style>
+    #holder {
+        background-image: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.4) 65%, rgba(158,158,158,1) 100%), url("/images/receipt.jpg");
+        background-size: cover;
+        background-repeat: no-repeat;
+        min-height: 80vh;
+        width: 100vw;
+        margin-bottom: 0px;
+    }
+
+    #fake-modal-area {
+        background-color: #FFFFFF;
+    }
+
+    main {
+        display: flex;
+        flex: 1 0 auto;
+    }
+
+    div.card.splash {
+        margin: 8px;
+        margin-top: 30px;
+        padding: 8px;
+    }
+
+    #card-detail {
+        margin: 0.9em;
+    }
+
+    .modal.working-panel {
+        overflow: hidden;
+        min-height: 500px !important;
+    }
+
+    .modal-info-blurb {
+        height: 100vh;
+    }
+</style>
+
+
+<div id="holder" class="row">
+    <div class="row">
+        <div class="s12">
+            <nav id="bread-crumb-bar" class="red darken-3 z-depth-3">
+                <div class="nav-wrapper ">
+                    <div class="col s12">
+                        <a href="#!" class="breadcrumb">Home</a>
+                        <a href="#!" class="breadcrumb"> Expense Management</a>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </div>
+    <div class="s12">
+        <div class="row">
+            <div class="col s6 offset-s2">
+
+                <form name="save-expense-form" asp-controller="ExpenseManagement" asp-action="SaveExpense">
+                    <div id="fake-modal-area" class="row">
+                        <div class="col s3 red darken-3 white-text modal-info-blurb z-depth-4">
+                            <div class="container">
+                                @if (Model.IsBrandNewExpenditureCreation)
+                                {
+                                    <h5>Add New Expenditure <br /></h5>
+                                    <h7>
+                                        <ul class="no-dots">
+                                            <li>Type: </li>
+                                            <li>
+                                                <em>@Model.ExpenseTypeDisplayname</em>
+                                            </li>
+                                        </ul>
+                                    </h7>
+                                }
+                                else
+                                {
+                                    //storing this to prevent multiple switch calls
+                                    var basicInfo = Model.BasicInfo;
+                                    <h5>Edit Expenditure <br /></h5>
+                                    <h7>
+                                        <ul class="no-dots">
+                                            <li>Entry: </li>
+                                            <li>
+                                                <em>@basicInfo.ShortExpenseName</em>
+                                            </li>
+                                        </ul>
+
+                                    </h7>
+
+                                    <h7>
+                                        <ul class="no-dots">
+                                            <li>Original Job: </li>
+                                            <li>
+                                                <em>@basicInfo.FullJobNameWithCode</em>
+                                            </li>
+                                        </ul>
+                                    </h7>
+
+                                    <h7>
+                                        <ul class="no-dots">
+                                            <li>
+                                                Original Employee:
+                                            </li>
+                                            <li>
+                                                <em>@basicInfo.EmployeeName</em>
+                                            </li>
+                                        </ul>
+                                    </h7>
+                                }
+
+                            </div>
+                        </div>
+                        <div class="col s9" style="height:100%; padding:30px">
+                            @Html.HiddenFor(x => x.ExpenseType)
+                            @if (!string.IsNullOrWhiteSpace(ViewBag.Error))
+                            {
+                            <div class="card-panel red darken-3 white-text z-depth-4">
+                                <span class="white-text">
+                                    @ViewBag.Error Please update your expense and save again.
+                                </span>
+                            </div>
+                            }
+
+                            @switch (Model.ExpenseType)
+                            {
+                                case ExpenditureTypeEnum.ArcFlashLabelExpenditure:
+                                    @await Html.PartialAsync("EditArcFlashPartial", Model)
+                                    break;
+                                case ExpenditureTypeEnum.CompanyVehicleExpenditure:
+                                    @await Html.PartialAsync("EditCompanyVehiclePartial", Model)
+                                    break;
+                                case ExpenditureTypeEnum.ContractorExpenditure:
+                                    @await Html.PartialAsync("EditContractorPartial", Model)
+                                    break;
+                                case ExpenditureTypeEnum.TimeAndExpenceExpenditure:
+                                    @await Html.PartialAsync("EditTimeAndExpensePartial", Model)
+                                    break;
+                                case ExpenditureTypeEnum.MiscExpenditure:
+                                    @await Html.PartialAsync("EditMiscPartial", Model)
+                                    break;
+                                default:
+                                    break;
+                            }
+                            <div class="modal-footer" style="vertical-align:bottom">
+                                @if (Model.IsBrandNewExpenditureCreation)
+                                {
+                                    <button type="button" class="waves-effect waves-white btn-flat" onclick="submitExpenseChanges('save-expense-form')">Add Expenditure</button>
+                                }
+                                else
+                                {
+                                    <button type="button" class="waves-effect waves-white btn-flat" onclick="submitExpenseChanges('save-expense-form')">Save Changes</button>
+                                    <button type="button" class="waves-effect waves-white btn-flat" onclick="deleteExpense('@Model.BasicInfo.Id');return false;">Delete Expense</button>
+                                }
+                                <button type="button" class="modal-close waves-effect waves-white btn-flat" data-dismiss="modal">Cancel</button>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </form>
+
+
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+@section Scripts {
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script type="text/javascript">
+
+        const jobDataBlob = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.AvailableJobs.ToDictionary(x => x.FullJobCodeWithName, x => x.JobId))) ;
+
+            $(document).ready(function () {
+            //wire up quick filter
+
+            $("#quick-filter").on("keyup", function () {
+                var value = $(this).val().toLowerCase();
+                $("#table-data tr").filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+           
+
+        });
+        function submitExpenseChanges(formName) {
+            document.forms[formName].submit();
+        }
+        function deleteExpense(expId) {
+            axios.delete('/expenses/' + expId)
+                .then(response => {
+                    window.location.reload(true)
+                })
+        }
+        function addNewExpense(expenseName) {
+            axios
+                .get('/expenses/' + expenseName)
+                .then(response => {
+                    document.getElementById('modal-content').innerHTML = response.data;
+                    var modalDiv = document.getElementById('modal-holder');
+                    var rez = M.Modal.init(modalDiv, {});
+                    var instance = M.Modal.getInstance(modalDiv);
+                    instance.open();
+                    initEditExpenseComponents();
+                    InitMaterializeComponents();
+                });
+        }
+        function editExpense(expId) {
+
+            axios
+                .get('/expenses/' + expId + '/edit-modal')
+                .then(response => {
+                    document.getElementById('modal-content').innerHTML = response.data;
+                    var modalDiv = document.getElementById('modal-holder');
+                    var rez = M.Modal.init(modalDiv, {});
+                    var instance = M.Modal.getInstance(modalDiv);
+                    instance.open();
+                    initEditExpenseComponents();
+                    InitMaterializeComponents();
+                });
+
+        }
+    </script>
+
+
+    <script src="/js/ExpenseManagement/edit-expense-modal.js" type="text/javascript"></script>
+
+}

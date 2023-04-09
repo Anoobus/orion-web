@@ -4,8 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using orion.web.api.expenditures.Models;
 using orion.web.BLL;
 using orion.web.BLL.ArcFlashExpenditureExpenses;
+using orion.web.BLL.Core;
 using orion.web.BLL.Expenditures;
 using orion.web.Employees;
 using orion.web.Notifications;
@@ -114,33 +116,60 @@ namespace orion.web.UI.Controllers
                 case ExpenditureTypeEnum.ArcFlashLabelExpenditure:
                     var afl = await updateArcFlashLabelExpenditure.Process(new UpdateArcFlashLabelExpenditureMessage(model.ArcFlashLabelExpenditure.Detail, model.ArcFlashLabelExpenditure.Detail.Id));
                     saved = afl.Success != null;
+                    if (!saved)
+                        return await SaveFailure(model, afl.Error.ToString(), (freshModel) => freshModel.ArcFlashLabelExpenditure = model.ArcFlashLabelExpenditure);
+
                     break;
                 case ExpenditureTypeEnum.MiscExpenditure:
                     var misc = await updateMiscExpenditure.Process(new UpdateMiscExpenditureMessage(model.MiscExpenditure.Detail, model.MiscExpenditure.Detail.Id));
                     saved = misc.Success != null;
+                    if (!saved)
+                        return await SaveFailure(model, misc.Error.ToString(), (freshModel) => freshModel.MiscExpenditure = model.MiscExpenditure);
+                    
                     break;
                 case ExpenditureTypeEnum.ContractorExpenditure:
-                    var ce = await updateContractorExpenditure.Process(new UpdateContractorMessage(model.ContractorExpenditure.Detail, model.ContractorExpenditure.Detail.ExternalId));
+                    var ce = await updateContractorExpenditure.Process(new UpdateContractorMessage(model.ContractorExpenditure.Detail, model.ContractorExpenditure.Detail.ExternalId));                    
                     saved = ce.Success != null;
+                    if (!saved)
+                        return await SaveFailure(model, ce.Error.ToString(), (freshModel) => freshModel.ContractorExpenditure = model.ContractorExpenditure);
+                    
                     break;
                 case ExpenditureTypeEnum.TimeAndExpenceExpenditure:
                     var te = await updateTimeAndExpenseExpenditure.Process(new UpdateTimeAndExpenseExpenditureMessage(model.TimeAndExpenceExpenditure.Detail, model.TimeAndExpenceExpenditure.Detail.Id));
                     saved = te.Success != null;
+                    if (!saved)
+                        return await SaveFailure(model, te.Error.ToString(), (freshModel) => freshModel.TimeAndExpenceExpenditure = model.TimeAndExpenceExpenditure);
+
                     break;
                 case ExpenditureTypeEnum.CompanyVehicleExpenditure:
                     var cv = await updateCompanyVehicleExpenditure.Process(new UpdateCompanyVehicleExpenditureMessage(model.CompanyVehicleExpenditure.Detail, model.CompanyVehicleExpenditure.Detail.ExternalId));
                     saved = cv.Success != null;
+                     if (!saved)
+                        return await SaveFailure(model, cv.Error.ToString(), (freshModel) => freshModel.CompanyVehicleExpenditure = model.CompanyVehicleExpenditure);
+                   
                     break;
                 default:
                     throw new NotImplementedException();
             }
             
             if(saved)
-                NotificationsController.AddNotification(this.User.SafeUserName(), $"Expenditure Saved");
-
+            {
+                NotificationsController.AddNotification(this.User.SafeUserName(), $"Expenditure Saved");                
+            }
+                
             return RedirectToAction(nameof(ExpenseList));
 
+        }
 
+        private async Task<IActionResult> SaveFailure(ExpenseViewModel model, string error, Action<ExpenseViewModel> updateModelWithUnsavedData)
+        {
+            this.ViewBag.Error = error;
+
+            var mdl = (await getCreateExpenseModel.Process(new GetCreateExpenseModelMessage(model.ExpenseType.ToString()))).Success;
+            updateModelWithUnsavedData(mdl);
+            mdl.BasicInfo.EmployeeName = model.BasicInfo.EmployeeName;
+            mdl.IsOnSaveFix = true;
+            return View("ExpenseDetail", mdl);
         }
 
         [Route("/expenses/{expense-id}")]
