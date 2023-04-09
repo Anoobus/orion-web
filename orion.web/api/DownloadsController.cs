@@ -39,7 +39,7 @@ namespace orion.web.api
                 {
                     Error = "Both password and zipFilename are required!",
                     Supplied = dl
-                }); ;
+                });
             }
 
             try
