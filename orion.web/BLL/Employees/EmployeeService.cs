@@ -40,7 +40,9 @@ namespace orion.web.Employees
         {
             using(var db = _contextFactory.CreateDb())
             {
-                return await db.UserRoles.Select(x => x.Name).ToListAsync();
+                return await db.UserRoles.Select(x => x.Name)
+                    .Where(x => x != "Limited")
+                    .ToListAsync();
             }
         }
 
