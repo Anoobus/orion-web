@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
             let form = $("#main-time-entry-form");
             let validator = form.validate();
-           
+
 
             if (form.valid()) {
 
@@ -57,19 +57,16 @@ document.addEventListener('DOMContentLoaded', function () {
                         $('div.week-errors').addClass('validation-summary-valid');
                         form.resetValidation();
                     }).catch(function (error) {
-                        
+
                         console.log('Error on call to save time', error);
                         $('div.week-errors ul').children().remove();
-                        let toastContent = `<ul><li>${error.response.data.errors.title}</li><li>Changes where not saved!</li></ul>`; 
-                        $('div.week-errors ul').append(`<li>${error.response.data.errors.detail}</li>`)                        
+                        let toastContent = `<ul><li>${error.response.data.errors.title}</li><li>Changes where not saved!</li></ul>`;
+                        $('div.week-errors ul').append(`<li>${error.response.data.errors.detail}</li>`)
                         $('div.week-errors').removeClass('validation-summary-valid');
                         $('div.week-errors').addClass('validation-summary-errors');
-                        toastSuccess(toastContent);                        
+                        toastSuccess(toastContent);
                     });
             }
-        }
-        else {
-            console.log('no event wtf?');
         }
     }, 950);
     debouncedSaver();
