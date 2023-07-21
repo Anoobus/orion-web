@@ -2149,6 +2149,7 @@ html {
   /* 2 */
   -webkit-text-size-adjust: 100%;
   /* 2 */
+  font-size:12px;
 }
 
 /* Sections
@@ -2587,7 +2588,7 @@ input,
 optgroup,
 select,
 textarea {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+  font-family: "Helvetica Neue", Helvetica, arial, sans-serif;
 }
 
 ul:not(.browser-default) {
@@ -4479,10 +4480,10 @@ a {
 }
 
 html {
-  line-height: 1.25;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
-  font-weight: normal;
-  color: rgba(0, 0, 0, 0.87);
+    line-height: 1.25;
+    font-family: "Helvetica Neue", Helvetica, arial, sans-serif;
+    font-weight: normal;
+    color: rgba(0, 0, 0, 0.87);    
 }
 
 @media only screen and (min-width: 0) {
@@ -5539,7 +5540,7 @@ button.btn-floating {
   clear: both;
   color: rgba(0, 0, 0, 0.87);
   cursor: pointer;
-  min-height: 32px;
+  min-height: 16px;
   line-height: 1.5rem;
   width: 100%;
   text-align: left;
@@ -5559,10 +5560,10 @@ button.btn-floating {
 }
 
 .dropdown-content li > a, .dropdown-content li > span {
-  font-size: 16px;
+  font-size: 14px;
   color: #B71C1C;
   display: block;
-  line-height: 22px;
+  line-height: 12px;
   padding: 5px 16px;
 }
 

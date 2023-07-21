@@ -273,3 +273,6 @@ orion.app.logs
 /orion.web/serilog-logs/
 
 !/orion.web/docs/*.xlsx
+test-db-dump.zip
+test-db-dump/
+.DS_Store

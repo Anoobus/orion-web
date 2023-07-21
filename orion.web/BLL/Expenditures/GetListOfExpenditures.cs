@@ -101,7 +101,7 @@ namespace orion.web.BLL.ArcFlashExpenditureExpenses
                         var hmm = new Expense<ArcFlashLabelExpenditure>()
                         {
                             Detail = x,
-                            Amount = x.TotalLabelsCost,
+                            Amount = x.TotalLabelsCost + x.TotalPostageCost,
                             EmployeeName = $"{employeeDetails[x.EmployeeId].Last}, {employeeDetails[x.EmployeeId].First}",
                             FullJobNameWithCode = jobs[x.JobId].FullJobCodeWithName,
                             Id = x.Id,

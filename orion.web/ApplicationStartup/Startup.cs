@@ -39,10 +39,12 @@ namespace orion.web.ApplicationStartup
             var name = assm.GetName().Name;
             return $"{name}: {assm.GetName().Version}";
         });
+        private readonly IWebHostEnvironment environment;
 
         public Startup(IConfiguration configuration, IWebHostEnvironment environment)
         {
             Configuration = configuration;
+            this.environment = environment;
             Serilog.Log.Information($"Running startup for {environment.EnvironmentName}");
         }
 
@@ -67,9 +69,9 @@ namespace orion.web.ApplicationStartup
 
             services.Configure<CookiePolicyOptions>(options =>
                 {
-                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
-                //options.CheckConsentNeeded = context => true;
-                options.MinimumSameSitePolicy = SameSiteMode.None;
+                    // This lambda determines whether user consent for non-essential cookies is needed for a given request.
+                    //options.CheckConsentNeeded = context => true;
+                    options.MinimumSameSitePolicy = SameSiteMode.None;
                 });
 
             Serilog.Log.Information("STARTING DB STUFF UP");
@@ -82,11 +84,19 @@ namespace orion.web.ApplicationStartup
                     .AddDefaultTokenProviders()
                     .AddEntityFrameworkStores<ApplicationDbContext>();
 
-            services.AddMvc(opts =>
+            var cfg = services.AddMvc(opts =>
             {
 
                 opts.EnableEndpointRouting = false;
+
             });
+
+            if (environment.IsDevelopment())
+            {
+                cfg.AddRazorRuntimeCompilation();
+            }
+
+            var builder = services.AddRazorPages();
 
             services.AutoRegisterForMarker<IAutoRegisterAsSingleton>(typeof(Startup).Assembly, ServiceLifetime.Singleton);
             services.AutoRegisterForMarker<IAutoRegisterAsTransient>(typeof(Startup).Assembly, ServiceLifetime.Transient);
@@ -120,14 +130,14 @@ namespace orion.web.ApplicationStartup
                 });
                 c.DocInclusionPredicate((route, descriptor) =>
                 {
-                    if(descriptor.RelativePath.StartsWith("orion-api"))
+                    if (descriptor.RelativePath.StartsWith("orion-api"))
                         return true;
 
                     return false;
                 });
                 c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme()
                 {
-                   Description = "Swashbuckle's AddSecurityDefinition Description...",
+                    Description = "Swashbuckle's AddSecurityDefinition Description...",
                     Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
                     In = Microsoft.OpenApi.Models.ParameterLocation.Header,
                     Name = "Authorization"
@@ -146,7 +156,7 @@ namespace orion.web.ApplicationStartup
                     }
                 });
                 c.CustomOperationIds(e => $"{e.ActionDescriptor.RouteValues["controller"]}_{e.HttpMethod}");
-                   c.CustomSchemaIds(x => x.FullName);
+                c.CustomSchemaIds(x => x.FullName);
             });
             LogEmailConfig();
             Serilog.Log.Information($"Services configuration complete");
@@ -171,7 +181,7 @@ namespace orion.web.ApplicationStartup
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             Serilog.Log.Information($"Configuring: {env.ApplicationName} for env {env.EnvironmentName}");
-            if(env.IsDevelopment())
+            if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
@@ -185,7 +195,7 @@ namespace orion.web.ApplicationStartup
                     {
                         await next();
                     }
-                    catch(Exception e)
+                    catch (Exception e)
                     {
                         _logger.Error(e, $"Error while handleing {context?.Request?.Path}");
                         throw;

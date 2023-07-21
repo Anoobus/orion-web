@@ -72,6 +72,13 @@ namespace orion.web.Employees
                         }
                         else
                         {
+                            if(userToUpdate.LockoutEnabled)
+                            {
+                                userToUpdate.LockoutEnabled = false;
+                                userToUpdate.LockoutEnd = null;
+                                var res3 = await userManager.UpdateAsync(userToUpdate);
+                                allCommandErrors.AddRange(res3.Errors.Select(err => $"{err.Code}-{err.Description}"));
+                            }
                             var res2 = await userManager.AddToRoleAsync(userToUpdate, employee.SelectedRole);
                             allCommandErrors.AddRange(res2.Errors.Select(err => $"{err.Code}-{err.Description}"));
                             if(res2.Succeeded)
