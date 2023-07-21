@@ -2,6 +2,7 @@
 using orion.web.Common;
 using orion.web.DataAccess;
 using orion.web.DataAccess.EF;
+using orion.web.Employees;
 using orion.web.Util.IoC;
 using System;
 using System.Collections.Generic;
@@ -94,7 +95,9 @@ namespace orion.web.TimeEntries
         {
             using(var db = _contextFactory.CreateDb())
             {
-                var allEmps = await db.Employees.Where(x => x.EmployeeId != admin_employee_id).ToListAsync();
+                var allEmps = await db.Employees.Include(x => x.UserRole)
+                                                .Where(x => x.EmployeeId != admin_employee_id && x.UserRole.Name != UserRoleName.Disabled).ToListAsync();
+                
 
                 var startWeek = beginDateInclusive.HasValue ? WeekDTO.CreateWithWeekContaining(beginDateInclusive.Value).WeekId.Value : WeekDTO.CreateWithWeekContaining(DateTime.Now.AddDays(-7)).WeekId.Value;
                 var endWeek = endDateInclusive.HasValue ? WeekDTO.CreateWithWeekContaining(endDateInclusive.Value).WeekId.Value : WeekDTO.CreateWithWeekContaining(DateTime.Now.AddDays(31)).WeekId.Value;
