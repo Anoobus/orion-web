@@ -1,7 +1,7 @@
 $ErrorActionPreference = "Stop"
 
 Write-Host get date identifier
-$dateId=Get-Date -Format "MMM-dd-yyyy"
+$dateId=Get-Date -Format " yyyy-mm-dd-\rHHMM"
 $dateId="build-$dateId"
 
 Write-Host create sql data dir for this build

@@ -5,11 +5,9 @@
     <UserSecretsId>aspnet-orion.web-FEEF65A2-EA60-42A9-8F69-6C8534D9A130</UserSecretsId>
     <DockerTargetOS>Linux</DockerTargetOS>
     <StartupObject></StartupObject>
-    <LangVersion>7.1</LangVersion>
-    <AssemblyVersion>1.0.5.8</AssemblyVersion>
-    <FileVersion>1.0.5.8</FileVersion>
+    <LangVersion>7.1</LangVersion>    
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <IdentityUIFrameworkVersion>Bootstrap4</IdentityUIFrameworkVersion>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>    
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
