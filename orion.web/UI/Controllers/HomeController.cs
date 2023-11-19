@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using orion.web.Employees;
 using Serilog;
@@ -14,17 +16,27 @@ namespace orion.web.Controllers
     public class HomeController : Controller
     {
         private readonly IEmployeeRepository employeeService;
+        private readonly SignInManager<IdentityUser> signInManager;
         private static readonly Serilog.ILogger _logger = Serilog.Log.Logger.ForContext<HomeController>();
-        public HomeController(IEmployeeRepository employeeService)
+        public HomeController(IEmployeeRepository employeeService,    
+            SignInManager<IdentityUser> signInManager)
         {
             this.employeeService = employeeService;
+            this.signInManager = signInManager;
         }
-        [Authorize]
+  
         public async Task<IActionResult> Index()
         {
-            var emp =await  employeeService.GetSingleEmployeeAsync(User.Identity.Name);
-            ViewData["first"] = emp.First;
-            return View();
+            if(signInManager.IsSignedIn(this.User))
+            {
+                var emp = await  employeeService.GetSingleEmployeeAsync(User.Identity.Name);
+                ViewData["first"] = emp.First;
+                return View();
+            }
+            else
+            {
+                return Redirect(@"/Identity/Account/Login");
+            }            
         }
 
         [Authorize(Roles =UserRoleName.Admin)]
@@ -35,17 +47,15 @@ namespace orion.web.Controllers
             return View();
         }
 
-        public IActionResult Contact()
+        [HttpPost]
+        public async Task<IActionResult> Logout()
         {
-            ViewData["Message"] = "Your contact page.";
-
-            return View();
+            
+            //await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+            await this.signInManager.SignOutAsync();
+            return Redirect(@"/Identity/Account/Login");
         }
-
-        public IActionResult Privacy()
-        {
-            return View();
-        }
+        
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

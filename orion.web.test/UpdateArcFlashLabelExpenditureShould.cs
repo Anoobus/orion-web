@@ -41,7 +41,7 @@ namespace orion.web.test.BLL
             }
             public UpdateArcFlashLabelExpenditure GetItemUnderTest()
             {
-                return new UpdateArcFlashLabelExpenditure(_repo.Object, _mapper);
+                return new UpdateArcFlashLabelExpenditure(_repo.Object, _mapper, null);
             }
             
         }

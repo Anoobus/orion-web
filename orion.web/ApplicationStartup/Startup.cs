@@ -79,9 +79,7 @@ namespace orion.web.ApplicationStartup
             SetupLocalDbBasedEntityFramework<OrionDbContext>(services, OrionDbContext.CONN_STRING_NAME);
             SetupLocalDbBasedEntityFramework<ApplicationDbContext>(services, "IdentityConnection");
 
-            services.AddIdentity<IdentityUser, IdentityRole>()
-                    .AddDefaultUI()
-                    .AddDefaultTokenProviders()
+            services.AddIdentity<IdentityUser, IdentityRole>()                               
                     .AddEntityFrameworkStores<ApplicationDbContext>();
 
             var cfg = services.AddMvc(opts =>

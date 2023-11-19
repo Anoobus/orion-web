@@ -47,7 +47,7 @@ namespace orion.web.test.BLL
             }
             public UpdateCompanyVehicleExpenditure GetItemUnderTest()
             {
-                return new UpdateCompanyVehicleExpenditure(_repo.Object, _mapper);
+                return new UpdateCompanyVehicleExpenditure(_repo.Object, _mapper, null);
             }
             
         }
