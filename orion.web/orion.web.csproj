@@ -6,8 +6,8 @@
     <DockerTargetOS>Linux</DockerTargetOS>
     <StartupObject></StartupObject>
     <LangVersion>7.1</LangVersion>
-    <AssemblyVersion>1.0.5.7</AssemblyVersion>
-    <FileVersion>1.0.5.7</FileVersion>
+    <AssemblyVersion>1.0.5.8</AssemblyVersion>
+    <FileVersion>1.0.5.8</FileVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <IdentityUIFrameworkVersion>Bootstrap4</IdentityUIFrameworkVersion>
   </PropertyGroup>

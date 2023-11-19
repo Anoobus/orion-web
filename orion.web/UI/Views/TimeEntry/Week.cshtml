@@ -42,7 +42,8 @@
 
 <style>
     div.form-group.skinny input[type=text]{
-        font-size:10px;
+        font-size:12px;
+        margin-bottom: 0px;
     }
     div.last-nav-item {
         text-align:right;
@@ -51,12 +52,12 @@
         margin-right:16px;
     }
     div.megawrap {
-        width: 1180px;
+        width: 1400px;
         margin-left: auto;
         margin-right: auto;
     }
     #time-entry {
-        width:1140px;        
+        width:1380px;        
     }
     #time-entry td,
     #time-entry td input[type='text'],
@@ -107,13 +108,14 @@
     #time-entry th.readonly-header-cell {
         background: #37474f;
         color: #FFF;
-        font-size: 10px;
+        font-size: 12px;
         text-align: center;
     }
 
     th.week-header-cell.ot-cell,
     th.week-header-cell.header-ot-total{
         width:54px;
+        padding: 5px 0px 5px 0px;
     }
 
     div.week-errors {
@@ -132,6 +134,8 @@
     table tfoot tr th, table thead tr th {
         padding-top: 5px;
         padding-bottom: 5px;
+        padding-left: 0px;
+        padding-right: 0px;
     }
 
     td.description-cell div.row {
@@ -142,7 +146,7 @@
     }
 
     div.effort-area {
-        font-size: 11px;
+        font-size: 14px;
         padding-left: 0px;
         padding-right: 0px;
         margin-left: 0px;
@@ -171,7 +175,7 @@
         display: inline;
     }
     div.effort-area.taskline {
-        font-size: .74rem; 
+        font-size: .78rem; 
         overflow-wrap: break-word;
         -webkit-hyphens: auto;
         -ms-hyphens: auto;
@@ -300,50 +304,50 @@
                                     <i class="tiny material-icons">access_time</i>
                                 </a>
                             </th>
-                            <th style="display:none" day="ot-col-saturday" class="week-header-cell ot-cell">OT-Sat</th>
+                            <th style="display:none" day="ot-col-saturday" class="week-header-cell ot-cell">Sat<sup>ot</sup></th>
                             <th day="col-sunday" class="week-header-cell">
                                 Sun
                                 <a href="#" class="ot-button white-text">
                                     <i class="tiny material-icons">access_time</i>
                                 </a>
                             </th>
-                            <th style="display:none" day="ot-col-sunday" class="week-header-cell ot-cell">OT-Sun</th>
+                            <th style="display:none" day="ot-col-sunday" class="week-header-cell ot-cell">Sun<sup>ot</sup></th>
                             <th day="col-monday" class="week-header-cell">
                                 Mon
                                 <a href="#" class="ot-button white-text">
                                     <i class="tiny material-icons">access_time</i>
                                 </a>
                             </th>
-                            <th style="display:none" day="ot-col-monday" class="week-header-cell ot-cell">OT-Mon</th>
+                            <th style="display:none" day="ot-col-monday" class="week-header-cell ot-cell">Mon<sup>ot</sup></th>
                             <th day="col-tuesday" class="week-header-cell">
                                 Tues
                                 <a href="#" class="ot-button white-text">
                                     <i class="tiny material-icons">access_time</i>
                                 </a>
                             </th>
-                            <th style="display:none" day="ot-col-tuesday" class="week-header-cell ot-cell">OT-Tue</th>
+                            <th style="display:none" day="ot-col-tuesday" class="week-header-cell ot-cell">Tue<sup>ot</sup></th>
                             <th day="col-wednesday" class="week-header-cell">
                                 Wed
                                 <a href="#" class="ot-button white-text">
                                     <i class="tiny material-icons">access_time</i>
                                 </a>
                             </th>
-                            <th style="display:none" day="ot-col-wednesday" class="week-header-cell ot-cell">OT-Wed</th>
+                            <th style="display:none" day="ot-col-wednesday" class="week-header-cell ot-cell">Wed<sup>ot</sup></th>
                             <th day="col-thursday" class="week-header-cell">
                                 Thur
                                 <a href="#" class="ot-button white-text">
                                     <i class="tiny material-icons">access_time</i>
                                 </a>
                             </th>
-                            <th style="display:none" day="ot-col-thursday" class="week-header-cell ot-cell">OT-Thur</th>
+                            <th style="display:none" day="ot-col-thursday" class="week-header-cell ot-cell">Thur<sup>ot</sup></th>
                             <th day="col-friday" class="week-header-cell">
                                 Fri
                                 <a href="#" class="ot-button white-text">
                                     <i class="tiny material-icons">access_time</i>
                                 </a>
                             </th>
-                            <th style="display:none" day="ot-col-friday" class="week-header-cell ot-cell">OT-Fri</th>
-                            <th style="display:none" day="ot-col-total" class="week-header-cell header-ot-total">OT-Total</th>
+                            <th style="display:none" day="ot-col-friday" class="week-header-cell ot-cell">Fri<sup>ot</sup></th>
+                            <th style="display:none" day="ot-col-total" class="week-header-cell header-ot-total">Total<sup>ot</sup></th>
                             <th day class="week-header-cell header-total"></th>
                         </tr>
                     </thead>
