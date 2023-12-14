@@ -8,8 +8,7 @@ namespace orion.web.Reports
 {
     public class AllOpenJobSummaryReportExcelExport
     {
-          private static readonly string[] columns = new string[] { "turningArrayInto1Based", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "k", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z" };
-      
+  
          public MemoryStream AsXls(ReportDTO<AllOpenJobSummaryReportDTO> rpt)
         {
             var workbook = new XLWorkbook("docs/AllOpenJobsSummaryReportTemplate.xlsx", new LoadOptions() { });
@@ -153,7 +152,7 @@ namespace orion.web.Reports
                                              .SetAlignHorizontal(XLAlignmentHorizontalValues.Center)
                                              .SetFontStyle(x => x.Bold = true);
 
-                labelTotal.FormulaA1 = $"SUM({columns[3]}{rowStart}:{columns[3 + report.Data.EmployeeIdToNameMap.Count - 1]}{rowStart})";
+                labelTotal.FormulaA1 = $"SUM({XLHelper.GetColumnLetterFromNumber(3)}{rowStart}:{XLHelper.GetColumnLetterFromNumber(3 + report.Data.EmployeeIdToNameMap.Count - 1)}{rowStart})";
 
                 rowStart++;
             }
