@@ -11,6 +11,7 @@ namespace orion.web.TimeEntries
         public string EmployeeDisplayName { get; set; }
         public TimeApprovalStatus ApprovalStatus { get; set; }
         public string SelectedRowId { get; set; }
+        public bool IncludeRowsWithNoEffortAppliedOnCopyPreviousWeekTasks { get; set; }
         public IEnumerable<Expense.ExpenseDTO> Expenses { get; set; }
     }
 }

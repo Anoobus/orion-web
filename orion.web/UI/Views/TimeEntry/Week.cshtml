@@ -279,7 +279,7 @@
                     })</script>
             </div>
         </div>
-        </div>
+    </div>
     <div class="megawrap">
         <div class="row time-entry-horz">
             <div class="col s12">
@@ -400,164 +400,198 @@
 
             </div>
         </div>
-        </div>
-        <div class="megawrap">
-            <div class="row time-entry-horz">
-                <div class="col s12">
+    </div>
+    <div class="megawrap">
+        <div class="row time-entry-horz">
+            <div class="col s12">
 
-                    @if (Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Unkown
+                @if (Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Unkown
 || Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Rejected)
-                    {
-                        <input type="submit" name="postType" value="Copy Job/Tasks From Previous Week" class="btn grey darken-2 white-text" />
-                        <input id="save-btn" type="submit" name="postType" value="Save" class="btn grey darken-2" />
-                        <button type="button" class="waves-effect waves-white btn" id="submit-modal-trigger">Submit</button>
+                {
+                    
 
+                   
+                    <button type="button" class="waves-effect waves-white btn grey darken-2" id="copy-prev-week-tasks-trigger">Copy Job/Tasks From Previous Week</button>
+
+                    <input id="save-btn" type="submit" name="postType" value="Save" class="btn grey darken-2" />
+                    <button type="button" class="waves-effect waves-white btn" id="submit-modal-trigger">Submit</button>
+
+                }
+
+                @if (User.IsInRole(UserRoleName.Admin))
+                {
+                    @if (Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Submitted)
+                    {
+                        <input type="submit" name="postType" class="btn" value="Approve" id="btnApprove" />
                     }
 
-                    @if (User.IsInRole(UserRoleName.Admin))
-                    {
-                        @if (Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Submitted)
-                        {
-                            <input type="submit" name="postType" class="btn" value="Approve" id="btnApprove" />
-                        }
-
-                        @if (Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Submitted
+                    @if (Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Submitted
 || Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Approved)
-                        {
-                            <input type="submit" name="postType" class="btn " value="Reject" id="btnReject" />
-                        }
+                    {
+                        <input type="submit" name="postType" class="btn " value="Reject" id="btnReject" />
                     }
+                }
+
+            </div>
+        </div>
+    </div>
+    <div class="modal modal-small" id="copyModal">
+        <div class="row">
+            <div class="col s3 red darken-3 white-text modal-info-blurb z-depth-4">
+                <div class="container">
+                    <h5>
+                        Copy Prevous Week Entries
+                    </h5>
+                </div>
+            </div>
+            <div class="col s9">
+                <div class="row" style="padding:20px">
+                    <p>Would you like to include rows that have no time applied?<br />
+    By default only job/task(s) which have hours applied, will be copied to this week.
+</p>
+                    <br />
+                    <br />
+                    <label>
+                        <input asp-for="IncludeRowsWithNoEffortAppliedOnCopyPreviousWeekTasks" type="checkbox" />
+                        <span>Also include entries with <em>NO</em> hours applied</span>
+                    </label>
+                </div>
+
+                <div class="modal-footer" style="vertical-align:bottom;margin-top:30px">
+                    <input type="submit" name="postType" value="Copy Job/Tasks From Previous Week" class="waves-effect waves-white btn-flat" />
+                    <button type="button" class="modal-close waves-effect waves-white btn-flat" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal modal-small" id="submitModal">
+        <div class="row">
+            <div class="col s3 red darken-3 white-text modal-info-blurb z-depth-4">
+                <div class="container">
 
                 </div>
             </div>
-            </div>
-            <div class="modal modal-small" id="submitModal">
-                <div class="row">
-                    <div class="col s3 red darken-3 white-text modal-info-blurb z-depth-4">
-                        <div class="container">
+            <div class="col s9">
+                <div class="row" style="padding:20px">
 
-                        </div>
-                    </div>
-                    <div class="col s9">
-                        <div class="row" style="padding:20px">
+                    <h4>
+                        Are you sure you want to submit your time?
+                    </h4>
 
-                            <h4>
-                                Are you sure you want to submit your time?
-                            </h4>
+                </div>
 
-                        </div>
-
-                        <div class="modal-footer" style="vertical-align:bottom;margin-top:30px">
-                            <button type="submit" name="postType" value="Submit" class="waves-effect waves-white btn-flat">Submit Time</button>
-                            <button type="button" class="modal-close waves-effect waves-white btn-flat" data-dismiss="modal">Cancel</button>
-                        </div>
-                    </div>
+                <div class="modal-footer" style="vertical-align:bottom;margin-top:30px">
+                    <button type="submit" name="postType" value="Submit" class="waves-effect waves-white btn-flat">Submit Time</button>
+                    <button type="button" class="modal-close waves-effect waves-white btn-flat" data-dismiss="modal">Cancel</button>
                 </div>
             </div>
+        </div>
+    </div>
 
-            <style>
-                .modal {
-                    overflow: hidden;
-                    min-height: 500px !important;
-                }
+    <style>
+        .modal {
+            overflow: hidden;
+            min-height: 500px !important;
+        }
 
-                .modal-small {
-                    overflow: hidden;
-                    max-height: 50%;
-                    width: 40%;
-                    min-height: 200px !important;
-                }
+        .modal-small {
+            overflow: hidden;
+            max-height: 50%;
+            width: 40%;
+            min-height: 200px !important;
+        }
 
-                .modal-info-blurb {
-                    height: 100vh;
-                }
+        .modal-info-blurb {
+            height: 100vh;
+        }
 
-                .ot-cell-gradient {
-                    background: rgba(252, 248, 22, 0.25)
-                }
-                div.modal-easment {
-                    margin: 5px 10px;
-                    padding: 5px 10px;
-                }
-            </style>
+        .ot-cell-gradient {
+            background: rgba(252, 248, 22, 0.25)
+        }
 
-            <div id="add-row-modal" class="modal">
+        div.modal-easment {
+            margin: 5px 10px;
+            padding: 5px 10px;
+        }
+    </style>
 
-                <div class="row">
-                    <div class="col s3 red darken-3 white-text modal-info-blurb z-depth-4">
-                        <div class="container">
-                            <h5>Add Job To Time Sheet</h5>
-                            <h6>Don't see your job? Click below to manage your job list.</h6>
-                            <a class="btn grey darken-2" asp-controller="Jobs" asp-action="List" delay-for-save="yup">Manage</a>
-                        </div>
-                    </div>
-                    <div class="col s9">
-                        <div class="modal-easment">
+    <div id="add-row-modal" class="modal">
+
+        <div class="row">
+            <div class="col s3 red darken-3 white-text modal-info-blurb z-depth-4">
+                <div class="container">
+                    <h5>Add Job To Time Sheet</h5>
+                    <h6>Don't see your job? Click below to manage your job list.</h6>
+                    <a class="btn grey darken-2" asp-controller="Jobs" asp-action="List" delay-for-save="yup">Manage</a>
+                </div>
+            </div>
+            <div class="col s9">
+                <div class="modal-easment">
+                    <div class="row">
+                        @if (Model.NewEntry.AvailableJobs.Any())
+                        {
+                            <div class="row" style="display:none" id="notification-block">
+                                <div class="col s12">
+                                    <div id="notification-block-content" class="text-danger card-panel week-errors pulse rounded"></div>
+                                </div>
+                            </div>
                             <div class="row">
-                                @if (Model.NewEntry.AvailableJobs.Any())
-                                {
-                                    <div class="row" style="display:none" id="notification-block">
-                                        <div class="col s12">
-                                            <div id="notification-block-content" class="text-danger card-panel week-errors pulse rounded"></div>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col s12">
-                                            <label asp-for="NewEntry.SelectedJobId">Job To Add</label>
-                                            <select asp-for="NewEntry.SelectedJobId" class="custom-drop-down job"
-                                                    asp-items="@(new SelectList(Model.NewEntry.AvailableJobs, "JobId", "FullJobCodeWithName"))">
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col s6">
-                                            <label asp-for="NewEntry.SelectedTaskCategory">Task Category</label>
-                                            <select asp-for="NewEntry.SelectedTaskCategory"
-                                                    disabled
-                                                    class="custom-drop-down category">
-
-                                                @foreach (var cat in Model.NewEntry.AvailableCategories)
-                                                {
-                                                    <option value="@cat.Name" internal-only="@cat.IsInternalCategory.ToString().ToLower()">@cat.Name</option>
-                                                }
-                                            </select>
-                                        </div>
-                                        <div class="col s6">
-                                            <label asp-for="NewEntry.SelectedTaskId">Task</label>
-                                            <select asp-for="NewEntry.SelectedTaskId" disabled class="custom-drop-down task">
-
-                                                @foreach (var task in Model.NewEntry.AvailableTasks)
-                                                {
-                                                    <option value="@task.TaskId" class="@task.Category.Name">@task.LegacyCode - @task.Name</option>
-                                                }
-                                            </select>
-                                        </div>
-                                    </div>
-                                }
-
+                                <div class="col s12">
+                                    <label asp-for="NewEntry.SelectedJobId">Job To Add</label>
+                                    <select asp-for="NewEntry.SelectedJobId" class="custom-drop-down job"
+                                            asp-items="@(new SelectList(Model.NewEntry.AvailableJobs, "JobId", "FullJobCodeWithName"))">
+                                    </select>
+                                </div>
                             </div>
-                        </div>
-                        <div class="modal-easment">
-                            <div class="modal-footer" style="vertical-align:bottom">
-                                <button id="ModalSubmit" type="button" class="waves-effect waves-white btn-flat" name="submit-button-thingy">Add Job-Task</button>
-                                <button type="button" class="modal-close waves-effect waves-white btn-flat" data-dismiss="modal">Cancel</button>
-                            </div>
-                        </div>
-                        </div>
+                            <div class="row">
+                                <div class="col s6">
+                                    <label asp-for="NewEntry.SelectedTaskCategory">Task Category</label>
+                                    <select asp-for="NewEntry.SelectedTaskCategory"
+                                            disabled
+                                            class="custom-drop-down category">
 
+                                        @foreach (var cat in Model.NewEntry.AvailableCategories)
+                                        {
+                                            <option value="@cat.Name" internal-only="@cat.IsInternalCategory.ToString().ToLower()">@cat.Name</option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="col s6">
+                                    <label asp-for="NewEntry.SelectedTaskId">Task</label>
+                                    <select asp-for="NewEntry.SelectedTaskId" disabled class="custom-drop-down task">
+
+                                        @foreach (var task in Model.NewEntry.AvailableTasks)
+                                        {
+                                            <option value="@task.TaskId" class="@task.Category.Name">@task.LegacyCode - @task.Name</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                        }
 
                     </div>
-
+                </div>
+                <div class="modal-easment">
+                    <div class="modal-footer" style="vertical-align:bottom">
+                        <button id="ModalSubmit" type="button" class="waves-effect waves-white btn-flat" name="submit-button-thingy">Add Job-Task</button>
+                        <button type="button" class="modal-close waves-effect waves-white btn-flat" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
             </div>
 
 
+        </div>
 
-            <input asp-for="ApprovalStatus" type="hidden" />
-            @if (User.IsInRole(UserRoleName.Admin))
-            {
-                <input type="hidden" id="IsAdmin" value="true" />
-            }
-            <input asp-for="SelectedRowId" type="hidden" />
+    </div>
+
+
+
+    <input asp-for="ApprovalStatus" type="hidden" />
+    @if (User.IsInRole(UserRoleName.Admin))
+    {
+        <input type="hidden" id="IsAdmin" value="true" />
+    }
+    <input asp-for="SelectedRowId" type="hidden" />
 </form>
 
 @section scripts {
@@ -576,7 +610,14 @@
     <script type="text/javascript" src="/js/TimeEntry/efforts/remove-effort-row.js"></script>
     <script type="text/javascript" src="/js/TimeEntry/efforts/add-effort-row.js"></script>
     <script type="text/javascript" src="/js/TimeEntry/efforts/change-effort-row.js"></script>
-    <script type="text/javascript">function showSubmitModal(targetId) {
+    <script type="text/javascript">
+        function showSubmitModal(targetId) {
+            let modalToShow = document.getElementById(targetId);
+            let instance = M.Modal.init(modalToShow, {});
+            instance.open();
+        }
+
+        function showCopyTasksModal(targetId) {
             let modalToShow = document.getElementById(targetId);
             let instance = M.Modal.init(modalToShow, {});
             instance.open();
@@ -628,6 +669,9 @@
                 }
             });
 
+            $('#copy-prev-week-tasks-trigger').click(e => {
+                showSubmitModal('copyModal');
+            })
             $('#submit-modal-trigger').click(e => {
                 let form = $("#main-time-entry-form");
                 let validator = form.validate();

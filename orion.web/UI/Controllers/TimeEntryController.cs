@@ -157,7 +157,7 @@ namespace orion.web.TimeEntries
 
             if(postType == "Copy Job/Tasks From Previous Week")
             {
-                await copyPreviousWeekTimeCommand.CopyPreviousWeekTime(employeeId, weekId);
+                await copyPreviousWeekTimeCommand.CopyPreviousWeekTime(employeeId, weekId, vm.IncludeRowsWithNoEffortAppliedOnCopyPreviousWeekTasks);
             }
 
             if(postType == "Submit")

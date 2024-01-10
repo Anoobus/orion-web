@@ -8,7 +8,7 @@ namespace orion.web.TimeEntries
 {
     public interface ICopyPreviousWeekTimeCommand
     {
-        Task CopyPreviousWeekTime(int employeeId, int id);
+        Task CopyPreviousWeekTime(int employeeId, int id, bool includeEntriesWithNoHoursApplied);
     }
     public class CopyPreviousWeekTimeCommand : ICopyPreviousWeekTimeCommand, IAutoRegisterAsSingleton
     {
@@ -25,7 +25,7 @@ namespace orion.web.TimeEntries
             _employeeRepository = employeeRepository;
             _timeSpentRepository = timeSpentRepository;
         }
-        public async Task CopyPreviousWeekTime(int employeeId, int id)
+        public async Task CopyPreviousWeekTime(int employeeId, int id, bool includeEntriesWithNoHoursApplied)
         {
             var prev = WeekDTO.CreateForWeekId(id).Previous();
             var timeEntries = await _timeService.GetAsync(prev.WeekId.Value, employeeId);
@@ -33,7 +33,8 @@ namespace orion.web.TimeEntries
             
             foreach (var entry in timeEntries.GroupBy(x => new { x.JobId, x.JobTaskId }))
             {
-                if (entry.Any(x => x.Hours > 0 || x.OvertimeHours > 0))
+                var hasTimeApplied = entry.Any(x => x.Hours > 0 || x.OvertimeHours > 0); 
+                if (hasTimeApplied || includeEntriesWithNoHoursApplied)
                 {
                     var entryForEveryDayOfWeek = _timeSpentRepository.CreateEmptyWeekForCombo(id, entry.Key.JobTaskId, entry.Key.JobId, employeeId); ;
                     foreach (var day in entryForEveryDayOfWeek)
