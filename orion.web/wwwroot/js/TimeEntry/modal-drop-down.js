@@ -8,10 +8,10 @@
         }
     }
 
-    function setDisabled() {
-        console.log('setDisabled on', selectBox);
+    function setDisabled() {        
         //lock it all down
         removeAllOptions(selectBox);
+        console.log(selectBox, "setting disabled for this item")
         selectBox.setAttribute('disabled', '');
 
         //turn off the submit button too;   
@@ -20,8 +20,6 @@
     }
 
     function setEnabled(options, presetName, selectedValue) {
-        console.log('setEnabled on', selectBox);
-
         removeAllOptions(selectBox);
         selectBox.add(new Option(presetName, "preset"));
 
@@ -40,6 +38,18 @@
         removeAllOptions,
         setDisabled,
         setEnabled,
-        value: () => selectBox.value
+        value: () => selectBox.value,
+        manuallySetValue: (selectedVal) => {
+            selectBox.value = selectedVal;
+            
+            if (typeof (Event) === 'function') {
+                var event = new Event('change');
+            } else {  // for IE11
+                var event = document.createEvent('Event');
+                event.initEvent('change', true, true);
+            }
+            //emit the event so that materialize acks the change too
+            selectBox.dispatchEvent(event);
+        }                
     };
 }

@@ -1,7 +1,17 @@
 ﻿let modalData = {}
 
+let oneTimeClears = {};
+
+function oneTimeClear(input) {
+    if (!oneTimeClears[input.id]) {
+        oneTimeClears[input.id] = true;
+        input.value = '';
+    }
+}
+
+
  const AddClickTrigger = function (startingValue, triggerId, modalId, onPersistChanges, materialize) {
-     console.log("AddClickTrigger to " + modalId + " when " + triggerId + " is clicked.", materialize);
+     
         document.getElementById(triggerId).onclick = (e) => {
             var modalFinds = document.getElementById(modalId);
             e.preventDefault();
@@ -9,11 +19,77 @@
         };
  };
 
+
+function undoJobChange(btn) {
+    let origInput = document.getElementById('original-job-text');
+    let jobInput = document.getElementById('NewlySelectedJob-Name');
+    jobInput.value = origInput.value;
+    updateJobSelection(jobInput);
+    oneTimeClears[jobInput.id] = false;
+    let jobInputLabel = document.querySelector('label[for="NewlySelectedJob-Name"]').classList.add('active');
+}
+
 document.addEventListener('DOMContentLoaded', function () {
-    modalData = initializeFieldsOnDocLoad(M);   
+    modalData = initializeFieldsOnDocLoad(M);
+   
+    
+   
+    
 });
 
 function initializeFieldsOnDocLoad(materialize) {
+
+    function updateNewJobId(input, targetId) {
+
+        if (nameToIdMap.has(input.value)) {
+            let newJobId = nameToIdMap.get(input.value);
+            document.getElementById(targetId).value = newJobId;
+        }
+        else {
+            let codeOnly = input.value.substring(0, 9);
+            if (codeToIdMap.has(codeOnly)) {
+                let newJobId = codeToIdMap.get(codeOnly);
+                document.getElementById(targetId).value = newJobId;
+            }
+            else {
+                console.log("skip set, can't find " + input.value + ' inside of our maps', nameToIdMap, codeToIdMap);
+            }
+        }
+
+
+    }
+
+    const AsMap = (idFilter, obj) => {
+        const keys = Object.keys(obj);
+        const map = new Map();
+        for (let i = 0; i < keys.length; i++) {
+            //inserting new key value pair inside map
+
+            map.set(idFilter(keys[i]), obj[keys[i]]);
+        };
+        return map;
+    };
+
+    const nameToIdMap = AsMap((x) => x, jobDataBlob);
+    const codeToIdMap = AsMap((x) => x.substring(0, 9), jobDataBlob);
+
+    let autoCompleteObj = {};
+    const jobMapIter = nameToIdMap.entries();
+    let didAdd = false;
+    do {
+        let maybeValue = jobMapIter.next().value;
+        if (maybeValue) {
+            autoCompleteObj[maybeValue[0]] = null;
+            didAdd = true;
+        }
+        else {
+            didAdd = false;
+        }
+
+    } while (didAdd)
+
+    
+
     //category options
     const internalOptions = document.querySelectorAll('select.custom-drop-down.category option[internal-only="true"]');
     const otherOptions = document.querySelectorAll('select.custom-drop-down.category option[internal-only="false"]');
@@ -37,8 +113,13 @@ function initializeFieldsOnDocLoad(materialize) {
     let jobDropDown = document.getElementById('NewEntry_SelectedJobId');
     let taskDropDown = document.getElementById("NewEntry_SelectedTaskId");
 
+    let autoCompleteJob = document.getElementById('AddJobTaskAutoComplete');
+   
+  
+    
+
     const okBtnId = 'ModalSubmit';
-    let jobSelection = modalDropDown('NewEntry_SelectedJobId', materialize, okBtnId, (e) => onJobChange(e, internalOptions, otherOptions));
+    let jobSelection = modalDropDown('NewEntry_SelectedJobId', materialize, okBtnId, (e) => addJobTaskOnJobChange(e.target.value, internalOptions, otherOptions));
     let categorySelection = modalDropDown('NewEntry_SelectedTaskCategory', materialize, okBtnId, (e) => onCategoryChange(e, optionGroup));
     let taskSelection = modalDropDown('NewEntry_SelectedTaskId', materialize, okBtnId, (e) => onTaskChange(e));
 
@@ -49,7 +130,15 @@ function initializeFieldsOnDocLoad(materialize) {
     let submitBtn = document.getElementById(okBtnId);
     submitBtn.style.display = "none";
 
+    autoCompleteJob.onchange = autoCompleteUpdateJobSelection;
+       
 
+    var instances = M.Autocomplete.init(autoCompleteJob, {
+        data: autoCompleteObj,
+        limit: 15
+    });
+
+   
 
     let modalNotificationBlock = document.getElementById('notification-block');
     let notificationContent = document.getElementById('notification-block-content');
@@ -66,12 +155,40 @@ function initializeFieldsOnDocLoad(materialize) {
                 console.log('pulse removed');
             }, 2500);
         }
-
     }
 
-    function onJobChange(event, internalCategoryOptions, otherCategoryOptions) {
-        const target = event.target;
-        const selectedVal = target.value;
+    
+    
+    
+    
+
+    
+
+
+    function autoCompleteUpdateJobSelection(event, targetId) {
+
+        let input = event.target;
+     
+        if (nameToIdMap.has(input.value)) {
+            let newJobId = nameToIdMap.get(input.value);
+            console.log(jobSelection);
+            jobSelection.manuallySetValue(newJobId);
+        }
+        else {
+            let codeOnly = input.value.substring(0, 9);
+            if (codeToIdMap.has(codeOnly)) {
+                let newJobId = codeToIdMap.get(codeOnly);
+                console.log(jobSelection);
+                jobSelection.manuallySetValue(newJobId);
+            }
+            else {
+                console.log("skip set, can't find " + input.value + ' inside of our maps', nameToIdMap, codeToIdMap);
+            }
+        }
+    }
+
+    function addJobTaskOnJobChange(selectedVal, internalCategoryOptions, otherCategoryOptions) {
+        
         document.getElementById('ModalSubmit').style.display = "none";
         if (selectedVal == "preset") {
             modalData.categorySelect.setDisabled();
@@ -84,6 +201,7 @@ function initializeFieldsOnDocLoad(materialize) {
             modalData.taskSelect.setDisabled();
         }
     };
+   
     function onCategoryChange(event, groupedTaskOptions) {
 
         console.log('catagory change detected!', event);
@@ -110,7 +228,46 @@ function initializeFieldsOnDocLoad(materialize) {
     }
 
 
+    document.getElementById('dd-job').onclick = updateSelectionType;
+    document.getElementById('auto-job').onclick = updateSelectionType;
+
+    function updateSelectionType(event) {
+        console.log(event, "clicked");
+        let selection = event.target.value;
+
+        if (selection == "auto") {
+            console.log("show auto");
+            document.getElementById('job-by-quick-search').style.display = "block";
+            document.getElementById('job-dd').style.display = "none";
+
+            
+                taskSelection.setDisabled();
+                categorySelection.setDisabled();
+                jobSelection.setEnabled(jobOptions, "Select Job");
+            
+            document.getElementById('dd-job').checked = false;
+            document.getElementById('auto-job').checked = true;
+
+        }
+        else {
+            console.log("show Drop down");
+            document.getElementById('job-by-quick-search').style.display = "none";
+            document.getElementById('job-dd').style.display = "block";
+
+            document.getElementById('auto-job').checked = false;
+            document.getElementById('dd-job').checked = true;
+        }
+    }
+
+
+
     function initializeModalForJobTaskCombo(jobId, taskId) {
+        var event = document.createEvent('Event');
+       
+        console.log('sending event2 !!');
+        event.initEvent('click', true, true);
+        document.getElementById('dd-job').dispatchEvent(event);
+
         jobSelection.setEnabled(jobOptions, "Select Job", jobId);
 
         let internalOnly = jobId == 1004;
@@ -141,6 +298,7 @@ function initializeFieldsOnDocLoad(materialize) {
     }
 
     function initializeModalForNewJobTaskCombo() {
+        
         jobSelection.setEnabled(jobOptions, "Select Job");
         categorySelection.setDisabled();
         taskSelection.setDisabled();
@@ -184,7 +342,10 @@ function onShowModalClick(modalToShow, startingValue, onPersistChanges, material
     }
 
     let instance = materialize.Modal.init(modalToShow, {});
-    instance.open();    
+    instance.open();
+
+
+   
 }
 
 

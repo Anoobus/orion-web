@@ -5767,6 +5767,7 @@ body.keyboard-focused .dropdown-content li:focus {
   height: 56px;
   width: 100%;
   text-align: right;
+  margin-left:20px;
 }
 
 .modal .modal-footer .btn, .modal .modal-footer .btn-large, .modal .modal-footer .btn-small, .modal .modal-footer .btn-flat {

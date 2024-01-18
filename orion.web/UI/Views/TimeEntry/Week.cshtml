@@ -41,80 +41,87 @@
 </div>
 
 <style>
-    div.form-group.skinny input[type=text]{
-        font-size:12px;
+    div.form-group.skinny input[type=text] {
+        font-size: 12px;
         margin-bottom: 0px;
     }
+
     div.last-nav-item {
-        text-align:right;
+        text-align: right;
     }
-    div.last-nav-item a {
-        margin-right:16px;
-    }
+
+        div.last-nav-item a {
+            margin-right: 16px;
+        }
+
     div.megawrap {
         width: 1540px;
         margin-left: auto;
         margin-right: auto;
     }
+
     #time-entry {
-        width:1540px;        
-    }
-    #time-entry td,
-    #time-entry td input[type='text'],
-    #time-entry th {
-        text-align: center;
+        width: 1540px;
     }
 
-        #time-entry th.job-task-description {
-            min-width: 50%;
+        #time-entry td,
+        #time-entry td input[type='text'],
+        #time-entry th {
+            text-align: center;
         }
 
-        #time-entry td.description-cell {
-            text-align: left;
-            margin-top:2px;
-            margin-bottom:2px;
-            padding-top:6px;
-            padding-bottom:6px;
-            overflow-y:hidden;
-            
+            #time-entry th.job-task-description {
+                min-width: 50%;
+            }
+
+            #time-entry td.description-cell {
+                text-align: left;
+                margin-top: 2px;
+                margin-bottom: 2px;
+                padding-top: 6px;
+                padding-bottom: 6px;
+                overflow-y: hidden;
+            }
+
+        #time-entry td {
+            line-height: 12px;
+            font-size: 9px;
+            padding-top: 0px;
+            padding-bottom: 0px;
         }
 
-    #time-entry td {
-        line-height: 12px;
-        font-size: 9px;
-        padding-top: 0px;
-        padding-bottom: 0px;
-    }
-        #time-entry td.description-cell {
-            line-height: 15px;            
+            #time-entry td.description-cell {
+                line-height: 15px;
+            }
+
+            #time-entry td label {
+                color: #000000;
+            }
+
+
+
+        #time-entry tbody tr td.description-cell {
+            font-size: 15px;
+            font-weight: bold;
         }
 
-        #time-entry td label {
-            color: #000000;
+        #time-entry tbody tr:hover {
+            border-style: none;
         }
 
-
-
-    #time-entry tbody tr td.description-cell {
-        font-size: 15px;
-        font-weight: bold;
-    }
-    #time-entry tbody tr:hover {
-        border-style:none;
-    }
-    #time-entry thead tr,
-    #time-entry tfoot tr,
-    #time-entry td.readonly-header-cell,
-    #time-entry th.readonly-header-cell {
-        background: #37474f;
-        color: #FFF;
-        font-size: 12px;
-        text-align: center;
-    }
+        #time-entry thead tr,
+        #time-entry tfoot tr,
+        #time-entry td.readonly-header-cell,
+        #time-entry th.readonly-header-cell {
+            background: #37474f;
+            color: #FFF;
+            font-size: 12px;
+            text-align: center;
+        }
 
     th.week-header-cell.ot-cell,
-    th.week-header-cell.header-ot-total{
-        width:54px;
+    th.week-header-cell.header-ot-total {
+        width: 54px;
         padding: 5px 0px 5px 0px;
     }
 
@@ -174,14 +181,15 @@
         hyphens: auto;
         display: inline;
     }
+
     div.effort-area.taskline {
-        font-size: 14.5px
-        overflow-wrap: break-word;
+        font-size: 14.5px overflow-wrap: break-word;
         -webkit-hyphens: auto;
         -ms-hyphens: auto;
         hyphens: auto;
-        display:block 
+        display: block
     }
+
     td.description-cell div.row.taskline-row {
         margin-top: -2px;
     }
@@ -189,15 +197,17 @@
     th.week-header-cell {
         min-width: 24px;
     }
+
     div.select-wrapper ul.dropdown-content.select-dropdown li {
         line-height: 10px;
         font-size: 12px;
         min-height: 10px;
     }
+
         div.select-wrapper ul.dropdown-content.select-dropdown li > span {
-            
             min-height: 10px;
         }
+
     div.task-name {
         font-size: .85rem;
     }
@@ -408,9 +418,9 @@
                 @if (Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Unkown
 || Model.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Rejected)
                 {
-                    
 
-                   
+
+
                     <button type="button" class="waves-effect waves-white btn grey darken-2" id="copy-prev-week-tasks-trigger">Copy Job/Tasks From Previous Week</button>
 
                     <input id="save-btn" type="submit" name="postType" value="Save" class="btn grey darken-2" />
@@ -446,9 +456,10 @@
             </div>
             <div class="col s9">
                 <div class="row" style="padding:20px">
-                    <p>Would you like to include rows that have no time applied?<br />
-    By default only job/task(s) which have hours applied, will be copied to this week.
-</p>
+                    <p>
+                        Would you like to include rows that have no time applied?<br />
+                        By default only job/task(s) which have hours applied, will be copied to this week.
+                    </p>
                     <br />
                     <br />
                     <label>
@@ -498,7 +509,7 @@
             overflow: hidden;
             max-height: 50%;
             width: 40%;
-            min-height: 200px !important;
+            min-height: 280px !important;
         }
 
         .modal-info-blurb {
@@ -537,10 +548,41 @@
                             </div>
                             <div class="row">
                                 <div class="col s12">
-                                    <label asp-for="NewEntry.SelectedJobId">Job To Add</label>
-                                    <select asp-for="NewEntry.SelectedJobId" class="custom-drop-down job"
-                                            asp-items="@(new SelectList(Model.NewEntry.AvailableJobs, "JobId", "FullJobCodeWithName"))">
-                                    </select>
+
+                                   Job Selection Type: 
+                                    <label for="auto-job">
+
+                                        <input type="radio" class="with-gap" value="auto" id="auto-job" />
+                                        <span>Quick Search</span>
+
+                                    </label>
+                                    <label for="dd-job">
+                                        <input type="radio" class="with-gap" value="dd" id="dd-job" checked="checked"  />
+                                       <span>Drop Down</span>
+                                    </label>
+
+                                  
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col s12">
+                                    <div class="input-field">
+                                        <div id="job-by-quick-search" style="display:none">
+                                            <i class="material-icons prefix">search</i>
+                                            <input type="text" id="AddJobTaskAutoComplete"
+                                                   class="autocomplete validate"
+                                                   onfocus="oneTimeClear(this)"
+                                                   placeholder="Type Job Code..." />
+                                            <label for="NewlySelectedJob-Name">Job To Add</label>
+                                        </div>
+                                        <div id="job-dd">
+                                            <label asp-for="NewEntry.SelectedJobId">Job To Add</label>
+                                            <select asp-for="NewEntry.SelectedJobId" class="custom-drop-down job"
+                                                    asp-items="@(new SelectList(Model.NewEntry.AvailableJobs, "JobId", "FullJobCodeWithName"))">
+                                            </select>
+                                        </div>
+                                    </div>
+
                                 </div>
                             </div>
                             <div class="row">
@@ -606,11 +648,22 @@
     <script type="text/javascript" src="/js/TimeEntry/modal-drop-down.js"></script>
     <script type="text/javascript" src="/js/TimeEntry/add-job-task-modal.js"></script>
     <script type="text/javascript" src="/js/TimeEntry/auto-cell-save.js"></script>
+    <script type="text/javascript" src="/js/TimeEntry/auto-cell-save.js"></script>
+
+
 
     <script type="text/javascript" src="/js/TimeEntry/efforts/remove-effort-row.js"></script>
     <script type="text/javascript" src="/js/TimeEntry/efforts/add-effort-row.js"></script>
     <script type="text/javascript" src="/js/TimeEntry/efforts/change-effort-row.js"></script>
     <script type="text/javascript">
+
+        const jobDataBlob = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.NewEntry.AvailableJobs.ToDictionary(x => x.FullJobCodeWithName, x => x.JobId))) ;
+
+
+
+
+
+
         function showSubmitModal(targetId) {
             let modalToShow = document.getElementById(targetId);
             let instance = M.Modal.init(modalToShow, {});
@@ -630,7 +683,7 @@
         function onCellUnFocus(cellTextInput) {
             if (cellTextInput.value == "0.0") {
                 cellTextInput.classList.add("hide-the-text");
-            }            
+            }
         }
         $(document).ready(function () {
 

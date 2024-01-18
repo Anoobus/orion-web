@@ -48,10 +48,14 @@ function undoJobChange(btn) {
 
 function initEditExpenseComponents() {
     var elems = document.querySelectorAll('.autocomplete');
-    var instances = M.Autocomplete.init(elems, {
-        data: autoCompleteObj,
-        limit: 15
-    });
+    console.log(elems, "this is elems!");
+    if (elems.length) {
+        var instances = M.Autocomplete.init(elems, {
+            data: autoCompleteObj,
+            limit: 15
+        });
+    }
+    
     
 }
 

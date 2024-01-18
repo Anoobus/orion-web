@@ -8,8 +8,7 @@
         throw "window object is not defined, but is required to run on this page. Client side processing will not continue.";
     }
 
-    function totalRow(row) {
-        console.log('totaling row: ', row);
+    function totalRow(row) {       
         var total = 0;
         row.find('td[autosum] input[type="text"]').each(function (index, inputVal) {
             total = total + Number($(inputVal).val());
