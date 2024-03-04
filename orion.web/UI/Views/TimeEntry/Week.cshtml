@@ -260,9 +260,18 @@
         padding-right: 8%;
     }
 
-    .hide-the-text {
+    .form-control.hide-the-text {
         color: rgba(0,0,0,0);
     }
+
+    input[type="text"].dropdown-content {
+        max-height:380px;
+    }
+
+    input[type="text"].hide-the-text:not(.browser-default):disabled {
+        color: rgba(0,0,0,0);
+    }
+
 </style>
 
 <form asp-action="Save" method="post" id="main-time-entry-form">
@@ -282,9 +291,9 @@
                             errors.forEach(li => li.innerHTML = '&nbsp;&nbsp;' + li.innerHTML);
                         }
                         setTimeout(() => {
-                            console.log('remove pulse');
+                            
                             document.getElementsByClassName("week-errors")[0].classList.remove('pulse');
-                            console.log('pulse removed');
+                            
                         }, 3500);
                     })</script>
             </div>
@@ -457,14 +466,14 @@
             <div class="col s9">
                 <div class="row" style="padding:20px">
                     <p>
-                        Would you like to include rows that have no time applied?<br />
-                        By default only job/task(s) which have hours applied, will be copied to this week.
+                        Which rows would you like to copy over?<br />
+                        By default, <em>all</em> job/task(s) will be copied to this week, <br />even if they have no hours present.
                     </p>
                     <br />
                     <br />
                     <label>
                         <input asp-for="IncludeRowsWithNoEffortAppliedOnCopyPreviousWeekTasks" type="checkbox" />
-                        <span>Also include entries with <em>NO</em> hours applied</span>
+                        <span>Include entries with <em>NO</em> hours applied. <br /><sub>(note: if this box is NOT checked, then only rows which have hours applied prev. week will be copied over)</sub></span>
                     </label>
                 </div>
 
@@ -647,8 +656,8 @@
     <script type="text/javascript" src="/js/TimeEntry/efforts/effort-repository.js"></script>
     <script type="text/javascript" src="/js/TimeEntry/modal-drop-down.js"></script>
     <script type="text/javascript" src="/js/TimeEntry/add-job-task-modal.js"></script>
-    <script type="text/javascript" src="/js/TimeEntry/auto-cell-save.js"></script>
-    <script type="text/javascript" src="/js/TimeEntry/auto-cell-save.js"></script>
+    <script type="text/javascript" src="/js/TimeEntry/auto-cell-save-v2.js"></script>
+    
 
 
 
@@ -701,6 +710,7 @@
                     $("form :input[type='submit']").prop("disabled", false);
                     $("form :input[name='__RequestVerificationToken']").prop("disabled", false);
                 }
+
             };
 
 

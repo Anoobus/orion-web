@@ -59,7 +59,7 @@ namespace orion.web.TimeEntries
             var currentWeek = WeekDTO.CreateForWeekId(request.WeekId);
 
             var weekOfTimeEntries = await timeService.GetWeekAsync(request.EmployeeId, request.WeekId);
-            //var timeEntries = await timeService.GetAsync(request.WeekId, request.EmployeeId);
+
             var allJobList = (await jobService.GetAsync()).ToList();
             var taskList = (await taskService.GetTasks()).ToList().OrderBy(x => x.Name).ThenBy(x => x.Description);
             var entries = new List<TimeEntryViewModel>();
@@ -116,7 +116,8 @@ namespace orion.web.TimeEntries
                 },
                 ApprovalStatus = status.TimeApprovalStatus,
 
-                Expenses = await _expenseService.GetExpensesForEmployee(request.EmployeeId,request.WeekId)
+                Expenses = await _expenseService.GetExpensesForEmployee(request.EmployeeId,request.WeekId),
+                IncludeRowsWithNoEffortAppliedOnCopyPreviousWeekTasks = true
             };
 
 

@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
 
                 if (txtInput.value == "") {
+                    txtInput.value = "0.0";
                     txtInput.classList.add("hide-the-text");
                 }
             });
