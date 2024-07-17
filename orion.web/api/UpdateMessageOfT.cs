@@ -1,13 +1,14 @@
 ﻿using System;
-namespace orion.web.api
+namespace Orion.Web.Api
 {
     public class UpdateMessage
     {
-        public static UpdateMessage<TNewValue,TExisting> CreateFrom<TNewValue,TExisting>(TNewValue newValue, TExisting existing)
+        public static UpdateMessage<TNewValue, TExisting> CreateFrom<TNewValue, TExisting>(TNewValue newValue, TExisting existing)
         {
             return new UpdateMessage<TNewValue, TExisting>(newValue, existing);
         }
     }
+
     public class UpdateMessage<TNewValue, TExisting>
     {
         public UpdateMessage(TNewValue newValue, TExisting existing)
@@ -20,4 +21,3 @@ namespace orion.web.api
         public TExisting Existing { get; }
     }
 }
-

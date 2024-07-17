@@ -1,33 +1,33 @@
-﻿@model IEnumerable<orion.web.TimeEntries.TimeApprovalDTO>
-@using orion.web.Employees
-@using orion.web.TimeEntries
+﻿@model Orion.Web.TimeApproval.TimeEntriesViewModel
+@using Orion.Web.Employees
+@using Orion.Web.TimeEntries
 
         <table class="table striped hover z-depth-3">
             <thead>
                 <tr class="z-depth-3">
                     <th>
-                        @Html.DisplayNameFor(model => model.First().WeekStartDate)
+                        @Html.DisplayNameFor(model => model.Entries.First().WeekStartDate)
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.First().SubmittedDate)
+                        @Html.DisplayNameFor(model => model.Entries.First().SubmittedDate)
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.First().EmployeeName)
+                        @Html.DisplayNameFor(model => model.Entries.First().EmployeeName)
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.First().TimeApprovalStatus)
+                        @Html.DisplayNameFor(model => model.Entries.First().TimeApprovalStatus)
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.First().TotalRegularHours)
+                        @Html.DisplayNameFor(model => model.Entries.First().TotalRegularHours)
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.First().TotalOverTimeHours)
+                        @Html.DisplayNameFor(model => model.Entries.First().TotalOverTimeHours)
                     </th>
                     <th></th>
                 </tr>
             </thead>
             <tbody class="weekly-rows">
-                @foreach(var item in Model)
+                @foreach(var item in Model.Entries)
                 {
                 <tr id="r-@item.EmployeeId-@item.WeekId">
                     <td>
@@ -50,7 +50,7 @@
                     </td>
                     <td>
                         @Html.ActionLink("Details", nameof(TimeEntryController.Edit), "TimeEntry", new { WeekId = item.WeekId, employeeId = item.EmployeeId })
-                        @if (!item.ApprovalDate.HasValue)
+                        @if (!item.ApprovalDate.HasValue && Model.CurrentUserCanManageTimeApprovals)
                         {
                                 <span class="approve-link">|  <a href="#approve" class="approve-week" emp="@item.EmployeeId" week="@item.WeekId" onclick="return tryApprove(this)">Approve</a></span>                            
                         }

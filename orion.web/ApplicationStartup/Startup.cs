@@ -1,34 +1,26 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Identity;
+﻿using System;
+using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using orion.web.AspNetCoreIdentity;
-using orion.web.DataAccess.EF;
-using Microsoft.AspNetCore.Mvc.Razor;
-using orion.web.UI;
-using orion.web.Util.IoC;
-using orion.web.BLL.AutoMapper;
-using System;
-using Newtonsoft.Json;
-using System.IO;
-using System.Diagnostics;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.Extensions.Logging;
-using Serilog;
-using Newtonsoft.Json.Serialization;
-using Microsoft.OpenApi.Models;
 using Microsoft.Extensions.Hosting;
-using Microsoft.AspNetCore.Http.Features;
-using System.Text.Json.Serialization;
+using Microsoft.OpenApi.Models;
+using Newtonsoft.Json;
+using Orion.Web.AspNetCoreIdentity;
+using Orion.Web.BLL.AutoMapper;
+using Orion.Web.DataAccess.EF;
+using Orion.Web.UI;
+using Orion.Web.Util.IoC;
 
-namespace orion.web.ApplicationStartup
+namespace Orion.Web.ApplicationStartup
 {
-
-
     public class Startup
     {
         private static readonly Serilog.ILogger _logger = Serilog.Log.Logger.ForContext<Startup>();
@@ -50,14 +42,9 @@ namespace orion.web.ApplicationStartup
 
         public IConfiguration Configuration { get; }
 
-
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
-            //Register Serilog for all Microsoft ILogger and ILogger<T>
-            //services.AddLogging();
-
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(config =>
             {
@@ -65,28 +52,24 @@ namespace orion.web.ApplicationStartup
                 config.LoginPath = "/Identity/Account/Login";
             });
 
-
-
             services.Configure<CookiePolicyOptions>(options =>
                 {
                     // This lambda determines whether user consent for non-essential cookies is needed for a given request.
-                    //options.CheckConsentNeeded = context => true;
+                    // options.CheckConsentNeeded = context => true;
                     options.MinimumSameSitePolicy = SameSiteMode.None;
                 });
 
             Serilog.Log.Information("STARTING DB STUFF UP");
 
-            SetupLocalDbBasedEntityFramework<OrionDbContext>(services, OrionDbContext.CONN_STRING_NAME);
+            SetupLocalDbBasedEntityFramework<OrionDbContext>(services, OrionDbContext.CONNSTRINGNAME);
             SetupLocalDbBasedEntityFramework<ApplicationDbContext>(services, "IdentityConnection");
 
-            services.AddIdentity<IdentityUser, IdentityRole>()                               
+            services.AddIdentity<IdentityUser, IdentityRole>()
                     .AddEntityFrameworkStores<ApplicationDbContext>();
 
             var cfg = services.AddMvc(opts =>
             {
-
                 opts.EnableEndpointRouting = false;
-
             });
 
             if (environment.IsDevelopment())
@@ -102,8 +85,8 @@ namespace orion.web.ApplicationStartup
             services.Configure<RazorViewEngineOptions>(config => config.ViewLocationExpanders.Add(new ViewLocationExpander()));
             services.Configure<FormOptions>(config =>
             {
-                config.ValueLengthLimit = config.ValueLengthLimit * 4; //approx 12mb
-                config.ValueCountLimit = config.ValueCountLimit * 10; //approx 10k entries                
+                config.ValueLengthLimit = config.ValueLengthLimit * 4; // approx 12mb
+                config.ValueCountLimit = config.ValueCountLimit * 10; // approx 10k entries
             });
             services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(opt =>
             {
@@ -114,13 +97,11 @@ namespace orion.web.ApplicationStartup
                 o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
             });
 
-
             services.AddHttpContextAccessor();
             services.AddCustomAutoMapper();
 
             services.AddSwaggerGen(c =>
             {
-
                 c.SwaggerDoc("v0", new Microsoft.OpenApi.Models.OpenApiInfo()
                 {
                     Title = "orion-timetracking.api",
@@ -140,7 +121,8 @@ namespace orion.web.ApplicationStartup
                     In = Microsoft.OpenApi.Models.ParameterLocation.Header,
                     Name = "Authorization"
                 });
-                c.AddSecurityRequirement(new OpenApiSecurityRequirement {
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
                 {
                     new OpenApiSecurityScheme
                     {
@@ -151,7 +133,7 @@ namespace orion.web.ApplicationStartup
                     }
                     },
                     new string[] { }
-                    }
+                }
                 });
                 c.CustomOperationIds(e => $"{e.ActionDescriptor.RouteValues["controller"]}_{e.HttpMethod}");
                 c.CustomSchemaIds(x => x.FullName);
@@ -168,7 +150,8 @@ namespace orion.web.ApplicationStartup
             Serilog.Log.Information($"Emails will use {JsonConvert.SerializeObject(new { emailUser, host, port })}");
         }
 
-        private void SetupLocalDbBasedEntityFramework<TContext>(IServiceCollection services, string connectionName) where TContext : DbContext
+        private void SetupLocalDbBasedEntityFramework<TContext>(IServiceCollection services, string connectionName)
+            where TContext : DbContext
         {
             var connString = Configuration.GetConnectionString(connectionName);
             Serilog.Log.Information($"Using {connString} for {connectionName}");
@@ -182,7 +165,9 @@ namespace orion.web.ApplicationStartup
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+#pragma warning disable CS0618 // Type or member is obsolete
                 app.UseDatabaseErrorPage();
+#pragma warning restore CS0618 // Type or member is obsolete
             }
             else
             {

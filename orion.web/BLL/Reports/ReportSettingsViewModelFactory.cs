@@ -1,22 +1,21 @@
-﻿using orion.web.BLL.Reports.AllOpenJobsSummaryreport;
-using orion.web.BLL.Reports.DetailedExpenseForJobReport;
-using orion.web.Common;
-using orion.web.Employees;
-using orion.web.Jobs;
-using orion.web.PayPeriod;
-using orion.web.Reports.Common;
-using orion.web.Reports.EmployeeTimeReport;
-using orion.web.Reports.PayPeriodReport;
-using orion.web.Reports.QuickJobTimeReport;
-using orion.web.Util.IoC;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Orion.Web.BLL.Reports.AllOpenJobsSummaryreport;
+using Orion.Web.BLL.Reports.DetailedExpenseForJobReport;
+using Orion.Web.Common;
+using Orion.Web.Employees;
+using Orion.Web.Jobs;
+using Orion.Web.PayPeriod;
+using Orion.Web.Reports.Common;
+using Orion.Web.Reports.EmployeeTimeReport;
+using Orion.Web.Reports.PayPeriodReport;
+using Orion.Web.Reports.QuickJobTimeReport;
+using Orion.Web.Util.IoC;
 
-namespace orion.web.Reports
+namespace Orion.Web.Reports
 {
-
     public interface IReportSettingsViewModelFactory
     {
         Task<ReportSelectionViewModel> GetReportSelectionViewModelAsync(bool isCurrentUserAdmin);
@@ -37,23 +36,22 @@ namespace orion.web.Reports
         {
             var vm2 = new PayPeriodReportCriteria();
             vm2.PayPeriodEnd = WeekDTO.CreateWithWeekContaining(DateTime.Now).WeekEnd;
-            vm2.PayPeriodList = PayPeriodRepository.GetPPRange(rangeSize: 25 );
-            var rpt = new ExcelReport<PayPeriodReportCriteria>(PayPeriodReportCriteria.PAY_PERIOD_REPORT_NAME, vm2, isCurrentUserAdmin);
+            vm2.PayPeriodList = PayPeriodRepository.GetPPRange(rangeSize: 25);
+            var rpt = new ExcelReport<PayPeriodReportCriteria>(PayPeriodReportCriteria.PAYPERIODREPORTNAME, vm2, isCurrentUserAdmin);
             return rpt;
         }
-       
+
         private async Task<ExcelReport<QuickJobTimeReportCriteria>> GetJobDetailreportAsync()
         {
             var vm = new QuickJobTimeReportCriteria();
             vm.PeriodSettings = GetDefaultPeriodSettings();
             vm.AvailableJobs = (await jobService.GetAsync()).OrderBy(x => x.FullJobCodeWithName).ToList();
-            var rpt = new ExcelReport<QuickJobTimeReportCriteria>(QuickJobTimeReportCriteria.QUICK_JOB_TIME_REPORT_NAME, vm, true);
+            var rpt = new ExcelReport<QuickJobTimeReportCriteria>(QuickJobTimeReportCriteria.QUICKJOBTIMEREPORTNAME, vm, true);
             return rpt;
         }
 
         public async Task<ReportSelectionViewModel> GetReportSelectionViewModelAsync(bool isCurrentUserAdmin)
         {
-
             var vm = new ReportSelectionViewModel()
             {
                 PayPeriodReportCriteria = GetPayPeriodReportViewModel(isCurrentUserAdmin),
@@ -61,14 +59,13 @@ namespace orion.web.Reports
                 DetailedExpenseForJobReportCriteria = await GetExpenseBreakDownReportCriteria(isCurrentUserAdmin),
                 AllOpenJobsSummaryReportCriteria = GetAllOpenJobsReportCriteria(isCurrentUserAdmin),
                 EmployeeTimeReportCriteria = await GetEmployeeTimeReportCriteria(isCurrentUserAdmin)
-               
             };
             return vm;
         }
 
         private async Task<ExcelReport<EmployeeTimeReportCriteria>> GetEmployeeTimeReportCriteria(bool isCurrentUserAdmin)
         {
-           var vm = new EmployeeTimeReportCriteria();
+            var vm = new EmployeeTimeReportCriteria();
             vm.PeriodSettings = GetDefaultPeriodSettings();
             var emps = (await employeeRepository.GetAllEmployees()).Where(x => x.EmployeeId != 1).ToList();
             vm.AvailableEmployees = emps.Select(x => new CoreEmployeeDto()
@@ -77,25 +74,25 @@ namespace orion.web.Reports
                 First = x.First,
                 Last = x.Last
             });
-            
-            var rpt = new ExcelReport<EmployeeTimeReportCriteria>(EmployeeTimeReportCriteria.EMPLOYEE_TIME_REPORT_NAME, vm, isCurrentUserAdmin);
+
+            var rpt = new ExcelReport<EmployeeTimeReportCriteria>(EmployeeTimeReportCriteria.EMPLOYEETIMEREPORTNAME, vm, isCurrentUserAdmin);
             return rpt;
         }
 
         private ExcelReport<AllOpenJobsSummaryReportCriteria> GetAllOpenJobsReportCriteria(bool isCurrentUserAdmin)
         {
-             var vm = new AllOpenJobsSummaryReportCriteria();
-            
-            var rpt = new ExcelReport<AllOpenJobsSummaryReportCriteria>(AllOpenJobsSummaryReportCriteria.ALL_OPEN_JOBS_SUMMARY_REPORT, vm, isCurrentUserAdmin);
+            var vm = new AllOpenJobsSummaryReportCriteria();
+
+            var rpt = new ExcelReport<AllOpenJobsSummaryReportCriteria>(AllOpenJobsSummaryReportCriteria.ALLOPENJOBSSUMMARYREPORT, vm, isCurrentUserAdmin);
             return rpt;
         }
 
         private async Task<ExcelReport<DetailedExpenseForJobReportCriteria>> GetExpenseBreakDownReportCriteria(bool isCurrentUserAdmin)
         {
             var vm = new DetailedExpenseForJobReportCriteria();
-            
+
             vm.AvailableJobs = (await jobService.GetAsync()).OrderBy(x => x.FullJobCodeWithName).ToList();
-            var rpt = new ExcelReport<DetailedExpenseForJobReportCriteria>(DetailedExpenseForJobReportCriteria.DETAILED_EXPENSE_REPORT_NAME, vm, isCurrentUserAdmin);
+            var rpt = new ExcelReport<DetailedExpenseForJobReportCriteria>(DetailedExpenseForJobReportCriteria.DETAILEDEXPENSEREPORTNAME, vm, isCurrentUserAdmin);
             return rpt;
         }
 

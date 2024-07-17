@@ -1,13 +1,13 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using orion.web.BLL.JobTasks;
-using orion.web.Employees;
-using orion.web.Notifications;
-using System;
+﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Orion.Web.BLL.JobTasks;
+using Orion.Web.Employees;
+using Orion.Web.Notifications;
 
-namespace orion.web.JobsTasks
+namespace Orion.Web.JobsTasks
 {
     [Authorize(Roles = UserRoleName.Admin)]
     public class TaskController : Controller
@@ -46,7 +46,6 @@ namespace orion.web.JobsTasks
                                          Id = (int)x,
                                      }).ToList();
 
-
             var vm = new TaskViewModel()
             {
                 AllTaskCategories = cats,
@@ -79,7 +78,6 @@ namespace orion.web.JobsTasks
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Save(TaskViewModel submittedTask)
         {
-
             var vm = await GetViewModel();
             var category = vm.AllTaskCategories.Single(x => x.Id == submittedTask.SelectedCategory);
             var usageStatus = vm.AllUsageStatusOptions.Single(x => x.Id == submittedTask.SelectedUsageStatus);
@@ -91,7 +89,7 @@ namespace orion.web.JobsTasks
             var isBadUpdateLegacyCode = !submittedTask.IsInCreateModel
                 && allTasks.Any(x => x.LegacyCode == submittedTask.Task.LegacyCode && x.TaskId != submittedTask.Task.TaskId);
 
-            if(isBadCreateLegacyCode || isBadUpdateLegacyCode)
+            if (isBadCreateLegacyCode || isBadUpdateLegacyCode)
             {
                 vm.SelectedCategory = submittedTask.SelectedCategory;
                 vm.SelectedUsageStatus = submittedTask.SelectedUsageStatus;

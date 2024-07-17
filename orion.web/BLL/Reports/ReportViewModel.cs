@@ -1,39 +1,38 @@
-﻿using orion.web.BLL.Reports.AllOpenJobsSummaryreport;
-using orion.web.BLL.Reports.DetailedExpenseForJobReport;
-using orion.web.Reports.Common;
-using orion.web.Reports.EmployeeTimeReport;
-using orion.web.Reports.PayPeriodReport;
-using orion.web.Reports.QuickJobTimeReport;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Orion.Web.BLL.Reports.AllOpenJobsSummaryreport;
+using Orion.Web.BLL.Reports.DetailedExpenseForJobReport;
+using Orion.Web.Reports.Common;
+using Orion.Web.Reports.EmployeeTimeReport;
+using Orion.Web.Reports.PayPeriodReport;
+using Orion.Web.Reports.QuickJobTimeReport;
 
-namespace orion.web.Reports
+namespace Orion.Web.Reports
 {
     public class ReportSelectionViewModel
     {
-
         public IEnumerable<string> AvailableReports()
         {
-            if(PayPeriodReportCriteria.CanView)
+            if (PayPeriodReportCriteria.CanView)
             {
                 yield return PayPeriodReportCriteria.ReportName;
             }
 
-            if(QuickJobTimeReportCriteria.CanView)
+            if (QuickJobTimeReportCriteria.CanView)
             {
                 yield return QuickJobTimeReportCriteria.ReportName;
             }
 
-            if(EmployeeTimeReportCriteria.CanView)
+            if (EmployeeTimeReportCriteria.CanView)
             {
                 yield return EmployeeTimeReportCriteria.ReportName;
             }
-           
-            if(DetailedExpenseForJobReportCriteria.CanView)
+
+            if (DetailedExpenseForJobReportCriteria.CanView)
             {
                 yield return DetailedExpenseForJobReportCriteria.ReportName;
             }
 
-            if(AllOpenJobsSummaryReportCriteria.CanView)
+            if (AllOpenJobsSummaryReportCriteria.CanView)
             {
                 yield return AllOpenJobsSummaryReportCriteria.ReportName;
             }

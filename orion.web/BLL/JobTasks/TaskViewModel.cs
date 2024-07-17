@@ -1,12 +1,12 @@
-﻿using orion.web.BLL.JobTasks;
-using orion.web.JobTasks;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Orion.Web.BLL.JobTasks;
+using Orion.Web.JobTasks;
 
-namespace orion.web.JobsTasks
+namespace Orion.Web.JobsTasks
 {
     public class TaskViewModel
     {
-        public  TaskDTO Task { get; set; }
+        public TaskDTO Task { get; set; }
 
         public bool IsInCreateModel { get; set; }
         public IEnumerable<CategoryDTO> AllTaskCategories { get; set; }
@@ -15,10 +15,7 @@ namespace orion.web.JobsTasks
         public IEnumerable<UsageStatusDTO> AllUsageStatusOptions { get; set; }
         public int SelectedUsageStatus { get; set; }
 
-
         public IEnumerable<TaskReportingTypeDto> AllTaskReportingTypes { get; set; }
         public int SelectedTaskReportingType { get; set; }
     }
-
-
 }

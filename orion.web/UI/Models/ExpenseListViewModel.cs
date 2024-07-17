@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
-using orion.web.api.expenditures.Models;
-using orion.web.BLL;
-using orion.web.Employees;
-using orion.web.Jobs;
+using Orion.Web.Api.Expenditures.Models;
+using Orion.Web.BLL;
+using Orion.Web.Employees;
+using Orion.Web.Jobs;
 
-namespace orion.web.UI.Models
+namespace Orion.Web.UI.Models
 {
     public class SharedExpenseModel
     {
@@ -17,15 +17,16 @@ namespace orion.web.UI.Models
         public decimal Amount { get; set; }
         public int JobId { get; set; }
         public Guid Id { get; set; }
-        public DateTime LastModifiedDateEst {get; set;}
-        public DateTime ExpensedOnDateEst {get; set;}
-
+        public DateTime LastModifiedDateEst { get; set; }
+        public DateTime ExpensedOnDateEst { get; set; }
     }
+
     public class Expense<TDetail> : SharedExpenseModel
     {
         public TDetail Detail { get; set; }
     }
-    public class AllExpendituresModel 
+
+    public class AllExpendituresModel
     {
         public IEnumerable<Expense<ArcFlashLabelExpenditure>> ArcFlashLabelExpenditures { get; set; } = Enumerable.Empty<Expense<ArcFlashLabelExpenditure>>();
         public IEnumerable<Expense<CompanyVehicleExpenditure>> CompanyVehicleExpenditures { get; set; } = Enumerable.Empty<Expense<CompanyVehicleExpenditure>>();
@@ -47,9 +48,7 @@ namespace orion.web.UI.Models
                .Concat(ContractorExpenditures.OfType<SharedExpenseModel>())
                .Concat(MiscExpenditures.OfType<SharedExpenseModel>())
                .Concat(TimeAndExpenceExpenditures.OfType<SharedExpenseModel>())
-               .OrderByDescending(x => x.ExpensedOnDateEst);           
+               .OrderByDescending(x => x.ExpensedOnDateEst);
         }
     }
-    
 }
-

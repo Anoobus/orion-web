@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace orion.web.BLL.AutoMapper
+namespace Orion.Web.BLL.AutoMapper
 {
     public static class AutoMapperStartupExtensions
     {

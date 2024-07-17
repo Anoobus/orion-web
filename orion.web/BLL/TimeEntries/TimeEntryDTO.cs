@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace orion.web.TimeEntries
+namespace Orion.Web.TimeEntries
 {
     public class TimeEntryDTO : TimeEntryBaseDTO
     {

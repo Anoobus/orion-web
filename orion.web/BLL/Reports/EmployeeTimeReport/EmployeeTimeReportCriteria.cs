@@ -1,21 +1,19 @@
-﻿using orion.web.Employees;
-using orion.web.Jobs;
-using orion.web.Reports.Common;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using Orion.Web.Employees;
+using Orion.Web.Jobs;
+using Orion.Web.Reports.Common;
 
-namespace orion.web.Reports.EmployeeTimeReport
+namespace Orion.Web.Reports.EmployeeTimeReport
 {
-
     public class EmployeeTimeReportCriteria
     {
-        public const string EMPLOYEE_TIME_REPORT_NAME = "Employee Time Report";
+        public const string EMPLOYEETIMEREPORTNAME = "Employee Time Report";
         public ReportingPeriod PeriodSettings { get; set; }
         public IEnumerable<CoreEmployeeDto> AvailableEmployees { get; set; }
         public int SelectedEmployeeId { get; set; }
-      
     }
 }

@@ -6,31 +6,26 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using orion.web.Common;
-using orion.web.Employees;
-using orion.web.Notifications;
-using orion.web.TimeEntries;
+using Orion.Web.Common;
+using Orion.Web.Employees;
+using Orion.Web.Notifications;
+using Orion.Web.TimeEntries;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
-namespace orion.web.api
+namespace Orion.Web.Api
 {
-
-    
-
     public class Day
     {
         [Range(0, double.MaxValue)]
-        [RegularExpression(@"([0-9]*\.[0-9])|(([0-9])\.?)")]        
+        [RegularExpression(@"([0-9]*\.[0-9])|(([0-9])\.?)")]
         public decimal Hours { get; set; }
         [Range(0, double.MaxValue)]
-        [RegularExpression(@"([0-9]*\.[0-9])|(([0-9])\.?)")]        
+        [RegularExpression(@"([0-9]*\.[0-9])|(([0-9])\.?)")]
         public decimal OvertimeHours { get; set; }
     }
 
     public class UpdateTimeEntry : Dictionary<DayOfWeek, Day>
     {
-
     }
 
     [Route("orion-api/v1")]
@@ -49,7 +44,8 @@ namespace orion.web.api
 
         [HttpPatch]
         [Route("employees/{employee-id}/time-entry/week/{week-id:int}/efforts/{job-id:int}.{task-id:int}")]
-        public async Task<IActionResult> SetTimeForEffort([FromBody] Dictionary<DayOfWeek, Day> saveRequest,
+        public async Task<IActionResult> SetTimeForEffort(
+            [FromBody] Dictionary<DayOfWeek, Day> saveRequest,
             [FromRoute(Name = "week-id")] int weekid,
             [FromRoute(Name = "employee-id")] int employeeId,
             [FromRoute(Name = "job-id")] int jobId,
@@ -60,7 +56,6 @@ namespace orion.web.api
             {
                 var msg = "You are not allowed to edit another users effort selection.";
                 return CreateErrorResponse(msg);
-
             }
 
             var currentTime = await _weekOfTimeEntriesQuery.GetFullTimeEntryViewModelAsync(new WeekOfTimeEntriesRequest()
@@ -75,13 +70,12 @@ namespace orion.web.api
             {
                 day.Hours = saveRequest[day.DayOfWeek].Hours;
                 day.OvertimeHours = saveRequest[day.DayOfWeek].OvertimeHours;
-
             }
-            
-            var addResult = await _saveTimeEntriesCommand.SaveTimeEntriesAsync(employeeId,weekid,currentTime);
+
+            var addResult = await _saveTimeEntriesCommand.SaveTimeEntriesAsync(employeeId, weekid, currentTime);
 
             if (addResult.Successful)
-            {               
+            {
                 return new StatusCodeResult(StatusCodes.Status200OK);
             }
             else
@@ -99,7 +93,6 @@ namespace orion.web.api
                     Detail = msg,
                     Status = StatusCodes.Status400BadRequest,
                     Title = "Errors Prevented Saving This Row",
-
                 }
             })
             {
@@ -108,4 +101,3 @@ namespace orion.web.api
         }
     }
 }
-

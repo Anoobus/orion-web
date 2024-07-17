@@ -5,22 +5,23 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
-using orion.web.api;
-using orion.web.api.expenditures.Models;
-using orion.web.BLL.Core;
-using orion.web.Common;
-using orion.web.DataAccess;
-using orion.web.Employees;
-using orion.web.Jobs;
-using orion.web.UI.Models;
-using orion.web.Util.IoC;
+using NUglify.Html;
+using Orion.Web.Api;
+using Orion.Web.Api.Expenditures.Models;
+using Orion.Web.BLL.Core;
+using Orion.Web.Common;
+using Orion.Web.DataAccess;
+using Orion.Web.Employees;
+using Orion.Web.Jobs;
+using Orion.Web.UI.Models;
+using Orion.Web.Util.IoC;
 
-namespace orion.web.BLL.ArcFlashExpenditureExpenses
+namespace Orion.Web.BLL.ArcFlashExpenditureExpenses
 {
-
     public class GetAllExpendituresRequest : IProduces<AllExpendituresModel>
     {
-        public GetAllExpendituresRequest(bool includeArcFlashlabels = true,
+        public GetAllExpendituresRequest(
+            bool includeArcFlashlabels = true,
             bool includeCompanyVehicles = true,
             bool includeMiscExpenditure = true,
             bool includeContractorExpenditures = true,
@@ -43,15 +44,15 @@ namespace orion.web.BLL.ArcFlashExpenditureExpenses
         public Guid? LimitToSingleExpense { get; }
     }
 
-
     public interface IGetListOfExpenditures
     {
-          public Task<IProcessResult<AllExpendituresModel>> Process(GetAllExpendituresRequest msg);
+        public Task<IProcessResult<AllExpendituresModel>> Process(GetAllExpendituresRequest msg);
     }
+
     public class GetListOfExpenditures
         : Orchastrator<GetAllExpendituresRequest, AllExpendituresModel>,
         IGetListOfExpenditures, IAutoRegisterAsSingleton
-        
+
     {
         private readonly IArcFlashLabelExpenditureRepo arcFlashLabelsRepo;
         private readonly ICompanyVehicleExpenditureRepo companyVehicleRepo;
@@ -62,7 +63,8 @@ namespace orion.web.BLL.ArcFlashExpenditureExpenses
         private readonly IJobsRepository jobsRepository;
         private readonly IMapper _mapper;
 
-        public GetListOfExpenditures(IArcFlashLabelExpenditureRepo arcFlashLabelsRepo,
+        public GetListOfExpenditures(
+            IArcFlashLabelExpenditureRepo arcFlashLabelsRepo,
             ICompanyVehicleExpenditureRepo companyVehicleRepo,
             IMiscExpenditureRepo miscRepo,
             IContractorExpenditureRepo contractorExpRepo,
@@ -80,22 +82,22 @@ namespace orion.web.BLL.ArcFlashExpenditureExpenses
             this.jobsRepository = jobsRepository;
             _mapper = mapper;
         }
+
         protected override async Task<IProcessResult<AllExpendituresModel>> Handle(GetAllExpendituresRequest msg)
         {
             var employeeDetails = (await empRepo.GetAllEmployees())
-                .Where(x => x.EmployeeId != 1) //exclude Admin here
+                .Where(x => x.EmployeeId != 1) // exclude Admin here
                 .ToDictionary(x => x.EmployeeId);
             var jobs = (await jobsRepository.GetAsync()).ToDictionary(x => x.JobId);
             var result = new AllExpendituresModel();
 
-
             if (msg.IncludeArcFlashlabels)
             {
-
                 var temp = await arcFlashLabelsRepo.SearchForEntity(x => msg.LimitToSingleExpense.HasValue ?
                                                                                 x.ExternalId == msg.LimitToSingleExpense.Value :
                                                                                 true);
-                await LoadSection(temp,
+                LoadSection(
+                    temp,
                     (ArcFlashLabelExpenditure x) =>
                     {
                         var hmm = new Expense<ArcFlashLabelExpenditure>()
@@ -114,9 +116,11 @@ namespace orion.web.BLL.ArcFlashExpenditureExpenses
                     },
                     mapped => result.ArcFlashLabelExpenditures = mapped);
             }
+
             if (msg.IncludeCompanyVehicles)
             {
-                await LoadSection(await companyVehicleRepo.SearchForEntity(x => msg.LimitToSingleExpense.HasValue ?
+                LoadSection(
+                    await companyVehicleRepo.SearchForEntity(x => msg.LimitToSingleExpense.HasValue ?
                                                                                 x.ExternalId == msg.LimitToSingleExpense.Value :
                                                                                 true),
                     (CompanyVehicleExpenditure x) => new Expense<CompanyVehicleExpenditure>()
@@ -126,7 +130,7 @@ namespace orion.web.BLL.ArcFlashExpenditureExpenses
                         EmployeeName = $"{employeeDetails[x.EmployeeId].Last}, {employeeDetails[x.EmployeeId].First}",
                         FullJobNameWithCode = jobs[x.JobId].FullJobCodeWithName,
                         Id = x.ExternalId,
-                        ShortExpenseName = $"Company Vehicle: {x.Vehicle} ({x.TotalMiles} miles)",
+                        ShortExpenseName = $"Company Vehicle: {ToHumanReadable(x.Vehicle)} ({x.TotalMiles} miles)",
                         JobId = x.JobId,
                         LastModifiedDateEst = DateTimeWithZone.ConvertToEST(x.LastModified.UtcDateTime),
                         ExpensedOnDateEst = DateTimeWithZone.ConvertToEST(x.DateVehicleFirstUsed.UtcDateTime)
@@ -135,8 +139,9 @@ namespace orion.web.BLL.ArcFlashExpenditureExpenses
             }
 
             if (msg.IncludeContractorExpenditures)
-            {               
-                await LoadSection(await contractorExpRepo.SearchForEntity(x => msg.LimitToSingleExpense.HasValue ?
+            {
+                LoadSection(
+                    await contractorExpRepo.SearchForEntity(x => msg.LimitToSingleExpense.HasValue ?
                                                                                 x.ExternalId == msg.LimitToSingleExpense.Value :
                                                                                 true),
                     (ContractorExpenditure x) => new Expense<ContractorExpenditure>()
@@ -153,9 +158,11 @@ namespace orion.web.BLL.ArcFlashExpenditureExpenses
                     },
                     mapped => result.ContractorExpenditures = mapped);
             }
+
             if (msg.IncludeMiscExpenditure)
             {
-                await LoadSection(await miscRepo.SearchForEntity(x => msg.LimitToSingleExpense.HasValue ?
+                LoadSection(
+                    await miscRepo.SearchForEntity(x => msg.LimitToSingleExpense.HasValue ?
                                                                                 x.ExternalId == msg.LimitToSingleExpense.Value :
                                                                                 true),
                     (MiscExpenditure x) => new Expense<MiscExpenditure>()
@@ -175,8 +182,8 @@ namespace orion.web.BLL.ArcFlashExpenditureExpenses
 
             if (msg.IncludeTimeAndExpenseExpenditures)
             {
-
-                await LoadSection(await timeAndExpenseExpRepo.SearchForEntity(x => msg.LimitToSingleExpense.HasValue ?
+                LoadSection(
+                    await timeAndExpenseExpRepo.SearchForEntity(x => msg.LimitToSingleExpense.HasValue ?
                                                                                 x.ExternalId == msg.LimitToSingleExpense.Value :
                                                                                 true),
                     (TimeAndExpenceExpenditure x) => new Expense<TimeAndExpenceExpenditure>()
@@ -205,10 +212,38 @@ namespace orion.web.BLL.ArcFlashExpenditureExpenses
             result.AvailableJobs = jobs.Values.Where(x => x.JobStatusId == JobStatus.Enabled || inUseJobs.Contains(x.JobId)).ToList();
 
             return Success(result);
-
         }
 
-        private async Task LoadSection<TResult, TEFModel>(List<TEFModel> inDb,
+        private string ToHumanReadable(CompanyVehicleDescriptor vehicle)
+        {
+            if (vehicle == CompanyVehicleDescriptor.Unknown)
+                return vehicle.ToString();
+
+            var temp = vehicle.ToString();
+            var final = string.Empty;
+            foreach (var character in temp)
+            {
+                if (character.IsAlphaUpper() || final.Length <= 1)
+                {
+                    final += character;
+                }
+                else
+                {
+                    var eow = final.Last();
+                    if (eow.IsAlphaUpper())
+                    {
+                        final = final.Substring(0, final.Length - 1) + " " + eow + character;
+                    }
+                    else
+                    {
+                        final += character;
+                    }
+                }
+            }
+            return $"2024 {final}";
+        }
+        private void LoadSection<TResult, TEFModel>(
+            List<TEFModel> inDb,
             Func<TResult, Expense<TResult>> map,
             Action<List<Expense<TResult>>> onMapped)
         {
@@ -223,9 +258,6 @@ namespace orion.web.BLL.ArcFlashExpenditureExpenses
                             .Select(map)
                             .ToList());
             }
-
-
         }
     }
 }
-

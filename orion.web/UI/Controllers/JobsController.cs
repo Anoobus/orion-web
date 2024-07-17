@@ -1,18 +1,18 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using orion.web.BLL.Jobs;
-using orion.web.Clients;
-using orion.web.Common;
-using orion.web.Employees;
-using orion.web.Notifications;
-using orion.web.TimeEntries;
-using orion.web.UI.Models;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Orion.Web.BLL.Jobs;
+using Orion.Web.Clients;
+using Orion.Web.Common;
+using Orion.Web.Employees;
+using Orion.Web.Notifications;
+using Orion.Web.TimeEntries;
+using Orion.Web.UI.Models;
 
-namespace orion.web.Jobs
+namespace Orion.Web.Jobs
 {
     [Authorize]
     public class JobsController : Controller
@@ -25,7 +25,8 @@ namespace orion.web.Jobs
         private readonly ISessionAdapter sessionAdapter;
         private readonly IMapper _mapper;
 
-        public JobsController(IClientsRepository clientRepository,
+        public JobsController(
+            IClientsRepository clientRepository,
             IJobsRepository jobsRepository,
             IEmployeeRepository employeeRepository,
             ISitesRepository siteRepository,
@@ -44,7 +45,7 @@ namespace orion.web.Jobs
 
         public ActionResult Index()
         {
-            if(User.IsInRole(UserRoleName.Admin))
+            if (User.IsInRole(UserRoleName.Admin))
             {
                 return View("Index");
             }
@@ -58,10 +59,11 @@ namespace orion.web.Jobs
         {
             var isAdmin = User.IsInRole(UserRoleName.Admin);
             var jobs = await _jobsRepository.GetAsync();
-            if(!isAdmin)
+            if (!isAdmin)
             {
                 jobs = jobs.Where(x => x.JobStatusId == JobStatus.Enabled).ToList();
             }
+
             var myJobs = await _jobsRepository.GetAsync(await sessionAdapter.EmployeeIdAsync());
             var availableClients = await clientRepository.GetAllClients();
             var availableSites = await siteRepository.GetAll();
@@ -106,12 +108,12 @@ namespace orion.web.Jobs
 
         public async System.Threading.Tasks.Task<ActionResult> RemoveJobForCurrentUser(int id)
         {
-
             var me = await _employeeRepository.GetSingleEmployeeAsync(User.Identity.Name);
-            if(me.AssignJobs.Contains(id))
+            if (me.AssignJobs.Contains(id))
             {
                 me.AssignJobs.Remove(id);
             }
+
             _employeeRepository.Save(me);
 
             NotificationsController.AddNotification(User.SafeUserName(), $"Removed from my jobs");
@@ -200,6 +202,5 @@ namespace orion.web.Jobs
             NotificationsController.AddNotification(User.SafeUserName(), $"Updated {jobSaved.FullJobCodeWithName}");
             return RedirectToAction(nameof(Index));
         }
-
     }
 }

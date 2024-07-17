@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
-using orion.web.Clients;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Orion.Web.Clients;
 
-namespace orion.web.Jobs
+namespace Orion.Web.Jobs
 {
     public class CreateJobViewModel
     {

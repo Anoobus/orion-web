@@ -3,22 +3,22 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
 
-namespace orion.web.Common
+namespace Orion.Web.Common
 {
-
-
     public class WeekDTO
     {
         private static readonly ConcurrentDictionary<WeekDTO, bool> PPEStatusByWeek = new ConcurrentDictionary<WeekDTO, bool>();
-        private static readonly ConcurrentDictionary<int, WeekDTO> weeksByWeekId = new ConcurrentDictionary<int, WeekDTO>();
-        private static readonly ConcurrentDictionary<WeekDTO,int> weekIdsByWeek = new ConcurrentDictionary<WeekDTO, int>();
+        private static readonly ConcurrentDictionary<int, WeekDTO> WeeksByWeekId = new ConcurrentDictionary<int, WeekDTO>();
+        private static readonly ConcurrentDictionary<WeekDTO, int> WeekIdsByWeek = new ConcurrentDictionary<WeekDTO, int>();
         public static readonly DateTime WeekEpoch = new DateTime(2000, 1, 1);
 
-        public const DayOfWeek WEEK_START = DayOfWeek.Saturday;
-        public const DayOfWeek WEEK_END = DayOfWeek.Friday;
+        public const DayOfWeek WEEKSTART = DayOfWeek.Saturday;
+        public const DayOfWeek WEEKEND = DayOfWeek.Friday;
 
-        public readonly DateTime WeekEnd;
-        public readonly DateTime WeekStart;
+        public DateTime WeekEnd => _weekEnd;
+        public DateTime WeekStart => _weekStart;
+        private readonly DateTime _weekEnd;
+        private readonly DateTime _weekStart;
         public int Year => WeekStart.Year;
         public Lazy<int> WeekId => new Lazy<int>(() => GetWeekId());
         public Lazy<bool> IsPPE => new Lazy<bool>(() => GetPPEStatus());
@@ -30,21 +30,22 @@ namespace orion.web.Common
 
         public WeekDTO(DateTime weekStart)
         {
-            if (weekStart.DayOfWeek != WEEK_START)
+            if (weekStart.DayOfWeek != WEEKSTART)
             {
-                throw new InvalidOperationException($"Week start must be on a {WEEK_START}");
+                throw new InvalidOperationException($"Week start must be on a {WEEKSTART}");
             }
-            WeekStart = weekStart.Date;
-            WeekEnd = weekStart.Date;
-            while (WeekEnd.DayOfWeek != WEEK_END)
+
+            _weekStart = weekStart.Date;
+            _weekEnd = weekStart.Date;
+            while (_weekEnd.DayOfWeek != WEEKEND)
             {
-                WeekEnd = WeekEnd.AddDays(1);
+                _weekEnd = _weekEnd.AddDays(1);
             }
         }
 
         private int GetWeekId()
         {
-            return weekIdsByWeek.GetOrAdd(this, (week) =>
+            return WeekIdsByWeek.GetOrAdd(this, (week) =>
              {
                  var candidate = new WeekDTO(WeekEpoch);
                  var weekId = 0;
@@ -53,6 +54,7 @@ namespace orion.web.Common
                      candidate = candidate.Next();
                      ++weekId;
                  }
+
                  return weekId;
              });
         }
@@ -79,19 +81,22 @@ namespace orion.web.Common
 
         public static WeekDTO CreateWithWeekContaining(DateTime date)
         {
-            while (date.DayOfWeek != WEEK_START)
+            while (date.DayOfWeek != WEEKSTART)
             {
                 date = date.AddDays(-1);
             }
+
             return new WeekDTO(date);
         }
+
         public static WeekDTO CreateWithWeekContaining(DateTimeOffset date)
         {
             return CreateWithWeekContaining(DateTimeWithZone.ConvertToEST(date.UtcDateTime));
         }
+
         public static WeekDTO CreateForWeekId(int weekId)
         {
-            return weeksByWeekId.GetOrAdd(weekId, (id) =>
+            return WeeksByWeekId.GetOrAdd(weekId, (id) =>
              {
                  var candidate = new WeekDTO(WeekEpoch);
                  var candidateWeekId = 0;
@@ -100,6 +105,7 @@ namespace orion.web.Common
                      candidate = candidate.Next();
                      ++candidateWeekId;
                  }
+
                  return candidate;
              });
         }
@@ -107,10 +113,11 @@ namespace orion.web.Common
         public DateTime GetDateFor(DayOfWeek dayOfWeek)
         {
             var candidateDay = WeekStart;
-            while(candidateDay.DayOfWeek != dayOfWeek)
+            while (candidateDay.DayOfWeek != dayOfWeek)
             {
                 candidateDay = candidateDay.AddDays(1);
             }
+
             return candidateDay;
         }
 
@@ -123,14 +130,17 @@ namespace orion.web.Common
 
             return week.Equals(other);
         }
+
         public static bool operator !=(WeekDTO week, WeekDTO other)
         {
             if (ReferenceEquals(week, null))
             {
                 return !ReferenceEquals(other, null);
             }
-            return !(week.Equals(other));
+
+            return !week.Equals(other);
         }
+
         public override bool Equals(object obj)
         {
             return Equals(obj as WeekDTO);

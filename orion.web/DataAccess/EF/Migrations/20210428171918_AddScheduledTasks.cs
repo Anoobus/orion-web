@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace orion.web.DataAccess.EF.Migrations
+namespace Orion.Web.DataAccess.EF.Migrations
 {
     public partial class AddScheduledTasks : Migration
     {

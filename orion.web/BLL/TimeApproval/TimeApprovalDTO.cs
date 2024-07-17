@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace orion.web.TimeEntries
+namespace Orion.Web.TimeEntries
 {
     public enum TimeApprovalStatus
     {
@@ -10,6 +10,7 @@ namespace orion.web.TimeEntries
         Rejected,
         Approved
     }
+
     public class TimeApprovalDTO
     {
         [Display(Name = "Employee")]
@@ -28,7 +29,7 @@ namespace orion.web.TimeEntries
         public DateTime WeekStartDate { get; set; }
         [Display(Name = "Total Regular")]
         public decimal TotalRegularHours { get; set; }
-        [Display(Name ="Total Overtime")]
+        [Display(Name = "Total Overtime")]
         public decimal TotalOverTimeHours { get; set; }
 
         public bool IsHidden { get; set; }

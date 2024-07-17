@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace orion.web.Reports.Common
+namespace Orion.Web.Reports.Common
 {
     public class ReportingPeriod
     {

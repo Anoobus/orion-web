@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 
-namespace orion.web.JobsTasks
+namespace Orion.Web.JobsTasks
 {
     public class TaskListViewModel
     {
         public TaskDTO HeaderHelp { get; set; }
-        public  IEnumerable<TaskDTO> Tasks { get; set; }
+        public IEnumerable<TaskDTO> Tasks { get; set; }
     }
 }

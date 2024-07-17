@@ -1,5 +1,5 @@
-﻿@model orion.web.Jobs.JobListViewModel
-@using orion.web.Employees
+﻿@model Orion.Web.Jobs.JobListViewModel
+@using Orion.Web.Employees
 <nav id="bread-crumb-bar" class="red darken-3 z-depth-3">
     <div class="nav-wrapper ">
         <div class="col s12">
@@ -77,7 +77,7 @@
                                     <br />Site: @Html.DisplayFor(modelItem => item.Key.Item2.Site.SiteName)
                                 </td>
                                 <td>
-                                    @if (item.Key.Item1.JobStatusId == orion.web.Jobs.JobStatus.Enabled)
+                                    @if (item.Key.Item1.JobStatusId == Orion.Web.Jobs.JobStatus.Enabled)
                                     {
                                         <span>Active</span>
                                     }
@@ -87,7 +87,7 @@
                                     }
                                 </td>
                                 <td class="action-button-col">
-                                    @if (item.Key.Item1.JobStatusId == orion.web.Jobs.JobStatus.Enabled && User.IsInRole(UserRoleName.Admin))
+                                    @if (item.Key.Item1.JobStatusId == Orion.Web.Jobs.JobStatus.Enabled && User.IsInRole(UserRoleName.Admin))
                                     {
                                         @Html.ActionLink("Close Job", "CloseJob", new { id = item.Key.Item1.JobId })<text> |</text>
                                     }

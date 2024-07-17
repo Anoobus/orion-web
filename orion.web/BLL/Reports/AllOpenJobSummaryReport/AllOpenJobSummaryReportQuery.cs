@@ -3,16 +3,17 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
-using orion.web.Common;
-using orion.web.Util.IoC;
+using Orion.Web.Common;
+using Orion.Web.Util.IoC;
 
-namespace orion.web.Reports
+namespace Orion.Web.Reports
 {
     public interface IAllOpenJobSummaryReportQuery
     {
         Task<ReportDTO<AllOpenJobSummaryReportDTO>> RunAsync(bool showEmptyJobs, string reportDisplayName);
     }
-    public class AllOpenJobSummaryReportQuery : IAllOpenJobSummaryReportQuery , IAutoRegisterAsSingleton
+
+    public class AllOpenJobSummaryReportQuery : IAllOpenJobSummaryReportQuery, IAutoRegisterAsSingleton
     {
         private readonly IConfiguration _configuration;
 
@@ -20,21 +21,20 @@ namespace orion.web.Reports
         {
             this._configuration = configuration;
         }
+
         public class TempCoreData
         {
             public int JobId { get; set; }
             public int EmployeeId { get; set; }
             public decimal TotalHours { get; set; }
         }
+
         public async Task<ReportDTO<AllOpenJobSummaryReportDTO>> RunAsync(bool showEmptyJobs, string reportDisplayName)
         {
-            
-          
-            using(var conn = new SqlConnection(_configuration.GetConnectionString("SiteConnection")))
-            using(var cmd = conn.CreateCommand())
+            using (var conn = new SqlConnection(_configuration.GetConnectionString("SiteConnection")))
+            using (var cmd = conn.CreateCommand())
             {
                 conn.Open();
-
 
                 cmd.CommandText = @";with CoreData as (
                                     SELECT
@@ -116,11 +116,9 @@ namespace orion.web.Reports
                                      + ISNULL(afla.amount,0) 
                                      + ISNULL(mea.amount,0) > 0";
 
-                
-
                 var rdr = cmd.ExecuteReader();
                 var core = new List<TempCoreData>();
-                while(await rdr.ReadAsync())
+                while (await rdr.ReadAsync())
                 {
                     core.Add(new TempCoreData()
                     {
@@ -129,20 +127,20 @@ namespace orion.web.Reports
                         TotalHours = rdr.GetDecimal(2)
                     });
                 }
+
                 await rdr.NextResultAsync();
                 var employees = new Dictionary<int, string>();
-                while(await rdr.ReadAsync())
+                while (await rdr.ReadAsync())
                 {
                     employees.Add(rdr.GetInt32(0), rdr.GetString(1));
                 }
 
                 await rdr.NextResultAsync();
                 var jobs = new Dictionary<int, string>();
-                while(await rdr.ReadAsync())
+                while (await rdr.ReadAsync())
                 {
                     jobs.Add(rdr.GetInt32(0), rdr.GetString(1));
                 }
-
 
                 var rpt = new AllOpenJobSummaryReportDTO()
                 {
@@ -153,19 +151,19 @@ namespace orion.web.Reports
                 rpt.EmployeeIdToNameMap = employees;
 
                 await rdr.NextResultAsync();
-                while(await rdr.ReadAsync())
+                while (await rdr.ReadAsync())
                 {
                     var jobName = jobs[rdr.GetInt32(0)];
                     rpt.ExpenseAmountForJob.Add(jobName, rdr.GetDecimal(1));
                 }
-            
+
                 var hmm = core.GroupBy(x => x.JobId);
                 foreach (var job in hmm)
                 {
                     var jobCode = jobs[job.Key];
                     rpt.Rows.Add(jobCode, new JobSummaryEmployeeCells(job.ToDictionary(j => j.EmployeeId, j => j.TotalHours)));
                 }
-               
+
                 return new ReportDTO<AllOpenJobSummaryReportDTO>()
                 {
                     Data = rpt,
@@ -173,12 +171,11 @@ namespace orion.web.Reports
                     RunSettings =
                 new Dictionary<string, string>()
                 {
-                    { "Generated", $"{DateTimeWithZone.EasternStandardTime.ToShortDateString()} at {DateTimeWithZone.EasternStandardTime.ToShortTimeString()}"},
+                    { "Generated", $"{DateTimeWithZone.EasternStandardTime.ToShortDateString()} at {DateTimeWithZone.EasternStandardTime.ToShortTimeString()}" },
                     { "Company", $"Orion Engineering Co., Inc." },
                 }
                 };
             }
-            
         }
     }
 }

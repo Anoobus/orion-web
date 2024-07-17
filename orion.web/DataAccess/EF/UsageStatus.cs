@@ -1,9 +1,8 @@
-﻿
-namespace orion.web.DataAccess.EF
+﻿namespace Orion.Web.DataAccess.EF
 {
     public class UsageStatus
     {
         public int UsageStatusId { get; set; }
         public string Name { get; set; }
-    }    
+    }
 }

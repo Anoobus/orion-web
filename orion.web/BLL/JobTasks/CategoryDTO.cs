@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace orion.web.JobTasks
+namespace Orion.Web.JobTasks
 {
     public enum TaskCategory
     {
@@ -17,6 +17,7 @@ namespace orion.web.JobTasks
         Managerial = 7,
         Misc = 8
     }
+
     public class CategoryDTO : IEquatable<CategoryDTO>
     {
         public int Id { get; set; }
@@ -37,6 +38,7 @@ namespace orion.web.JobTasks
                    Enum == other.Enum &&
                    IsInternalCategory == other.IsInternalCategory;
         }
+
         public override int GetHashCode()
         {
             return Id;

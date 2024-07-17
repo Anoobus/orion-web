@@ -1,16 +1,17 @@
-﻿using Microsoft.EntityFrameworkCore;
-using orion.web.DataAccess;
-using orion.web.Util.IoC;
-using System;
+﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Orion.Web.DataAccess;
+using Orion.Web.Util.IoC;
 
-namespace orion.web.TimeEntries
+namespace Orion.Web.TimeEntries
 {
     public interface ITimeSummaryService
     {
         Task<TimeSummaryDTO> GetAsync(int weekId, int employeeId);
     }
+
     public class TimeSummaryService : ITimeSummaryService, IAutoRegisterAsSingleton
     {
         private readonly IContextFactory _contextFactory;
@@ -22,7 +23,7 @@ namespace orion.web.TimeEntries
 
         public async Task<TimeSummaryDTO> GetAsync(int weekId, int employeeId)
         {
-            using(var db = _contextFactory.CreateDb())
+            using (var db = _contextFactory.CreateDb())
             {
                 var weekDataByEmployeeId = (await db.WeeklyData.Where(x => x.WeekId == weekId && x.EmployeeId == employeeId).ToListAsync()).ToDictionary(x => x.EmployeeId, x => x);
                 var approvalStatus = await db.TimeSheetApprovals.FirstOrDefaultAsync(x => x.EmployeeId == employeeId && x.WeekId == weekId);

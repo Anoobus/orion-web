@@ -3,22 +3,23 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
-using orion.web.BLL.Reports.DetailedExpenseForJobReport;
-using orion.web.Common;
-using orion.web.Jobs;
-using orion.web.Util.IoC;
+using Orion.Web.BLL.Reports.DetailedExpenseForJobReport;
+using Orion.Web.Common;
+using Orion.Web.Jobs;
+using Orion.Web.Util.IoC;
 
-namespace orion.web.Reports
+namespace Orion.Web.Reports
 {
     public interface IDetailedExpenseForJobReportQuery
     {
         Task<ReportDTO<DetailedExpenseForJobReportDTO>> RunAsync(DetailedExpenseForJobReportCriteria settings);
     }
+
     public class DetailedExpenseForJobReportQuery : IDetailedExpenseForJobReportQuery, IAutoRegisterAsSingleton
     {
         private static readonly Serilog.ILogger _logger = Serilog.Log.Logger.ForContext<DetailedExpenseForJobReportQuery>();
 
-        private static readonly string jobParam = "jobId";
+        private static readonly string JobParam = "jobId";
         private static readonly string GetTimeAndExpenseQuery = @"Select 
                                 te.ExpenseOnDate,
                                 e.First + ', ' + e.Last  as Employee,
@@ -26,7 +27,7 @@ namespace orion.web.Reports
                                 from dbo.TimeAndExpenceExpenditures te
                                 inner join dbo.Employees e
                                 on te.EmployeeId = e.EmployeeId
-                                where te.JobId = @" + jobParam;
+                                where te.JobId = @" + JobParam;
         private static TimeAndExposeSectionRow MapToTimeAndExposeSectionRow(SqlDataReader rdr)
         {
             return new TimeAndExposeSectionRow()
@@ -36,8 +37,8 @@ namespace orion.web.Reports
                 Cost = rdr.GetDecimal(2)
             };
         }
-        //$.50 x (600 - (2 x 250))
 
+        // $.50 x (600 - (2 x 250))
         private static readonly string GetCompanyVehicleExpenseQuery = @"select 
                                 ve.DateVehicleFirstUsed,
                                 v.Name,
@@ -52,7 +53,7 @@ namespace orion.web.Reports
                                 on ve.CompanyVehicleId = v.Id
                                 inner join dbo.Employees e
                                 on e.EmployeeId = ve.EmployeeId
-                                where ve.JobId = @" + jobParam;
+                                where ve.JobId = @" + JobParam;
 
         private static CompanyVehicleSectionRow MapToCompanyVehicleSectionRow(SqlDataReader rdr)
         {
@@ -73,7 +74,7 @@ namespace orion.web.Reports
                                 ce.TotalPOContractAmount,
                                 ce.ExpensedOn
                                 from dbo.ContractorExpenditures ce
-                                where ce.JobId = @" + jobParam;
+                                where ce.JobId = @" + JobParam;
         private static SubContractorSectionRow MapToSubContractorSectionRow(SqlDataReader rdr)
         {
             return new SubContractorSectionRow()
@@ -95,7 +96,7 @@ namespace orion.web.Reports
                                 from dbo.ArcFlashlabelExpenditures afl
                                 left outer join dbo.Employees e
                                  on afl.EmployeeId = e.EmployeeId
-                                where afl.JobId = @" + jobParam;
+                                where afl.JobId = @" + JobParam;
         private static ArcFlashLabeSectionRow MapToArcFlashlabelSection(SqlDataReader rdr)
         {
             return new ArcFlashLabeSectionRow()
@@ -109,12 +110,13 @@ namespace orion.web.Reports
             };
         }
 
-         private static readonly string GetMiscExpenseQuery = @"select 
+        private static readonly string GetMiscExpenseQuery = @"select 
                                 e.[Description],
                                 e.Amount,
                                 e.[ExpensedOn]
                                 from dbo.MiscExpenditures e
-                                where e.JobId = @" + jobParam;
+                                where e.JobId = @" + JobParam;
+        private readonly IJobsRepository jobsRepository;
         private static MiscSectionRow MapToMiscSectionRow(SqlDataReader rdr)
         {
             return new MiscSectionRow()
@@ -126,14 +128,12 @@ namespace orion.web.Reports
         }
 
         private IConfiguration configuration;
-        private readonly IJobsRepository jobsRepository;
 
         public DetailedExpenseForJobReportQuery(IConfiguration configuration, IJobsRepository jobsRepository)
         {
             this.configuration = configuration;
             this.jobsRepository = jobsRepository;
         }
-
 
         private async Task<IEnumerable<T>> LoadSection<T>(string query, Func<SqlDataReader, T> map, int jobId)
         {
@@ -143,25 +143,26 @@ namespace orion.web.Reports
             {
                 await conn.OpenAsync();
                 cmd.CommandText = query;
-                cmd.Parameters.Add(new SqlParameter(jobParam, jobId));
+                cmd.Parameters.Add(new SqlParameter(JobParam, jobId));
                 var rdr = await cmd.ExecuteReaderAsync();
                 while (await rdr.ReadAsync())
                 {
                     allResults.Add(map(rdr));
                 }
             }
+
             return allResults;
         }
+
         public async Task<ReportDTO<DetailedExpenseForJobReportDTO>> RunAsync(DetailedExpenseForJobReportCriteria settings)
         {
-
             try
             {
                 var data = new DetailedExpenseForJobReportDTO();
                 data.ArcFlashLabel = await LoadSection(GetArcFlashLabelExpenseQuery, MapToArcFlashlabelSection, int.Parse(settings.SelectedJobId));
                 data.CompanyVehicle = await LoadSection(GetCompanyVehicleExpenseQuery, MapToCompanyVehicleSectionRow, int.Parse(settings.SelectedJobId));
                 data.SubContractor = await LoadSection(GetContractorExpenseQuery, MapToSubContractorSectionRow, int.Parse(settings.SelectedJobId));
-                data.TimeAndExpense = await LoadSection(GetTimeAndExpenseQuery, MapToTimeAndExposeSectionRow, int.Parse(settings.SelectedJobId));                
+                data.TimeAndExpense = await LoadSection(GetTimeAndExpenseQuery, MapToTimeAndExposeSectionRow, int.Parse(settings.SelectedJobId));
                 data.Misc = await LoadSection(GetMiscExpenseQuery, MapToMiscSectionRow, int.Parse(settings.SelectedJobId));
                 data.PeriodStart = new DateTime(2021, 1, 1, 10, 0, 0, DateTimeKind.Local);
                 data.PeriodEnd = DateTimeWithZone.EasternStandardTime;
@@ -178,7 +179,7 @@ namespace orion.web.Reports
                     ReportName = "Detailed Expense Report",
                     RunSettings = new Dictionary<string, string>()
                     {
-                        { "Generated", $"{DateTimeWithZone.EasternStandardTime.ToShortDateString()} at {DateTimeWithZone.EasternStandardTime.ToShortTimeString()}"},
+                        { "Generated", $"{DateTimeWithZone.EasternStandardTime.ToShortDateString()} at {DateTimeWithZone.EasternStandardTime.ToShortTimeString()}" },
                         { "Company", $"Orion Engineering Co., Inc." },
                     }
                 };
@@ -189,12 +190,5 @@ namespace orion.web.Reports
                 throw;
             }
         }
-
-
     }
-
 }
-
-
-
-

@@ -1,8 +1,8 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System.Linq;
+﻿using System.Linq;
 using System.Reflection;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace orion.web.Util.IoC
+namespace Orion.Web.Util.IoC
 {
     public interface IAutoRegisterAsTransient { }
 }

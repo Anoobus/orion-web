@@ -1,14 +1,14 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using orion.web.Employees;
-using orion.web.Jobs;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Orion.Web.Employees;
+using Orion.Web.Jobs;
 
-namespace orion.web.api
+namespace Orion.Web.Api
 {
     [Authorize]
     [Route("api/v1/sites")]
@@ -27,7 +27,7 @@ namespace orion.web.api
         [HttpGet]
         public async Task<ActionResult<IEnumerable<SiteModel>>> Get()
         {
-            return Ok(_mapper.Map<IEnumerable<SiteModel>>( await _sitesRepository.GetAll()));
+            return Ok(_mapper.Map<IEnumerable<SiteModel>>(await _sitesRepository.GetAll()));
         }
     }
 }

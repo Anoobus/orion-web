@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 
-namespace orion.web.Jobs
+namespace Orion.Web.Jobs
 {
     public class SiteDTO : IEquatable<SiteDTO>
     {

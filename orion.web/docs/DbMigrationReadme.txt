@@ -1,2 +1,2 @@
 ﻿Add-Migration MigrationName -Context OrionDbContext -OutputDir DataAccess\EF\Migrations
-dotnet ef migrations add MIGRATION_NAME -c OrionDbContext -o DataAccess\EF\Migrations -p orion.web/orion.web.csproj -v
+dotnet ef migrations add MIGRATION_NAME -c OrionDbContext -o DataAccess/EF/Migrations -p orion.web/orion.web.csproj -v

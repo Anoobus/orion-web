@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace orion.web.Reports
+namespace Orion.Web.Reports
 {
     public class PayPeriodReportDTO
     {
@@ -23,5 +23,4 @@ namespace orion.web.Reports
         public decimal ExcusedNoPay { get; set; }
         public decimal Combined { get; set; }
     }
-
 }

@@ -1,10 +1,10 @@
-﻿using AutoMapper;
-using orion.web.BLL.AutoMapper;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using AutoMapper;
+using Orion.Web.BLL.AutoMapper;
 
-namespace orion.web.test.TestHelpers
+namespace Orion.Web.test.TestHelpers
 {
     public static class TestAutoMapper
     {

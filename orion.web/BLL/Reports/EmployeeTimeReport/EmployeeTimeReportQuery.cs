@@ -1,12 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using orion.web.Clients;
-using orion.web.Common;
-using orion.web.Employees;
-using orion.web.Jobs;
-using orion.web.Reports.EmployeeTimeReport;
-using orion.web.Reports.QuickJobTimeReport;
-using orion.web.Util.IoC;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
@@ -14,39 +6,48 @@ using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+using Orion.Web.Clients;
+using Orion.Web.Common;
+using Orion.Web.Employees;
+using Orion.Web.Jobs;
+using Orion.Web.Reports.EmployeeTimeReport;
+using Orion.Web.Reports.QuickJobTimeReport;
+using Orion.Web.Util.IoC;
 
-namespace orion.web.Reports.EmployeeTimeReport
+namespace Orion.Web.Reports.EmployeeTimeReport
 {
     public interface IEmployeeTimeReportQuery
     {
         Task<ReportDTO<EmployeeTimeReportDTO>> RunAsync(EmployeeTimeReportCriteria criteria);
     }
+
     public class EmployeeTimeReportQuery : IEmployeeTimeReportQuery, IAutoRegisterAsSingleton
     {
         private readonly IConfiguration configuration;
         private readonly ISessionAdapter _sessionAdapter;
         private readonly IEmployeeRepository _employeeRepository;
 
-        public EmployeeTimeReportQuery(IConfiguration configuration,
-            ISessionAdapter sessionAdapter, IEmployeeRepository employeeRepository
+        public EmployeeTimeReportQuery(
+            IConfiguration configuration,
+            ISessionAdapter sessionAdapter,
+            IEmployeeRepository employeeRepository
          )
         {
             this.configuration = configuration;
             _sessionAdapter = sessionAdapter;
             _employeeRepository = employeeRepository;
         }
+
         public async Task<ReportDTO<EmployeeTimeReportDTO>> RunAsync(EmployeeTimeReportCriteria criteria)
         {
             DateTime start = criteria.PeriodSettings.Start;
             DateTime end = criteria.PeriodSettings.End;
-            
-                                   
 
             using (var conn = new SqlConnection(configuration.GetConnectionString("SiteConnection")))
             using (var cmd = conn.CreateCommand())
             {
                 conn.Open();
-
 
                 cmd.CommandText = @"
 
@@ -69,13 +70,9 @@ group by
     ,ISNULL(jt.LegacyCode,'') + ' - ' + ISNULL(jt.Name,'') 
 order by 1,2";
 
-
-
-
                 cmd.Parameters.Add(new SqlParameter("employeeId", criteria.SelectedEmployeeId));
                 cmd.Parameters.Add(new SqlParameter("startInclusive", start));
                 cmd.Parameters.Add(new SqlParameter("endInclusive", end));
-                
 
                 var rdr = cmd.ExecuteReader();
                 var emp = await _employeeRepository.GetSingleEmployeeAsync(criteria.SelectedEmployeeId);
@@ -84,7 +81,7 @@ order by 1,2";
                 {
                     EmployeeName = $"{emp.Last}, {emp.First}",
                     PeriodEnd = end,
-                    PeriodStart = start                     
+                    PeriodStart = start
                 };
                 var rows = new List<EmployeeTimeEntry>();
                 while (await rdr.ReadAsync())
@@ -93,28 +90,28 @@ order by 1,2";
                     {
                         rows.Add(new EmployeeTimeEntry()
                         {
-                             JobCode = rdr.GetString(0),
-                             TaskCode = rdr.GetString(1),
-                             Regular = rdr.GetDecimal(2),
-                             Overtime = rdr.GetDecimal(3)                            
+                            JobCode = rdr.GetString(0),
+                            TaskCode = rdr.GetString(1),
+                            Regular = rdr.GetDecimal(2),
+                            Overtime = rdr.GetDecimal(3)
                         });
                     }
                 }
+
                 rez.Entries = rows;
-                    
+
                 return new ReportDTO<EmployeeTimeReportDTO>()
                 {
                     Data = rez,
-                    ReportName = EmployeeTimeReportCriteria.EMPLOYEE_TIME_REPORT_NAME,
+                    ReportName = EmployeeTimeReportCriteria.EMPLOYEETIMEREPORTNAME,
                     RunSettings =
                 new Dictionary<string, string>()
                 {
-                    { "Generated", $"{DateTimeWithZone.EasternStandardTime.ToShortDateString()} at {DateTimeWithZone.EasternStandardTime.ToShortTimeString()}"},
+                    { "Generated", $"{DateTimeWithZone.EasternStandardTime.ToShortDateString()} at {DateTimeWithZone.EasternStandardTime.ToShortTimeString()}" },
                     { "Company", $"Orion Engineering Co., Inc." }
-                }};
-
-
+                }
+                };
             }
-        }      
+        }
     }
 }

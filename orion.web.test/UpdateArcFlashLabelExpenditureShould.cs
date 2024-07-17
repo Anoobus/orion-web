@@ -5,10 +5,10 @@ using AutoMapper;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using orion.web.BLL.Expenditures;
-using orion.web.DataAccess;
+using Orion.Web.BLL.Expenditures;
+using Orion.Web.DataAccess;
 
-namespace orion.web.test.BLL
+namespace Orion.Web.test.BLL
 {
     [TestClass]
     public class UpdateArcFlashLabelExpenditureShould
@@ -17,20 +17,20 @@ namespace orion.web.test.BLL
         {
             private Mock<IArcFlashLabelExpenditureRepo> _repo = new Mock<IArcFlashLabelExpenditureRepo>();
             public bool WasSaveCalled { get; private set; }
-            public UpdateArcFlashLabelExpenditureMessage TestMessage { get; } 
+            public UpdateArcFlashLabelExpenditureMessage TestMessage { get; }
             public TestContext()
             {
                 TestMessage = _fixture.Create<UpdateArcFlashLabelExpenditureMessage>();
 
-                 _repo.Setup(x => x.FindByExternalId(It.IsAny<Guid>()))
-                     .ReturnsAsync((Guid id) =>
-                     {
-                         return new DataAccess.EF.ArcFlashLabelExpenditure()
-                         {
-                             ExternalId = id,
+                _repo.Setup(x => x.FindByExternalId(It.IsAny<Guid>()))
+                    .ReturnsAsync((Guid id) =>
+                    {
+                        return new DataAccess.EF.ArcFlashLabelExpenditure()
+                        {
+                            ExternalId = id,
 
-                         };
-                     });
+                        };
+                    });
 
                 _repo.Setup(x => x.SaveEntity(It.IsAny<DataAccess.EF.ArcFlashLabelExpenditure>()))
                      .ReturnsAsync((DataAccess.EF.ArcFlashLabelExpenditure mdl) =>
@@ -43,7 +43,7 @@ namespace orion.web.test.BLL
             {
                 return new UpdateArcFlashLabelExpenditure(_repo.Object, _mapper, null);
             }
-            
+
         }
 
         [TestMethod]
@@ -51,7 +51,7 @@ namespace orion.web.test.BLL
         {
             var ctx = new TestContext();
             var underTest = ctx.GetItemUnderTest();
-                     
+
             var actionReslut = await underTest.Process(ctx.TestMessage);
 
             var actual = actionReslut.Success;

@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using orion.web.Employees;
-using orion.web.Notifications;
+using Orion.Web.Employees;
+using Orion.Web.Notifications;
 
-namespace orion.web.Jobs
+namespace Orion.Web.Jobs
 {
-    [Authorize(Roles =UserRoleName.Admin)]
+    [Authorize(Roles = UserRoleName.Admin)]
     public class SiteController : Controller
     {
         private readonly ISitesRepository siteService;
@@ -20,7 +20,6 @@ namespace orion.web.Jobs
         {
             return View();
         }
-       
 
         // GET: Client/Create
         public ActionResult Create()
@@ -44,7 +43,5 @@ namespace orion.web.Jobs
                 return View();
             }
         }
-
-
     }
 }

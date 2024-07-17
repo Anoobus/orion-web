@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace orion.web.Employees
+namespace Orion.Web.Employees
 {
     public class EmployeeDTO : CoreEmployeeDto
     {
@@ -9,7 +9,9 @@ namespace orion.web.Employees
         public string UserName { get; set; }
         public bool IsExempt { get; set; }
         public List<int> AssignJobs { get; set; }
+        public List<int> DirectReports { get; set; }
         public string Role { get; set; }
+        public string NameOfRecord => $"{Last}, {First}";
     }
 
     public class CoreEmployeeDto

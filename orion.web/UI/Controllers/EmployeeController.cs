@@ -1,12 +1,13 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using orion.web.Jobs;
-using orion.web.Notifications;
-using System.Linq;
-using System.Threading.Tasks;
+using Orion.Web.Common;
+using Orion.Web.Jobs;
+using Orion.Web.Notifications;
 
-namespace orion.web.Employees
+namespace Orion.Web.Employees
 {
     [Authorize]
     public class EmployeeController : Controller
@@ -16,24 +17,29 @@ namespace orion.web.Employees
         private readonly IJobsRepository jobService;
         private readonly ICreateEmployeeCommand createEmployeeCommand;
         private readonly IUpdateEmployeeCommand updateEmployeeCommand;
+        private readonly ISessionAdapter _sessionAdapter;
 
-        public EmployeeController(IEmployeeRepository employeeService,
+        public EmployeeController(
+            IEmployeeRepository employeeService,
             UserManager<IdentityUser> userManager,
             IJobsRepository jobService,
             ICreateEmployeeCommand createEmployeeCommand,
-            IUpdateEmployeeCommand updateEmployeeCommand)
+            IUpdateEmployeeCommand updateEmployeeCommand,
+            ISessionAdapter sessionAdapter)
         {
             this.employeeService = employeeService;
             this.userManager = userManager;
             this.jobService = jobService;
             this.createEmployeeCommand = createEmployeeCommand;
             this.updateEmployeeCommand = updateEmployeeCommand;
+            _sessionAdapter = sessionAdapter;
         }
 
         public ActionResult Index()
         {
             return RedirectToAction(nameof(List));
         }
+
         public async Task<ActionResult> List()
         {
             var employees = await employeeService.GetAllEmployees();
@@ -51,6 +57,7 @@ namespace orion.web.Employees
             var allJobs = jobService.GetAsync();
             var roles = await employeeService.GetAllRoles();
             var emp = await employeeService.GetSingleEmployeeAsync(employee);
+            
             var vm = new EditEmployeeViewModel()
             {
                 SelectedRole = emp.Role,
@@ -62,10 +69,27 @@ namespace orion.web.Employees
                 NewEmail = string.Empty,
                 Password = string.Empty,
                 PasswordConfirm = string.Empty,
+                SelectedDirectReports = emp.DirectReports,
+                AvailableDirectReports = await GetAvailableDirectReportEmployees(emp.EmployeeId)
             };
 
-
             return View("Edit", vm);
+        }
+
+        private async Task<EmployeeSelectionViewModel[]> GetAvailableDirectReportEmployees(int? supervisorsEmployeeId = null)
+        {
+            var allEmps = await employeeService.GetAllEmployees();
+            return allEmps.Where(x => x.UserName != "admin@company.com" 
+                                      && x.Role != UserRoleName.Disabled 
+                                      && (!supervisorsEmployeeId.HasValue || x.EmployeeId != supervisorsEmployeeId.Value) 
+                                      && x.Role != UserRoleName.Admin)
+                          .Select(x => new EmployeeSelectionViewModel()
+                          {
+                              EmployeeId = x.EmployeeId,
+                              Fullname = x.NameOfRecord
+                          })
+                          .OrderBy(x => x.Fullname)
+                          .ToArray();
         }
 
         [HttpGet]
@@ -73,10 +97,12 @@ namespace orion.web.Employees
         {
             var allJobs = await jobService.GetAsync();
             var roles = await employeeService.GetAllRoles();
+           
             var vm = new CreateEmployeeViewModel()
             {
                 AvailableJobs = allJobs,
-                AvailableRoles = roles
+                AvailableRoles = roles,
+                AvailableDirectReports = await GetAvailableDirectReportEmployees()
             };
             return View("NewEmployee", vm);
         }
@@ -105,8 +131,6 @@ namespace orion.web.Employees
             employee.AvailableJobs = await jobService.GetAsync();
             employee.AvailableRoles = await employeeService.GetAllRoles();
             return View("NewEmployee", employee);
-
-
         }
 
         [HttpPost]
@@ -119,7 +143,7 @@ namespace orion.web.Employees
 
                 if (res.Successful)
                 {
-                    NotificationsController.AddNotification(this.User.SafeUserName(), $"{employee.Email} has been updated.");                    
+                    NotificationsController.AddNotification(this.User.SafeUserName(), $"{employee.Email} has been updated.");
                     return RedirectToAction(nameof(Edit), new { employee = employee.Email });
                 }
                 else
@@ -133,7 +157,6 @@ namespace orion.web.Employees
 
             employee.AvailableRoles = await employeeService.GetAllRoles();
             return View("Edit", employee);
-
         }
     }
 }

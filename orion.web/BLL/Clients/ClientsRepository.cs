@@ -1,13 +1,13 @@
-﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
-using orion.web.DataAccess;
-using orion.web.DataAccess.EF;
-using orion.web.Util.IoC;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using Orion.Web.DataAccess;
+using Orion.Web.DataAccess.EF;
+using Orion.Web.Util.IoC;
 
-namespace orion.web.Clients
+namespace Orion.Web.Clients
 {
     public interface IClientsRepository
     {
@@ -16,6 +16,7 @@ namespace orion.web.Clients
         Task<ClientDTO> Save(ClientDTO client);
         Task Delete(int clientId);
     }
+
     public class ClientsRepository : IClientsRepository, IAutoRegisterAsSingleton
     {
         private readonly IContextFactory _contextFactory;
@@ -29,7 +30,7 @@ namespace orion.web.Clients
 
         public async Task<IEnumerable<ClientDTO>> GetAllClients()
         {
-            using(var db = _contextFactory.CreateDb())
+            using (var db = _contextFactory.CreateDb())
             {
                 return (await db.Clients.ToListAsync())
                     .Select(x => _mapper.Map<ClientDTO>(x))
@@ -40,11 +41,11 @@ namespace orion.web.Clients
 
         public async Task<ClientDTO> Save(ClientDTO client)
         {
-            using(var db = _contextFactory.CreateDb())
+            using (var db = _contextFactory.CreateDb())
             {
                 var toUpdate = await db.Clients.SingleOrDefaultAsync(x => x.ClientId == client.ClientId);
 
-                if(toUpdate != null)
+                if (toUpdate != null)
                 {
                     toUpdate.ClientName = client.ClientName;
                     await db.SaveChangesAsync();
@@ -63,7 +64,7 @@ namespace orion.web.Clients
 
         public async Task<ClientDTO> GetClient(int ClientId)
         {
-            using(var db = _contextFactory.CreateDb())
+            using (var db = _contextFactory.CreateDb())
             {
                 return _mapper.Map<ClientDTO>(await db.Clients.SingleOrDefaultAsync(x => x.ClientId == ClientId));
             }
@@ -71,11 +72,11 @@ namespace orion.web.Clients
 
         public async Task Delete(int clientId)
         {
-            using(var db = _contextFactory.CreateDb())
+            using (var db = _contextFactory.CreateDb())
             {
                 var client = await db.Clients.SingleAsync(x => x.ClientId == clientId);
                 var inUse = await db.Jobs.AnyAsync(x => x.ClientId == client.ClientId);
-                if(!inUse)
+                if (!inUse)
                 {
                     db.Clients.Remove(client);
                     await db.SaveChangesAsync();

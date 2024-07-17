@@ -1,8 +1,7 @@
-﻿
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace orion.web.DataAccess.EF
+namespace Orion.Web.DataAccess.EF
 {
     public class ExpenseItem
     {

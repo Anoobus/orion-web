@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using orion.web.Util;
+using Orion.Web.Util;
 
-namespace orion.web.Common
+namespace Orion.Web.Common
 {
     public struct DateTimeWithZone
     {
-        public static DateTime UniversalTime => DateTime.UtcNow; 
+        public static DateTime UniversalTime => DateTime.UtcNow;
 
-        public static TimeZoneInfo IANA => TimeZoneInfo.GetSystemTimeZones().FirstOrDefault(x =>  x.Id == "America/Detroit");
+        public static TimeZoneInfo IANA => TimeZoneInfo.GetSystemTimeZones().FirstOrDefault(x => x.Id == "America/Detroit");
         public static TimeZoneInfo WINDOWS => TimeZoneInfo.GetSystemTimeZones().FirstOrDefault(x => x.Id == "Eastern Standard Time");
         public static TimeZoneInfo TimeZone => ComputeTZ();
 
@@ -30,7 +30,6 @@ namespace orion.web.Common
         {
             get
             {
-                
                 return TimeZoneInfo.ConvertTime(DateTime.UtcNow, TimeZone);
             }
         }
@@ -47,6 +46,7 @@ namespace orion.web.Common
         {
             return TimeZoneInfo.ConvertTime(utc, TimeZone);
         }
+
         public static DateTime ConvertToEST(DateTimeOffset date)
         {
             return TimeZoneInfo.ConvertTime(date, TimeZone).LocalDateTime;
@@ -54,7 +54,7 @@ namespace orion.web.Common
 
         public static DateTime ConvertToEST(int year, int month, int day)
         {
-            var safeOffset = new DateTimeOffset(year, month, day,11,50,50,new TimeSpan());
+            var safeOffset = new DateTimeOffset(year, month, day, 11, 50, 50, default(TimeSpan));
             return TimeZoneInfo.ConvertTime(safeOffset, TimeZone).LocalDateTime;
         }
     }

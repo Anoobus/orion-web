@@ -1,14 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
-using orion.web.Clients;
-using orion.web.UI.Models;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Orion.Web.Clients;
+using Orion.Web.UI.Models;
 
-namespace orion.web.Jobs
+namespace Orion.Web.Jobs
 {
     public class EditJobViewModel
     {
-
         public CoreJobDto Job { get; set; }
         public int SelectedProjectManagerEmployeeId { get; set; }
         [DisplayName("Status")]

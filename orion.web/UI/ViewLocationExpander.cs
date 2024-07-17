@@ -1,14 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc.Razor;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Razor;
 
-namespace orion.web.UI
+namespace Orion.Web.UI
 {
     public class ViewLocationExpander : IViewLocationExpander
     {
-
         /// <summary>
         /// Used to specify the locations that the view engine should search to
         /// locate views.
@@ -18,11 +17,10 @@ namespace orion.web.UI
         /// <returns></returns>
         public IEnumerable<string> ExpandViewLocations(ViewLocationExpanderContext context, IEnumerable<string> viewLocations)
         {
-            //{2} is area, {1} is controller,{0} is the action
+            // {2} is area, {1} is controller,{0} is the action
             string[] locations = new string[] { "/UI/Views/{2}/{1}/{0}.cshtml", "/UI/Views/shared/{0}.cshtml" };
-            return locations.Union(viewLocations);          //Add mvc default locations after ours
+            return locations.Union(viewLocations);          // Add mvc default locations after ours
         }
-
 
         public void PopulateValues(ViewLocationExpanderContext context)
         {

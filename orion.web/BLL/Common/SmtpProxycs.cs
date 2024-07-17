@@ -1,13 +1,13 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using orion.web.Util;
-using orion.web.Util.IoC;
-using System;
+﻿using System;
 using System.Net;
 using System.Net.Mail;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Orion.Web.Util;
+using Orion.Web.Util.IoC;
 
-namespace orion.web.Common
+namespace Orion.Web.Common
 {
     public interface ISmtpProxy
     {
@@ -18,9 +18,18 @@ namespace orion.web.Common
     {
         private readonly IConfiguration config;
         private readonly ILogger<SmtpProxy> logger;
+#pragma warning disable CS0618 // Type or member is obsolete
         private readonly IHostingEnvironment _hostingEnvironment;
+#pragma warning restore CS0618 // Type or member is obsolete
 
-        public SmtpProxy(IConfiguration config, ILogger<SmtpProxy> logger, IHostingEnvironment hostingEnvironment)
+        public SmtpProxy(
+            IConfiguration config,
+            ILogger<SmtpProxy> logger,
+#pragma warning disable CS0618 // Type or member is obsolete
+            IHostingEnvironment hostingEnvironment
+#pragma warning restore CS0618 // Type or member is obsolete
+            )
+
         {
             this.config = config;
             this.logger = logger;
@@ -44,14 +53,14 @@ namespace orion.web.Common
                     UseDefaultCredentials = false,
                     Credentials = new NetworkCredential(fromAddress.Address, fromPassword)
                 };
-                using(var message = new MailMessage(fromAddress, toAddress)
+                using (var message = new MailMessage(fromAddress, toAddress)
                 {
                     Subject = subject,
                     Body = body,
                     IsBodyHtml = true,
                 })
                 {
-                    if(_hostingEnvironment.EnvironmentName == "Development")
+                    if (_hostingEnvironment.EnvironmentName == "Development")
                     {
                         var debug = new
                         {
@@ -68,7 +77,7 @@ namespace orion.web.Common
                     }
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 logger.LogError(e, "Exception while trying to send notification email");
                 throw;

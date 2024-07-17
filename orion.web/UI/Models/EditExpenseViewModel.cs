@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using orion.web.Employees;
-using orion.web.Jobs;
+using Orion.Web.Employees;
+using Orion.Web.Jobs;
 
-namespace orion.web.UI.Models
+namespace Orion.Web.UI.Models
 {
     public class EditExpenseViewModel<T>
     {
@@ -12,11 +12,7 @@ namespace orion.web.UI.Models
         public IEnumerable<CoreJobDto> AvailableJobs { get; set; }
         public int? NewlySelectedJob { get; set; }
 
-
         public IEnumerable<CoreEmployeeDto> AvailableEmployees { get; set; }
         public int? NewlySelectedEmployeeId { get; set; }
-
-      
     }
 }
-

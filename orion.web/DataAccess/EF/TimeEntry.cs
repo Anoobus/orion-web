@@ -1,7 +1,7 @@
 ﻿using System;
 
-namespace orion.web.DataAccess.EF
-{    
+namespace Orion.Web.DataAccess.EF
+{
     public class TimeEntry
     {
         public int TimeEntryId { get; set; }
@@ -11,6 +11,6 @@ namespace orion.web.DataAccess.EF
         public decimal Hours { get; set; }
         public decimal OvertimeHours { get; set; }
         public DateTime Date { get; set; }
-        public int WeekId { get; set; }        
+        public int WeekId { get; set; }
     }
 }

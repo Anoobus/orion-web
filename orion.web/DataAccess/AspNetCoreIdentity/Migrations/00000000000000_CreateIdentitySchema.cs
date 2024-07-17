@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace orion.web.AspNetCoreIdentity.Migrations
+namespace Orion.Web.AspNetCoreIdentity.Migrations
 {
     public partial class CreateIdentitySchema : Migration
     {

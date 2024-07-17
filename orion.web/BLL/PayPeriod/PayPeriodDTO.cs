@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace orion.web.Common
+namespace Orion.Web.Common
 {
     public class PayPeriodListDTO
     {
@@ -16,6 +16,6 @@ namespace orion.web.Common
         public DateTime PayPeriodStart { get; set; }
         public DateTime PayPeriodEnd { get; set; }
         public int StartWeekId { get; set; }
-        public int EndWeekId { get; set; }        
+        public int EndWeekId { get; set; }
     }
 }

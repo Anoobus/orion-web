@@ -1,12 +1,12 @@
-﻿using orion.web.BLL.Reports.DetailedExpenseForJobReport;
-using orion.web.Jobs;
-using orion.web.Reports.EmployeeTimeReport;
-using orion.web.Reports.PayPeriodReport;
-using orion.web.Reports.QuickJobTimeReport;
-using orion.web.Util.IoC;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using Orion.Web.BLL.Reports.DetailedExpenseForJobReport;
+using Orion.Web.Jobs;
+using Orion.Web.Reports.EmployeeTimeReport;
+using Orion.Web.Reports.PayPeriodReport;
+using Orion.Web.Reports.QuickJobTimeReport;
+using Orion.Web.Util.IoC;
 
-namespace orion.web.Reports
+namespace Orion.Web.Reports
 {
     public interface IReportCreator
     {
@@ -26,7 +26,8 @@ namespace orion.web.Reports
         private readonly IDetailedExpenseForJobReportQuery detailedExpenseForJobReportQuery;
         private readonly IEmployeeTimeReportQuery employeeTimeReportQuery;
 
-        public ReportCreator(IJobsRepository jobService,
+        public ReportCreator(
+            IJobsRepository jobService,
             IAllOpenJobSummaryReportQuery jobSummaryQuery,
             IQuickJobTimeReportQuery quickJobTimeReportQuery,
             IPayPeriodReportQuery payPeriodReportQuery,
@@ -59,7 +60,7 @@ namespace orion.web.Reports
 
         public async Task<ReportDTO<DetailedExpenseForJobReportDTO>> CreateDetailedExpenseReport(DetailedExpenseForJobReportCriteria criteria)
         {
-            return await detailedExpenseForJobReportQuery.RunAsync(criteria);           
+            return await detailedExpenseForJobReportQuery.RunAsync(criteria);
         }
 
         public async Task<ReportDTO<EmployeeTimeReportDTO>> CreateEmployeeTimeReportAsync(EmployeeTimeReportCriteria settings)

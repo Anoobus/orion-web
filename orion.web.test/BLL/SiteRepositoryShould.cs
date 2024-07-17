@@ -1,16 +1,16 @@
-﻿using AutoFixture;
-using FluentAssertions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using orion.web.Clients;
-using orion.web.DataAccess.EF;
-using orion.web.Jobs;
-using orion.web.test.TestHelpers;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoFixture;
+using FluentAssertions;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Orion.Web.Clients;
+using Orion.Web.DataAccess.EF;
+using Orion.Web.Jobs;
+using Orion.Web.test.TestHelpers;
 
-namespace orion.web.test.BLL
+namespace Orion.Web.test.BLL
 {
     [TestClass]
     public class SiteRepositoryShould
@@ -22,13 +22,13 @@ namespace orion.web.test.BLL
             public IEnumerable<SiteDTO> SavedSites { get; private set; }
             public TestContext()
             {
-                using(var inMemDb = DbFactory.CreateDb())
+                using (var inMemDb = DbFactory.CreateDb())
                 {
                     SavedSites = Enumerable.Range(0, 3)
                                             .Select(z => _fixture.Build<SiteDTO>().With(x => x.SiteID, 0).Create())
                                             .ToList();
 
-                    foreach(var site in SavedSites)
+                    foreach (var site in SavedSites)
                     {
                         SaveSite(inMemDb, site);
                     }
@@ -68,7 +68,7 @@ namespace orion.web.test.BLL
             var newSite = new SiteDTO() { SiteName = Guid.NewGuid().ToString() };
             var siteId = await underTest.Create(newSite);
 
-            using(var db = ctx.DbFactory.CreateDb())
+            using (var db = ctx.DbFactory.CreateDb())
             {
                 db.Sites.Any(x => x.SiteID == siteId).Should().BeTrue();
             }

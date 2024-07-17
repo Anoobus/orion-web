@@ -1,19 +1,18 @@
-﻿using AutoMapper;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using orion.web.Clients;
-using orion.web.Employees;
-using orion.web.Notifications;
-using orion.web.UI.Models;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using Orion.Web.Clients;
+using Orion.Web.Employees;
+using Orion.Web.Notifications;
+using Orion.Web.UI.Models;
 
-namespace orion.web.UI.Controllers
+namespace Orion.Web.UI.Controllers
 {
     [Authorize(Roles = UserRoleName.Admin)]
     public class TestingController : Controller
     {
-
         public TestingController()
         {
         }
@@ -22,7 +21,5 @@ namespace orion.web.UI.Controllers
         {
             return View("Index");
         }
-
-
     }
 }

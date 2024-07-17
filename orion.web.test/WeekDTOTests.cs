@@ -1,11 +1,11 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using orion.web.Common;
-using orion.web.TimeEntries;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Orion.Web.Common;
+using Orion.Web.TimeEntries;
 
-namespace orion.web.test
+namespace Orion.Web.test
 {
     [TestClass]
     public class WeekDTOTests
@@ -29,7 +29,7 @@ namespace orion.web.test
         [TestMethod]
         public void PayPeriodsWork()
         {
-            var start = WeekDTO.CreateWithWeekContaining(new DateTime(2021,4,20));
+            var start = WeekDTO.CreateWithWeekContaining(new DateTime(2021, 4, 20));
 
             Assert.IsTrue(start.IsPPE.Value);
 

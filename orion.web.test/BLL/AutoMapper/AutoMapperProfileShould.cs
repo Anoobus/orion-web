@@ -2,11 +2,11 @@
 using AutoMapper;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using orion.web.BLL.ArcFlashExpenditureExpenses;
-using orion.web.BLL.AutoMapper;
-using orion.web.DataAccess;
+using Orion.Web.BLL.ArcFlashExpenditureExpenses;
+using Orion.Web.BLL.AutoMapper;
+using Orion.Web.DataAccess;
 
-namespace orion.web.test.BLL
+namespace Orion.Web.test.BLL
 {
 
     public static class TestAutoMapper
@@ -14,7 +14,7 @@ namespace orion.web.test.BLL
         public static IMapper Instance { get; private set; }
         static TestAutoMapper()
         {
-             var configuration = new MapperConfiguration(cfg => cfg.AddProfile<OrionProfile>());
+            var configuration = new MapperConfiguration(cfg => cfg.AddProfile<OrionProfile>());
             Instance = configuration.CreateMapper();
         }
     }
@@ -25,7 +25,7 @@ namespace orion.web.test.BLL
         [TestMethod]
         public void BeValid()
         {
-            var configuration = new MapperConfiguration(cfg => cfg.AddProfile<OrionProfile>());            
+            var configuration = new MapperConfiguration(cfg => cfg.AddProfile<OrionProfile>());
             configuration.AssertConfigurationIsValid();
         }
     }

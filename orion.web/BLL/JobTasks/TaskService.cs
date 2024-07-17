@@ -1,15 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore;
-using orion.web.BLL.JobTasks;
-using orion.web.DataAccess;
-using orion.web.DataAccess.EF;
-using orion.web.JobTasks;
-using orion.web.Util.IoC;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Orion.Web.BLL.JobTasks;
+using Orion.Web.DataAccess;
+using Orion.Web.DataAccess.EF;
+using Orion.Web.JobTasks;
+using Orion.Web.Util.IoC;
 
-namespace orion.web.JobsTasks
+namespace Orion.Web.JobsTasks
 {
     public interface ITaskService
     {
@@ -30,7 +30,7 @@ namespace orion.web.JobsTasks
 
         public async Task<IEnumerable<CategoryDTO>> GetTaskCategoriesAsync()
         {
-            using(var db = _contextFactory.CreateDb())
+            using (var db = _contextFactory.CreateDb())
             {
                 return await db.TaskCategories.Select(x => new CategoryDTO()
                 {
@@ -41,10 +41,9 @@ namespace orion.web.JobsTasks
             }
         }
 
-
         public async Task<IEnumerable<UsageStatusDTO>> GetUsageStatusAsync()
         {
-            using(var db = _contextFactory.CreateDb())
+            using (var db = _contextFactory.CreateDb())
             {
                 return await db.UsageStatuses.Select(x => new UsageStatusDTO()
                 {
@@ -57,7 +56,7 @@ namespace orion.web.JobsTasks
 
         public async Task<IEnumerable<TaskDTO>> GetTasks()
         {
-            using(var db = _contextFactory.CreateDb())
+            using (var db = _contextFactory.CreateDb())
             {
                 return (await db.JobTasks
                 .Include(x => x.TaskCategory)
@@ -95,26 +94,25 @@ namespace orion.web.JobsTasks
 
         public async Task Upsert(TaskDTO task)
         {
-            using(var db = _contextFactory.CreateDb())
+            using (var db = _contextFactory.CreateDb())
             {
                 var match = await db.JobTasks.SingleOrDefaultAsync(x => x.JobTaskId == task.TaskId);
-                if(match == null)
+                if (match == null)
                 {
                     match = new JobTask();
                     db.JobTasks.Add(match);
-                    if(await db.JobTasks.AnyAsync(x => x.LegacyCode == task.LegacyCode))
+                    if (await db.JobTasks.AnyAsync(x => x.LegacyCode == task.LegacyCode))
                     {
                         throw new ArgumentException($"Supplied code {task.LegacyCode} is already in use");
                     }
                 }
                 else
                 {
-                    if(await db.JobTasks.AnyAsync(x => x.LegacyCode == match.LegacyCode && x.JobTaskId != task.TaskId))
+                    if (await db.JobTasks.AnyAsync(x => x.LegacyCode == match.LegacyCode && x.JobTaskId != task.TaskId))
                     {
                         throw new ArgumentException($"Supplied code {match.LegacyCode} is already in use");
                     }
                 }
-
 
                 match.Description = task.Description;
                 match.LegacyCode = task.LegacyCode;
@@ -125,6 +123,5 @@ namespace orion.web.JobsTasks
                 db.SaveChanges();
             }
         }
-
     }
 }

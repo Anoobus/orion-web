@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace orion.web.DataAccess.EF
+namespace Orion.Web.DataAccess.EF
 {
     public class WeekOfHours
     {

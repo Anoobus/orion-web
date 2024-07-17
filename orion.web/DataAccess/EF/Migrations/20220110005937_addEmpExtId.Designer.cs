@@ -5,13 +5,13 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using orion.web.DataAccess.EF;
+using Orion.Web.DataAccess.EF;
 
-namespace orion.web.DataAccess.EF.Migrations
+namespace Orion.Web.DataAccess.EF.Migrations
 {
     [DbContext(typeof(OrionDbContext))]
     [Migration("20220110005937_addEmpExtId")]
-    partial class addEmpExtId
+    partial class AddEmpExtId
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -21,7 +21,7 @@ namespace orion.web.DataAccess.EF.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("orion.web.DataAccess.EF.Client", b =>
+            modelBuilder.Entity("Orion.Web.DataAccess.EF.Client", b =>
                 {
                     b.Property<int>("ClientId")
                         .ValueGeneratedOnAdd()
@@ -36,7 +36,7 @@ namespace orion.web.DataAccess.EF.Migrations
                     b.ToTable("Clients");
                 });
 
-            modelBuilder.Entity("orion.web.DataAccess.EF.Employee", b =>
+            modelBuilder.Entity("Orion.Web.DataAccess.EF.Employee", b =>
                 {
                     b.Property<int>("EmployeeId")
                         .ValueGeneratedOnAdd()
@@ -68,7 +68,7 @@ namespace orion.web.DataAccess.EF.Migrations
                     b.ToTable("Employees");
                 });
 
-            modelBuilder.Entity("orion.web.DataAccess.EF.EmployeeJob", b =>
+            modelBuilder.Entity("Orion.Web.DataAccess.EF.EmployeeJob", b =>
                 {
                     b.Property<int>("EmployeeJobId")
                         .ValueGeneratedOnAdd()
@@ -90,7 +90,7 @@ namespace orion.web.DataAccess.EF.Migrations
                     b.ToTable("EmployeeJobs");
                 });
 
-            modelBuilder.Entity("orion.web.DataAccess.EF.ExpenseItem", b =>
+            modelBuilder.Entity("Orion.Web.DataAccess.EF.ExpenseItem", b =>
                 {
                     b.Property<int>("ExpenseItemId")
                         .ValueGeneratedOnAdd()
@@ -131,7 +131,7 @@ namespace orion.web.DataAccess.EF.Migrations
                     b.ToTable("Expenses");
                 });
 
-            modelBuilder.Entity("orion.web.DataAccess.EF.Job", b =>
+            modelBuilder.Entity("Orion.Web.DataAccess.EF.Job", b =>
                 {
                     b.Property<int>("JobId")
                         .ValueGeneratedOnAdd()
@@ -172,7 +172,7 @@ namespace orion.web.DataAccess.EF.Migrations
                     b.ToTable("Jobs");
                 });
 
-            modelBuilder.Entity("orion.web.DataAccess.EF.JobStatus", b =>
+            modelBuilder.Entity("Orion.Web.DataAccess.EF.JobStatus", b =>
                 {
                     b.Property<int>("JobStatusId")
                         .ValueGeneratedOnAdd()
@@ -187,7 +187,7 @@ namespace orion.web.DataAccess.EF.Migrations
                     b.ToTable("JobStatuses");
                 });
 
-            modelBuilder.Entity("orion.web.DataAccess.EF.JobTask", b =>
+            modelBuilder.Entity("Orion.Web.DataAccess.EF.JobTask", b =>
                 {
                     b.Property<int>("JobTaskId")
                         .ValueGeneratedOnAdd()
@@ -221,7 +221,7 @@ namespace orion.web.DataAccess.EF.Migrations
                     b.ToTable("JobTasks");
                 });
 
-            modelBuilder.Entity("orion.web.DataAccess.EF.ScheduleTask", b =>
+            modelBuilder.Entity("Orion.Web.DataAccess.EF.ScheduleTask", b =>
                 {
                     b.Property<int>("ScheduleTaskId")
                         .ValueGeneratedOnAdd()
@@ -266,7 +266,7 @@ namespace orion.web.DataAccess.EF.Migrations
                     b.ToTable("ScheduleTasks");
                 });
 
-            modelBuilder.Entity("orion.web.DataAccess.EF.ScheduleTaskRunLog", b =>
+            modelBuilder.Entity("Orion.Web.DataAccess.EF.ScheduleTaskRunLog", b =>
                 {
                     b.Property<int>("ScheduleTaskRunLogId")
                         .ValueGeneratedOnAdd()
@@ -286,7 +286,7 @@ namespace orion.web.DataAccess.EF.Migrations
                     b.ToTable("ScheduleTaskRunLogs");
                 });
 
-            modelBuilder.Entity("orion.web.DataAccess.EF.Site", b =>
+            modelBuilder.Entity("Orion.Web.DataAccess.EF.Site", b =>
                 {
                     b.Property<int>("SiteID")
                         .ValueGeneratedOnAdd()
@@ -301,7 +301,7 @@ namespace orion.web.DataAccess.EF.Migrations
                     b.ToTable("Sites");
                 });
 
-            modelBuilder.Entity("orion.web.DataAccess.EF.TaskCategory", b =>
+            modelBuilder.Entity("Orion.Web.DataAccess.EF.TaskCategory", b =>
                 {
                     b.Property<int>("TaskCategoryId")
                         .ValueGeneratedOnAdd()
@@ -319,7 +319,7 @@ namespace orion.web.DataAccess.EF.Migrations
                     b.ToTable("TaskCategories");
                 });
 
-            modelBuilder.Entity("orion.web.DataAccess.EF.TimeEntry", b =>
+            modelBuilder.Entity("Orion.Web.DataAccess.EF.TimeEntry", b =>
                 {
                     b.Property<int>("TimeEntryId")
                         .ValueGeneratedOnAdd()
@@ -352,7 +352,7 @@ namespace orion.web.DataAccess.EF.Migrations
                     b.ToTable("TimeEntries");
                 });
 
-            modelBuilder.Entity("orion.web.DataAccess.EF.TimeSheetApproval", b =>
+            modelBuilder.Entity("Orion.Web.DataAccess.EF.TimeSheetApproval", b =>
                 {
                     b.Property<int>("TimeSheetApprovalId")
                         .ValueGeneratedOnAdd()
@@ -390,7 +390,7 @@ namespace orion.web.DataAccess.EF.Migrations
                     b.ToTable("TimeSheetApprovals");
                 });
 
-            modelBuilder.Entity("orion.web.DataAccess.EF.UsageStatus", b =>
+            modelBuilder.Entity("Orion.Web.DataAccess.EF.UsageStatus", b =>
                 {
                     b.Property<int>("UsageStatusId")
                         .ValueGeneratedOnAdd()
@@ -405,7 +405,7 @@ namespace orion.web.DataAccess.EF.Migrations
                     b.ToTable("UsageStatuses");
                 });
 
-            modelBuilder.Entity("orion.web.DataAccess.EF.UserRole", b =>
+            modelBuilder.Entity("Orion.Web.DataAccess.EF.UserRole", b =>
                 {
                     b.Property<int>("UserRoleId")
                         .ValueGeneratedOnAdd()
@@ -420,93 +420,93 @@ namespace orion.web.DataAccess.EF.Migrations
                     b.ToTable("UserRoles");
                 });
 
-            modelBuilder.Entity("orion.web.DataAccess.EF.Employee", b =>
+            modelBuilder.Entity("Orion.Web.DataAccess.EF.Employee", b =>
                 {
-                    b.HasOne("orion.web.DataAccess.EF.UserRole", "UserRole")
+                    b.HasOne("Orion.Web.DataAccess.EF.UserRole", "UserRole")
                         .WithMany()
                         .HasForeignKey("UserRoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("orion.web.DataAccess.EF.EmployeeJob", b =>
+            modelBuilder.Entity("Orion.Web.DataAccess.EF.EmployeeJob", b =>
                 {
-                    b.HasOne("orion.web.DataAccess.EF.Employee", null)
+                    b.HasOne("Orion.Web.DataAccess.EF.Employee", null)
                         .WithMany("EmployeeJobs")
                         .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("orion.web.DataAccess.EF.Job", "Job")
+                    b.HasOne("Orion.Web.DataAccess.EF.Job", "Job")
                         .WithMany()
                         .HasForeignKey("JobId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("orion.web.DataAccess.EF.ExpenseItem", b =>
+            modelBuilder.Entity("Orion.Web.DataAccess.EF.ExpenseItem", b =>
                 {
-                    b.HasOne("orion.web.DataAccess.EF.Job", "RelatedJob")
+                    b.HasOne("Orion.Web.DataAccess.EF.Job", "RelatedJob")
                         .WithMany()
                         .HasForeignKey("JobId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("orion.web.DataAccess.EF.Job", b =>
+            modelBuilder.Entity("Orion.Web.DataAccess.EF.Job", b =>
                 {
-                    b.HasOne("orion.web.DataAccess.EF.Client", "Client")
+                    b.HasOne("Orion.Web.DataAccess.EF.Client", "Client")
                         .WithMany()
                         .HasForeignKey("ClientId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("orion.web.DataAccess.EF.Employee", "ProjectManager")
+                    b.HasOne("Orion.Web.DataAccess.EF.Employee", "ProjectManager")
                         .WithMany()
                         .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("orion.web.DataAccess.EF.JobStatus", "JobStatus")
+                    b.HasOne("Orion.Web.DataAccess.EF.JobStatus", "JobStatus")
                         .WithMany()
                         .HasForeignKey("JobStatusId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("orion.web.DataAccess.EF.Site", "Site")
+                    b.HasOne("Orion.Web.DataAccess.EF.Site", "Site")
                         .WithMany("Jobs")
                         .HasForeignKey("SiteId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("orion.web.DataAccess.EF.JobTask", b =>
+            modelBuilder.Entity("Orion.Web.DataAccess.EF.JobTask", b =>
                 {
-                    b.HasOne("orion.web.DataAccess.EF.TaskCategory", "TaskCategory")
+                    b.HasOne("Orion.Web.DataAccess.EF.TaskCategory", "TaskCategory")
                         .WithMany()
                         .HasForeignKey("TaskCategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("orion.web.DataAccess.EF.UsageStatus", "UsageStatus")
+                    b.HasOne("Orion.Web.DataAccess.EF.UsageStatus", "UsageStatus")
                         .WithMany()
                         .HasForeignKey("UsageStatusId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("orion.web.DataAccess.EF.ScheduleTaskRunLog", b =>
+            modelBuilder.Entity("Orion.Web.DataAccess.EF.ScheduleTaskRunLog", b =>
                 {
-                    b.HasOne("orion.web.DataAccess.EF.ScheduleTask", "ScheduleTask")
+                    b.HasOne("Orion.Web.DataAccess.EF.ScheduleTask", "ScheduleTask")
                         .WithMany()
                         .HasForeignKey("ScheduleTaskId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("orion.web.DataAccess.EF.TimeSheetApproval", b =>
+            modelBuilder.Entity("Orion.Web.DataAccess.EF.TimeSheetApproval", b =>
                 {
-                    b.HasOne("orion.web.DataAccess.EF.Employee", "Employee")
+                    b.HasOne("Orion.Web.DataAccess.EF.Employee", "Employee")
                         .WithMany()
                         .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.Cascade)

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace orion.web.TimeEntries
+namespace Orion.Web.TimeEntries
 {
     public class WeekListViewModel
     {
@@ -13,6 +13,7 @@ namespace orion.web.TimeEntries
         public int WeeksToShow { get; set; }
         public DateTime StartWithDate { get; set; }
     }
+
     public class DetailedWeekIdentifier : WeekIdentifier
     {
         public decimal TotalOverTime { get; set; }

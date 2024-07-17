@@ -1,38 +1,33 @@
 ﻿using System;
 using System.Threading.Tasks;
 using AutoMapper;
-using orion.web.api;
-using orion.web.api.expenditures.Models;
-using orion.web.BLL.Core;
-using orion.web.Common;
-using orion.web.DataAccess;
-using orion.web.Jobs;
-using orion.web.Util.IoC;
+using Orion.Web.Api;
+using Orion.Web.Api.Expenditures.Models;
+using Orion.Web.BLL.Core;
+using Orion.Web.Common;
+using Orion.Web.DataAccess;
+using Orion.Web.Jobs;
+using Orion.Web.Util.IoC;
 
-namespace orion.web.BLL.Expenditures
+namespace Orion.Web.BLL.Expenditures
 {
     public class UpdateMiscExpenditureMessage : IProduces<MiscExpenditure>
     {
         public EditableMiscExpenditure Model { get; }
         public Guid ExternalExpenditureId { get; }
-        
 
-        public UpdateMiscExpenditureMessage(EditableMiscExpenditure model,
+        public UpdateMiscExpenditureMessage(
+            EditableMiscExpenditure model,
             Guid miscExpId)
         {
             Model = model;
             this.ExternalExpenditureId = miscExpId;
-           
         }
-
-        
-        
     }
 
-     public interface IUpdateMiscExpenditure
+    public interface IUpdateMiscExpenditure
     {
-          public Task<IProcessResult<MiscExpenditure>> Process(UpdateMiscExpenditureMessage msg);
-
+        public Task<IProcessResult<MiscExpenditure>> Process(UpdateMiscExpenditureMessage msg);
     }
 
     public class UpdateMiscExpenditure
@@ -50,17 +45,17 @@ namespace orion.web.BLL.Expenditures
             this._jobsRepository = jobsRepository;
         }
 
-        protected override async Task<IProcessResult<MiscExpenditure>>  Handle(UpdateMiscExpenditureMessage msg)
+        protected override async Task<IProcessResult<MiscExpenditure>> Handle(UpdateMiscExpenditureMessage msg)
         {
             var job = await _jobsRepository.GetForJobId(msg.Model.JobId);
             if (job == null)
-                return Failure(ApiErrors.JobDoesNotExistException(msg.Model.JobId == 0 ? "[Not Supplied]" : $"[databaseId:{msg.Model.JobId }]", "A valid open job must be supplied in order to add an expense to it."));
+                return Failure(ApiErrors.JobDoesNotExistException(msg.Model.JobId == 0 ? "[Not Supplied]" : $"[databaseId:{msg.Model.JobId}]", "A valid open job must be supplied in order to add an expense to it."));
 
-            if(job.CoreInfo.JobStatusId != JobStatus.Enabled)
+            if (job.CoreInfo.JobStatusId != JobStatus.Enabled)
                 return Failure(ApiErrors.JobMustBeOpen(job.CoreInfo.FullJobCodeWithName, "It must first be enabled/opened in order to add an expense to it. If you do not have access to open the job contact your administrator."));
 
             var existing = await _repo.FindByExternalId(msg.ExternalExpenditureId);
-            if(existing == null
+            if (existing == null
                 || msg.ExternalExpenditureId == default(Guid))
             {
                 existing = new DataAccess.EF.MiscExpenditure();
@@ -69,19 +64,23 @@ namespace orion.web.BLL.Expenditures
                 existing.LastModified = DateTimeWithZone.EasternStandardTimeOffset;
                 existing.WeekId = WeekDTO.CreateWithWeekContaining(msg.Model.ExpensedOn).WeekId.Value;
 
-                //NOTE DateVehicleFirstUsed has a valid Month day year, but the time part is very very wrong
-                //we'll adjust here so we don't drift a day when doing TimeZone Conversion
-                existing.ExpensedOn = new DateTimeOffset(msg.Model.ExpensedOn.Year,
-                                                                   msg.Model.ExpensedOn.Month,
-                                                                   msg.Model.ExpensedOn.Day,
-                                                                   0, 0, 0, new TimeSpan());      
+                // NOTE DateVehicleFirstUsed has a valid Month day year, but the time part is very very wrong
+                // we'll adjust here so we don't drift a day when doing TimeZone Conversion
+                existing.ExpensedOn = new DateTimeOffset(
+                    msg.Model.ExpensedOn.Year,
+                    msg.Model.ExpensedOn.Month,
+                    msg.Model.ExpensedOn.Day,
+                    0,
+                    0,
+                    0,
+                    default(TimeSpan));
             }
+
             var updateMsg = UpdateMessage.CreateFrom(msg, existing);
             var mapped = _mapper.Map<DataAccess.EF.MiscExpenditure>(updateMsg);
-            
+
             var saved = await _repo.SaveEntity(mapped);
             return Success(_mapper.Map<MiscExpenditure>(saved));
         }
     }
 }
-

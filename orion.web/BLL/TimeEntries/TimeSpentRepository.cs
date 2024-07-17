@@ -1,31 +1,36 @@
-﻿using orion.web.Common;
-using orion.web.Util.IoC;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Orion.Web.Common;
+using Orion.Web.Util.IoC;
 
-namespace orion.web.TimeEntries
+namespace Orion.Web.TimeEntries
 {
     public interface ITimeSpentRepository
     {
         IEnumerable<TimeEntryDTO> CreateEmptyWeekForCombo(int weekId, int JobTaskId, int JobId, int employeeId);
     }
+
     public class TimeSpentRepository : ITimeSpentRepository, IAutoRegisterAsSingleton
     {
-
-        private TimeEntryDTO CreateDTO(WeekDTO week, int SelectedTaskId, int SelectedJobId,
-          int employeeId, DayOfWeek dayOfWeek)
+        private TimeEntryDTO CreateDTO(
+                                       WeekDTO week,
+                                       int SelectedTaskId,
+                                       int SelectedJobId,
+                                       int EmployeeId,
+                                       DayOfWeek dayOfWeek)
         {
             var candidate = week.WeekStart;
             while (candidate.DayOfWeek != dayOfWeek)
             {
                 candidate = candidate.AddDays(1);
             }
+
             var dto = new TimeEntryDTO()
             {
                 Date = candidate,
-                EmployeeId = employeeId,
+                EmployeeId = EmployeeId,
                 Hours = 0,
                 OvertimeHours = 0,
                 JobId = SelectedJobId,

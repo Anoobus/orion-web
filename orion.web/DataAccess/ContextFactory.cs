@@ -1,10 +1,10 @@
-﻿using orion.web.DataAccess.EF;
-using System;
-using orion.web.Util.IoC;
+﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Orion.Web.DataAccess.EF;
+using Orion.Web.Util.IoC;
 
-namespace orion.web.DataAccess
+namespace Orion.Web.DataAccess
 {
     public interface IContextFactory
     {
@@ -21,7 +21,7 @@ namespace orion.web.DataAccess
             {
                 var optsBuilder = new DbContextOptionsBuilder<OrionDbContext>();
 
-                optsBuilder.UseSqlServer(configuration.GetConnectionString(OrionDbContext.CONN_STRING_NAME));
+                optsBuilder.UseSqlServer(configuration.GetConnectionString(OrionDbContext.CONNSTRINGNAME));
                 return optsBuilder.Options;
             });
         }

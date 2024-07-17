@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace orion.web.UI.Models
+namespace Orion.Web.UI.Models
 {
     public class ClientListModel
     {

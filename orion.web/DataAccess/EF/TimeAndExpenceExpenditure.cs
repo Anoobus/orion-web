@@ -1,5 +1,5 @@
 ﻿using System;
-namespace orion.web.DataAccess.EF
+namespace Orion.Web.DataAccess.EF
 {
     public class TimeAndExpenceExpenditure
     {
@@ -14,4 +14,3 @@ namespace orion.web.DataAccess.EF
         public decimal Amount { get; set; }
     }
 }
-

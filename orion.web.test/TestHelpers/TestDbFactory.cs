@@ -1,13 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using orion.web.DataAccess;
-using orion.web.DataAccess.EF;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
 using Microsoft.EntityFrameworkCore;
+using Orion.Web.DataAccess;
+using Orion.Web.DataAccess.EF;
 
-namespace orion.web.test.TestHelpers
+namespace Orion.Web.test.TestHelpers
 {
     public class TestDbFactory : IContextFactory
     {

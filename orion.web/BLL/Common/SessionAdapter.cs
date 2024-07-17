@@ -1,11 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
-using orion.web.Employees;
-using orion.web.Util.IoC;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Orion.Web.Employees;
+using Orion.Web.Util.IoC;
 
-namespace orion.web.Common
+namespace Orion.Web.Common
 {
     public interface ISessionAdapter
     {
@@ -33,6 +32,5 @@ namespace orion.web.Common
             });
             return int.Parse(employeeId);
         }
-
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System;
-namespace orion.web.DataAccess.EF
-{    
+namespace Orion.Web.DataAccess.EF
+{
     public class ArcFlashLabelExpenditure
     {
         public Guid ExternalId { get; set; }
@@ -18,4 +18,3 @@ namespace orion.web.DataAccess.EF
         public decimal TotalPostageCost { get; set; }
     }
 }
-

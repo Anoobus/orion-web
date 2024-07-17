@@ -1,5 +1,5 @@
-﻿@model orion.web.TimeEntries.WeekListViewModel
-@using orion.web.Employees
+﻿@model Orion.Web.TimeEntries.WeekListViewModel
+@using Orion.Web.Employees
 
 
 <nav id="bread-crumb-bar" class="red darken-3">
@@ -103,23 +103,23 @@
                                     @item.TotalOverTime.ToString("0.#")
                                 </td>
                                 <td>
-                                    @if (item.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Unkown)
+                                    @if (item.ApprovalStatus == Orion.Web.TimeEntries.TimeApprovalStatus.Unkown)
                                     {
                                         <span class="label label-info">Not submitted</span>
                                     }
-                                    else if (item.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Approved)
+                                    else if (item.ApprovalStatus == Orion.Web.TimeEntries.TimeApprovalStatus.Approved)
                                     {
                                         <span class="label label-success">
                                             @item.ApprovalStatus
                                         </span>
                                     }
-                                    else if (item.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Rejected)
+                                    else if (item.ApprovalStatus == Orion.Web.TimeEntries.TimeApprovalStatus.Rejected)
                                     {
                                         <span class="label label-danger">
                                             @item.ApprovalStatus
                                         </span>
                                     }
-                                    else if (item.ApprovalStatus == orion.web.TimeEntries.TimeApprovalStatus.Submitted)
+                                    else if (item.ApprovalStatus == Orion.Web.TimeEntries.TimeApprovalStatus.Submitted)
                                     {
                                         <span class="label label-primary">
                                             @item.ApprovalStatus

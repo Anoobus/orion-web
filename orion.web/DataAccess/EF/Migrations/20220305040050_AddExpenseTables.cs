@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace orion.web.DataAccessEFMigrations
+namespace Orion.Web.DataAccessEFMigrations
 {
     public partial class AddExpenseTables : Migration
     {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace orion.web.BLL.ScheduledTasks
+namespace Orion.Web.BLL.ScheduledTasks
 {
     public class NewScheduledTask
     {

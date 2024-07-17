@@ -1,14 +1,14 @@
-﻿using AutoMapper;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using orion.web.Clients;
-using orion.web.Employees;
-using orion.web.Notifications;
-using orion.web.UI.Models;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using Orion.Web.Clients;
+using Orion.Web.Employees;
+using Orion.Web.Notifications;
+using Orion.Web.UI.Models;
 
-namespace orion.web.UI.Controllers
+namespace Orion.Web.UI.Controllers
 {
     [Authorize(Roles = UserRoleName.Admin)]
     public class ClientsController : Controller
@@ -33,11 +33,10 @@ namespace orion.web.UI.Controllers
             return View("ListClients", new ClientListModel() { Clients = _mapper.Map<IEnumerable<ClientModel>>(clients) });
         }
 
-
         public async Task<ActionResult> EditClient(int clientId)
         {
             var client = await _clientRepository.GetClient(clientId);
-            if(client == null)
+            if (client == null)
                 return NotFound();
 
             return View("EditClient", _mapper.Map<ClientModel>(client));
@@ -64,7 +63,7 @@ namespace orion.web.UI.Controllers
         {
             try
             {
-                _clientRepository.Save(_mapper.Map< ClientDTO>(client));
+                _clientRepository.Save(_mapper.Map<ClientDTO>(client));
                 NotificationsController.AddNotification(this.User.SafeUserName(), $"{client.ClientName} has been created.");
                 return RedirectToAction(nameof(Create));
             }
@@ -73,6 +72,5 @@ namespace orion.web.UI.Controllers
                 return View("CreateClient");
             }
         }
-
     }
 }

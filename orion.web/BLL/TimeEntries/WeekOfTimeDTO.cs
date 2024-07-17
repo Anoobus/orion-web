@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace orion.web.TimeEntries
+namespace Orion.Web.TimeEntries
 {
     public class JobWithTaskDTO : IEquatable<JobWithTaskDTO>
     {
@@ -27,6 +27,7 @@ namespace orion.web.TimeEntries
             return HashCode.Combine(JobId, TaskId);
         }
     }
+
     public class WeekOfTimeDTO
     {
         public int WeekId { get; set; }
@@ -38,8 +39,9 @@ namespace orion.web.TimeEntries
         public Dictionary<JobWithTaskDTO, TimeEntryBaseDTO> Saturday { get; set; }
         public Dictionary<JobWithTaskDTO, TimeEntryBaseDTO> Sunday { get; set; }
 
-        public IEnumerable<TimeEntryBaseDTO> AsEnumerable() {
-            foreach(var entry in Monday.Values.Union(Tuesday.Values)
+        public IEnumerable<TimeEntryBaseDTO> AsEnumerable()
+        {
+            foreach (var entry in Monday.Values.Union(Tuesday.Values)
                                               .Union(Wednesday.Values)
                                               .Union(Thursday.Values)
                                               .Union(Friday.Values)
@@ -48,8 +50,6 @@ namespace orion.web.TimeEntries
             {
                 yield return entry;
             }
-
         }
-
     }
 }

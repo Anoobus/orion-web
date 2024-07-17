@@ -1,23 +1,24 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using orion.web.Common;
-using orion.web.DataAccess;
-using orion.web.DataAccess.EF;
-using orion.web.Util.IoC;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Orion.Web.Common;
+using Orion.Web.DataAccess;
+using Orion.Web.DataAccess.EF;
+using Orion.Web.Util.IoC;
 
-namespace orion.web.Reports
+namespace Orion.Web.Reports
 {
     public interface IPayPeriodReportQuery
     {
         Task<ReportDTO<PayPeriodReportDTO>> RunAsync(DateTime payPeriodEnd);
     }
+
     public class PayPeriodReportQuery : IPayPeriodReportQuery, IAutoRegisterAsSingleton
     {
         private readonly IConfiguration configuration;
@@ -28,15 +29,13 @@ namespace orion.web.Reports
             this.configuration = configuration;
             this.logger = logger;
         }
+
         public async Task<ReportDTO<PayPeriodReportDTO>> RunAsync(DateTime payPeriodEnd)
         {
-
-
             using (var conn = new SqlConnection(configuration.GetConnectionString("SiteConnection")))
             using (var cmd = conn.CreateCommand())
             {
                 await conn.OpenAsync();
-
 
                 cmd.CommandText = @"
 
@@ -101,46 +100,47 @@ group by e.EmployeeId,
                 var emps = new List<PayPeriodEmployees>();
                 try
                 {
-
-                var rdr = await cmd.ExecuteReaderAsync();
-                var map = GetColumnMap(rdr.GetColumnSchema());
-                while (await rdr.ReadAsync())
-                {
-                    emps.Add(new PayPeriodEmployees()
+                    var rdr = await cmd.ExecuteReaderAsync();
+                    var map = GetColumnMap(rdr.GetColumnSchema());
+                    while (await rdr.ReadAsync())
                     {
-                        Combined = rdr.GetDecimal(map[nameof(PayPeriodEmployees.Combined)]),
-                        EmployeeName = rdr.IsDBNull(map[nameof(PayPeriodEmployees.EmployeeName)]) ? "" : rdr.GetSqlString(map[nameof(PayPeriodEmployees.EmployeeName)]).Value,
-                        ExcusedNoPay = rdr.GetDecimal(map[nameof(PayPeriodEmployees.ExcusedNoPay)]),
-                        ExcusedWithPay = rdr.GetDecimal(map[nameof(PayPeriodEmployees.ExcusedWithPay)]),
-                        Holiday = rdr.GetDecimal(map[nameof(PayPeriodEmployees.Holiday)]),
-                        IsExempt = rdr.GetBoolean(map[nameof(PayPeriodEmployees.IsExempt)]),
-                        Overtime = rdr.GetDecimal(map[nameof(PayPeriodEmployees.Overtime)]),
-                        Regular = rdr.GetDecimal(map[nameof(PayPeriodEmployees.Regular)]),
-                        PTO = rdr.GetDecimal(map[nameof(PayPeriodEmployees.PTO)]),
-                    });
-                }
-                data.Employees = emps;
-                return new ReportDTO<PayPeriodReportDTO>()
-                {
-                    Data = data,
-                    ReportName = "Pay Period Report",
-                    RunSettings =
-                new Dictionary<string, string>()
-                {
+                        emps.Add(new PayPeriodEmployees()
+                        {
+                            Combined = rdr.GetDecimal(map[nameof(PayPeriodEmployees.Combined)]),
+                            EmployeeName = rdr.IsDBNull(map[nameof(PayPeriodEmployees.EmployeeName)]) ? "" : rdr.GetSqlString(map[nameof(PayPeriodEmployees.EmployeeName)]).Value,
+                            ExcusedNoPay = rdr.GetDecimal(map[nameof(PayPeriodEmployees.ExcusedNoPay)]),
+                            ExcusedWithPay = rdr.GetDecimal(map[nameof(PayPeriodEmployees.ExcusedWithPay)]),
+                            Holiday = rdr.GetDecimal(map[nameof(PayPeriodEmployees.Holiday)]),
+                            IsExempt = rdr.GetBoolean(map[nameof(PayPeriodEmployees.IsExempt)]),
+                            Overtime = rdr.GetDecimal(map[nameof(PayPeriodEmployees.Overtime)]),
+                            Regular = rdr.GetDecimal(map[nameof(PayPeriodEmployees.Regular)]),
+                            PTO = rdr.GetDecimal(map[nameof(PayPeriodEmployees.PTO)]),
+                        });
+                    }
+
+                    data.Employees = emps;
+                    return new ReportDTO<PayPeriodReportDTO>()
+                    {
+                        Data = data,
+                        ReportName = "Pay Period Report",
+                        RunSettings =
+                    new Dictionary<string, string>()
+                    {
                     { "Pay Period", $"{pps.ToShortDateString()} thru {ppe.ToShortDateString()}" },
                     { "Check Date/Pay Date", $"{ppe.AddDays(7).ToShortDateString()}" },
-                    { "Generated", $"{DateTimeWithZone.EasternStandardTime.ToShortDateString()} at {DateTimeWithZone.EasternStandardTime.ToShortTimeString()}"},
+                    { "Generated", $"{DateTimeWithZone.EasternStandardTime.ToShortDateString()} at {DateTimeWithZone.EasternStandardTime.ToShortTimeString()}" },
                     { "Company", $"Orion Engineering Co., Inc." },
+                    }
+                    };
                 }
-                };
-                }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     logger.LogError(e, $"Error while running {cmd.CommandText}");
                     throw;
                 }
             }
         }
+
         private static readonly Dictionary<string, int> ColumnMap = new Dictionary<string, int>();
         private static object reportColumnMapLock = new object();
         private Dictionary<string, int> GetColumnMap(ReadOnlyCollection<DbColumn> cols)
@@ -155,12 +155,9 @@ group by e.EmployeeId,
                         ColumnMap.Add(prop.Name, cols.Single(x => x.ColumnName == prop.Name).ColumnOrdinal.Value);
                     }
                 }
-
             }
+
             return ColumnMap;
         }
-
-
-
     }
 }

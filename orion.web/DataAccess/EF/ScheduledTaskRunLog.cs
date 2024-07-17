@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace orion.web.DataAccess.EF
+namespace Orion.Web.DataAccess.EF
 {
     public class ScheduleTaskRunLog
     {

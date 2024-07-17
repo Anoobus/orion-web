@@ -1,14 +1,14 @@
-﻿using AutoFixture;
-using FluentAssertions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using orion.web.Clients;
-using orion.web.DataAccess.EF;
-using orion.web.test.TestHelpers;
-using System;
+﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoFixture;
+using FluentAssertions;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Orion.Web.Clients;
+using Orion.Web.DataAccess.EF;
+using Orion.Web.test.TestHelpers;
 
-namespace orion.web.test.BLL
+namespace Orion.Web.test.BLL
 {
     [TestClass]
     public class ClientsRepositoryShould
@@ -24,7 +24,7 @@ namespace orion.web.test.BLL
             {
                 JoblessClient = _fixture.Build<ClientDTO>().With(x => x.ClientId, 0).Create();
                 ClientWithJob = _fixture.Build<ClientDTO>().With(x => x.ClientId, 0).Create();
-                using(var inMemDb = DbFactory.CreateDb())
+                using (var inMemDb = DbFactory.CreateDb())
                 {
 
                     var js = _fixture.Build<JobStatus>().With(x => x.JobStatusId, 0).Create();
@@ -132,7 +132,7 @@ namespace orion.web.test.BLL
 
             await underTest.Delete(ctx.ClientWithJob.ClientId);
 
-            using(var db = ctx.DbFactory.CreateDb())
+            using (var db = ctx.DbFactory.CreateDb())
             {
                 db.Clients.Any(x => x.ClientId == ctx.ClientWithJob.ClientId).Should().BeTrue();
             }
@@ -146,7 +146,7 @@ namespace orion.web.test.BLL
 
             await underTest.Delete(ctx.JoblessClient.ClientId);
 
-            using(var db = ctx.DbFactory.CreateDb())
+            using (var db = ctx.DbFactory.CreateDb())
             {
                 db.Clients.Any(x => x.ClientId == ctx.JoblessClient.ClientId).Should().BeFalse();
             }

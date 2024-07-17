@@ -1,18 +1,19 @@
-﻿using Microsoft.AspNetCore.Http;
-using orion.web.Common;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Orion.Web.Common;
 
-namespace orion.web.Expense
+namespace Orion.Web.Expense
 {
     public class EditExpenseViewModel : AddExpenseViewModel
     {
         public int ExpenseItemId { get; set; }
         public Guid? AttachmentId { get; set; }
     }
+
     public class AddExpenseViewModel
     {
         public ExpenseModel ExpenseToSave { get; set; }
@@ -23,11 +24,12 @@ namespace orion.web.Expense
         public IFormFile UploadFile { get; set; }
         public int WeekId { get; set; }
     }
+
     public class ExpenseModel
     {
         public DateTimeOffset SaveDate { get; set; }
         public decimal Amount { get; set; }
-        [Display(Name ="Expense (Related Attachment)")]
+        [Display(Name = "Expense (Related Attachment)")]
         public string AttachmentName { get; set; }
         public string Classification { get; set; }
         public string AddtionalNotes { get; set; }

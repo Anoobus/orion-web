@@ -1,13 +1,6 @@
 ﻿using System;
-namespace orion.web.DataAccess.EF
+namespace Orion.Web.DataAccess.EF
 {
-
-
-
-   
-
-
-
     public class CompanyVehicleExpenditure
     {
         public int Id { get; set; }
@@ -24,7 +17,4 @@ namespace orion.web.DataAccess.EF
         public int TotalNumberOfDaysUsed { get; set; }
         public int TotalMiles { get; set; }
     }
-
-    
 }
-

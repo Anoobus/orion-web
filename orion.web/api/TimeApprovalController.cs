@@ -2,13 +2,13 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using orion.web.Common;
-using orion.web.Employees;
-using orion.web.Notifications;
-using orion.web.TimeApproval;
-using orion.web.TimeEntries;
+using Orion.Web.Common;
+using Orion.Web.Employees;
+using Orion.Web.Notifications;
+using Orion.Web.TimeApproval;
+using Orion.Web.TimeEntries;
 
-namespace orion.web.api
+namespace Orion.Web.Api
 {
     public class TimeApprovalUpdateRequest
     {
@@ -32,7 +32,8 @@ namespace orion.web.api
 
         [HttpPut]
         [Route("time-approval/employees/{employee-id}/week/{week-id:int}")]
-        public async Task<IActionResult> SetTimeForEffort([FromBody] TimeApprovalUpdateRequest saveRequest,
+        public async Task<IActionResult> SetTimeForEffort(
+            [FromBody] TimeApprovalUpdateRequest saveRequest,
             [FromRoute(Name = "employee-id")] int employeeId,
             [FromRoute(Name = "week-id")] int weekId)
         {
@@ -51,7 +52,7 @@ namespace orion.web.api
 
                 if (rez.Successful)
                 {
-                    var current = await _timeApprovalService.GetAsync(request.WeekId, request.EmployeeId);                    
+                    var current = await _timeApprovalService.GetAsync(request.WeekId, request.EmployeeId);
                     NotificationsController.AddNotification(User.SafeUserName(), $"Time approved for {current.EmployeeName}");
                     return new OkObjectResult(new { SubmittedDate = current.SubmittedDate.Value.ToShortDateString(), current.TimeApprovalStatus });
                 }
@@ -65,7 +66,6 @@ namespace orion.web.api
                 var hmm = ex;
                 throw;
             }
-         
         }
 
         private static IActionResult CreateErrorResponse(string msg)
@@ -77,7 +77,6 @@ namespace orion.web.api
                     Detail = msg,
                     Status = StatusCodes.Status400BadRequest,
                     Title = "Couldn't approve time.",
-
                 }
             })
             {
@@ -86,4 +85,3 @@ namespace orion.web.api
         }
     }
 }
-

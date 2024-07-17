@@ -1,6 +1,6 @@
-﻿namespace orion.web.Reports.Common
+﻿namespace Orion.Web.Reports.Common
 {
-    public class ExcelReport<TCriteria> 
+    public class ExcelReport<TCriteria>
     {
         public ExcelReport(string reportName, TCriteria criteria, bool canView)
         {
@@ -8,10 +8,11 @@
             this.Criteria = criteria;
             this.CanView = canView;
         }
+
         public ExcelReport()
         {
-
         }
+
         public string ReportName { get; set; }
 
         public TCriteria Criteria { get; set; }

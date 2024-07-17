@@ -1,12 +1,12 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using orion.web.Common;
-using orion.web.Controllers;
-using orion.web.TimeEntries;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Orion.Web.Common;
+using Orion.Web.Controllers;
+using Orion.Web.TimeEntries;
 
-namespace orion.web.test
+namespace Orion.Web.test
 {
 }

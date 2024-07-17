@@ -1,13 +1,13 @@
-﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
-using orion.web.DataAccess;
-using orion.web.DataAccess.EF;
-using orion.web.Util.IoC;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using Orion.Web.DataAccess;
+using Orion.Web.DataAccess.EF;
+using Orion.Web.Util.IoC;
 
-namespace orion.web.Jobs
+namespace Orion.Web.Jobs
 {
     public interface ISitesRepository
     {
@@ -15,7 +15,7 @@ namespace orion.web.Jobs
         Task<int> Create(SiteDTO site);
     }
 
-    public class SitesRepository :  ISitesRepository, IAutoRegisterAsSingleton
+    public class SitesRepository : ISitesRepository, IAutoRegisterAsSingleton
     {
         private readonly IContextFactory _contextFactory;
         private readonly IMapper _mapper;
@@ -25,9 +25,10 @@ namespace orion.web.Jobs
             _contextFactory = contextFactory;
             _mapper = mapper;
         }
+
         public async Task<IEnumerable<SiteDTO>> GetAll()
         {
-            using(var db = _contextFactory.CreateDb())
+            using (var db = _contextFactory.CreateDb())
             {
                 return (await db.Sites.Select(x => new SiteDTO()
                 {
@@ -40,7 +41,7 @@ namespace orion.web.Jobs
 
         public async Task<int> Create(SiteDTO site)
         {
-            using(var db = _contextFactory.CreateDb())
+            using (var db = _contextFactory.CreateDb())
             {
                 var newSite = _mapper.Map<Site>(site);
                 db.Sites.Add(newSite);

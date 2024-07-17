@@ -1,10 +1,10 @@
-﻿using orion.web.Jobs;
-using orion.web.JobsTasks;
-using orion.web.JobTasks;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using Orion.Web.Jobs;
+using Orion.Web.JobsTasks;
+using Orion.Web.JobTasks;
 
-namespace orion.web.TimeEntries
+namespace Orion.Web.TimeEntries
 {
     public class Week<T>
     {
@@ -35,10 +35,11 @@ namespace orion.web.TimeEntries
         {
             get
             {
-                if(AvailableTasks != null)
+                if (AvailableTasks != null)
                 {
                     return AvailableTasks.Select(x => x.Category).Distinct();
                 }
+
                 return Enumerable.Empty<CategoryDTO>();
             }
         }
@@ -48,6 +49,7 @@ namespace orion.web.TimeEntries
         public int? SelectedTaskId { get; set; }
         public string SelectedTaskCategory { get; set; }
     }
+
     public class TimeEntryViewModel : Week<TimeSpentViewModel>
     {
         public int? SelectedJobId { get; set; }

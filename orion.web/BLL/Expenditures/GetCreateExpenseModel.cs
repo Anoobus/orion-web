@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using orion.web.BLL.Core;
-using orion.web.Employees;
-using orion.web.Jobs;
-using orion.web.UI.Models;
-using orion.web.Util.IoC;
+using Orion.Web.BLL.Core;
+using Orion.Web.Employees;
+using Orion.Web.Jobs;
+using Orion.Web.UI.Models;
+using Orion.Web.Util.IoC;
 
-namespace orion.web.BLL.Expenditures
+namespace Orion.Web.BLL.Expenditures
 {
     public class GetCreateExpenseModelMessage : IProduces<ExpenseViewModel>
     {
@@ -21,15 +21,16 @@ namespace orion.web.BLL.Expenditures
     public interface IGetCreateExpenseModel
     {
         public Task<IProcessResult<ExpenseViewModel>> Process(GetCreateExpenseModelMessage msg);
-
     }
+
     public class GetCreateExpenseModel : Orchastrator<GetCreateExpenseModelMessage, ExpenseViewModel>,
         IGetCreateExpenseModel, IAutoRegisterAsSingleton
     {
         private readonly IEmployeeRepository empRepo;
         private readonly IJobsRepository jobsRepository;
 
-        public GetCreateExpenseModel(IEmployeeRepository empRepo,
+        public GetCreateExpenseModel(
+            IEmployeeRepository empRepo,
             IJobsRepository jobsRepository)
         {
             this.empRepo = empRepo;
@@ -49,40 +50,37 @@ namespace orion.web.BLL.Expenditures
                     AvailableJobs = jobs.Where(x => x.JobStatusId == JobStatus.Enabled).ToArray(),
                     ExpenseType = msg.TargetExpenseType,
                     IsBrandNewExpenditureCreation = true,
-                    ArcFlashLabelExpenditure = new Expense<api.expenditures.Models.ArcFlashLabelExpenditure>()
+                    ArcFlashLabelExpenditure = new Expense<Api.Expenditures.Models.ArcFlashLabelExpenditure>()
                     {
-                        Detail = new api.expenditures.Models.ArcFlashLabelExpenditure()
+                        Detail = new Api.Expenditures.Models.ArcFlashLabelExpenditure()
                         {
                             DateOfInvoice = DateTimeOffset.UtcNow,
                         }
-
                     }
                 },
                 ExpenditureTypeEnum.MiscExpenditure => new ExpenseViewModel()
                 {
                     AvailableEmployees = emps,
-                    AvailableJobs =  jobs.Where(x => x.JobStatusId == JobStatus.Enabled).ToArray(),
+                    AvailableJobs = jobs.Where(x => x.JobStatusId == JobStatus.Enabled).ToArray(),
                     ExpenseType = msg.TargetExpenseType,
                     IsBrandNewExpenditureCreation = true,
-                    MiscExpenditure = new Expense<api.expenditures.Models.MiscExpenditure>()
+                    MiscExpenditure = new Expense<Api.Expenditures.Models.MiscExpenditure>()
                     {
-                        Detail = new api.expenditures.Models.MiscExpenditure()
+                        Detail = new Api.Expenditures.Models.MiscExpenditure()
                         {
                             ExpensedOn = DateTimeOffset.UtcNow,
-
                         }
-
                     }
                 },
                 ExpenditureTypeEnum.ContractorExpenditure => new ExpenseViewModel()
                 {
                     AvailableEmployees = emps,
-                    AvailableJobs =  jobs.Where(x => x.JobStatusId == JobStatus.Enabled).ToArray(),
+                    AvailableJobs = jobs.Where(x => x.JobStatusId == JobStatus.Enabled).ToArray(),
                     ExpenseType = msg.TargetExpenseType,
                     IsBrandNewExpenditureCreation = true,
-                    ContractorExpenditure = new Expense<api.expenditures.Models.ContractorExpenditure>()
+                    ContractorExpenditure = new Expense<Api.Expenditures.Models.ContractorExpenditure>()
                     {
-                        Detail = new api.expenditures.Models.ContractorExpenditure()
+                        Detail = new Api.Expenditures.Models.ContractorExpenditure()
                         {
                             ExpensedOn = DateTimeOffset.UtcNow
                         }
@@ -91,12 +89,12 @@ namespace orion.web.BLL.Expenditures
                 ExpenditureTypeEnum.TimeAndExpenceExpenditure => new ExpenseViewModel()
                 {
                     AvailableEmployees = emps,
-                    AvailableJobs =  jobs.Where(x => x.JobStatusId == JobStatus.Enabled).ToArray(),
+                    AvailableJobs = jobs.Where(x => x.JobStatusId == JobStatus.Enabled).ToArray(),
                     ExpenseType = msg.TargetExpenseType,
                     IsBrandNewExpenditureCreation = true,
-                    TimeAndExpenceExpenditure = new Expense<api.expenditures.Models.TimeAndExpenceExpenditure>()
+                    TimeAndExpenceExpenditure = new Expense<Api.Expenditures.Models.TimeAndExpenceExpenditure>()
                     {
-                        Detail = new api.expenditures.Models.TimeAndExpenceExpenditure()
+                        Detail = new Api.Expenditures.Models.TimeAndExpenceExpenditure()
                         {
                             ExpenseOnDate = DateTimeOffset.UtcNow
                         }
@@ -105,16 +103,16 @@ namespace orion.web.BLL.Expenditures
                 ExpenditureTypeEnum.CompanyVehicleExpenditure => new ExpenseViewModel()
                 {
                     AvailableEmployees = emps,
-                    AvailableJobs =  jobs.Where(x => x.JobStatusId == JobStatus.Enabled).ToArray(),
+                    AvailableJobs = jobs.Where(x => x.JobStatusId == JobStatus.Enabled).ToArray(),
                     ExpenseType = msg.TargetExpenseType,
                     IsBrandNewExpenditureCreation = true,
-                    CompanyVehicleExpenditure = new Expense<api.expenditures.Models.CompanyVehicleExpenditure>()
+                    CompanyVehicleExpenditure = new Expense<Api.Expenditures.Models.CompanyVehicleExpenditure>()
                     {
-                        Detail = new api.expenditures.Models.CompanyVehicleExpenditure()
+                        Detail = new Api.Expenditures.Models.CompanyVehicleExpenditure()
                         {
                             DateVehicleFirstUsed = DateTimeOffset.UtcNow,
                             LastModified = DateTimeOffset.UtcNow,
-                            Vehicle = api.expenditures.Models.CompanyVehicleDescriptor.Enclave
+                            Vehicle = Api.Expenditures.Models.CompanyVehicleDescriptor.ChevyBlazer
                         }
                     }
                 },
@@ -125,4 +123,3 @@ namespace orion.web.BLL.Expenditures
         }
     }
 }
-

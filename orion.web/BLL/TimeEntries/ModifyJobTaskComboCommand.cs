@@ -1,52 +1,56 @@
-﻿using orion.web.Common;
-using orion.web.Employees;
-using orion.web.Util.IoC;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
+using Orion.Web.Common;
+using Orion.Web.Employees;
+using Orion.Web.Util.IoC;
 
-namespace orion.web.TimeEntries
+namespace Orion.Web.TimeEntries
 {
     public interface IModifyJobTaskComboCommand
     {
-        Task<Result> ModifyJobTaskCombo(int employeeId,  int weekId, int newTaskId, int newJobId, int oldTaskId, int oldJobId);
+        Task<Result> ModifyJobTaskCombo(int employeeId, int weekId, int newTaskId, int newJobId, int oldTaskId, int oldJobId);
     }
+
     public class ModifyJobTaskComboCommand : IModifyJobTaskComboCommand, IAutoRegisterAsSingleton
     {
         private readonly IEmployeeRepository employeeService;
-        //private readonly IWeekService weekService;
+
+        // private readonly IWeekService weekService;
         private readonly ITimeService timeService;
         private readonly ITimeSpentRepository timeSpentRepository;
 
-        public ModifyJobTaskComboCommand(IEmployeeRepository employeeService,
-          //  IWeekService weekService,
+        public ModifyJobTaskComboCommand(
+            IEmployeeRepository employeeService,
+
+            // IWeekService weekService,
             ITimeService timeService,
             ITimeSpentRepository timeSpentRepository)
         {
             this.employeeService = employeeService;
-            //this.weekService = weekService;
+
+            // this.weekService = weekService;
             this.timeService = timeService;
             this.timeSpentRepository = timeSpentRepository;
         }
-        public async Task<Result> ModifyJobTaskCombo(int employeeId,  int weekId, int newTaskId, int newJobId, int oldTaskId, int oldJobId)
-        {
 
-            var timeEntries = await timeService.GetAsync( weekId, employeeId);
+        public async Task<Result> ModifyJobTaskCombo(int employeeId, int weekId, int newTaskId, int newJobId, int oldTaskId, int oldJobId)
+        {
+            var timeEntries = await timeService.GetAsync(weekId, employeeId);
 
             var oldEntries = timeEntries.Where(x => x.JobId == oldJobId && x.JobTaskId == oldTaskId).ToList();
             var existingEntries = timeEntries.Where(x => x.JobId == newJobId && x.JobTaskId == newTaskId).ToList();
-            foreach(var item in oldEntries.GroupBy(x => x.Date.DayOfWeek).Select(z => new { DayOfWeek = z.Key, entry = z.First() }))
+            foreach (var item in oldEntries.GroupBy(x => x.Date.DayOfWeek).Select(z => new { DayOfWeek = z.Key, entry = z.First() }))
             {
-
                 var match = existingEntries.FirstOrDefault(x => x.Date.DayOfWeek == item.DayOfWeek);
-                if(match != null)
+                if (match != null)
                 {
                     match.Hours += item.entry.Hours;
                     match.OvertimeHours += item.entry.OvertimeHours;
-                    await timeService.SaveAsync(  employeeId, match);
+                    await timeService.SaveAsync(employeeId, match);
                 }
                 else
                 {
-                    await timeService.SaveAsync(  employeeId, new TimeEntryDTO()
+                    await timeService.SaveAsync(employeeId, new TimeEntryDTO()
                     {
                         Date = item.entry.Date,
                         EmployeeId = item.entry.EmployeeId,
@@ -57,11 +61,10 @@ namespace orion.web.TimeEntries
                         WeekId = weekId
                     });
                 }
-
             }
-            await timeService.DeleteAllEntries( weekId, oldTaskId, oldJobId, employeeId);
+
+            await timeService.DeleteAllEntries(weekId, oldTaskId, oldJobId, employeeId);
             return new Result(true);
         }
     }
-
 }

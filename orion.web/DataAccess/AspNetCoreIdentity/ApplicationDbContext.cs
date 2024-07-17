@@ -6,9 +6,8 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
-namespace orion.web.AspNetCoreIdentity
+namespace Orion.Web.AspNetCoreIdentity
 {
-
     public class AppIdentMigrationContextFactory : IDesignTimeDbContextFactory<ApplicationDbContext>
     {
         public ApplicationDbContext CreateDbContext(string[] args)
@@ -19,6 +18,7 @@ namespace orion.web.AspNetCoreIdentity
             return new ApplicationDbContext(optionsBuilder.Options);
         }
     }
+
     public class ApplicationDbContext : IdentityDbContext
     {
         public ApplicationDbContext()

@@ -1,10 +1,6 @@
 ﻿using System;
-namespace orion.web.DataAccess.EF
+namespace Orion.Web.DataAccess.EF
 {
-
-
-
-  
     public class MiscExpenditure
     {
         public int Id { get; set; }
@@ -19,6 +15,4 @@ namespace orion.web.DataAccess.EF
         public string Description { get; set; }
         public decimal Amount { get; set; }
     }
-
 }
-

@@ -1,11 +1,6 @@
 ﻿using System;
-namespace orion.web.DataAccess.EF
+namespace Orion.Web.DataAccess.EF
 {
-
-
-
-   
-
     public class ContractorExpenditure
     {
         public int Id { get; set; }
@@ -21,4 +16,3 @@ namespace orion.web.DataAccess.EF
         public decimal TotalPOContractAmount { get; set; }
     }
 }
-

@@ -1,10 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using orion.web.Clients;
-using orion.web.Common;
-using orion.web.Jobs;
-using orion.web.Reports.QuickJobTimeReport;
-using orion.web.Util.IoC;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
@@ -12,13 +6,20 @@ using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+using Orion.Web.Clients;
+using Orion.Web.Common;
+using Orion.Web.Jobs;
+using Orion.Web.Reports.QuickJobTimeReport;
+using Orion.Web.Util.IoC;
 
-namespace orion.web.Reports
+namespace Orion.Web.Reports
 {
     public interface IQuickJobTimeReportQuery
     {
         Task<ReportDTO<QuickJobTimeReportDTO>> RunAsync(QuickJobTimeReportCriteria criteria);
     }
+
     public class QuickJobTimeReportQuery : IQuickJobTimeReportQuery, IAutoRegisterAsSingleton
     {
         private readonly IConfiguration configuration;
@@ -35,6 +36,7 @@ namespace orion.web.Reports
             _sitesRepository = sitesRepository;
             _clientsRepository = clientsRepository;
         }
+
         public async Task<ReportDTO<QuickJobTimeReportDTO>> RunAsync(QuickJobTimeReportCriteria criteria)
         {
             DateTime start = criteria.PeriodSettings.Start;
@@ -49,7 +51,6 @@ namespace orion.web.Reports
             using (var cmd = conn.CreateCommand())
             {
                 conn.Open();
-
 
                 cmd.CommandText = @"
 
@@ -88,7 +89,7 @@ where
 	(@JobId is null Or te.JobId = @JobId) and
 	te.Date >= @WeekStart and te.Date <= @WeekEnd and
     ISNULL(e.[UserName],'') != 'admin@company.com' "
-+ (limitToEmployeeId.HasValue ? $" and te.EmployeeId = { limitToEmployeeId.Value}" : string.Empty)
++ (limitToEmployeeId.HasValue ? $" and te.EmployeeId = {limitToEmployeeId.Value}" : string.Empty)
 + @"  group by tc.Name,s.SiteName, 
 j.JobCode, 
 COALESCE(e.Last,'') + ', ' + COALESCE(e.First,'') , 
@@ -170,9 +171,6 @@ AND (@LimitToEmployeeId is null OR @LimitToEmployeeId = e.EmployeeId)
 AND (@JobId is null Or j.JobId = @JobId)   
 HAVING SUM(ISNULL(e.Amount,0)) > 0 ";
 
-
-
-
                 cmd.Parameters.Add(new SqlParameter("JobId", jobId));
                 cmd.Parameters.Add(new SqlParameter("LimitToEmployeeId", limitToEmployeeId.HasValue ? limitToEmployeeId : DBNull.Value));
                 cmd.Parameters.Add(new SqlParameter("WeekIdStartInclusive", WeekDTO.CreateWithWeekContaining(start).WeekId.Value));
@@ -213,30 +211,30 @@ HAVING SUM(ISNULL(e.Amount,0)) > 0 ";
                         });
                     }
                 }
+
                 rpt.Employees = employeeRows;
-                
+
                 await rdr.NextResultAsync();
-                while(await rdr.ReadAsync())
+                while (await rdr.ReadAsync())
                 {
                     rpt.Expenses.Add(rdr.GetString(0), rdr.GetDecimal(1));
                 }
-                    
+
                 return new ReportDTO<QuickJobTimeReportDTO>()
                 {
                     Data = rpt,
-                    ReportName = QuickJobTimeReport.QuickJobTimeReportCriteria.QUICK_JOB_TIME_REPORT_NAME,
+                    ReportName = QuickJobTimeReport.QuickJobTimeReportCriteria.QUICKJOBTIMEREPORTNAME,
                     RunSettings =
                 new Dictionary<string, string>()
                 {
-                    { "Generated", $"{DateTimeWithZone.EasternStandardTime.ToShortDateString()} at {DateTimeWithZone.EasternStandardTime.ToShortTimeString()}"},
+                    { "Generated", $"{DateTimeWithZone.EasternStandardTime.ToShortDateString()} at {DateTimeWithZone.EasternStandardTime.ToShortTimeString()}" },
                     { "Company", $"Orion Engineering Co., Inc." },
-                    { "Showing Time From", criteria.ShowAllEmployeesForJob ? "All Employees" : "Self"  },
+                    { "Showing Time From", criteria.ShowAllEmployeesForJob ? "All Employees" : "Self" },
                 }
                 };
-
-
             }
         }
+
         private static readonly Dictionary<string, int> ColumnMap = new Dictionary<string, int>();
         private static object reportColumnMapLock = new object();
         private Dictionary<string, int> GetColumnMap(ReadOnlyCollection<DbColumn> cols)
@@ -254,6 +252,7 @@ HAVING SUM(ISNULL(e.Amount,0)) > 0 ";
                             ColumnMap.Add(prop.Name, match.ColumnOrdinal.Value);
                         }
                     }
+
                     var empPropNames = typeof(QuickJobEmployees).GetProperties();
                     foreach (var prop in empPropNames)
                     {
@@ -264,10 +263,9 @@ HAVING SUM(ISNULL(e.Amount,0)) > 0 ";
                         }
                     }
                 }
-
             }
+
             return ColumnMap;
         }
-
     }
 }

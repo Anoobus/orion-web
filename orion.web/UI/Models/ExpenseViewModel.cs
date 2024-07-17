@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using orion.web.api.expenditures.Models;
-using orion.web.BLL.Expenditures;
-using orion.web.Employees;
-using orion.web.Jobs;
-using orion.web.UI.Models;
-namespace orion.web.UI.Models
+using Orion.Web.Api.Expenditures.Models;
+using Orion.Web.BLL.Expenditures;
+using Orion.Web.Employees;
+using Orion.Web.Jobs;
+using Orion.Web.UI.Models;
+namespace Orion.Web.UI.Models
 {
-
     public class ExpenseViewModel
     {
         public ExpenditureTypeEnum ExpenseType { get; set; }

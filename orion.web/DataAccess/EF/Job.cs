@@ -1,8 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace orion.web.DataAccess.EF
+namespace Orion.Web.DataAccess.EF
 {
-
     public class Job
     {
         public int JobId { get; set; }
@@ -21,6 +20,6 @@ namespace orion.web.DataAccess.EF
 
         public int EmployeeId { get; set; }
         [ForeignKey("EmployeeId")]
-        public virtual Employee ProjectManager {get;set;}
+        public virtual Employee ProjectManager { get; set; }
     }
 }

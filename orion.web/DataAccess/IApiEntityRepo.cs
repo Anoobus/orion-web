@@ -4,12 +4,12 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using orion.web.api;
-using orion.web.DataAccess.EF;
-using orion.web.Util.IoC;
-using ArcFlashLabelExpenditure = orion.web.DataAccess.EF.ArcFlashLabelExpenditure;
+using Orion.Web.Api;
+using Orion.Web.DataAccess.EF;
+using Orion.Web.Util.IoC;
+using ArcFlashLabelExpenditure = Orion.Web.DataAccess.EF.ArcFlashLabelExpenditure;
 
-namespace orion.web.DataAccess
+namespace Orion.Web.DataAccess
 {
     public interface IApiEntityRepo<TEntity>
     {
@@ -29,6 +29,7 @@ namespace orion.web.DataAccess
         {
             this._contextFactory = contextFactory;
         }
+
         public async Task DeleteEntity(Guid externalId)
         {
             using (var db = _contextFactory.CreateDb())
@@ -39,7 +40,6 @@ namespace orion.web.DataAccess
 
                 await db.SaveChangesAsync();
             }
-
         }
 
         public async Task<ArcFlashLabelExpenditure> FindByExternalId(Guid externalId)
@@ -49,6 +49,7 @@ namespace orion.web.DataAccess
                 return await db.ArcFlashlabelExpenditures.SingleOrDefaultAsync(x => x.ExternalId == externalId);
             }
         }
+
         public async Task<ArcFlashLabelExpenditure> SaveEntity(ArcFlashLabelExpenditure update)
         {
             using (var db = _contextFactory.CreateDb())
@@ -63,6 +64,7 @@ namespace orion.web.DataAccess
                     db.ArcFlashlabelExpenditures.Add(update);
                     exp = update;
                 }
+
                 await db.SaveChangesAsync();
                 return exp;
             }
@@ -72,7 +74,6 @@ namespace orion.web.DataAccess
         {
             using (var db = _contextFactory.CreateDb())
             {
-
                 var exp = await db.ArcFlashlabelExpenditures.SingleOrDefaultAsync(x => x.ExternalId == externalId);
 
                 if (exp == null)
@@ -92,10 +93,7 @@ namespace orion.web.DataAccess
                 return await db.ArcFlashlabelExpenditures.Where(filter).ToListAsync();
             }
         }
-
-
     }
-
 
     public interface ICompanyVehicleExpenditureRepo : IApiEntityRepo<DataAccess.EF.CompanyVehicleExpenditure> { }
     public class CompanyVehicleExpenditureRepo : ICompanyVehicleExpenditureRepo, IAutoRegisterAsSingleton
@@ -117,7 +115,6 @@ namespace orion.web.DataAccess
 
                 await db.SaveChangesAsync();
             }
-
         }
 
         public async Task<CompanyVehicleExpenditure> FindByExternalId(Guid externalId)
@@ -141,6 +138,7 @@ namespace orion.web.DataAccess
                 {
                     db.CompanyVehicleExpenditures.Add(toSave);
                 }
+
                 await db.SaveChangesAsync();
                 return exp ?? toSave;
             }
@@ -158,7 +156,6 @@ namespace orion.web.DataAccess
         {
             using (var db = _contextFactory.CreateDb())
             {
-
                 var exp = await db.CompanyVehicleExpenditures.SingleOrDefaultAsync(x => x.ExternalId == externalId);
 
                 if (exp == null)
@@ -171,7 +168,6 @@ namespace orion.web.DataAccess
             }
         }
     }
-
 
     public interface IMiscExpenditureRepo : IApiEntityRepo<DataAccess.EF.MiscExpenditure> { }
     public class MiscExpenditureRepo : IMiscExpenditureRepo, IAutoRegisterAsSingleton
@@ -193,7 +189,6 @@ namespace orion.web.DataAccess
 
                 await db.SaveChangesAsync();
             }
-
         }
 
         public async Task<MiscExpenditure> FindByExternalId(Guid externalId)
@@ -217,6 +212,7 @@ namespace orion.web.DataAccess
                 {
                     db.MiscExpenditures.Add(toSave);
                 }
+
                 await db.SaveChangesAsync();
                 return exp ?? toSave;
             }
@@ -234,7 +230,6 @@ namespace orion.web.DataAccess
         {
             using (var db = _contextFactory.CreateDb())
             {
-
                 var exp = await db.MiscExpenditures.SingleOrDefaultAsync(x => x.ExternalId == externalId);
 
                 if (exp == null)
@@ -247,7 +242,6 @@ namespace orion.web.DataAccess
             }
         }
     }
-
 
     public interface IContractorExpenditureRepo : IApiEntityRepo<DataAccess.EF.ContractorExpenditure> { }
     public class ContractorExpenditureRepo : IContractorExpenditureRepo, IAutoRegisterAsSingleton
@@ -269,7 +263,6 @@ namespace orion.web.DataAccess
 
                 await db.SaveChangesAsync();
             }
-
         }
 
         public async Task<ContractorExpenditure> FindByExternalId(Guid externalId)
@@ -293,6 +286,7 @@ namespace orion.web.DataAccess
                 {
                     db.ContractorExpenditures.Add(toSave);
                 }
+
                 await db.SaveChangesAsync();
                 return exp ?? toSave;
             }
@@ -310,7 +304,6 @@ namespace orion.web.DataAccess
         {
             using (var db = _contextFactory.CreateDb())
             {
-
                 var exp = await db.ContractorExpenditures.SingleOrDefaultAsync(x => x.ExternalId == externalId);
 
                 if (exp == null)
@@ -323,6 +316,7 @@ namespace orion.web.DataAccess
             }
         }
     }
+
     public interface ITimeAndExpenceExpenditureRepo : IApiEntityRepo<DataAccess.EF.TimeAndExpenceExpenditure> { }
     public class TimeAndExpenceExpenditureRepo : ITimeAndExpenceExpenditureRepo, IAutoRegisterAsSingleton
     {
@@ -343,7 +337,6 @@ namespace orion.web.DataAccess
 
                 await db.SaveChangesAsync();
             }
-
         }
 
         public async Task<TimeAndExpenceExpenditure> FindByExternalId(Guid externalId)
@@ -367,6 +360,7 @@ namespace orion.web.DataAccess
                 {
                     db.TimeAndExpenceExpenditures.Add(toSave);
                 }
+
                 await db.SaveChangesAsync();
                 return exp ?? toSave;
             }
@@ -384,7 +378,6 @@ namespace orion.web.DataAccess
         {
             using (var db = _contextFactory.CreateDb())
             {
-
                 var exp = await db.TimeAndExpenceExpenditures.SingleOrDefaultAsync(x => x.ExternalId == externalId);
 
                 if (exp == null)

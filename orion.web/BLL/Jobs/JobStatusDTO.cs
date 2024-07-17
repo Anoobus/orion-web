@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace orion.web.Jobs
+namespace Orion.Web.Jobs
 {
     public enum JobStatus
     {
         Unkown = 0,
         Enabled = 1,
         Archived = 2,
-    };
+    }
+
     public class JobStatusDTO
     {
         public int Id { get; set; }

@@ -1,17 +1,16 @@
-﻿using Ionic.Zip;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
+using Ionic.Zip;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 
-namespace orion.web.api
+namespace Orion.Web.Api
 {
-
     public class DownloadModel
     {
         public string ZipFileName { get; set; }
@@ -33,7 +32,7 @@ namespace orion.web.api
         [HttpPost("current-db-zip")]
         public async Task<ActionResult> DownloadDb([FromBody] DownloadModel dl)
         {
-            if(string.IsNullOrWhiteSpace(dl?.Password) || string.IsNullOrWhiteSpace(dl?.ZipFileName))
+            if (string.IsNullOrWhiteSpace(dl?.Password) || string.IsNullOrWhiteSpace(dl?.ZipFileName))
             {
                 return BadRequest(new
                 {
@@ -44,15 +43,17 @@ namespace orion.web.api
 
             try
             {
-                //bin dir
+                // bin dir
                 var currentDir = new DirectoryInfo(Path.GetFullPath(Assembly.GetExecutingAssembly().Location));
-                //app dir
+
+                // app dir
                 var parent = currentDir.Parent;
                 var backupDir = Path.Combine(parent.FullName, "db-backups");
-                if(!Directory.Exists(backupDir))
+                if (!Directory.Exists(backupDir))
                 {
                     Directory.CreateDirectory(backupDir);
                 }
+
                 CleanUpOldData(backupDir);
 
                 var thisBackupId = Guid.NewGuid().ToString();
@@ -62,9 +63,8 @@ namespace orion.web.api
                 var thisUsersBackUpId = Path.Combine(backUpPath, "orion.web.aspnet.identity.bak");
                 var thisWebBackUpId = Path.Combine(backUpPath, "orion.web.bak");
 
-
-                using(var conn = new SqlConnection(_configuration.GetConnectionString("SiteConnection")))
-                using(var cmd = conn.CreateCommand())
+                using (var conn = new SqlConnection(_configuration.GetConnectionString("SiteConnection")))
+                using (var cmd = conn.CreateCommand())
                 {
                     await conn.OpenAsync();
 
@@ -82,7 +82,7 @@ namespace orion.web.api
                 var bytes = System.IO.File.ReadAllBytes(finalZip);
                 return File(bytes, "application/octet-stream", dl.ZipFileName);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 var res = new ObjectResult(new
                 {
@@ -92,38 +92,36 @@ namespace orion.web.api
                 res.StatusCode = 500;
                 return res;
             }
-
-
         }
 
         private void CleanUpOldData(string backUpDir)
         {
             var dirInfo = new DirectoryInfo(backUpDir);
             var toDelete = new List<DirectoryInfo>();
-            foreach(var item in dirInfo.GetDirectories())
+            foreach (var item in dirInfo.GetDirectories())
             {
-                if(DateTime.UtcNow.Subtract(item.CreationTimeUtc).TotalDays > 30)
+                if (DateTime.UtcNow.Subtract(item.CreationTimeUtc).TotalDays > 30)
                 {
                     toDelete.Add(item);
                 }
             }
 
-            foreach(var item in toDelete)
+            foreach (var item in toDelete)
             {
                 item.Delete(recursive: true);
             }
         }
 
-        [HttpPost]
-        public void CreatePasswordProtectedZip(string zipFullFileName, string password, string[] sourcefiles)
+        private void CreatePasswordProtectedZip(string zipFullFileName, string password, string[] sourcefiles)
         {
-            using(var zip = new ZipFile())
+            using (var zip = new ZipFile())
             {
                 zip.Password = password;
-                foreach(var file in sourcefiles)
+                foreach (var file in sourcefiles)
                 {
                     zip.AddFile(file, string.Empty);
                 }
+
                 zip.Save(zipFullFileName);
             }
         }

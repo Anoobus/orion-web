@@ -1,13 +1,13 @@
-﻿using Microsoft.Extensions.Configuration;
-using orion.web.Common;
-using orion.web.Util.IoC;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+using Orion.Web.Common;
+using Orion.Web.Util.IoC;
 
-namespace orion.web.Expense
+namespace Orion.Web.Expense
 {
     public interface IUploadLocationResolver
     {
@@ -22,6 +22,7 @@ namespace orion.web.Expense
         {
             _config = config;
         }
+
         public string GetUploadPath()
         {
             var currentLocation = new FileInfo(this.GetType().Assembly.Location);

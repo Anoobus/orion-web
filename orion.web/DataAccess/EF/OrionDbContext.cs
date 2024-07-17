@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
-namespace orion.web.DataAccess.EF
+namespace Orion.Web.DataAccess.EF
 {
     public class MigrationContextFactory : IDesignTimeDbContextFactory<OrionDbContext>
     {
@@ -16,7 +16,7 @@ namespace orion.web.DataAccess.EF
 
     public class OrionDbContext : DbContext
     {
-        public const string CONN_STRING_NAME = "SiteConnection";
+        public const string CONNSTRINGNAME = "SiteConnection";
         public OrionDbContext()
             : base(new DbContextOptionsBuilder<OrionDbContext>()
                   .UseSqlServer(@"Server=localhost\\sql2017;Integrated Security=true;Database=orion.web;")
@@ -42,6 +42,7 @@ namespace orion.web.DataAccess.EF
         public DbSet<TimeSheetApproval> TimeSheetApprovals { get; set; }
         public DbSet<JobStatus> JobStatuses { get; set; }
         public DbSet<EmployeeJob> EmployeeJobs { get; set; }
+        public DbSet<EmployeeDirectReport> EmployeeDirectReport { get; set; }
         public DbSet<ExpenseItem> Expenses { get; set; }
         public DbSet<WeekOfHours> WeeklyData { get; set; }
 
@@ -54,7 +55,5 @@ namespace orion.web.DataAccess.EF
         public DbSet<ArcFlashLabelExpenditure> ArcFlashlabelExpenditures { get; set; }
         public DbSet<MiscExpenditure> MiscExpenditures { get; set; }
         public DbSet<TimeAndExpenceExpenditure> TimeAndExpenceExpenditures { get; set; }
-
-
     }
 }

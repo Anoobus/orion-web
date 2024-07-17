@@ -1,17 +1,16 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using orion.web.Common;
-using orion.web.Jobs;
-using System;
-using System.Threading.Tasks;
-using System.Linq;
+﻿using System;
 using System.IO;
-using orion.web.Employees;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Orion.Web.Common;
+using Orion.Web.Employees;
+using Orion.Web.Jobs;
 
-namespace orion.web.Expense
+namespace Orion.Web.Expense
 {
-
     [Authorize]
     public class ExpenseController : Controller
     {
@@ -40,7 +39,6 @@ namespace orion.web.Expense
                 Week = WeekDTO.CreateForWeekId(weekid),
                 CancelUrl = originUrl,
                 WeekId = weekid,
-
             };
             return View("New", vm);
         }
@@ -56,7 +54,7 @@ namespace orion.web.Expense
         [HttpPost]
         public async Task<ActionResult> Create(AddExpenseViewModel vm)
         {
-            var uploadId = new Guid?();
+            var uploadId = default(Guid?);
             if (vm.UploadFile != null)
             {
                 uploadId = Guid.NewGuid();
@@ -67,7 +65,6 @@ namespace orion.web.Expense
                     await vm.UploadFile.CopyToAsync(fs);
                 }
             }
-
 
             var jobDetails = await _jobsService.GetForJobId(vm.SelectedJobId);
             await _expenseService.SaveExpensesForEmployee(new ExpenseDTO()
@@ -95,12 +92,12 @@ namespace orion.web.Expense
                 AvailableJobs = jobs.ToList(),
                 ExpenseToSave = new ExpenseModel()
                 {
-                     AddtionalNotes = expense.AddtionalNotes,
-                     Amount = expense.Amount,
-                     AttachmentName = expense.AttatchmentName,
-                     Classification = expense.Classification,
-                     RelatedJob = expense.RelatedJob,
-                     SaveDate = expense.SaveDate
+                    AddtionalNotes = expense.AddtionalNotes,
+                    Amount = expense.Amount,
+                    AttachmentName = expense.AttatchmentName,
+                    Classification = expense.Classification,
+                    RelatedJob = expense.RelatedJob,
+                    SaveDate = expense.SaveDate
                 },
                 Week = WeekDTO.CreateForWeekId(weekid),
                 CancelUrl = originUrl,
@@ -114,10 +111,10 @@ namespace orion.web.Expense
         [HttpPost]
         public async Task<ActionResult> Edit(EditExpenseViewModel vm, string postType)
         {
-            if(postType == "Delete")
+            if (postType == "Delete")
             {
                 var deleted = await _expenseService.DeleteExpense(vm.ExpenseItemId);
-                if(deleted != null)
+                if (deleted != null)
                 {
                     System.IO.File.Delete(Path.Combine(_uploadLocationResolver.GetUploadPath(), deleted.AttachmentId.Value.ToString()));
                 }
@@ -141,16 +138,10 @@ namespace orion.web.Expense
                 });
             }
 
-
-
             var jobDetails = await _jobsService.GetForJobId(vm.SelectedJobId);
 
             Notifications.NotificationsController.AddNotification(User.Identity.Name, $"{vm.ExpenseToSave.AttachmentName} was saved.");
             return Redirect(vm.CancelUrl);
         }
-
-
     }
-
 }
-

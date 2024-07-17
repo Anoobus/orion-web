@@ -1,33 +1,34 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using orion.web.BLL.TimeApproval;
-using orion.web.Common;
-using orion.web.DataAccess.EF;
-using orion.web.Employees;
-using orion.web.TimeEntries;
-using Serilog;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Orion.Web.BLL.TimeApproval;
+using Orion.Web.Common;
+using Orion.Web.DataAccess.EF;
+using Orion.Web.Employees;
+using Orion.Web.TimeEntries;
+using Serilog;
 
-namespace orion.web.api
+namespace Orion.Web.Api
 {
     [Authorize]
     [ApiController]
     public class RemindersController : ControllerBase
     {
-        public const string PPE_MISSING_TIME_TASK = "on-ppe-missing-time-email";
-        public const string NONPPE_MISSING_TIME_TASK = "off-ppe-missing-time-email";
+        public const string PPEMISSINGTIMETASK = "on-ppe-missing-time-email";
+        public const string NONPPEMISSINGTIMETASK = "off-ppe-missing-time-email";
 
         private readonly ITimeApprovalService _timeApprovalService;
         private readonly ISmtpProxy _smtpProxy;
         private readonly IEmployeeRepository _employeeRepository;
         private readonly IScheduledTaskRepo _scheduleTaskRepo;
-        private readonly ILogger _logger = Log.ForContext< RemindersController>();
+        private readonly ILogger _logger = Log.ForContext<RemindersController>();
         private readonly IEmailExclusionFilter _emailExclusionFilter;
 
-        public RemindersController(ITimeApprovalService timeApprovalService,
+        public RemindersController(
+            ITimeApprovalService timeApprovalService,
             ISmtpProxy smtpProxy,
             IEmployeeRepository employeeRepository,
             IScheduledTaskRepo scheduleTaskRepo,
@@ -45,10 +46,10 @@ namespace orion.web.api
         [HttpPost("on-ppe-missing-time-email")]
         public async Task<ActionResult> SendUnsubmittedTimeReminderPPE()
         {
-            var reminderTask = await _scheduleTaskRepo.GetTaskByName(PPE_MISSING_TIME_TASK);
-            reminderTask = reminderTask ?? (await CreateReminderTask(PPE_MISSING_TIME_TASK, isPpeOnly: true));
+            var reminderTask = await _scheduleTaskRepo.GetTaskByName(PPEMISSINGTIMETASK);
+            reminderTask = reminderTask ?? (await CreateReminderTask(PPEMISSINGTIMETASK, isPpeOnly: true));
             _logger.Information($"Checking if {reminderTask} should run");
-            if(await ShouldRun(reminderTask))
+            if (await ShouldRun(reminderTask))
             {
                 _logger.Information($"{reminderTask} now running");
                 await _scheduleTaskRepo.RecordTaskCompletion(reminderTask.ScheduleTaskId);
@@ -76,49 +77,48 @@ namespace orion.web.api
             var hasNotRanWithin_N_Weeks = !taskHasNeverRan && now.Subtract(lastRun.Value).TotalDays > (reminderTask.RecurEveryNWeeks * 7);
             return taskHasNeverRan || hasNotRanWithin_N_Weeks;
         }
+
         private async Task SendReminders()
         {
             var thisWeek = WeekDTO.CreateWithWeekContaining(DateTime.Now);
-            if(thisWeek.IsPPE.Value)
+            if (thisWeek.IsPPE.Value)
             {
                 var beginDate = thisWeek.Previous().WeekStart;
                 var endDate = thisWeek.WeekEnd;
                 var entries = (await _timeApprovalService.GetByStatus(beginDate, endDate, TimeApprovalStatus.Unkown)).ToList();
                 var template = await System.IO.File.ReadAllTextAsync(@"wwwroot\email-submit-time-reminder.html");
-                foreach(var entry in entries.GroupBy(x => x.EmployeeId))
+                foreach (var entry in entries.GroupBy(x => x.EmployeeId))
                 {
                     try
                     {
                         var emp = await _employeeRepository.GetSingleEmployeeAsync(entry.Key);
                         _logger.Information($"sending reminder to {emp.First} {emp.Last} [{emp.UserName}]");
-                        if(! await _emailExclusionFilter.ShouldRecieveSubmittTimeReminder(emp.EmployeeId))
+                        if (!await _emailExclusionFilter.ShouldRecieveSubmittTimeReminder(emp.EmployeeId))
                         {
                             _smtpProxy.SendMail(emp.UserName, template, $"Reminder to submit time for {beginDate.ToShortDateString()}-{endDate.ToShortDateString()}");
-                        }                        
+                        }
                     }
-                    catch(Exception  e)
+                    catch (Exception e)
                     {
                         _logger.Error(e, "error trying to send reminder");
                     }
-
                 }
             }
         }
 
         private Dictionary<DayOfWeek, Func<ScheduleTask, bool>> _dayMap = new Dictionary<DayOfWeek, Func<ScheduleTask, bool>>()
         {
-            {DayOfWeek.Monday,  x=> x.OnMonday  },
-            {DayOfWeek.Tuesday,  x=> x.OnTuesday  },
-            {DayOfWeek.Wednesday,  x=> x.OnWednesday  },
-            {DayOfWeek.Thursday,  x=> x.OnThursday  },
-            {DayOfWeek.Friday,  x=> x.OnFriday  },
-            {DayOfWeek.Saturday,  x=> x.OnSaturday  },
-            {DayOfWeek.Sunday,  x=> x.OnSunday  }
+            { DayOfWeek.Monday,  x => x.OnMonday },
+            { DayOfWeek.Tuesday,  x => x.OnTuesday },
+            { DayOfWeek.Wednesday,  x => x.OnWednesday },
+            { DayOfWeek.Thursday,  x => x.OnThursday },
+            { DayOfWeek.Friday,  x => x.OnFriday },
+            { DayOfWeek.Saturday,  x => x.OnSaturday },
+            { DayOfWeek.Sunday,  x => x.OnSunday }
         };
 
         private bool MatchesDay(ScheduleTask task, DateTimeOffset dateTimeOffset)
         {
-
             var dayOfWeek = dateTimeOffset.ToLocalTime().DayOfWeek;
             var expr = _dayMap[dayOfWeek];
             return expr(task);
@@ -127,11 +127,12 @@ namespace orion.web.api
         private async Task<DataAccess.EF.ScheduleTask> CreateReminderTask(string taskName, bool isPpeOnly)
         {
             var thisWeek = WeekDTO.CreateWithWeekContaining(DateTime.Now);
-            if(isPpeOnly)
+            if (isPpeOnly)
             {
-                if(!thisWeek.IsPPE.Value)
+                if (!thisWeek.IsPPE.Value)
                     thisWeek = thisWeek.Previous();
             }
+
             _logger.Information($"Creating new Reminder Task [{taskName}]");
             return await _scheduleTaskRepo.CreateNewScheduledTask(new BLL.ScheduledTasks.NewScheduledTask()
             {
@@ -143,16 +144,15 @@ namespace orion.web.api
             });
         }
 
-
-        //[HttpPost("off-ppe-missing-time-email")]
-        //public async Task<ActionResult> SendUnsubmittedTimeReminder()
-        //{
+        // [HttpPost("off-ppe-missing-time-email")]
+        // public async Task<ActionResult> SendUnsubmittedTimeReminder()
+        // {
         //    var thisWeek = WeekDTO.CreateWithWeekContaining(DateTime.Now);
 
-        //    var reminderTask = await _scheduleTaskRepo.GetTaskByName(NONPPE_MISSING_TIME_TASK);
+        // var reminderTask = await _scheduleTaskRepo.GetTaskByName(NONPPE_MISSING_TIME_TASK);
         //    reminderTask = reminderTask ?? (await CreateReminderTask(NONPPE_MISSING_TIME_TASK, isPpeOnly: false));
 
-        //    if(await ShouldRun(reminderTask))
+        // if(await ShouldRun(reminderTask))
         //    {
         //        var entries = (await _timeApprovalService.GetByStatus(thisWeek.WeekStart, thisWeek.WeekEnd, TimeApprovalStatus.Unkown)).ToList();
         //        var template = await System.IO.File.ReadAllTextAsync(@"wwwroot\email-submit-time-reminder.html");
@@ -163,9 +163,7 @@ namespace orion.web.api
         //        }
         //    }
 
-        //    return Ok();
-        //}
-
-
+        // return Ok();
+        // }
     }
 }

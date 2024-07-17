@@ -1,8 +1,8 @@
-﻿using orion.web.BLL.JobTasks;
-using orion.web.JobTasks;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using Orion.Web.BLL.JobTasks;
+using Orion.Web.JobTasks;
 
-namespace orion.web.JobsTasks
+namespace Orion.Web.JobsTasks
 {
     public class TaskDTO
     {
@@ -12,7 +12,7 @@ namespace orion.web.JobsTasks
         public string LegacyCode { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public TaskReportingTypeDto ReportingType { get;set;}
+        public TaskReportingTypeDto ReportingType { get; set; }
         public CategoryDTO Category { get; set; }
         public UsageStatusDTO UsageStatus { get; set; }
     }

@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace orion.web.Reports
+namespace Orion.Web.Reports
 {
     public class DetailedExpenseForJobReportDTO
     {
         public string JobCode { get; set; }
         public string JobName { get; set; }
         public string SiteName { get; set; }
-        public string ClientName { get; set; }        
+        public string ClientName { get; set; }
 
         public DateTime PeriodStart { get; set; }
         public DateTime PeriodEnd { get; set; }
-
 
         public IEnumerable<TimeAndExposeSectionRow> TimeAndExpense { get; set; }
         public IEnumerable<CompanyVehicleSectionRow> CompanyVehicle { get; set; }
@@ -41,7 +40,7 @@ namespace orion.web.Reports
     public class SubContractorSectionRow
     {
         public string Company { get; set; }
-        public string PONumber { get; set; }        
+        public string PONumber { get; set; }
         public decimal ContractAmount { get; set; }
         public DateTimeOffset ExpensedOn { get; set; }
     }
@@ -49,7 +48,7 @@ namespace orion.web.Reports
     public class ArcFlashLabeSectionRow
     {
         public DateTimeOffset DateOfInvoice { get; set; }
-        public int Quantity { get; set;}
+        public int Quantity { get; set; }
         public decimal LabelCost { get; set; }
         public decimal PostageCost { get; set; }
         public decimal TotalCost { get; set; }

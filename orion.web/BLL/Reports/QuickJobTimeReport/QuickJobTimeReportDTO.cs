@@ -1,19 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace orion.web.Reports
+namespace Orion.Web.Reports
 {
     public class QuickJobTimeReportDTO
     {
         public string JobCode { get; set; }
         public string JobName { get; set; }
         public string SiteName { get; set; }
-        public string ClientName { get; set; }        
+        public string ClientName { get; set; }
 
         public IEnumerable<QuickJobEmployees> Employees { get; set; }
         public DateTime PeriodStart { get; set; }
         public DateTime PeriodEnd { get; set; }
-        public Dictionary<string,decimal> Expenses { get; set; }
+        public Dictionary<string, decimal> Expenses { get; set; }
     }
 
     public class QuickJobEmployees
@@ -25,5 +25,4 @@ namespace orion.web.Reports
         public string TaskCategory { get; set; }
         public string TaskName { get; set; }
     }
-
 }

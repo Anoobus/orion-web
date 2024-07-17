@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace orion.web.Common
+namespace Orion.Web.Common
 {
     public class Result
     {
@@ -12,6 +12,7 @@ namespace orion.web.Common
             Successful = successful;
             Errors = errors ?? Enumerable.Empty<string>();
         }
+
         public bool Successful { get; set; }
         public IEnumerable<string> Errors { get; set; }
     }

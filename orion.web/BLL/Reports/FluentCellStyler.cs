@@ -1,10 +1,10 @@
 ﻿using System;
 using ClosedXML.Excel;
-using orion.web.Common;
+using Orion.Web.Common;
 
-namespace orion.web.BLL.Reports
+namespace Orion.Web.BLL.Reports
 {
-     public static class FluentCellStyle
+    public static class FluentCellStyle
     {
         public static IXLCell AddLeftBorder(this IXLCell cell, XLBorderStyleValues borderStyle = XLBorderStyleValues.Thin, XLColor color = null)
         {
@@ -17,6 +17,7 @@ namespace orion.web.BLL.Reports
             cell.AsRange().AddRightBorder(borderStyle, color);
             return cell;
         }
+
         public static IXLCell AddTopBorder(this IXLCell cell, XLBorderStyleValues borderStyle = XLBorderStyleValues.Thin, XLColor color = null)
         {
             cell.AsRange().AddRightBorder(borderStyle, color);
@@ -28,48 +29,54 @@ namespace orion.web.BLL.Reports
             cell.AsRange().AddBottomBorder(borderStyle, color);
             return cell;
         }
+
         public static IXLCell SetAlignHorizontal(this IXLCell cell, XLAlignmentHorizontalValues align)
         {
             cell.AsRange().SetAlignHorizontal(align);
             return cell;
         }
+
         public static IXLCell SetAlignVertical(this IXLCell cell, XLAlignmentVerticalValues align)
         {
             cell.AsRange().SetAlignVertical(align);
             return cell;
         }
+
         public static IXLCell SetFontStyle(this IXLCell cell, Action<IXLFont> config)
         {
             cell.AsRange().SetFontStyle(config);
             return cell;
         }
+
         public static IXLCell AssignValue<T>(this IXLCell cell, T val, Func<T, string> customProjection = null, (XLDataType format, string style) dataFormatOverride = default)
         {
             cell.AsRange().AssignValue(val, customProjection, dataFormatOverride);
             return cell;
         }
+
         public enum CellToThe
         {
-            left,
-            right,
-            below,
-            above
+            Left,
+            Right,
+            Below,
+            Above
         }
+
         public static IXLRange MergeWith(this IXLCell cell, CellToThe nighborToMerge)
         {
-            if (nighborToMerge == CellToThe.left)
+            if (nighborToMerge == CellToThe.Left)
             {
                 return cell.Worksheet.Range(cell, cell.CellLeft()).Merge();
             }
-            else if (nighborToMerge == CellToThe.right)
+            else if (nighborToMerge == CellToThe.Right)
             {
                 return cell.Worksheet.Range(cell, cell.CellRight()).Merge();
             }
-            else if (nighborToMerge == CellToThe.above)
+            else if (nighborToMerge == CellToThe.Above)
             {
                 return cell.Worksheet.Range(cell, cell.CellAbove()).Merge();
             }
-            else if (nighborToMerge == CellToThe.below)
+            else if (nighborToMerge == CellToThe.Below)
             {
                 return cell.Worksheet.Range(cell, cell.CellBelow()).Merge();
             }
@@ -84,6 +91,7 @@ namespace orion.web.BLL.Reports
             {
                 cell.Style.Border.LeftBorderColor = color ?? XLColor.Black;
             }
+
             foreach (var c in cell.Cells())
             {
                 if (c.WorksheetColumn().ColumnNumber() > 1)
@@ -106,6 +114,7 @@ namespace orion.web.BLL.Reports
             {
                 cell.Style.Border.RightBorderColor = color ?? XLColor.Black;
             }
+
             foreach (var c in cell.Cells())
             {
                 c.CellRight().Style.Border.LeftBorder = borderStyle;
@@ -114,8 +123,10 @@ namespace orion.web.BLL.Reports
                     c.CellRight().Style.Border.LeftBorderColor = color ?? XLColor.Black;
                 }
             }
+
             return cell;
         }
+
         public static IXLRange AddTopBorder(this IXLRange cell, XLBorderStyleValues borderStyle = XLBorderStyleValues.Thin, XLColor color = null)
         {
             cell.Style.Border.TopBorder = borderStyle;
@@ -123,26 +134,27 @@ namespace orion.web.BLL.Reports
             {
                 cell.Style.Border.TopBorderColor = color ?? XLColor.Black;
             }
+
             foreach (var c in cell.Cells())
             {
-
                 c.CellAbove().Style.Border.BottomBorder = borderStyle;
                 if (borderStyle != XLBorderStyleValues.None)
                 {
                     c.CellAbove().Style.Border.BottomBorderColor = color ?? XLColor.Black;
                 }
             }
+
             return cell;
         }
 
         public static IXLRange AddBottomBorder(this IXLRange cell, XLBorderStyleValues borderStyle = XLBorderStyleValues.Thin, XLColor color = null)
         {
             cell.Style.Border.BottomBorder = borderStyle;
-            if(borderStyle != XLBorderStyleValues.None)
+            if (borderStyle != XLBorderStyleValues.None)
             {
                 cell.Style.Border.BottomBorderColor = color ?? XLColor.Black;
-            
             }
+
             foreach (var c in cell.Cells())
             {
                 c.CellBelow().Style.Border.TopBorder = borderStyle;
@@ -151,13 +163,16 @@ namespace orion.web.BLL.Reports
                     c.CellBelow().Style.Border.TopBorderColor = color ?? XLColor.Black;
                 }
             }
+
             return cell;
         }
+
         public static IXLRange SetAlignHorizontal(this IXLRange cell, XLAlignmentHorizontalValues align)
         {
             cell.Style.Alignment.Horizontal = align;
             return cell;
         }
+
         public static IXLRange SetAlignVertical(this IXLRange cell, XLAlignmentVerticalValues align)
         {
             cell.Style.Alignment.Vertical = align;
@@ -175,7 +190,6 @@ namespace orion.web.BLL.Reports
                 cell.Value = val;
                 if (dataFormatOverride != default)
                 {
-
                     cell.DataType = dataFormatOverride.format;
                     if (dataFormatOverride.format == XLDataType.Number)
                         cell.Style.NumberFormat.Format = dataFormatOverride.style;
@@ -189,7 +203,6 @@ namespace orion.web.BLL.Reports
                 {
                     cell.DataType = XLDataType.DateTime;
                     cell.Style.DateFormat.Format = "yyyy-MM-dd";
-
                 }
             }
 
@@ -201,7 +214,5 @@ namespace orion.web.BLL.Reports
             config(cell.Style.Font);
             return cell;
         }
-
     }
 }
-

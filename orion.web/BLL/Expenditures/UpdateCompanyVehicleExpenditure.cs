@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Threading.Tasks;
 using AutoMapper;
-using orion.web.api;
-using orion.web.api.expenditures.Models;
-using orion.web.BLL.Core;
-using orion.web.Common;
-using orion.web.DataAccess;
-using orion.web.Jobs;
-using orion.web.Util.IoC;
+using Orion.Web.Api;
+using Orion.Web.Api.Expenditures.Models;
+using Orion.Web.BLL.Core;
+using Orion.Web.Common;
+using Orion.Web.DataAccess;
+using Orion.Web.Jobs;
+using Orion.Web.Util.IoC;
 
-namespace orion.web.BLL.Expenditures
+namespace Orion.Web.BLL.Expenditures
 {
     public class UpdateCompanyVehicleExpenditureMessage : IProduces<CompanyVehicleExpenditure>
     {
@@ -19,13 +19,12 @@ namespace orion.web.BLL.Expenditures
         {
             Model = model;
             CompanyVehicleExpenditureId = companyVehicleExpenditureId;
-        }        
+        }
     }
 
     public interface IUpdateCompanyVehicleExpenditure
     {
-          public Task<IProcessResult<CompanyVehicleExpenditure>> Process(UpdateCompanyVehicleExpenditureMessage msg);
-
+        public Task<IProcessResult<CompanyVehicleExpenditure>> Process(UpdateCompanyVehicleExpenditureMessage msg);
     }
 
     public class UpdateCompanyVehicleExpenditure
@@ -47,14 +46,13 @@ namespace orion.web.BLL.Expenditures
         {
             var job = await _jobsRepository.GetForJobId(msg.Model.JobId);
             if (job == null)
-                return Failure(ApiErrors.JobDoesNotExistException(msg.Model.JobId == 0 ? "[Not Supplied]" : $"[databaseId:{msg.Model.JobId }]", "A valid open job must be supplied in order to add an expense to it."));
+                return Failure(ApiErrors.JobDoesNotExistException(msg.Model.JobId == 0 ? "[Not Supplied]" : $"[databaseId:{msg.Model.JobId}]", "A valid open job must be supplied in order to add an expense to it."));
 
-            if(job.CoreInfo.JobStatusId != JobStatus.Enabled)
+            if (job.CoreInfo.JobStatusId != JobStatus.Enabled)
                 return Failure(ApiErrors.JobMustBeOpen(job.CoreInfo.FullJobCodeWithName, "It must first be enabled/opened in order to add an expense to it. If you do not have access to open the job contact your administrator."));
 
-            
             var existing = await _companyVehicleExpenditureRepo.FindByExternalId(msg.CompanyVehicleExpenditureId);
-            if(existing == null
+            if (existing == null
                 || msg.CompanyVehicleExpenditureId == default(Guid))
             {
                 existing = new DataAccess.EF.CompanyVehicleExpenditure();
@@ -62,19 +60,24 @@ namespace orion.web.BLL.Expenditures
                 existing.Id = 0;
                 existing.LastModified = DateTimeWithZone.EasternStandardTimeOffset;
                 existing.WeekId = WeekDTO.CreateWithWeekContaining(msg.Model.DateVehicleFirstUsed).WeekId.Value;
-                //NOTE DateVehicleFirstUsed has a valid Month day year, but the time part is very very wrong
-                //we'll adjust here so we don't drift a day when doing TimeZone Conversion
-                existing.DateVehicleFirstUsed = new DateTimeOffset(msg.Model.DateVehicleFirstUsed.Year,
-                                                                   msg.Model.DateVehicleFirstUsed.Month,
-                                                                   msg.Model.DateVehicleFirstUsed.Day,
-                                                                   0, 0, 0, new TimeSpan());                    
+
+                // NOTE DateVehicleFirstUsed has a valid Month day year, but the time part is very very wrong
+                // we'll adjust here so we don't drift a day when doing TimeZone Conversion
+                existing.DateVehicleFirstUsed = new DateTimeOffset(
+                    msg.Model.DateVehicleFirstUsed.Year,
+                    msg.Model.DateVehicleFirstUsed.Month,
+                    msg.Model.DateVehicleFirstUsed.Day,
+                    0,
+                    0,
+                    0,
+                    default(TimeSpan));
             }
+
             var updateMsg = UpdateMessage.CreateFrom(msg, existing);
             var mapped = _mapper.Map<DataAccess.EF.CompanyVehicleExpenditure>(updateMsg);
-            
+
             var saved = await _companyVehicleExpenditureRepo.SaveEntity(mapped);
             return Success(_mapper.Map<CompanyVehicleExpenditure>(saved));
         }
     }
 }
-

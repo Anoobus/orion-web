@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace orion.web.DataAccess.EF
+namespace Orion.Web.DataAccess.EF
 {
     public class Site
     {
@@ -8,6 +8,7 @@ namespace orion.web.DataAccess.EF
         {
             Jobs = new HashSet<Job>();
         }
+
         public int SiteID { get; set; }
         public string SiteName { get; set; }
 

@@ -1,7 +1,7 @@
-﻿using AutoFixture;
-using System.Linq;
+﻿using System.Linq;
+using AutoFixture;
 
-namespace orion.web.test.TestHelpers
+namespace Orion.Web.test.TestHelpers
 {
     public class NoRecursionFixture : Fixture
     {

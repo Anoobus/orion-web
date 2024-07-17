@@ -1,4 +1,4 @@
-﻿@model orion.web.Employees.EditEmployeeViewModel
+﻿@model Orion.Web.Employees.EditEmployeeViewModel
 
 @{
     ViewData["Title"] = "Edit Employee";
@@ -72,7 +72,12 @@
             </div>
 
         </div>
-       
+        <div class="row">
+            <div class="col s12">
+                <label asp-for="SelectedDirectReports" class="control-label"></label> <em>*Only For Supervisors</em>
+                <select asp-for="SelectedDirectReports" class="form-control" asp-items="@(new SelectList(Model.AvailableDirectReports,"EmployeeId","Fullname"))"></select>
+            </div>
+        </div>
         <div class="row">
             <div class="col s12">
 

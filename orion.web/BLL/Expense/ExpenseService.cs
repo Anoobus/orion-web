@@ -1,17 +1,16 @@
-﻿using Microsoft.EntityFrameworkCore;
-using orion.web.DataAccess;
-using orion.web.DataAccess.EF;
-using orion.web.Expense;
-using orion.web.Jobs;
-using orion.web.Util.IoC;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Orion.Web.DataAccess;
+using Orion.Web.DataAccess.EF;
+using Orion.Web.Expense;
+using Orion.Web.Jobs;
+using Orion.Web.Util.IoC;
 
-namespace orion.web.Employees
+namespace Orion.Web.Employees
 {
-
     public interface IExpenseService
     {
         Task<IEnumerable<ExpenseDTO>> GetExpensesForEmployee(int employeeId, int weekId);
@@ -19,6 +18,7 @@ namespace orion.web.Employees
         Task<ExpenseDTO> DeleteExpense(int expenseItemId);
         Task<ExpenseDTO> GetExpenseById(int expenseItemId);
     }
+
     public class ExpenseService : IExpenseService, IAutoRegisterAsSingleton
     {
         private readonly IContextFactory _contextFactory;
@@ -32,25 +32,26 @@ namespace orion.web.Employees
 
         public async Task<ExpenseDTO> DeleteExpense(int expenseItemId)
         {
-            using(var db = _contextFactory.CreateDb())
+            using (var db = _contextFactory.CreateDb())
             {
                 var match = await db.Expenses.SingleOrDefaultAsync(x => x.ExpenseItemId == expenseItemId);
-                if(match != null)
+                if (match != null)
                 {
                     db.Expenses.Remove(match);
                     await db.SaveChangesAsync();
                     return await MapToExpenseDTO(match);
                 }
+
                 return null;
             }
         }
 
         public async Task<ExpenseDTO> GetExpenseById(int ExpenseItemId)
         {
-            using(var db = _contextFactory.CreateDb())
+            using (var db = _contextFactory.CreateDb())
             {
                 var x = await db.Expenses.Where(z => z.ExpenseItemId == ExpenseItemId).SingleOrDefaultAsync();
-                if(x == null)
+                if (x == null)
                     return null;
                 return await MapToExpenseDTO(x);
             }
@@ -66,7 +67,7 @@ namespace orion.web.Employees
                 Classification = x.Classification,
                 RelatedJob = (await _jobService.GetForJobId(x.JobId)).CoreInfo,
                 SaveDate = x.CreateDate,
-                AttachmentId = Guid.TryParse(x.AttachmentUploadId, out var temp) ? temp : new Guid?(),
+                AttachmentId = Guid.TryParse(x.AttachmentUploadId, out var temp) ? temp : default(Guid?),
                 EmployeeId = x.EmployeeId,
                 WeekId = x.WeekId,
                 ExpenseItemId = x.ExpenseItemId
@@ -75,7 +76,7 @@ namespace orion.web.Employees
 
         public async Task<IEnumerable<ExpenseDTO>> GetExpensesForEmployee(int employeeId, int weekId)
         {
-            using(var db = _contextFactory.CreateDb())
+            using (var db = _contextFactory.CreateDb())
             {
                 var entries = await db.Expenses.Where(x => x.EmployeeId == employeeId && x.WeekId == weekId).ToListAsync();
                 return await Task.WhenAll(entries.Select(async x => new ExpenseDTO()
@@ -86,7 +87,7 @@ namespace orion.web.Employees
                     Classification = x.Classification,
                     RelatedJob = (await _jobService.GetForJobId(x.JobId)).CoreInfo,
                     SaveDate = x.CreateDate,
-                    AttachmentId = Guid.TryParse(x.AttachmentUploadId, out var temp) ? temp : new Guid?(),
+                    AttachmentId = Guid.TryParse(x.AttachmentUploadId, out var temp) ? temp : default(Guid?),
                     EmployeeId = x.EmployeeId,
                     WeekId = x.WeekId,
                     ExpenseItemId = x.ExpenseItemId
@@ -96,10 +97,10 @@ namespace orion.web.Employees
 
         public async Task SaveExpensesForEmployee(ExpenseDTO expense)
         {
-            using(var db = _contextFactory.CreateDb())
+            using (var db = _contextFactory.CreateDb())
             {
                 var existing = await db.Expenses.SingleOrDefaultAsync(x => x.ExpenseItemId == expense.ExpenseItemId);
-                if(existing == null)
+                if (existing == null)
                 {
                     existing = new ExpenseItem();
                     db.Expenses.Add(existing);

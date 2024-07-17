@@ -4,14 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace orion.web.Areas.Identity.Pages.Account
+namespace Orion.Web.Areas.Identity.Pages.Account
 {
     public class AccessDeniedModel : PageModel
     {
         public void OnGet()
         {
-
         }
     }
 }
-

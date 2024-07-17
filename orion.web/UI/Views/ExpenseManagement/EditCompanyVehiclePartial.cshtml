@@ -1,7 +1,7 @@
-﻿@using orion.web.Employees
-@using orion.web.TimeEntries
-@using orion.web.api.expenditures.Models
-@using orion.web.UI.Models
+﻿@using Orion.Web.Employees
+@using Orion.Web.TimeEntries
+@using Orion.Web.Api.Expenditures.Models
+@using Orion.Web.UI.Models
 
 @model ExpenseViewModel
 <style>
@@ -83,31 +83,31 @@
         <select id="AvailableVehicles" class="validate"
                 onchange="updateTargetVehicle(this, 'CompanyVehicleExpenditure_Detail_Vehicle')">
 
-            @if ((!Model.IsBrandNewExpenditureCreation || Model.IsOnSaveFix) && CompanyVehicleDescriptor.Enclave == Model.CompanyVehicleExpenditure.Detail.Vehicle)
+            @if ((!Model.IsBrandNewExpenditureCreation || Model.IsOnSaveFix) && CompanyVehicleDescriptor.ChevyBlazer == Model.CompanyVehicleExpenditure.Detail.Vehicle)
             {
-                <option value="@((int)CompanyVehicleDescriptor.Enclave)" selected="selected">Enclave</option>
+                <option value="@((int)CompanyVehicleDescriptor.ChevyBlazer)" selected="selected">2024 Chevy Blazer</option>
             }
             else
             {
-                <option value="@((int)CompanyVehicleDescriptor.Enclave)">Enclave</option>
+                <option value="@((int)CompanyVehicleDescriptor.ChevyBlazer)">2024 Chevy Blazer</option>
             }
 
-            @if ((!Model.IsBrandNewExpenditureCreation || Model.IsOnSaveFix) && CompanyVehicleDescriptor.Encore == Model.CompanyVehicleExpenditure.Detail.Vehicle)
+            @if ((!Model.IsBrandNewExpenditureCreation || Model.IsOnSaveFix) && CompanyVehicleDescriptor.ChevyTruck == Model.CompanyVehicleExpenditure.Detail.Vehicle)
             {
-                <option value="@((int)CompanyVehicleDescriptor.Encore)" selected="selected">Encore</option>
+                <option value="@((int)CompanyVehicleDescriptor.ChevyTruck)" selected="selected">2024 Chevy Truck</option>
             }
             else
             {
-                <option value="@((int)CompanyVehicleDescriptor.Encore)">Encore</option>
+                <option value="@((int)CompanyVehicleDescriptor.ChevyTruck)">2024 Chevy Truck</option>
             }
 
-            @if ((!Model.IsBrandNewExpenditureCreation || Model.IsOnSaveFix) && CompanyVehicleDescriptor.Truck == Model.CompanyVehicleExpenditure.Detail.Vehicle)
+            @if ((!Model.IsBrandNewExpenditureCreation || Model.IsOnSaveFix) && CompanyVehicleDescriptor.GMCTruck == Model.CompanyVehicleExpenditure.Detail.Vehicle)
             {
-                <option value="@((int)CompanyVehicleDescriptor.Truck)" selected="selected">Truck</option>
+                <option value="@((int)CompanyVehicleDescriptor.GMCTruck)" selected="selected">2024 GMC Truck</option>
             }
             else
             {
-                <option value="@((int)CompanyVehicleDescriptor.Truck)">Truck</option>
+                <option value="@((int)CompanyVehicleDescriptor.GMCTruck)">2024 GMC Truck</option>
             }
 
         </select>

@@ -1,8 +1,8 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System.Linq;
+﻿using System.Linq;
 using System.Reflection;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace orion.web.Util.IoC
+namespace Orion.Web.Util.IoC
 {
     public static class AutoRegisterExtensions
     {
@@ -10,13 +10,13 @@ namespace orion.web.Util.IoC
         {
             var markerInterface = typeof(TMarkerInterface);
 
-            foreach(var concreteType in assemblyToInterrogate.GetTypes().Where(x => x.IsClass))
+            foreach (var concreteType in assemblyToInterrogate.GetTypes().Where(x => x.IsClass))
             {
                 var allInterfaces = concreteType.GetInterfaces();
-                if(allInterfaces.Any(x => x == markerInterface))
+                if (allInterfaces.Any(x => x == markerInterface))
                 {
                     var matchingInterface = allInterfaces.SingleOrDefault(x => string.Equals(x.Name.Substring(1), concreteType.Name));
-                    if(matchingInterface != default)
+                    if (matchingInterface != default)
                     {
                         serviceCollection.Add(new ServiceDescriptor(matchingInterface, concreteType, lifetime));
                     }

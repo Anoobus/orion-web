@@ -1,17 +1,16 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using orion.web.Common;
-using orion.web.Employees;
-using orion.web.Notifications;
-using orion.web.TimeApproval;
-using System;
-using System.Threading.Tasks;
+using Orion.Web.Common;
+using Orion.Web.Employees;
+using Orion.Web.Notifications;
+using Orion.Web.TimeApproval;
 
-namespace orion.web.TimeEntries
+namespace Orion.Web.TimeEntries
 {
-
     [Authorize]
     public class TimeApprovalController : Controller
     {
@@ -21,7 +20,8 @@ namespace orion.web.TimeEntries
         private readonly ITimeApprovalListQuery timeApprovalListQuery;
         private readonly ISessionAdapter sessionAdapter;
 
-        public TimeApprovalController(ITimeApprovalService timeApprovalService,
+        public TimeApprovalController(
+            ITimeApprovalService timeApprovalService,
             IApproveTimeCommand approveTimeCommand,
             IWeekOfTimeEntriesQuery weekOfTimeEntriesQuery,
             ITimeApprovalListQuery timeApprovalListQuery,
@@ -34,12 +34,12 @@ namespace orion.web.TimeEntries
             this.sessionAdapter = sessionAdapter;
         }
 
-        public const string APPROVAL_ROUTE = "APPROVAL_ROUTE";
+        public const string APPROVALROUTE = "APPROVAL_ROUTE";
 
         public class TimeApprovalModel
         {
             public int WeekId { get; set; }
-            public int EmployeeId { get; set; }         
+            public int EmployeeId { get; set; }
             public TimeApprovalStatus NewApprovalState { get; set; }
         }
 
@@ -64,31 +64,28 @@ namespace orion.web.TimeEntries
             return View("List", vm);
         }
 
-
         [HttpPost]
-        [Route("TimeApproval/{newApprovalState}", Name = APPROVAL_ROUTE)]
+        [Route("TimeApproval/{newApprovalState}", Name = APPROVALROUTE)]
         public async Task<ActionResult> ApplyApproval(TimeApprovalModel request)
         {
             var req = new TimeApprovalRequest(
-                approvingUserId : await sessionAdapter.EmployeeIdAsync(),
-                approvingUserIsAdmin : User.IsInRole(UserRoleName.Admin),
+                approvingUserId: await sessionAdapter.EmployeeIdAsync(),
+                approvingUserIsAdmin: User.IsInRole(UserRoleName.Admin),
                 employeeId: request.EmployeeId,
-                weekId : request.WeekId,
-                newApprovalState : request.NewApprovalState
+                weekId: request.WeekId,
+                newApprovalState: request.NewApprovalState
             );
             var res = await approveTimeCommand.ApplyApproval(req);
-            if(res.Successful)
+            if (res.Successful)
             {
                 NotificationsController.AddNotification(this.User.SafeUserName(), $"Timesheet is {request.NewApprovalState}");
                 return Ok();
             }
             else
             {
-                NotificationsController.AddNotification(this.User.SafeUserName(), $"{string.Join(",",res.Errors)}");
+                NotificationsController.AddNotification(this.User.SafeUserName(), $"{string.Join(",", res.Errors)}");
                 return Unauthorized();
             }
-
         }
     }
 }
-

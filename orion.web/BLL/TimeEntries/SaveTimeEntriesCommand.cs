@@ -1,35 +1,36 @@
-﻿using orion.web.Common;
-using orion.web.Jobs;
-using orion.web.Util.IoC;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Orion.Web.Common;
+using Orion.Web.Jobs;
+using Orion.Web.Util.IoC;
 
-namespace orion.web.TimeEntries
+namespace Orion.Web.TimeEntries
 {
     public class EffortDto
     {
         public int JobId { get; set; }
         public int TaskId { get; set; }
     }
+
     public class EffortTimeEntryDto : EffortDto
     {
-        public Dictionary<DayOfWeek,DayTimeEntryDto> Entries { get; set; }
+        public Dictionary<DayOfWeek, DayTimeEntryDto> Entries { get; set; }
     }
 
     public class DayTimeEntryDto
     {
-                  public DateTime Date { get; set; }
-         public decimal Hours { get; set; }
+        public DateTime Date { get; set; }
+        public decimal Hours { get; set; }
         public decimal OvertimeHours { get; set; }
     }
-   
-   
+
     public interface ISaveTimeEntriesCommand
     {
         Task<Result> SaveTimeEntriesAsync(int employeeId, int weekId, FullTimeEntryViewModel vm);
     }
+
     public class SaveTimeEntriesCommand : ISaveTimeEntriesCommand, IAutoRegisterAsSingleton
     {
         private readonly ITimeApprovalService _timeApprovalService;
@@ -42,24 +43,27 @@ namespace orion.web.TimeEntries
             _timeService = timeService;
             _jobsRepository = jobsRepository;
         }
+
         public async Task<Result> SaveTimeEntriesAsync(int employeeId, int weekId, FullTimeEntryViewModel vm)
         {
             var statusAllowsSave = await GetSaveStatus(employeeId, weekId);
-            if(!statusAllowsSave)
+            if (!statusAllowsSave)
             {
                 return new Result(false, "Current status does not allow saving");
             }
+
             var hoursIssues = (await VerifyHourEntries(vm)).ToList();
-            if(hoursIssues.Any())
+            if (hoursIssues.Any())
             {
                 hoursIssues.Add(" -- NO CHANGES WHERE SAVED -- ");
                 return new Result(false, hoursIssues.ToArray());
             }
 
-            if(vm.TimeEntryRow != null)
+            if (vm.TimeEntryRow != null)
             {
                 await _timeService.SaveWeekAsync(employeeId, ToDTO(employeeId, weekId, vm));
             }
+
             return new Result(true);
         }
 
@@ -106,34 +110,36 @@ namespace orion.web.TimeEntries
 
         private async Task<IEnumerable<string>> VerifyHourEntries(FullTimeEntryViewModel vm)
         {
-            var issues = new List<String>();
-            if(vm.TimeEntryRow != null)
+            var issues = new List<string>();
+            if (vm.TimeEntryRow != null)
             {
-                if(vm.TimeEntryRow.Any(z => z.AllDays().Any(x => x.Hours < 0 || x.OvertimeHours < 0)))
+                if (vm.TimeEntryRow.Any(z => z.AllDays().Any(x => x.Hours < 0 || x.OvertimeHours < 0)))
                 {
                     issues.Add("Hours must be a non-negative number.");
                 }
-                if(vm.TimeEntryRow.Any(z => z.AllDays().Any(x => x.Hours + x.OvertimeHours > 24)))
+
+                if (vm.TimeEntryRow.Any(z => z.AllDays().Any(x => x.Hours + x.OvertimeHours > 24)))
                 {
                     issues.Add("Regular + Overtime must never exceed 24 hours.");
                 }
-                if(vm.TimeEntryRow.Sum(x => x.AllDays().Sum(z => z.Hours)) > 40)
+
+                if (vm.TimeEntryRow.Sum(x => x.AllDays().Sum(z => z.Hours)) > 40)
                 {
                     issues.Add("Regular hours must never exceed 40 hours");
                 }
 
-
                 var entriesByJob = vm.TimeEntryRow.Select(te => new { jobId = te.SelectedJobId.Value, hasTime = te.AllDays().Any(h => h.Hours > 0 || h.OvertimeHours > 0) });
                 var grouped = entriesByJob.GroupBy(x => x.jobId);
-                foreach(var jobGroup in grouped)
+                foreach (var jobGroup in grouped)
                 {
                     var job = await _jobsRepository.GetForJobId(jobGroup.Key);
-                    if(job.CoreInfo.JobStatusId != JobStatus.Enabled)
+                    if (job.CoreInfo.JobStatusId != JobStatus.Enabled)
                     {
                         issues.Add($"Job {job.CoreInfo.FullJobCodeWithName} has been closed, either remove this entry, or have an administrator re-open the job");
                     }
                 }
             }
+
             return issues;
         }
 

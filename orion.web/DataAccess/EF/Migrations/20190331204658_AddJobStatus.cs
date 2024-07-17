@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace orion.web.DataAccess.EF.Migrations
+namespace Orion.Web.DataAccess.EF.Migrations
 {
     public partial class AddJobStatus : Migration
     {
@@ -31,10 +31,11 @@ namespace orion.web.DataAccess.EF.Migrations
                 table: "Jobs",
                 column: "JobStatusId");
 
-            var arr = new object[,] {
-            { (int)Jobs.JobStatus.Unkown, Jobs.JobStatus.Unkown.ToString()},
-            { (int)Jobs.JobStatus.Enabled, Jobs.JobStatus.Enabled.ToString()},
-            { (int)Jobs.JobStatus.Archived, Jobs.JobStatus.Archived.ToString()}
+            var arr = new object[,]
+            {
+            { (int)Jobs.JobStatus.Unkown, Jobs.JobStatus.Unkown.ToString() },
+            { (int)Jobs.JobStatus.Enabled, Jobs.JobStatus.Enabled.ToString() },
+            { (int)Jobs.JobStatus.Archived, Jobs.JobStatus.Archived.ToString() }
             };
             migrationBuilder.InsertData("JobStatuses", new string[] { "JobStatusId", "Name" }, arr);
 

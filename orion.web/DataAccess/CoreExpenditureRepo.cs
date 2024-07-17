@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
-using orion.web.BLL.Expenditures;
-using orion.web.Util.IoC;
+using Orion.Web.BLL.Expenditures;
+using Orion.Web.Util.IoC;
 
-namespace orion.web.DataAccess
+namespace Orion.Web.DataAccess
 {
     public interface ICoreExpenditureRepo
     {
         Task<CoreExpenditureDto> GetExpenditureCoreInfoByExternalId(Guid ExternalId);
     }
+
     public class CoreExpenditureRepo : ICoreExpenditureRepo, IAutoRegisterAsSingleton
     {
         private readonly IArcFlashLabelExpenditureRepo arcFlashLabelExpenditureRepo;
@@ -18,7 +19,8 @@ namespace orion.web.DataAccess
         private readonly ITimeAndExpenceExpenditureRepo timeAndExpenceExpenditureRepo;
         private readonly IMiscExpenditureRepo miscExpenditureRepo;
         private static readonly ConcurrentDictionary<Guid, CoreExpenditureDto> _cachedInfo = new ConcurrentDictionary<Guid, CoreExpenditureDto>();
-        public CoreExpenditureRepo(IArcFlashLabelExpenditureRepo arcFlashLabelExpenditureRepo,
+        public CoreExpenditureRepo(
+            IArcFlashLabelExpenditureRepo arcFlashLabelExpenditureRepo,
             ICompanyVehicleExpenditureRepo companyVehicleExpenditureRepo,
             IContractorExpenditureRepo contractorExpenditureRepo,
             ITimeAndExpenceExpenditureRepo timeAndExpenceExpenditureRepo,
@@ -48,46 +50,55 @@ namespace orion.web.DataAccess
         {
             var afl = await arcFlashLabelExpenditureRepo.FindByExternalId(externalId);
             if (afl != null)
+            {
                 return new CoreExpenditureDto()
                 {
                     ExpenditureType = ExpenditureTypeEnum.ArcFlashLabelExpenditure,
                     ExternalId = externalId
                 };
+            }
 
             var cve = await companyVehicleExpenditureRepo.FindByExternalId(externalId);
             if (cve != null)
+            {
                 return new CoreExpenditureDto()
                 {
                     ExpenditureType = ExpenditureTypeEnum.CompanyVehicleExpenditure,
                     ExternalId = externalId
                 };
+            }
 
             var ce = await contractorExpenditureRepo.FindByExternalId(externalId);
             if (ce != null)
+            {
                 return new CoreExpenditureDto()
                 {
                     ExpenditureType = ExpenditureTypeEnum.ContractorExpenditure,
                     ExternalId = externalId
                 };
+            }
 
             var me = await miscExpenditureRepo.FindByExternalId(externalId);
             if (me != null)
+            {
                 return new CoreExpenditureDto()
                 {
                     ExpenditureType = ExpenditureTypeEnum.MiscExpenditure,
                     ExternalId = externalId
                 };
+            }
 
             var taee = await timeAndExpenceExpenditureRepo.FindByExternalId(externalId);
             if (taee != null)
+            {
                 return new CoreExpenditureDto()
                 {
                     ExpenditureType = ExpenditureTypeEnum.TimeAndExpenceExpenditure,
                     ExternalId = externalId
                 };
+            }
 
             return null;
         }
     }
 }
-

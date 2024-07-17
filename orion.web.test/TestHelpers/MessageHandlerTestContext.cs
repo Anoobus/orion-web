@@ -1,10 +1,10 @@
 ﻿using System;
 using AutoFixture;
 using AutoMapper;
-using orion.web.BLL;
-using orion.web.test.BLL;
+using Orion.Web.BLL;
+using Orion.Web.test.BLL;
 
-namespace orion.web.test
+namespace Orion.Web.test
 {
     public abstract class BaseTestcontext
     {

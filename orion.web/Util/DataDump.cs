@@ -1,10 +1,10 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
-namespace orion.web.Util
+namespace Orion.Web.Util
 {
     public static class DataDump
     {
@@ -14,11 +14,11 @@ namespace orion.web.Util
             {
                 return JsonConvert.SerializeObject(forDump, Formatting.Indented);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
-                return forDump.ToString();
+                Console.WriteLine(e.ToString());
+                return forDump?.ToString();
             }
-
         }
     }
 }

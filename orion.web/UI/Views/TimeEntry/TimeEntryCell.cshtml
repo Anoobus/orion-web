@@ -1,4 +1,4 @@
-﻿@model orion.web.TimeEntries.TimeSpentViewModel
+﻿@model Orion.Web.TimeEntries.TimeSpentViewModel
 <td class="form-inline time-cell" day="col-@Model.DayOfWeek.ToString().ToLower()" autosum>
     <div class="form-group skinny">
         @if (Model.Hours.HasValue && Model.Hours.Value > 0)

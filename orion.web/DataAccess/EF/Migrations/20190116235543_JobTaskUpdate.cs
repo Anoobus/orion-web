@@ -1,14 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace orion.web.DataAccess.EF.Migrations
+namespace Orion.Web.DataAccess.EF.Migrations
 {
     public partial class JobTaskUpdate : Migration
     {
-
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-
             migrationBuilder.RenameColumn(
                 name: "ShortName",
                 table: "JobTasks",
@@ -43,10 +41,11 @@ namespace orion.web.DataAccess.EF.Migrations
                   table.PrimaryKey("PK_UsageStatus", x => x.UsageStatusId);
               });
 
-            var arr = new object[,] {
-            { (int)JobTasks.UsageStatus.Unkown, JobTasks.UsageStatus.Unkown.ToString()},
-            { (int)JobTasks.UsageStatus.Enabled, JobTasks.UsageStatus.Enabled.ToString()},
-            { (int)JobTasks.UsageStatus.Disabled, JobTasks.UsageStatus.Disabled.ToString()}
+            var arr = new object[,]
+            {
+            { (int)JobTasks.UsageStatus.Unkown, JobTasks.UsageStatus.Unkown.ToString() },
+            { (int)JobTasks.UsageStatus.Enabled, JobTasks.UsageStatus.Enabled.ToString() },
+            { (int)JobTasks.UsageStatus.Disabled, JobTasks.UsageStatus.Disabled.ToString() }
             };
             migrationBuilder.InsertData("UsageStatus", new string[] { "UsageStatusId", "Name" }, arr);
 

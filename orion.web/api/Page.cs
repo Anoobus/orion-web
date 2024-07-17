@@ -1,15 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using orion.web.BLL;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Orion.Web.BLL;
 
-namespace orion.web.api
+namespace Orion.Web.Api
 {
-    public class Page<T> 
+    public class Page<T>
     {
-
         public T[] Data { get; set; }
         public Meta Meta { get; set; }
 
@@ -18,6 +17,7 @@ namespace orion.web.api
             return new OkObjectResult(this);
         }
     }
+
     public class Meta
     {
         public int Limit { get; set; }

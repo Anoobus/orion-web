@@ -1,6 +1,7 @@
-﻿@using orion.web.Employees
+﻿@using Orion.Web.BLL.Authorization
+@using Orion.Web.Employees
 @using System.Reflection
-@using orion.web.ApplicationStartup
+@using Orion.Web.ApplicationStartup
 
 <!DOCTYPE html>
 <html>
@@ -53,6 +54,16 @@
             display: inline;
             vertical-align: middle;
         }
+
+        li.slim-it-down a {
+            padding-left: 0px;
+            padding-right: 0px;
+        }
+
+        li.slim-it-down a i {
+            margin-left: 0px;
+            padding-left: 4px;
+        }
     </style>
     @if (User.Identity.IsAuthenticated)
     {
@@ -69,11 +80,17 @@
                 <ul id="nav-mobile" class="">
                     <li class="valign-wrapper"><img src="/images/orion_logo_brand.png" style="height:28px;margin-top:12px"></li>
                     <li><a class="waves-effect waves-light" asp-controller="Home" asp-action="Index">Home</a></li>
-                    @if (User.IsInRole(UserRoleName.Admin))
+                    @if (User.CanManageSystemConfiguration())
                     {
-                        <li><a class="dropdown-trigger custom-drop-down nav-dd" href="#!" data-target="sys-mgmt-dropdown">System Management <i class="material-icons right">arrow_drop_down</i></a></li>
-                        <li><a class="waves-effect waves-light" asp-controller="ExpenseManagement" asp-action="Index">Expense Management</a></li>
-                        <li><a class="waves-effect waves-light" asp-controller="TimeApproval" asp-action="Index">Time Approval</a></li>
+                    <li class="slim-it-down"><a class="dropdown-trigger custom-drop-down nav-dd" href="#!" data-target="sys-mgmt-dropdown">System Management<i class="material-icons right">arrow_drop_down</i></a></li>
+                    }                       
+                    @if(User.CanManageExpenses())
+                    {
+                    <li><a class="waves-effect waves-light" asp-controller="ExpenseManagement" asp-action="Index">Expense Management</a></li>
+                    }
+                    @if(User.CanViewOtherUsersTime())
+                    {
+                    <li><a class="waves-effect waves-light" asp-controller="TimeApproval" asp-action="Index">Time Approval</a></li>
                     }
                     <li><a class="waves-effect waves-light" asp-controller="TimeEntry" asp-action="Index">Time Entry</a></li>
                     <li><a class="waves-efect waves-light" asp-controller="Reports" asp-action="Index">View Reports</a></li>
@@ -97,7 +114,7 @@
         <footer class="red darken-4 white-text">
             <div class="footer-copyright">
                 <div class="container">
-                    &copy; 2023 - Pragmatic Software Solutions LLC
+                    &copy; 2024 - Pragmatic Software Solutions LLC
                     <div class="right">@Startup.AppVersion.Value</div>
                 </div>
             </div>

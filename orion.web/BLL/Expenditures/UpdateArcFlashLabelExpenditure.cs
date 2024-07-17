@@ -1,37 +1,35 @@
 ﻿using System;
 using System.Threading.Tasks;
 using AutoMapper;
-using orion.web.api;
-using orion.web.api.expenditures.Models;
-using orion.web.BLL.Core;
-using orion.web.Common;
-using orion.web.DataAccess;
-using orion.web.Jobs;
-using orion.web.Util.IoC;
+using Orion.Web.Api;
+using Orion.Web.Api.Expenditures.Models;
+using Orion.Web.BLL.Core;
+using Orion.Web.Common;
+using Orion.Web.DataAccess;
+using Orion.Web.Jobs;
+using Orion.Web.Util.IoC;
 
-namespace orion.web.BLL.Expenditures
+namespace Orion.Web.BLL.Expenditures
 {
     public class UpdateArcFlashLabelExpenditureMessage : IProduces<ArcFlashLabelExpenditure>
     {
-        public Guid arcFlashLabelExpenditureId { get; }
-        public ArcFlashLabelExpenditureOneTimeSet existingValues {get; set;}
+        public Guid ArcFlashLabelExpenditureId { get; }
+        public ArcFlashLabelExpenditure ExistingValues { get; set; }
 
-        public UpdateArcFlashLabelExpenditureMessage(EditableArcFlashLabelExpenditure model,
+        public UpdateArcFlashLabelExpenditureMessage(
+            EditableArcFlashLabelExpenditure model,
             Guid arcFlashLabelExpenditureId)
         {
-            this.model = model;
-            this.arcFlashLabelExpenditureId = arcFlashLabelExpenditureId;
-           
+            this.Model = model;
+            this.ArcFlashLabelExpenditureId = arcFlashLabelExpenditureId;
         }
 
-        public EditableArcFlashLabelExpenditure model { get; }
-        
+        public EditableArcFlashLabelExpenditure Model { get; }
     }
 
-     public interface IUpdateArcFlashLabelExpenditure
+    public interface IUpdateArcFlashLabelExpenditure
     {
-          public Task<IProcessResult<ArcFlashLabelExpenditure>> Process(UpdateArcFlashLabelExpenditureMessage msg);
-
+        public Task<IProcessResult<ArcFlashLabelExpenditure>> Process(UpdateArcFlashLabelExpenditureMessage msg);
     }
 
     public class UpdateArcFlashLabelExpenditure
@@ -49,39 +47,43 @@ namespace orion.web.BLL.Expenditures
             _jobsRepository = jobsRepository;
         }
 
-        protected override async Task<IProcessResult<ArcFlashLabelExpenditure>>  Handle(UpdateArcFlashLabelExpenditureMessage msg)
+        protected override async Task<IProcessResult<ArcFlashLabelExpenditure>> Handle(UpdateArcFlashLabelExpenditureMessage msg)
         {
-            var job = await _jobsRepository.GetForJobId(msg.model.JobId);
+            var job = await _jobsRepository.GetForJobId(msg.Model.JobId);
             if (job == null)
-                return Failure(ApiErrors.JobDoesNotExistException(msg.model.JobId == 0 ? "[Not Supplied]" : $"[databaseId:{msg.model.JobId }]", "A valid open job must be supplied in order to add an expense to it."));
+                return Failure(ApiErrors.JobDoesNotExistException(msg.Model.JobId == 0 ? "[Not Supplied]" : $"[databaseId:{msg.Model.JobId}]", "A valid open job must be supplied in order to add an expense to it."));
 
-            if(job.CoreInfo.JobStatusId != JobStatus.Enabled)
+            if (job.CoreInfo.JobStatusId != JobStatus.Enabled)
                 return Failure(ApiErrors.JobMustBeOpen(job.CoreInfo.FullJobCodeWithName, "It must first be enabled/opened in order to add an expense to it. If you do not have access to open the job contact your administrator."));
 
-
-            var existing = await _repo.FindByExternalId(msg.arcFlashLabelExpenditureId);
-            if(existing == null
-                || msg.arcFlashLabelExpenditureId == default(Guid))
+            var existing = await _repo.FindByExternalId(msg.ArcFlashLabelExpenditureId);
+            if (existing == null
+                || msg.ArcFlashLabelExpenditureId == default(Guid))
             {
                 existing = new DataAccess.EF.ArcFlashLabelExpenditure();
                 existing.ExternalId = Guid.NewGuid();
                 existing.Id = 0;
                 existing.LastModified = DateTimeWithZone.EasternStandardTimeOffset;
-                existing.WeekId = WeekDTO.CreateWithWeekContaining(msg.model.DateOfInvoice.DateTime).WeekId.Value;
-                var tester = WeekDTO.CreateWithWeekContaining(msg.model.DateOfInvoice).WeekId.Value;
-                //NOTE DateVehicleFirstUsed has a valid Month day year, but the time part is very very wrong
-                //we'll adjust here so we don't drift a day when doing TimeZone Conversion                           
-                existing.DateOfInvoice = new DateTimeOffset(msg.model.DateOfInvoice.Year,
-                                                                   msg.model.DateOfInvoice.Month,
-                                                                   msg.model.DateOfInvoice.Day,
-                                                                   0, 0, 0, new TimeSpan());      
+                existing.WeekId = WeekDTO.CreateWithWeekContaining(msg.Model.DateOfInvoice.DateTime).WeekId.Value;
+                var tester = WeekDTO.CreateWithWeekContaining(msg.Model.DateOfInvoice).WeekId.Value;
+
+                // NOTE DateVehicleFirstUsed has a valid Month day year, but the time part is very very wrong
+                // we'll adjust here so we don't drift a day when doing TimeZone Conversion
+                existing.DateOfInvoice = new DateTimeOffset(
+                    msg.Model.DateOfInvoice.Year,
+                    msg.Model.DateOfInvoice.Month,
+                    msg.Model.DateOfInvoice.Day,
+                    0,
+                    0,
+                    0,
+                    default(TimeSpan));
             }
+
             var updateMsg = UpdateMessage.CreateFrom(msg, existing);
             var mapped = _mapper.Map<DataAccess.EF.ArcFlashLabelExpenditure>(updateMsg);
-            
+
             var saved = await _repo.SaveEntity(mapped);
             return Success(_mapper.Map<ArcFlashLabelExpenditure>(saved));
         }
     }
 }
-

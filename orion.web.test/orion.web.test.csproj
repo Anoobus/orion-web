@@ -28,8 +28,10 @@
 
   <ItemGroup>
     <None Remove="BLL\AutoMapper\" />
+    <None Remove="BLL\Authorization\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="BLL\AutoMapper\" />
+    <Folder Include="BLL\Authorization\" />
   </ItemGroup>
 </Project>

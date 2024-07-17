@@ -4,18 +4,17 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using orion.web.api.expenditures.Models;
-using orion.web.BLL;
-using orion.web.BLL.ArcFlashExpenditureExpenses;
-using orion.web.BLL.Core;
-using orion.web.BLL.Expenditures;
-using orion.web.Employees;
-using orion.web.Notifications;
-using orion.web.UI.Models;
+using Orion.Web.Api.Expenditures.Models;
+using Orion.Web.BLL;
+using Orion.Web.BLL.ArcFlashExpenditureExpenses;
+using Orion.Web.BLL.Core;
+using Orion.Web.BLL.Expenditures;
+using Orion.Web.Employees;
+using Orion.Web.Notifications;
+using Orion.Web.UI.Models;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
-namespace orion.web.UI.Controllers
+namespace Orion.Web.UI.Controllers
 {
     [Authorize(Roles = UserRoleName.Admin)]
     public class ExpenseManagementController : Controller
@@ -29,7 +28,8 @@ namespace orion.web.UI.Controllers
         private readonly IUpdateTimeAndExpenseExpenditure updateTimeAndExpenseExpenditure;
         private readonly IUpdateCompanyVehicleExpenditure updateCompanyVehicleExpenditure;
 
-        public ExpenseManagementController(IGetListOfExpenditures listExpendituresHandler,
+        public ExpenseManagementController(
+            IGetListOfExpenditures listExpendituresHandler,
             IDeleteExpenditure deleteExpenditure,
             IUpdateArcFlashLabelExpenditure updateArcFlashLabelExpenditure,
             IGetCreateExpenseModel getCreateExpenseModel,
@@ -47,10 +47,10 @@ namespace orion.web.UI.Controllers
             this.updateTimeAndExpenseExpenditure = updateTimeAndExpenseExpenditure;
             this.updateCompanyVehicleExpenditure = updateCompanyVehicleExpenditure;
         }
+
         public async Task<IActionResult> Index()
         {
             var mdl = (await listExpendituresHandler.Process(new GetAllExpendituresRequest(includeArcFlashlabels: false, includeCompanyVehicles: false, includeMiscExpenditure: false, includeContractorExpenditures: false, includeTimeAndExpenseExpenditures: false))).Success;
-
 
             var vm = new ExpenseLandingPageModel()
             {
@@ -62,15 +62,14 @@ namespace orion.web.UI.Controllers
 
         public async Task<IActionResult> ExpenseList()
         {
-            return View("AllExpenseList",
+            return View(
+                "AllExpenseList",
                 (await listExpendituresHandler.Process(new GetAllExpendituresRequest())).Success);
         }
 
-
         [Route("/expenses/{expense-id}/edit-modal")]
-         public async Task<IActionResult> EditModal([FromRoute(Name = "expense-id")] Guid expenseId)
+        public async Task<IActionResult> EditModal([FromRoute(Name = "expense-id")] Guid expenseId)
         {
-
             var mdl = (await listExpendituresHandler.Process(new GetAllExpendituresRequest(limitToSingleExpense: expenseId))).Success;
             var vm = new ExpenseViewModel()
             {
@@ -81,7 +80,7 @@ namespace orion.web.UI.Controllers
                 TimeAndExpenceExpenditure = mdl.TimeAndExpenceExpenditures.FirstOrDefault(),
                 IsBrandNewExpenditureCreation = false,
                 AvailableJobs = mdl.AvailableJobs,
-                AvailableEmployees = mdl.AvailableEmployees,              
+                AvailableEmployees = mdl.AvailableEmployees,
             };
             if (vm.ArcFlashLabelExpenditure != null)
                 vm.ExpenseType = ExpenditureTypeEnum.ArcFlashLabelExpenditure;
@@ -95,20 +94,18 @@ namespace orion.web.UI.Controllers
                 vm.ExpenseType = ExpenditureTypeEnum.TimeAndExpenceExpenditure;
 
             return PartialView("ExpenseDetailModal", vm);
-          
         }
 
         [Route("/expenses/{expense-type}")]
         public async Task<IActionResult> NewModal([FromRoute(Name = "expense-type")] string type)
         {
-
             var mdl = (await getCreateExpenseModel.Process(new GetCreateExpenseModelMessage(type))).Success;
-          
-            return PartialView("ExpenseDetailModal", mdl);          
+
+            return PartialView("ExpenseDetailModal", mdl);
         }
 
         [HttpPost]
-         public async Task<IActionResult> SaveExpense([FromForm] ExpenseViewModel model)
+        public async Task<IActionResult> SaveExpense([FromForm] ExpenseViewModel model)
         {
             var saved = false;
             switch (model.ExpenseType)
@@ -125,14 +122,14 @@ namespace orion.web.UI.Controllers
                     saved = misc.Success != null;
                     if (!saved)
                         return await SaveFailure(model, misc.Error.ToString(), (freshModel) => freshModel.MiscExpenditure = model.MiscExpenditure);
-                    
+
                     break;
                 case ExpenditureTypeEnum.ContractorExpenditure:
-                    var ce = await updateContractorExpenditure.Process(new UpdateContractorMessage(model.ContractorExpenditure.Detail, model.ContractorExpenditure.Detail.ExternalId));                    
+                    var ce = await updateContractorExpenditure.Process(new UpdateContractorMessage(model.ContractorExpenditure.Detail, model.ContractorExpenditure.Detail.ExternalId));
                     saved = ce.Success != null;
                     if (!saved)
                         return await SaveFailure(model, ce.Error.ToString(), (freshModel) => freshModel.ContractorExpenditure = model.ContractorExpenditure);
-                    
+
                     break;
                 case ExpenditureTypeEnum.TimeAndExpenceExpenditure:
                     var te = await updateTimeAndExpenseExpenditure.Process(new UpdateTimeAndExpenseExpenditureMessage(model.TimeAndExpenceExpenditure.Detail, model.TimeAndExpenceExpenditure.Detail.Id));
@@ -144,21 +141,20 @@ namespace orion.web.UI.Controllers
                 case ExpenditureTypeEnum.CompanyVehicleExpenditure:
                     var cv = await updateCompanyVehicleExpenditure.Process(new UpdateCompanyVehicleExpenditureMessage(model.CompanyVehicleExpenditure.Detail, model.CompanyVehicleExpenditure.Detail.ExternalId));
                     saved = cv.Success != null;
-                     if (!saved)
+                    if (!saved)
                         return await SaveFailure(model, cv.Error.ToString(), (freshModel) => freshModel.CompanyVehicleExpenditure = model.CompanyVehicleExpenditure);
-                   
+
                     break;
                 default:
                     throw new NotImplementedException();
             }
-            
-            if(saved)
-            {
-                NotificationsController.AddNotification(this.User.SafeUserName(), $"Expenditure Saved");                
-            }
-                
-            return RedirectToAction(nameof(ExpenseList));
 
+            if (saved)
+            {
+                NotificationsController.AddNotification(this.User.SafeUserName(), $"Expenditure Saved");
+            }
+
+            return RedirectToAction(nameof(ExpenseList));
         }
 
         private async Task<IActionResult> SaveFailure(ExpenseViewModel model, string error, Action<ExpenseViewModel> updateModelWithUnsavedData)
@@ -173,18 +169,14 @@ namespace orion.web.UI.Controllers
         }
 
         [Route("/expenses/{expense-id}")]
-         [HttpDelete()]
-         public async Task<IActionResult> DeleteExpense([FromRoute(Name = "expense-id")] Guid expenseId)
+        [HttpDelete]
+        public async Task<IActionResult> DeleteExpense([FromRoute(Name = "expense-id")] Guid expenseId)
         {
             var temp = await deleteExpenditure.Process(new DeleteExpenditureRequest(expenseId));
             if (temp.Success != null)
                 NotificationsController.AddNotification(this.User.SafeUserName(), "Expenditure deleted");
 
-            return temp.AsApiResult();          
+            return temp.AsApiResult();
         }
     }
-
-
-
 }
-

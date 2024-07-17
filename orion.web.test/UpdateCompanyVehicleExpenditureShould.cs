@@ -5,15 +5,15 @@ using AutoMapper;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using orion.web.BLL;
-using orion.web.BLL.ArcFlashExpenditureExpenses;
-using orion.web.BLL.AutoMapper;
-using orion.web.BLL.Expenditures;
-using orion.web.DataAccess;
+using Orion.Web.BLL;
+using Orion.Web.BLL.ArcFlashExpenditureExpenses;
+using Orion.Web.BLL.AutoMapper;
+using Orion.Web.BLL.Expenditures;
+using Orion.Web.DataAccess;
 
-namespace orion.web.test.BLL
+namespace Orion.Web.test.BLL
 {
-    
+
 
 
     [TestClass]
@@ -23,19 +23,19 @@ namespace orion.web.test.BLL
         {
             private Mock<ICompanyVehicleExpenditureRepo> _repo = new Mock<ICompanyVehicleExpenditureRepo>();
             public bool WasSaveCalled { get; private set; }
-            public UpdateCompanyVehicleExpenditureMessage TestMessage { get; } 
+            public UpdateCompanyVehicleExpenditureMessage TestMessage { get; }
             public TestContext()
             {
                 TestMessage = _fixture.Create<UpdateCompanyVehicleExpenditureMessage>();
-                 _repo.Setup(x => x.FindByExternalId(It.IsAny<Guid>()))
-                     .ReturnsAsync((Guid id) =>
-                     {
-                         return new DataAccess.EF.CompanyVehicleExpenditure()
-                         {
-                             ExternalId = id,
+                _repo.Setup(x => x.FindByExternalId(It.IsAny<Guid>()))
+                    .ReturnsAsync((Guid id) =>
+                    {
+                        return new DataAccess.EF.CompanyVehicleExpenditure()
+                        {
+                            ExternalId = id,
 
-                         };
-                     });
+                        };
+                    });
 
                 _repo.Setup(x => x.SaveEntity(It.IsAny<DataAccess.EF.CompanyVehicleExpenditure>()))
                      .ReturnsAsync((DataAccess.EF.CompanyVehicleExpenditure mdl) =>
@@ -49,7 +49,7 @@ namespace orion.web.test.BLL
             {
                 return new UpdateCompanyVehicleExpenditure(_repo.Object, _mapper, null);
             }
-            
+
         }
 
         [TestMethod]
@@ -57,12 +57,12 @@ namespace orion.web.test.BLL
         {
             var ctx = new TestContext();
             var underTest = ctx.GetItemUnderTest();
-                     
+
             var actionReslut = await underTest.Process(ctx.TestMessage);
 
             var actual = actionReslut.Success;
 
-           
+
             actual.Should().NotBeNull();
             ctx.WasSaveCalled.Should().BeTrue();
         }

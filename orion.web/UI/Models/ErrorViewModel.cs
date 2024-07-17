@@ -1,5 +1,4 @@
-
-namespace orion.web
+namespace Orion.Web
 {
     public class ErrorViewModel
     {

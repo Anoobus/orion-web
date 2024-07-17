@@ -1,15 +1,15 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using orion.web.Clients;
-using orion.web.Employees;
-using orion.web.Jobs;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Orion.Web.Clients;
+using Orion.Web.Employees;
+using Orion.Web.Jobs;
 
-namespace orion.web.api
+namespace Orion.Web.Api
 {
     [Authorize]
     [Route("api/v1/clients")]

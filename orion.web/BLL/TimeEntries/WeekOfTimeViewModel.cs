@@ -1,10 +1,10 @@
-﻿//using System;
-//using System.Collections.Generic;
-//using System.Linq;
-//using System.Threading.Tasks;
+﻿// using System;
+// using System.Collections.Generic;
+// using System.Linq;
+// using System.Threading.Tasks;
 
-//namespace orion.web.TimeEntries
-//{
+// namespace Orion.Web.TimeEntries
+// {
 //    public class WeekOfTimeViewModel
 //    {
 //        public DateTime WeekEnd { get; set; }
@@ -12,4 +12,4 @@
 //        public int Year { get; set; }
 //        public int WeekId { get; set; }
 //    }
-//}
+// }

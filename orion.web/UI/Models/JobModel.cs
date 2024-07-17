@@ -1,11 +1,11 @@
-﻿using orion.web.Clients;
-using orion.web.UI.Models;
-using System.ComponentModel;
+﻿using System.ComponentModel;
+using Orion.Web.Clients;
+using Orion.Web.UI.Models;
 
-namespace orion.web.Jobs
+namespace Orion.Web.Jobs
 {
-    //public class JobModel
-    //{
+    // public class JobModel
+    // {
     //    public int JobId { get; set; }
     //    [DisplayName("Job Code")]
     //    public string JobCode { get; set; }
@@ -19,8 +19,7 @@ namespace orion.web.Jobs
     //    [DisplayName("Project Manager")]
     //    public int ProjectManagerEmployeeId { get; set; }
 
-
-    //}
+    // }
     public class JobModelDetail
     {
         public ClientModel Client { get; set; }

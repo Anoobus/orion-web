@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace orion.web.Reports
+namespace Orion.Web.Reports
 {
     public class EmployeeTimeReportDTO
     {
@@ -12,11 +12,10 @@ namespace orion.web.Reports
     }
 
     public class EmployeeTimeEntry
-    {        
+    {
         public decimal Regular { get; set; }
-        public decimal Overtime { get; set; }        
+        public decimal Overtime { get; set; }
         public string JobCode { get; set; }
         public string TaskCode { get; set; }
     }
-
 }

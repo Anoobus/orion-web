@@ -1,21 +1,22 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using orion.web.Common;
-using orion.web.Employees;
-using orion.web.Notifications;
-using orion.web.TimeApproval;
-using System;
+﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Orion.Web.BLL.Authorization;
+using Orion.Web.Common;
+using Orion.Web.Employees;
+using Orion.Web.Notifications;
+using Orion.Web.TimeApproval;
 
-namespace orion.web.TimeEntries
+namespace Orion.Web.TimeEntries
 {
-
     [Authorize]
     public class TimeEntryController : Controller
     {
-        public const string EDIT_ROUTE = nameof(TimeEntryController) + nameof(Edit);
-        //private readonly IWeekService weekService;
+        public const string EDITROUTE = nameof(TimeEntryController) + nameof(Edit);
+
+        // private readonly IWeekService weekService;
         private readonly ICopyPreviousWeekTimeCommand copyPreviousWeekTimeCommand;
         private readonly ISaveTimeEntriesCommand saveTimeEntriesCommand;
         private readonly IAddNewJobTaskComboCommand addNewJobTaskComboCommand;
@@ -25,9 +26,9 @@ namespace orion.web.TimeEntries
         private readonly IRemoveRowCommand removeRowCommand;
         private readonly IModifyJobTaskComboCommand modifyJobTaskComboCommand;
         private readonly ISessionAdapter sessionAdapter;
-        private readonly IExpenseService _expenseService;
+        private readonly IEmployeeRepository _employeeRepository;
 
-        public TimeEntryController(//IWeekService weekService,
+        public TimeEntryController(// IWeekService weekService,
             ICopyPreviousWeekTimeCommand copyPreviousWeekTimeCommand,
             ISaveTimeEntriesCommand saveTimeEntriesCommand,
             IAddNewJobTaskComboCommand addNewJobTaskComboCommand,
@@ -37,9 +38,9 @@ namespace orion.web.TimeEntries
             IRemoveRowCommand removeRowCommand,
             IModifyJobTaskComboCommand modifyJobTaskComboCommand,
             ISessionAdapter sessionAdapter,
-            IExpenseService expenseService)
+            IEmployeeRepository employeeRepository)
         {
-            //this.weekService = weekService;
+            // this.weekService = weekService;
             this.copyPreviousWeekTimeCommand = copyPreviousWeekTimeCommand;
             this.saveTimeEntriesCommand = saveTimeEntriesCommand;
             this.addNewJobTaskComboCommand = addNewJobTaskComboCommand;
@@ -49,16 +50,16 @@ namespace orion.web.TimeEntries
             this.removeRowCommand = removeRowCommand;
             this.modifyJobTaskComboCommand = modifyJobTaskComboCommand;
             this.sessionAdapter = sessionAdapter;
-            _expenseService = expenseService;
+            _employeeRepository = employeeRepository;
         }
-
 
         public async Task<ActionResult> Index(int? weeksToShow, string startWithDate)
         {
-            if(!DateTime.TryParse(startWithDate, out var startDate))
+            if (!DateTime.TryParse(startWithDate, out var startDate))
             {
                 startDate = DateTime.Now;
             }
+
             return View("WeekList", await weekIdentifierListQuery.GetWeeksAsync(weeksToShow ?? 5, await sessionAdapter.EmployeeIdAsync(), startDate));
         }
 
@@ -66,24 +67,24 @@ namespace orion.web.TimeEntries
         [Route("TimeEntry/Employee/{employeeId}")]
         public async Task<ActionResult> IndexForEmployee(int employeeId, int? weeksToShow, string startWithDate)
         {
-            if(!User.IsInRole(UserRoleName.Admin))
+            if (!User.IsInRole(UserRoleName.Admin))
             {
                 return RedirectToAction("Index", new { startWithDate, weeksToShow });
             }
 
-            if(!DateTime.TryParse(startWithDate, out var startDate))
+            if (!DateTime.TryParse(startWithDate, out var startDate))
             {
                 startDate = DateTime.Now;
             }
+
             return View("WeekList", await weekIdentifierListQuery.GetWeeksAsync(weeksToShow ?? 5, employeeId, startDate));
         }
-
 
         public async Task<ActionResult> Current(int? employeeId)
         {
             var emp = await sessionAdapter.EmployeeIdAsync();
 
-            if(User.IsInRole(UserRoleName.Admin) && employeeId.HasValue)
+            if (User.IsInRole(UserRoleName.Admin) && employeeId.HasValue)
             {
                 emp = employeeId.Value;
             }
@@ -93,13 +94,12 @@ namespace orion.web.TimeEntries
             return RedirectToAction("Edit", new { weekId = current.WeekId.Value, employeeId = emp });
         }
 
-
         [HttpGet]
-        [Route("Edit/Employee/{employeeId}/Week/{weekId:int=1}", Name = EDIT_ROUTE)]
+        [Route("Edit/Employee/{employeeId}/Week/{weekId:int=1}", Name = EDITROUTE)]
         public async Task<ActionResult> Edit(int weekId, int employeeId)
         {
             var currentUserId = await sessionAdapter.EmployeeIdAsync();
-            if(!User.IsInRole(UserRoleName.Admin) && employeeId != currentUserId)
+            if (!await CanCurrentUserViewTime(employeeId, currentUserId))
             {
                 return RedirectToAction("Edit", new { weekId, employeeId = currentUserId });
             }
@@ -115,7 +115,16 @@ namespace orion.web.TimeEntries
             return View("Week", vm);
         }
 
+        private async Task<bool> CanCurrentUserViewTime(int employeeId, int currentUserId)
+        {
+            var isSelf = employeeId == currentUserId;
+            var isAdminManager = User.CanManageAllEmployeesTime();
+            var emp = await _employeeRepository.GetSingleEmployeeAsync(currentUserId);
+            var isSupervisorOfThisUser = User.CanViewOtherUsersTime() && emp.DirectReports.Contains(employeeId);
 
+            var canViewTime = isSelf || isAdminManager || isSupervisorOfThisUser;
+            return canViewTime;
+        }
 
         [HttpPost]
         [Route("Edit/Employee/{employeeId}/Week/{weekId:int}")]
@@ -123,15 +132,15 @@ namespace orion.web.TimeEntries
         public async Task<ActionResult> Save(int weekId, int employeeId, FullTimeEntryViewModel vm, string postType)
         {
             var currentUserId = await sessionAdapter.EmployeeIdAsync();
-            if(!User.IsInRole(UserRoleName.Admin) && employeeId != currentUserId)
+            if (!User.IsInRole(UserRoleName.Admin) && employeeId != currentUserId)
             {
                 return RedirectToAction("Index", new { weekId });
             }
 
-            if(postType == "Save" || postType == "Add Task" || postType == "Submit")
+            if (postType == "Save" || postType == "Add Task" || postType == "Submit")
             {
                 var res = await saveTimeEntriesCommand.SaveTimeEntriesAsync(employeeId, weekId, vm);
-                if(res.Successful)
+                if (res.Successful)
                 {
                     NotificationsController.AddNotification(User.SafeUserName(), "Timesheet has been saved");
                 }
@@ -141,10 +150,10 @@ namespace orion.web.TimeEntries
                 }
             }
 
-            if(postType == "Add Task")
+            if (postType == "Add Task")
             {
                 var AddResult = await addNewJobTaskComboCommand.AddNewJobTaskCombo(employeeId, weekId, vm.NewEntry.SelectedTaskId ?? 0, vm.NewEntry.SelectedJobId ?? 0);
-                if(AddResult.Successful)
+                if (AddResult.Successful)
                 {
                     NotificationsController.AddNotification(User.SafeUserName(), "The selected task has been added.");
                 }
@@ -155,12 +164,12 @@ namespace orion.web.TimeEntries
                 }
             }
 
-            if(postType == "Copy Job/Tasks From Previous Week")
+            if (postType == "Copy Job/Tasks From Previous Week")
             {
                 await copyPreviousWeekTimeCommand.CopyPreviousWeekTime(employeeId, weekId, vm.IncludeRowsWithNoEffortAppliedOnCopyPreviousWeekTasks);
             }
 
-            if(postType == "Submit")
+            if (postType == "Submit")
             {
                 var req = new TimeApprovalRequest(
                     approvingUserId: await sessionAdapter.EmployeeIdAsync(),
@@ -173,7 +182,7 @@ namespace orion.web.TimeEntries
                 NotificationsController.AddNotification(User.SafeUserName(), $"Timesheet is {TimeApprovalStatus.Submitted}");
             }
 
-            if(postType == "Approve")
+            if (postType == "Approve")
             {
                 var req = new TimeApprovalRequest(
                     approvingUserId: await sessionAdapter.EmployeeIdAsync(),
@@ -186,7 +195,7 @@ namespace orion.web.TimeEntries
                 NotificationsController.AddNotification(User.SafeUserName(), $"Timesheet is {TimeApprovalStatus.Submitted}");
             }
 
-            if(postType == "Reject")
+            if (postType == "Reject")
             {
                 var req = new TimeApprovalRequest(
                     approvingUserId: await sessionAdapter.EmployeeIdAsync(),
@@ -197,9 +206,9 @@ namespace orion.web.TimeEntries
                 );
                 var res = await approveTimeCommand.ApplyApproval(req);
                 NotificationsController.AddNotification(User.SafeUserName(), $"Timesheet is {TimeApprovalStatus.Rejected}");
-
             }
-            if(postType == "Save New Combination")
+
+            if (postType == "Save New Combination")
             {
                 var rowId = vm.SelectedRowId;
                 var oldJobId = int.Parse(rowId.Substring(0, rowId.IndexOf(".")));
@@ -207,13 +216,14 @@ namespace orion.web.TimeEntries
                 var res = await modifyJobTaskComboCommand.ModifyJobTaskCombo(employeeId, weekId, vm.NewEntry.SelectedTaskId ?? 0, vm.NewEntry.SelectedJobId ?? 0, oldTaskId, oldJobId);
             }
 
-            if(postType == "RemoveRow")
+            if (postType == "RemoveRow")
             {
                 var rowId = vm.SelectedRowId;
                 var jobId = rowId.Substring(0, rowId.IndexOf("."));
                 var taskId = rowId.Substring(rowId.IndexOf(".") + 1);
                 var res = await removeRowCommand.RemoveRow(employeeId, weekId, int.Parse(taskId), int.Parse(jobId));
             }
+
             return RedirectToAction(nameof(Edit), new { weekId = weekId, employeeId = employeeId });
         }
 
@@ -227,7 +237,7 @@ namespace orion.web.TimeEntries
                 WeekId = weekId
             };
             var vmDefault = await weekOfTimeEntriesQuery.GetFullTimeEntryViewModelAsync(req);
-            foreach(var day in vmDefault.TimeEntryRow)
+            foreach (var day in vmDefault.TimeEntryRow)
             {
                 var match = vm.TimeEntryRow.Single(x => x.RowId == day.RowId);
 
@@ -247,15 +257,15 @@ namespace orion.web.TimeEntries
                 day.Saturday.OvertimeHours = match.Saturday.OvertimeHours;
                 day.Sunday.OvertimeHours = match.Sunday.OvertimeHours;
             }
+
             NotificationsController.AddNotification(User.SafeUserName(), $"Timesheet was not saved {string.Join("<br />", res.Errors)}");
             ModelState.Clear();
-            foreach(var err in res.Errors)
+            foreach (var err in res.Errors)
             {
                 ModelState.AddModelError("", err);
             }
+
             return View("Week", vmDefault);
         }
     }
-
 }
-

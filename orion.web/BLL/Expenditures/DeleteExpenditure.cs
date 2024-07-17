@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
-using orion.web.api;
-using orion.web.BLL.Core;
-using orion.web.DataAccess;
-using orion.web.UI.Models;
-using orion.web.Util.IoC;
+using Orion.Web.Api;
+using Orion.Web.BLL.Core;
+using Orion.Web.DataAccess;
+using Orion.Web.UI.Models;
+using Orion.Web.Util.IoC;
 
-namespace orion.web.BLL.Expenditures
+namespace Orion.Web.BLL.Expenditures
 {
     public class DeleteExpenditureRequest : IProduces<EmptyResult>
     {
@@ -18,10 +18,11 @@ namespace orion.web.BLL.Expenditures
         public Guid ExpenditureToDelete { get; }
     }
 
-     public interface IDeleteExpenditure
+    public interface IDeleteExpenditure
     {
-          public Task<IProcessResult<EmptyResult>> Process(DeleteExpenditureRequest msg);
+        public Task<IProcessResult<EmptyResult>> Process(DeleteExpenditureRequest msg);
     }
+
     public class DeleteExpenditure
         : Orchastrator<DeleteExpenditureRequest, EmptyResult>,
         IDeleteExpenditure, IAutoRegisterAsSingleton
@@ -34,7 +35,8 @@ namespace orion.web.BLL.Expenditures
         private readonly IMiscExpenditureRepo miscExpenditureRepo;
         private readonly ICoreExpenditureRepo coreExpenditureRepo;
 
-        public DeleteExpenditure(IArcFlashLabelExpenditureRepo arcFlashLabelExpenditureRepo,
+        public DeleteExpenditure(
+            IArcFlashLabelExpenditureRepo arcFlashLabelExpenditureRepo,
             ICompanyVehicleExpenditureRepo companyVehicleExpenditureRepo,
             IContractorExpenditureRepo contractorExpenditureRepo,
             ITimeAndExpenceExpenditureRepo timeAndExpenceExpenditureRepo,
@@ -48,13 +50,13 @@ namespace orion.web.BLL.Expenditures
             this.miscExpenditureRepo = miscExpenditureRepo;
             this.coreExpenditureRepo = coreExpenditureRepo;
         }
+
         protected override async Task<IProcessResult<EmptyResult>> Handle(DeleteExpenditureRequest msg)
         {
             var exp = await coreExpenditureRepo.GetExpenditureCoreInfoByExternalId(msg.ExpenditureToDelete);
             if (exp == null)
                 return Failure(ApiErrors.NotFoundException($"No expense exists with id: {msg.ExpenditureToDelete}"));
 
-                    
             switch (exp.ExpenditureType)
             {
                 case ExpenditureTypeEnum.ArcFlashLabelExpenditure:
@@ -79,6 +81,4 @@ namespace orion.web.BLL.Expenditures
             return Success(EmptyResult.Instance);
         }
     }
-
 }
-

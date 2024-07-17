@@ -1,19 +1,9 @@
 ﻿using System;
-namespace orion.web.DataAccess.EF
+namespace Orion.Web.DataAccess.EF
 {
-
-
-
-   
-
-
-
-    
-
     public class CompanyVehicle
     {
         public int Id { get; set; }
         public string Name { get; set; }
     }
 }
-

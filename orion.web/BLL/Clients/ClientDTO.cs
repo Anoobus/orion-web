@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace orion.web.Clients
+namespace Orion.Web.Clients
 {
     public class ClientDTO : IEquatable<ClientDTO>
     {

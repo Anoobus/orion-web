@@ -4,14 +4,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using orion.web.Common;
-using orion.web.Employees;
-using orion.web.Notifications;
-using orion.web.TimeEntries;
+using Orion.Web.Common;
+using Orion.Web.Employees;
+using Orion.Web.Notifications;
+using Orion.Web.TimeEntries;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
-namespace orion.web.api
+namespace Orion.Web.Api
 {
     public class ApiResult<T>
     {
@@ -22,8 +21,9 @@ namespace orion.web.api
     public class NoResult
     {
         private static readonly NoResult _instance = new NoResult();
-        static NoResult Instance => _instance;
+        private static NoResult Instance => _instance;
     }
+
     public class NewEffort
     {
         public int SelectedTaskId { get; set; }
@@ -55,7 +55,6 @@ namespace orion.web.api
             {
                 var msg = "You are not allowed to edit another users effort selection.";
                 return CreateErrorResponse(msg);
-
             }
 
             var addResult = await _addNewJobTaskComboCommand.AddNewJobTaskCombo(employeeId, weekid, effort.SelectedTaskId, effort.SelectedJobId);
@@ -70,9 +69,11 @@ namespace orion.web.api
                 return CreateErrorResponse(string.Join(", ", addResult.Errors));
             }
         }
+
         [HttpDelete]
         [Route("employees/{employee-id}/time-entry/week/{week-id:int}/efforts/{job-id:int}.{task-id:int}")]
-        public async Task<IActionResult> Index([FromRoute(Name = "week-id")] int weekid,
+        public async Task<IActionResult> Index(
+            [FromRoute(Name = "week-id")] int weekid,
             [FromRoute(Name = "employee-id")] int employeeId,
             [FromRoute(Name = "job-id")] int jobId,
             [FromRoute(Name = "task-id")] int taskId)
@@ -82,7 +83,6 @@ namespace orion.web.api
             {
                 var msg = "You are not allowed to edit another users effort selection.";
                 return CreateErrorResponse(msg);
-
             }
 
             var removeResult = await _removeRowCommand.RemoveRow(employeeId, weekid, taskId, jobId);
@@ -103,17 +103,19 @@ namespace orion.web.api
                 return CreateErrorResponse(string.Join(", ", removeResult.Errors));
             }
         }
+
         public class EffortSwitchModel
         {
-            public int oldJobId { get; set; }
-            public int oldTaskid {get;set;}
-            public int newTaskId { get; set; }
-            public int newJobId { get; set; }
+            public int OldJobId { get; set; }
+            public int OldTaskid { get; set; }
+            public int NewTaskId { get; set; }
+            public int NewJobId { get; set; }
         }
 
         [HttpPost]
         [Route("employees/{employee-id}/time-entry/week/{week-id:int}/efforts/switch")]
-        public async Task<IActionResult> Index( [FromRoute(Name = "week-id")] int weekid,
+        public async Task<IActionResult> Index(
+            [FromRoute(Name = "week-id")] int weekid,
             [FromRoute(Name = "employee-id")] int employeeId,
             [FromBody] EffortSwitchModel request)
         {
@@ -122,20 +124,19 @@ namespace orion.web.api
             {
                 var msg = "You are not allowed to edit another users effort selection.";
                 return CreateErrorResponse(msg);
-
             }
 
-            var removeResult = await _modifyJobTaskComboCommand.ModifyJobTaskCombo(employeeId, weekid, request.newTaskId, request.newJobId, request.oldTaskid, request.oldJobId);
-                       
+            var removeResult = await _modifyJobTaskComboCommand.ModifyJobTaskCombo(employeeId, weekid, request.NewTaskId, request.NewJobId, request.OldTaskid, request.OldJobId);
+
             if (removeResult.Successful)
             {
                 NotificationsController.AddNotification(User.SafeUserName(), "The selected effort was updated.");
                 return new ObjectResult(new ApiResult<string>()
                 {
-                     Data = "The selected effort was updated."
+                    Data = "The selected effort was updated."
                 })
                 {
-                   StatusCode =  StatusCodes.Status200OK
+                    StatusCode = StatusCodes.Status200OK
                 };
             }
             else
@@ -153,7 +154,6 @@ namespace orion.web.api
                     Detail = msg,
                     Status = StatusCodes.Status400BadRequest,
                     Title = "Couldn't add new Effort",
-
                 }
             })
             {
@@ -162,4 +162,3 @@ namespace orion.web.api
         }
     }
 }
-

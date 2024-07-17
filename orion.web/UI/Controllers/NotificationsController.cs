@@ -4,7 +4,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace orion.web.Notifications
+namespace Orion.Web.Notifications
 {
     public static class UserNameExtenions
     {
@@ -13,15 +13,17 @@ namespace orion.web.Notifications
             return user?.Identity?.Name ?? "NOT AUTHED";
         }
     }
+
     [Route("api/Notifications")]
     [Authorize]
     public class NotificationsController : Controller
     {
-        public static readonly ConcurrentDictionary<string, Queue<string>> notifications = new ConcurrentDictionary<string, Queue<string>>();
+        public static readonly ConcurrentDictionary<string, Queue<string>> Notifications = new ConcurrentDictionary<string, Queue<string>>();
 
         public static void AddNotification(string userName, string msg)
         {
-            notifications.AddOrUpdate(userName,
+            Notifications.AddOrUpdate(
+                userName,
                 new Queue<string>(new string[] { msg }),
                 (username, queue) =>
                  {
@@ -29,20 +31,20 @@ namespace orion.web.Notifications
                      return queue;
                  });
         }
+
         // GET api/values
         [HttpGet]
         public IEnumerable<string> Get()
         {
-
             var lastOne = User.SafeUserName();
-            var msgs = notifications.GetOrAdd(lastOne, new Queue<string>());
+            var msgs = Notifications.GetOrAdd(lastOne, new Queue<string>());
             var allNotifications = new List<string>();
-            while(msgs.TryDequeue(out var stringy))
+            while (msgs.TryDequeue(out var stringy))
             {
                 allNotifications.Add(stringy);
             }
+
             return allNotifications;
         }
-
     }
 }

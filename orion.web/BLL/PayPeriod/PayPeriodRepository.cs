@@ -1,9 +1,9 @@
-﻿using orion.web.Common;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Orion.Web.Common;
 
-namespace orion.web.PayPeriod
+namespace Orion.Web.PayPeriod
 {
     public class PayPeriodRepository
     {
@@ -21,14 +21,14 @@ namespace orion.web.PayPeriod
             var surroundingSize = rangeSize / 2;
 
             var temp = startPP;
-            for(int i = 0; i < surroundingSize; i++)
+            for (int i = 0; i < surroundingSize; i++)
             {
                 temp = GetNextPP(temp);
                 list.PayPeriodList.Add(temp);
             }
 
             temp = startPP;
-            for(int i = 0; i < surroundingSize; i++)
+            for (int i = 0; i < surroundingSize; i++)
             {
                 temp = GetPreviousPP(temp);
                 list.PayPeriodList.Add(temp);
@@ -42,7 +42,7 @@ namespace orion.web.PayPeriod
         {
             var currentPP = new PayPeriodDTO();
             var currentWeek = WeekDTO.CreateWithWeekContaining(date);
-            if(currentWeek.IsPPE.Value)
+            if (currentWeek.IsPPE.Value)
             {
                 return MapForPPEndWeek(currentWeek);
             }
@@ -79,8 +79,9 @@ namespace orion.web.PayPeriod
         private static PayPeriodDTO GetNextPP(PayPeriodDTO currentPP)
         {
             var week = WeekDTO.CreateWithWeekContaining(currentPP.PayPeriodEnd.AddDays(1));
-            return MapForPPStartWeek(week);          
+            return MapForPPStartWeek(week);
         }
+
         private static PayPeriodDTO GetPreviousPP(PayPeriodDTO currentPP)
         {
             var week = WeekDTO.CreateWithWeekContaining(currentPP.PayPeriodStart.AddDays(-1));

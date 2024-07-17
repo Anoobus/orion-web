@@ -1,19 +1,19 @@
-﻿using orion.web.Common;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using Orion.Web.Common;
 
-namespace orion.web.Reports.PayPeriodReport
+namespace Orion.Web.Reports.PayPeriodReport
 {
     public class PayPeriodReportCriteria
     {
-        public const string PAY_PERIOD_REPORT_NAME = "Pay Period Report";
+        public const string PAYPERIODREPORTNAME = "Pay Period Report";
 
         [Display(Name = "Pay Period End Date")]
-        public DateTime PayPeriodEnd { get; set; }   
-        
+        public DateTime PayPeriodEnd { get; set; }
+
         public PayPeriodListDTO PayPeriodList { get; set; }
     }
 }

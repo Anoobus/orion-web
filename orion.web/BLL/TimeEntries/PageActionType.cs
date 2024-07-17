@@ -1,5 +1,4 @@
-﻿
-namespace orion.web.TimeEntries
+﻿namespace Orion.Web.TimeEntries
 {
     public enum PageActionType
     {

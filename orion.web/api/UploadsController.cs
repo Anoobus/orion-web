@@ -1,18 +1,18 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using orion.web.Clients;
-using orion.web.Employees;
-using orion.web.Jobs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Orion.Web.Clients;
+using Orion.Web.Employees;
+using Orion.Web.Jobs;
 
-namespace orion.web.api
+namespace Orion.Web.Api
 {
     public class JobUploadResults
     {
@@ -22,6 +22,7 @@ namespace orion.web.api
         public IEnumerable<CoreJobDto> UpdatedJobs { get; set; }
         public IEnumerable<CoreJobDto> SkippedEntriesBecuaseNoChange { get; set; }
     }
+
     public class JobUploadModel
     {
         public string JobCode { get; set; }
@@ -56,7 +57,6 @@ namespace orion.web.api
             {
                 NewClients = new Dictionary<string, int>(),
                 NewSites = new Dictionary<string, int>(),
-
             };
             try
             {
@@ -71,16 +71,18 @@ namespace orion.web.api
                 var newJobs = new List<CoreJobDto>();
                 var updatedJobs = new List<CoreJobDto>();
                 var skippedEntry = new List<CoreJobDto>();
-                foreach(var rec in jobs)
+                foreach (var rec in jobs)
                 {
                     var isBrandNewJob = false;
                     var temp = rec;
-                    var matchedJob = await SaveForMatchingField(allJobs,
-                                               matchCriteria: (existingJob, newJob) => {
-                                                   var wtf = existingJob.JobCode.Replace("-","").Equals(newJob.JobCode.Replace("-",""), StringComparison.InvariantCultureIgnoreCase);
+                    var matchedJob = await SaveForMatchingField(
+                        allJobs,
+                        matchCriteria: (existingJob, newJob) =>
+                                               {
+                                                   var wtf = existingJob.JobCode.Replace("-", "").Equals(newJob.JobCode.Replace("-", ""), StringComparison.InvariantCultureIgnoreCase);
                                                    return wtf;
-                                                },
-                                               factory: async (newJob) =>
+                                               },
+                        factory: async (newJob) =>
                                                {
                                                    var created = await _jobsRepository.Create(new BLL.Jobs.CreateJobDto()
                                                    {
@@ -95,16 +97,16 @@ namespace orion.web.api
 
                                                    return created;
                                                },
-                                               field: temp);
+                        field: temp);
 
                     var nameChanged = matchedJob.JobName != rec.JobName;
                     var clientChanged = matchedJob.ClientId != clientsByClientName[rec.ClientName.Trim()];
                     var siteChanged = matchedJob.SiteId != sitesBySiteName[rec.SiteName.Trim()];
-                    if(isBrandNewJob)
+                    if (isBrandNewJob)
                     {
                         newJobs.Add(matchedJob);
                     }
-                    else if(nameChanged || clientChanged || siteChanged)
+                    else if (nameChanged || clientChanged || siteChanged)
                     {
                         matchedJob.JobName = rec.JobName;
                         matchedJob.ClientId = clientsByClientName[rec.ClientName.Trim()];
@@ -122,7 +124,7 @@ namespace orion.web.api
                 res.CreatedJobs = newJobs;
                 res.SkippedEntriesBecuaseNoChange = skippedEntry;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 return new ObjectResult(new
                 {
@@ -136,9 +138,7 @@ namespace orion.web.api
                     },
                     Processed = res
                 });
-
             }
-
 
             return Ok(res);
         }
@@ -146,12 +146,13 @@ namespace orion.web.api
         private async Task<Dictionary<string, int>> BulkSaveSites(IEnumerable<SiteDTO> allSites, IEnumerable<JobUploadModel> recs, Action<SiteDTO> onNewSiteCreated)
         {
             var comparer = StringComparer.InvariantCultureIgnoreCase;
-            var sitesBySiteName = new Dictionary<string, int >(comparer);
-            foreach(var rec in recs.Select(z => z.SiteName.Trim()).Distinct())
+            var sitesBySiteName = new Dictionary<string, int>(comparer);
+            foreach (var rec in recs.Select(z => z.SiteName.Trim()).Distinct())
             {
-                var matchedSite = await SaveForMatchingField(allSites,
-                                                               matchCriteria: (site, field) => site.SiteName.Trim().Equals(field, StringComparison.InvariantCultureIgnoreCase),
-                                                               factory: async (field) =>
+                var matchedSite = await SaveForMatchingField(
+                    allSites,
+                    matchCriteria: (site, field) => site.SiteName.Trim().Equals(field, StringComparison.InvariantCultureIgnoreCase),
+                    factory: async (field) =>
                                                                {
                                                                    var site = new SiteDTO()
                                                                    {
@@ -161,10 +162,11 @@ namespace orion.web.api
                                                                    onNewSiteCreated(site);
                                                                    return site;
                                                                },
-                                                               field: rec);
+                    field: rec);
 
                 sitesBySiteName.TryAdd(matchedSite.SiteName.Trim(), matchedSite.SiteID);
             }
+
             return sitesBySiteName;
         }
 
@@ -172,11 +174,12 @@ namespace orion.web.api
         {
             var comparer = StringComparer.InvariantCultureIgnoreCase;
             var clientsByClientName = new Dictionary<string, int>(comparer);
-            foreach(var rec in recs.Select(z => z.ClientName.Trim()).Distinct())
+            foreach (var rec in recs.Select(z => z.ClientName.Trim()).Distinct())
             {
-                var matchedClient = await SaveForMatchingField(allClients,
-                                                                 matchCriteria: (client, field) => client.ClientName.Trim().Equals(field, StringComparison.InvariantCultureIgnoreCase),
-                                                                 factory: async (field) =>
+                var matchedClient = await SaveForMatchingField(
+                    allClients,
+                    matchCriteria: (client, field) => client.ClientName.Trim().Equals(field, StringComparison.InvariantCultureIgnoreCase),
+                    factory: async (field) =>
                                                                  {
                                                                      var client = await _clientsRepository.Save(new ClientDTO()
                                                                      {
@@ -185,30 +188,32 @@ namespace orion.web.api
                                                                      onNewClientCreated(client);
                                                                      return client;
                                                                  },
-                                                                 field: rec);
+                    field: rec);
 
                 clientsByClientName.TryAdd(matchedClient.ClientName.Trim(), matchedClient.ClientId);
             }
+
             return clientsByClientName;
         }
 
-        private async Task<T> SaveForMatchingField<T,U>(
+        private async Task<T> SaveForMatchingField<T, TJobRow>(
             IEnumerable<T> currentListing,
-            Func<T, U, bool> matchCriteria,
-            Func<U, Task<T>> factory,
-            U field)
+            Func<T, TJobRow, bool> matchCriteria,
+            Func<TJobRow, Task<T>> factory,
+            TJobRow field)
         {
             var matchedSites = currentListing.Where(x => matchCriteria(x, field)).ToList();
             var matchedSite = matchedSites.FirstOrDefault();
-            if(matchedSites.Count() > 1)
+            if (matchedSites.Count() > 1)
             {
                 Console.WriteLine($"Multiple matching entries: {JsonConvert.SerializeObject(matchedSites)}");
             }
 
-            if(matchedSite == null)
+            if (matchedSite == null)
             {
                 matchedSite = await factory(field);
             }
+
             return matchedSite;
         }
     }
