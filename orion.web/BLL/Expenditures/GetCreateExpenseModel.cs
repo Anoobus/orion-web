@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Orion.Web.BLL.Core;
 using Orion.Web.Employees;
@@ -39,7 +40,10 @@ namespace Orion.Web.BLL.Expenditures
 
         protected override async Task<IProcessResult<ExpenseViewModel>> Handle(GetCreateExpenseModelMessage msg)
         {
-            var emps = (await empRepo.GetAllEmployees()).Where(x => x.EmployeeId != 1).ToList();
+            var emps = (await empRepo.GetAllEmployees())
+            .Where(x => x.EmployeeId != 1 && x.Role != "Disabled")
+            .OrderBy(x => x.Last).ToList();
+
             var jobs = await jobsRepository.GetAsync();
 
             var mdl = msg.TargetExpenseType switch

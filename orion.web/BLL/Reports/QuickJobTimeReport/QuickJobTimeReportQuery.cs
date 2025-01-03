@@ -212,7 +212,7 @@ HAVING SUM(ISNULL(e.Amount,0)) > 0 ";
                     }
                 }
 
-                rpt.Employees = employeeRows;
+                rpt.Employees = employeeRows.Where(x => x.Combined > 0).ToList();
 
                 await rdr.NextResultAsync();
                 while (await rdr.ReadAsync())

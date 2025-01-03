@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Orion.Web.Employees;
 using Orion.Web.Jobs;
+using Orion.Web.UI.Models;
 
 namespace Orion.Web.Api
 {

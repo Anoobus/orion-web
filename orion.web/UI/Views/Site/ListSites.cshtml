@@ -1,0 +1,92 @@
+﻿@model Orion.Web.UI.Models.SiteListModel
+@using Orion.Web.Employees
+@using Orion.Web.UI.Controllers
+
+<nav id="bread-crumb-bar" class="red darken-3 z-depth-3">
+    <div class="nav-wrapper ">
+        <div class="col s12">
+            <a href="#!" class="breadcrumb">Home</a>
+            <a href="#!" class="breadcrumb"> Site List</a>
+        </div>
+    </div>
+</nav>
+
+<style>
+    td.action-link-cell {
+        min-width: 290px;
+    }
+</style>
+
+<div class="">
+    <div class="row">
+        <div class="col s3">
+
+
+            @if (User.IsInRole(UserRoleName.Admin))
+            {
+                <a class="btn  btn-default  btn-margin-right pull-right " asp-action="Create" asp-controller="Site">Create Site</a>
+            }
+
+        </div>
+        <div class="col s9">
+            <label for="quick-filter">Quick Filter Rows</label>
+            <input id="quick-filter" type="text" class="input form-control" />
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col s12">
+            <table class="table striped hover z-depth-2">
+                <thead>
+
+                <thead>
+                    <tr>
+                        <th>
+                            Name
+                        </th>
+                        <th>
+
+                        </th>
+                    </tr>
+
+                </thead>
+                <tbody id="table-data">
+                    @foreach (var item in Model.Sites)
+                    {
+                        <tr>
+                            <td>
+                                @if (User.IsInRole(UserRoleName.Admin))
+                                {
+                                    @Html.ActionLink(item.SiteName, nameof(SiteController.EditSite), new { item.SiteID })
+                                }
+                            </td>
+                            <td>
+                                @Html.ActionLink("Delete", nameof(SiteController.DeleteSite), new { item.SiteID })
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+
+
+</div>
+<link rel="stylesheet" href="/css/site-table.css" />
+
+@section Scripts {
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+   
+    <script type="text/javascript">$(document).ready(function () {
+            $("#quick-filter").on("keyup", function () {
+                var value = $(this).val().toLowerCase();
+                $("#table-data tr").filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+        });</script>
+}
+

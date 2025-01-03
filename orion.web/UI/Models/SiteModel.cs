@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace Orion.Web.Jobs
+namespace Orion.Web.UI.Models
 {
     public class SiteModel
     {
